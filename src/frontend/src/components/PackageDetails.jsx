@@ -132,7 +132,7 @@ function PackageDetails({ packageData, onBack }) {
             {/* Seção "Para pacotes extra família" com background azul claro */}
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 bg-blue-50 rounded-lg p-6 shadow-sm mb-0"> 
               <p className="text-gray-600 text-base md:text-lg">Para pacotes extra família</p>
-              <button className="bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition duration-300 shadow-md">
+              <button className=" main-action-button bg-blue-600 text-white px-8 py-3 rounded-md hover:bg-blue-700 transition duration-300 shadow-md">
                 Contato
               </button>
             </div>

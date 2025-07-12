@@ -16,6 +16,30 @@ body {
   font-family: sans-serif;
 }
 
+
+/* Esta classe deve ser aplicada nos botões no JSX, por exemplo: className="main-action-button" */
+.main-action-button {
+  background-color: #3B82F6 !important; /* Cor de fundo azul (equivalente a bg-blue-500) */
+  color: #FFFFFF !important;           /* Cor do texto branca (equivalente a text-white) */
+  /* As outras propriedades como font-bold, py-2 px-4 rounded etc. ainda devem estar no JSX */
+}
+
+.main-action-button:hover {
+  background-color: #2563EB !important; /* Cor de fundo azul mais escura no hover (equivalente a hover:bg-blue-600) */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* === ESTILOS ROBUSTOS PARA POSICIONAR A PAGINAÇÃO DO SWIPER ABAIXO DOS CARDS === */
 
 /* Garante que o container Swiper tenha altura e espaço para a paginação abaixo */

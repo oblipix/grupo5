@@ -72,7 +72,7 @@ function TravelSection({ title, travels, id, className, onCardClick }) {
                         </div>
                         {/* === MUDANÇA AQUI: Adicionado cursor-pointer ao botão === */}
                         <button
-                          className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 text-sm mt-4 cursor-pointer" // Adicionado cursor-pointer
+                          className="main-action-button bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition duration-300 text-sm mt-4 cursor-pointer" // Adicionado cursor-pointer
                           onClick={(e) => {
                             e.stopPropagation();
                             onCardClick(travel.id);
