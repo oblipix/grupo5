@@ -1,58 +1,80 @@
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+@import "tailwindcss";
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* === SCROLL SUAVE PARA LINKS DE ÂNCORA === */
+html {
+  scroll-behavior: smooth;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
 
 body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  font-family: sans-serif;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+/* === ESTILOS ROBUSTOS PARA POSICIONAR A PAGINAÇÃO DO SWIPER ABAIXO DOS CARDS === */
+
+/* Garante que o container Swiper tenha altura e espaço para a paginação abaixo */
+/* Adicione padding-bottom no Swiper para empurrar o conteúdo e dar espaço para a paginação */
+.travel-pagination-bottom {
+  padding-bottom: 40px; /* Aumenta o padding interno do Swiper. Ajuste este valor! */
+  /* Aumentei para 40px para ter certeza que há espaço */
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
+/* Posiciona as bolinhas da paginação absolutamente no fundo da área do Swiper */
+/* O bottom negativo as empurra para fora da área dos slides, mas ainda dentro do padding-bottom do Swiper */
+.travel-pagination-bottom .swiper-pagination-bullets {
+  position: relative !important; /* Garante que é absoluto */
+  margin-top: 50px;       /* Fixa no fundo do Swiper (onde está o padding-bottom) */
+  left: 50% !important;         /* Centraliza horizontalmente */
+  transform: translateX(-50%) !important; /* Ajusta o centralização perfeita */
+  top: auto !important;         /* Reseta qualquer 'top' padrão do Swiper */
+  z-index: 10;                  /* Garante que esteja acima de outros elementos se houver sobreposição inesperada */
 }
-button:hover {
-  border-color: #646cff;
+
+/* Estilos de cor das bolinhas, para combinar com seu tema */
+.travel-pagination-bottom .swiper-pagination-bullet {
+  background: #60a5fa; /* Cor azul suave do Tailwind para as bolinhas inativas */
+  opacity: 0.6;
 }
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+
+.travel-pagination-bottom .swiper-pagination-bullet-active {
+  background: #2563eb; /* Cor azul mais forte do Tailwind para a bolinha ativa */
+  opacity: 1;
 }
+
+
+/*NOVO AJUSTE: SUBIR A PAGINAÇÃO DO HERO SWIPER === */
+/* Aumente o valor do 'bottom' para fazer as bolinhas subirem mais */
+.hero-swiper-pagination .swiper-pagination-bullets {
+  bottom: 90px !important; /* Ajuste este valor! Ex: 20px, 30px, 40px */
+  /* Quanto maior o valor, mais as bolinhas sobem */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  top: auto !important;
+  z-index: 20; /* Certifique-se de que esteja acima da próxima seção arredondada */
+}
+
+/* Opcional: Estilo para as bolinhas do Hero, se quiserem ser diferentes */
+.hero-swiper-pagination .swiper-pagination-bullet {
+  background: white; /* Bolinhas brancas para contraste no hero */
+  opacity: 0.7;
+}
+
+.hero-swiper-pagination .swiper-pagination-bullet-active {
+  background: white; /* Bolinha ativa branca */
+  opacity: 1;
+}
+
+
+
+
+
+
 
 @media (prefers-color-scheme: light) {
   :root {
@@ -65,20 +87,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
-
-
-
-
-/* Animações personalizadas */
-.animate-fade-in-up {
-  animation-fill-mode: both; /* Mantém o estado final da animação */
-}
-
-.delay-200 {
-  animation-delay: 0.2s;
-}
-
-.delay-400 {
-  animation-delay: 0.4s;
 }
