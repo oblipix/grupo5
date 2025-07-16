@@ -52,7 +52,7 @@ function App() {
     const processedDescription = removeAccents(travel.description).toLowerCase();
 
     return processedTitle.includes(processedSearchTerm) ||
-           processedDescription.includes(processedSearchTerm);
+           processedDescription.includes(processedSearchTerm);            
   });
 
   const handleSaveTravel = (travelToSave) => {
@@ -60,11 +60,11 @@ function App() {
 
     if (isAlreadySaved) {
       setSavedUserTravels(prevSaved => prevSaved.filter(saved => saved.id !== travelToSave.id));
-      console.log(Viagem ${travelToSave.title} removida dos salvos.);
+      console.log(`Viagem ${travelToSave.title} removida dos salvos.`);
     } else {
       const travelWithStatus = { ...travelToSave, status: 'Salva', type: travelToSave.type || 'Internacional' };
       setSavedUserTravels(prevSaved => [...prevSaved, travelWithStatus]);
-      console.log(Viagem ${travelToSave.title} salva!);
+      console.log(`Viagem ${travelToSave.title} salva!`);
     }
   };
 
