@@ -2,7 +2,7 @@
 
 namespace ViagemImpacta.Models
 {
-    public class Quartos
+    public class Quarto
     {
         public int QuartosId { get; set; }
         public string? Name { get; set; }
