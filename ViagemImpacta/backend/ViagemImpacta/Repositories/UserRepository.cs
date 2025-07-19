@@ -36,4 +36,9 @@ public class UserRepository : Repository<User>, IUserRepository
         user.DisabledAt = DateTime.UtcNow;
         return true;
     }
+
+    public async Task<bool> AlreadyEmailExist(string email)
+    {
+        return await _context.Users.AnyAsync(u => u.Email == email);
+    }
 }

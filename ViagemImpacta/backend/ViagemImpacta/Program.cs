@@ -13,6 +13,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
+//Autenticacao JWT  
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication("Bearer").AddJwtBearer();
+
 // Marcelo : Foi adicionado esse HttpContext para visualização da paginação na página Index
 builder.Services.AddHttpContextAccessor();
 

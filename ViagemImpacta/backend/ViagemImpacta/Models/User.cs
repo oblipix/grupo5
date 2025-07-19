@@ -12,13 +12,13 @@ public class User
     public string FirstName { get; set; }
     public string LastName { get; set; }
     public string Phone { get; set; } //Minimo 10, Max 12
-    public int Age { get; set; }
+    public DateTime BirthDate { get; set; }
     public string Photo { get; set; }
     public string Cpf { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; }
     public DateTime DisabledAt { get; set; }
-    public bool Active { get; set; }
+    public bool Active { get; set; } = true;
 
     public ICollection<Review>? Reviews { get; set; }
 
