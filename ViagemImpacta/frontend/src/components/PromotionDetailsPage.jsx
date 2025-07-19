@@ -138,7 +138,7 @@ const PromotionDetailsPage = ({ promotionData, onBack, onNavigateToPurchase }) =
       {/* Seção de Preços "De X por Y" */}
       {promotionData.priceFrom && promotionData.priceTo && (
         <div className="text-center mb-10">
-          <p className="text-2xl text-gray-600 line-through">De: {formatCurrency(promotionData.priceFrom)}</p>
+          <p className="text-2xl text-red-700 line-through">De: {formatCurrency(promotionData.priceFrom)}</p>
           <p className="text-5xl font-bold text-green-600 mt-2">Por: {formatCurrency(promotionData.priceTo)}</p>
           <p className="text-lg text-gray-500 mt-1">Preço por pessoa em apartamento duplo. Consulte condições.</p>
         </div>
