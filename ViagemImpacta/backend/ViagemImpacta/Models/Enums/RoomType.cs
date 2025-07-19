@@ -1,6 +1,6 @@
 ﻿namespace ViagemImpacta.Models.Enums
 {
-    public enum TipoQuarto
+    public enum RoomType
     {
         Standard,
         Luxo,

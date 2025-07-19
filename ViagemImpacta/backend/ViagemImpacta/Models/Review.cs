@@ -5,8 +5,8 @@ namespace ViagemImpacta.Models
     public class Review
     {
         public int ReviewId { get; set; }
-        public int PackageId { get; set; }
-        public TravelPackage? Package { get; set; }
+        public int TravelPackageId { get; set; }
+        public TravelPackage? TravelPackage { get; set; }
         public int UserId { get; set; }
         public User? User { get; set; }
         public string? Comment { get; set; }
