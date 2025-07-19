@@ -5,17 +5,22 @@
         public int TravelPackageId { get; set; }
         public string? Title { get; set; }
         public string? Description { get; set; }
-        public decimal Value { get; set; }
+        public decimal Price { get; set; }
        
-        public int TotalSeats { get; set; }
         public bool Active { get; set; }
         public bool Promotion { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        
-        public List<Room> Rooms { get; set; }
+
+        public string? Destination { get; set; }
+
+        //TODO:
+        //lista de hoteis
+        //public List<Hotel> Hotels { get; set; } = new List<Hotel>();
+
+        //rooms -> TravelPackage pode ser n:n e o Hotel = tabela intermediária
 
         public List<Reservation> Reservations { get; set; }
         public List<Review> Reviews { get; set; }
