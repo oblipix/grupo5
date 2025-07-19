@@ -1,4 +1,6 @@
-﻿namespace ViagemImpacta.Repositories.Interfaces
+﻿using ViagemImpacta.Models;
+
+namespace ViagemImpacta.Repositories.Interfaces
 {
     public interface IHotelRepository
     {

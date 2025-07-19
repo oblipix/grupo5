@@ -33,7 +33,6 @@ Thumbs.db
 
 # Publish output
 publish/
-wwwroot/
 
 # Rider
 .idea/

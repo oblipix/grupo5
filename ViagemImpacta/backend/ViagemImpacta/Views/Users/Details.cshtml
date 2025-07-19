@@ -1,0 +1,30 @@
+﻿@model ViagemImpacta.Models.User
+@{
+    ViewData["Title"] = "Detalhes do Usuário";
+}
+
+<h1>Detalhes do Usuário</h1>
+
+@if (Model != null)
+{
+    <div class="card" style="max-width: 500px;">
+        <div class="card-body">
+            <h5 class="card-title">@Model.FirstName</h5>
+            <dl class="row">
+                <dt class="col-sm-4">ID</dt>
+                <dd class="col-sm-8">@Model.UserId</dd>
+                <dt class="col-sm-4">Email</dt>
+                <dd class="col-sm-8">@Model.Email</dd>
+                <dt class="col-sm-4">CPF</dt>
+                <dd class="col-sm-8">@Model.Cpf</dd>
+                <dt class="col-sm-4">Idade</dt>
+                <dd class="col-sm-8">@Model.Age</dd>
+            </dl>
+            <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">Usuário não encontrado.</div>
+}

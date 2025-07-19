@@ -1,6 +1,14 @@
-﻿namespace ViagemImpacta.Repositories.Interfaces
+﻿using ApiCatalogo.Repositories;
+using ViagemImpacta.Models;
+
+namespace ViagemImpacta.Repositories.Interfaces
 {
-    public class IUserRepository
+    public interface IUserRepository : IRepository<User>
     {
+        Task<IEnumerable<User>> GetAllClientUsersWithPagination(int skip, int take);
+
+        Task<User?> GetUserById(int id);
+
+        Task<bool> SetUserDisabled(int id);  
     }
 }

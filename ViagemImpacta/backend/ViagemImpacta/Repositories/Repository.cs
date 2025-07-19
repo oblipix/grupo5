@@ -4,18 +4,14 @@ using ViagemImpacta.Data;
 
 namespace ViagemImpacta.Repositories
 {
-
-
-
     public class Repository<T> : IRepository<T> where T : class
     {
-
-        public readonly AppDbContext _context;
+        // Marcelo : troquei de public para privado, para evitar o erro de herança na chamada do context nas classes filhas
+        private readonly AppDbContext _context;
 
         public Repository(AppDbContext context)
         {
             _context = context;
-
         }
 
         public Task<T> AddAsync(T entity)
@@ -34,13 +30,11 @@ namespace ViagemImpacta.Repositories
             }
               _context.Set<T>().Remove(entity);
             return true;
-
         }
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {
-            return await _context.Set<T>().ToListAsync();
-           
+            return await _context.Set<T>().ToListAsync();        
         }
 
         public async Task<T?> GetByIdAsync(int id)
