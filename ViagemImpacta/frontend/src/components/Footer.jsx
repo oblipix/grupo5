@@ -7,7 +7,7 @@ function Footer() {
       <div className="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between text-center md:text-left"> {/* Adicionei px-6 aqui */}
         {/* Logo ou Nome da Empresa */}
         <div className="mb-4 md:mb-0">
-          <span className="text-xl font-bold text-blue-600">Tripz</span>
+          <span className="logo">Tripz</span>
           <p className="text-gray-600 text-sm mt-1">
             &copy; {new Date().getFullYear()} Tripz. Todos os direitos reservados.
           </p>
