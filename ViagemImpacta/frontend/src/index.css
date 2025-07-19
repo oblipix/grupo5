@@ -17,15 +17,100 @@ body {
 }
 
 
-/* Esta classe deve ser aplicada nos botões no JSX, por exemplo: className="main-action-button" */
-.main-action-button {
-  background: linear-gradient(90deg, #2563EB 0%, #60A5FA 100%) !important; /* Cor de fundo azul (equivalente a bg-blue-500) */
-  color: #FFFFFF !important;           /* Cor do texto branca (equivalente a text-white) */
-  /* As outras propriedades como font-bold, py-2 px-4 rounded etc. ainda devem estar no JSX */
+
+/* src/index.css */
+
+/*
+  Base style for all buttons/links EXCLUDING Hotéis,
+  when they are NOT active.
+*/
+.btn-common-style {
+  padding: 8px 16px; /* py-2 px-4 */
+  border-radius: 9999px; /* rounded-full */
+  white-space: nowrap; /* whitespace-nowrap */
+  font-weight: 500; /* font-medium */
+  transition: all 0.2s ease-in-out; /* transition-colors duration-200 */
+  
+  /* Cores padrão para não-selecionado */
+  background-color: #ffffff; /* Fundo branco */
+  color: #4a5568; /* Texto cinza-700 */
+  border: 1px solid transparent; /* Borda transparente */
+  outline: none; /* Remove outline de foco padrão */
+  appearance: none; /* Reset nativo para alguns estilos de UI */
+  -webkit-appearance: none; /* Safari */
+  -moz-appearance: none; /* Firefox */
 }
 
-.main-action-button:hover {
-  background: linear-gradient(90deg, #60A5FA 0%,  #2563EB 100%) !important; /* Cor de fundo azul mais escura no hover (equivalente a hover:bg-blue-600) */
+/* Hover effect for common buttons */
+.btn-common-style:hover {
+  background-color: #e2e8f0; /* Fundo gray-100 no hover */
+  color: #2b6cb0;
+}
+
+/* Style for the ACTIVE state of common buttons */
+.btn-active-style {
+  background-color: #2b6cb0 !important; /* Fundo azul-600 FORÇADO */
+  color: #ffffff !important; /* Texto branco FORÇADO */
+  border-color: #2b6cb0 !important; /* Borda da mesma cor do fundo ativo FORÇADA */
+  outline: none !important; /* Remove outline de foco no estado ativo */
+}
+
+
+/* --- CLASSES ESPECÍFICAS PARA O BOTÃO "HOTÉIS" --- */
+
+.btn-hotels {
+  /* Reset mais agressivo para o elemento <button> */
+  all: unset; /* Zera a maioria dos estilos padrão do navegador */
+  display: inline-block; /* Re-aplica display, importante para layout */
+  cursor: pointer; /* Re-aplica cursor */
+  box-sizing: border-box; /* Re-aplica box-sizing padrão */
+  -webkit-appearance: none; /* Para safari/webkit browsers */
+  -moz-appearance: none; /* For firefox */
+  appearance: none; /* Standard */
+  outline: none !important; /* Remove outline */
+
+  /* Estilos base para o botão de Hotéis (quando NÃO ativo) */
+  padding: 8px 16px; /* py-2 px-4 */
+  border-radius: 9999px; /* rounded-full */
+  white-space: nowrap; /* whitespace-nowrap */
+  font-weight: 500; /* font-medium */
+  transition: all 0.2s ease-in-out; /* transição suave */
+
+  background-color: #ffffff !important; /* Fundo branco FORÇADO */
+  color: #4a5568 !important; /* Texto cinza-700 FORÇADO */
+  border: 1px solid transparent !important; /* Borda transparente FORÇADA */
+}
+
+.btn-hotels:hover {
+  background-color: #e2e8f0 !important; /* Fundo gray-100 no hover FORÇADO */
+}
+
+.btn-hotels.active { /* Classe para o estado ativo do botão Hotéis */
+  background-color: #2b6cb0 !important; /* Fundo azul-600 FORÇADO */
+  color: #ffffff !important; /* Texto branco FORÇADO */
+  border-color: #2b6cb0 !important; /* Borda da mesma cor do fundo ativo FORÇADA */
+}
+
+
+
+
+/* Esta classe deve ser aplicada nos botões no JSX, por exemplo: className="main-action-button" */
+.main-action-button,
+.promotion-data-button,
+.next-purchase,
+.reservation-button,
+.event-submit
+ {
+  background: linear-gradient(90deg, #2563EB 0%, #60A5FA 100%) !important; 
+  color: #FFFFFF !important;        
+}
+
+.main-action-button:hover,
+.promotion-data-button:hover,
+.next-purchase:hover,
+.reservation-button:hover,
+.event-submit:hover {
+  background: linear-gradient(90deg, #60A5FA 0%,  #2563EB 100%) !important; 
 }
 
 
@@ -59,6 +144,108 @@ body {
   top: auto !important;         /* Reseta qualquer 'top' padrão do Swiper */
   z-index: 10;                  /* Garante que esteja acima de outros elementos se houver sobreposição inesperada */
 }
+
+
+
+.logo {
+font-size: 30px;
+font-weight: bold;
+background-image: linear-gradient(to right, #1e3a8a, #60a5fa); /* Azul escuro (#1e3a8a) para azul claro (#60a5fa) */
+-webkit-background-clip: text;
+color: transparent;
+}
+
+
+.explore{
+  font-size: 12px;
+   background-color: #98c6ff;
+   padding: 10px;
+   margin-bottom: 50px;
+   align-content: center;
+   align-items: center;
+   text-align: center;
+  color: #48497f;
+  border-color: #1e3a8a;
+  border-radius: 9999px; 
+}
+
+
+
+
+/* Estilos para o react-calendar */
+.react-calendar__tile--booked {
+  background-color: #fca5a5; /* Um tom de vermelho claro */
+  color: #991b1b; /* Texto mais escuro */
+  font-weight: bold;
+}
+
+.react-calendar__tile--available {
+  background-color: #a7f3d0; /* Um tom de verde claro */
+  color: #065f46; /* Texto mais escuro */
+  font-weight: bold;
+}
+
+/* Opcional: para tornar os dias clicáveis mais óbvios */
+.react-calendar__tile:enabled:hover {
+    background-color: #e0e0e0;
+}
+.react-calendar__tile--active {
+    background-color: #3b82f6 !important; /* Cor azul para a data selecionada */
+    color: white !important;
+}
+
+
+
+
+
+/* Estilo para dias específicos do evento (destaque) */
+.react-calendar__tile--event-highlight {
+  background-color: #bfdbfe; /* Um azul bem clarinho (tailwind blue-200) */
+  font-weight: bold;
+}
+
+/* Garante que o destaque de evento não seja sobrescrito facilmente */
+.react-calendar__tile--event-highlight:hover {
+    background-color: #93c5fd !important; /* Azul um pouco mais escuro no hover */
+}
+
+/* Prioriza as cores de status sobre o destaque do evento */
+.react-calendar__tile--booked {
+  background-color: #fca5a5 !important; /* Um tom de vermelho claro */
+  color: #991b1b !important; /* Texto mais escuro */
+}
+.react-calendar__tile--available {
+  background-color: #a7f3d0 !important; /* Um tom de verde claro */
+  color: #065f46 !important; /* Texto mais escuro */
+}
+
+/* Estilo para dias desabilitados no react-calendar */
+.react-calendar__tile:disabled {
+  background-color: #f0f0f0 !important; /* Um cinza bem claro */
+  color: #a0a0a0 !important; /* Cor do texto cinza */
+  cursor: not-allowed !important; /* Cursor de "proibido" */
+  opacity: 0.8; /* Um pouco de transparência */
+}
+.react-calendar__tile:disabled:hover {
+  background-color: #f0f0f0 !important;
+}
+
+
+
+
+a {
+  color: #686868;
+  transition: color 0.3s ease, background-color 0.3s ease; 
+}
+
+a:hover {
+  color: #1e3a8a; /* Azul escuro do Tailwind */
+  background-color: #d2e6ff6b; /* Azul claro do Tailwind */
+  text-decoration: none; /* Remove underline no hover */
+}
+
+
+
 
 /* Estilos de cor das bolinhas, para combinar com seu tema */
 .travel-pagination-bottom .swiper-pagination-bullet {
