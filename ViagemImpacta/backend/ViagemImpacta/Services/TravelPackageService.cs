@@ -21,7 +21,7 @@ namespace ViagemImpacta.Services
         {
             return await _context.TravelPackages
                 .Where(p =>p.Active)
-                .Include(p => p.Rooms)
+                .Include(p => p.Hotels)
                 .Include(p=>p.Reviews)
                 .ToListAsync();
         }
@@ -29,7 +29,7 @@ namespace ViagemImpacta.Services
         {
             return await _context.TravelPackages
                 .Where(p => p.Active && p.TravelPackageId == id)
-                .Include(p => p.Rooms)
+                .Include(p => p.Hotels)
                 .Include(p => p.Reviews)
                 .FirstOrDefaultAsync();
         }
@@ -44,7 +44,7 @@ namespace ViagemImpacta.Services
             int take = 10)
         {
             var query = _context.TravelPackages
-                .Include(p => p.Rooms)
+                .Include(p => p.Hotels)
                 .Where(p => p.Active);
 
             //Filtros
@@ -89,7 +89,7 @@ namespace ViagemImpacta.Services
              */
 
             return await _context.TravelPackages
-                .Include(p => p.Rooms)
+                .Include(p => p.Hotels)
                 .Where(p => p.Active &&
                     (p.Title!.Contains(searchTerm) ||
                      p.Description!.Contains(searchTerm)))
