@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\ViewsControllers\" />
     <Folder Include="DTO\" />
   </ItemGroup>
 
