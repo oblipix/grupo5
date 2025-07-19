@@ -14,5 +14,6 @@
         public int Stars { get; set; }
         public bool Gym { get; set; }
         public bool Restaurant { get; set; }
+        
     }
 }
