@@ -19,7 +19,10 @@
                 <dd class="col-sm-8">@Model.Cpf</dd>
                 <dt class="col-sm-4">Idade</dt>
                 <dd class="col-sm-8">@Model.Age</dd>
+                <dt class="col-sm-4">Ativo</dt> @*Ajustar botão para ficar active=false após o usuario estiver desativado.*@
+                <dd class="col-sm-8">@Model.Active</dd>
             </dl>
+            
             <a asp-action="Index" class="btn btn-secondary">Voltar</a>
         </div>
     </div>
