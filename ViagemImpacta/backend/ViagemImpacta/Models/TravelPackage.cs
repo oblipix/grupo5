@@ -18,11 +18,11 @@
 
         //TODO:
         //lista de hoteis
-        //public List<Hotel> Hotels { get; set; } = new List<Hotel>();
+        public List<Hotel> Hotels { get; set; } = new List<Hotel>();
 
         //rooms -> TravelPackage pode ser n:n e o Hotel = tabela intermediária
 
-        public List<Reservation> Reservations { get; set; }
-        public List<Review> Reviews { get; set; }
+        public ICollection<Reservation> Reservations { get; set; }
+        public ICollection<Review> Reviews { get; set; }
     }
 }
