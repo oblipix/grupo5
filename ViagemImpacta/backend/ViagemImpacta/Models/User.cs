@@ -6,7 +6,7 @@ namespace ViagemImpacta.Models;
 
 public class User
 {
-    public long UserId { get; set; }
+    public long UserId { get; set; } //TROCAR DE LONG PARA INT
     public string Email { get; set; }
     public string Password { get; set; }
     public string FirstName { get; set; }

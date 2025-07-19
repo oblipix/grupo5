@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ViagemImpacta.Data;
 using ViagemImpacta.Models;
-using ViagemImpacta.Repositories;
+using ViagemImpacta.Repositories.Implementations;
 using ViagemImpacta.Repositories.Interfaces;
 
 public class UserRepository : Repository<User>, IUserRepository

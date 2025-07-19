@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ViagemImpacta.Data;
 
-namespace ViagemImpacta.Repositories
+namespace ViagemImpacta.Repositories.Implementations
 {
     public class Repository<T> : IRepository<T> where T : class
     {

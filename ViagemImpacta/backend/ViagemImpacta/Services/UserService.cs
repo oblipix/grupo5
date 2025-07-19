@@ -1,9 +1,9 @@
-﻿using GerenciadorDeProjetos.Repositories.Interfaces;
-using ViagemImpacta.Models;
+﻿using ViagemImpacta.Models;
+using ViagemImpacta.Repositories;
 
 namespace ViagemImpacta.Services
 {
-    public class UserService
+    public class UserService : IUserService
     {
         private readonly IUnitOfWork _unitOfWork;
 

@@ -1,6 +1,6 @@
 ﻿namespace ViagemImpacta.Repositories.Interfaces
 {
-    public class IReservationRepository
+    public interface IReservationRepository
     {
     }
 }

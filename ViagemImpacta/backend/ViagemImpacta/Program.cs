@@ -1,7 +1,6 @@
-﻿using GerenciadorDeProjetos.Repositories;
-using GerenciadorDeProjetos.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ViagemImpacta.Data;
+using ViagemImpacta.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

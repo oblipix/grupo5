@@ -1,5 +1,5 @@
-﻿using GerenciadorDeProjetos.Repositories.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using ViagemImpacta.Repositories;
 
 namespace ViagemImpacta.Controllers
 {
@@ -23,15 +23,6 @@ namespace ViagemImpacta.Controllers
             var users = await _unitOfWork.Users
                 .GetAllClientUsersWithPagination(skip, take);
             return View(users);
-        }
-
-        /*
-         TODO:
-        - Trocar possível nome da referência da página (da Action)
-         */
-        public IActionResult Business()
-        {
-            return View();
         }
 
         public async Task<IActionResult> Details(int id)

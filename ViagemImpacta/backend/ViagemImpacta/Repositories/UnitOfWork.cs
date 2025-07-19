@@ -1,18 +1,20 @@
-﻿using GerenciadorDeProjetos.Repositories.Interfaces;
-using ViagemImpacta.Data;
+﻿using ViagemImpacta.Data;
+using ViagemImpacta.Repositories.Implementations;
 using ViagemImpacta.Repositories.Interfaces;
 
-namespace GerenciadorDeProjetos.Repositories
+namespace ViagemImpacta.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AppDbContext _context;
         public IUserRepository Users { get; private set; }
+        public ITravelPackageRepository TravelPackages { get; private set; }
 
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
             Users = new UserRepository(_context);
+            TravelPackages = new TravelPackageRepository(_context);
         }
 
         // Marcelo: Troquei para <bool> por ser mais semântico, mas a ideia é a mesma.

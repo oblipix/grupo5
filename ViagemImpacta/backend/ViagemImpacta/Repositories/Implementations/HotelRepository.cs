@@ -1,6 +1,6 @@
 ﻿using ViagemImpacta.Repositories.Interfaces;
 
-namespace ViagemImpacta.Repositories
+namespace ViagemImpacta.Repositories.Implementations
 {
     public class HotelRepository
     {
