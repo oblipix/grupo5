@@ -40,7 +40,6 @@ publish/
 
 # Node.js / Frontend
 node_modules/
-dist/
 build/
 .env
 .env.*
