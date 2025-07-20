@@ -1,4 +1,5 @@
-﻿using ViagemImpacta.DTO;
+﻿using Microsoft.AspNetCore.Mvc;
+using ViagemImpacta.DTO;
 using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Services.Interfaces

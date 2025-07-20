@@ -27,7 +27,7 @@ namespace ViagemImpacta.Services
 
         public async Task<User> CreateUser(CreateUserDTO createUserDTO)
         {
-            if(await _unitOfWork.Users.AlreadyEmailExist(createUserDTO.Email))
+            if (await _unitOfWork.Users.AlreadyEmailExist(createUserDTO.Email))
             {
                 throw new Exception("Já existe um usuário com este email.");
             }
