@@ -16,7 +16,6 @@ namespace ViagemImpacta.Services
 
         public async Task<IEnumerable<Hotel>> GetAllHotelsAsync()
         {
-            // Incluindo a coleção de 'Rooms' para retornar dados mais completos
             return await _context.Hotels.Include(h => h.Rooms).ToListAsync();
         }
 
@@ -31,25 +30,21 @@ namespace ViagemImpacta.Services
         {
             var query = _context.Hotels.AsQueryable();
 
-            // Filtro por localização (busca parcial)
             if (!string.IsNullOrEmpty(location))
             {
                 query = query.Where(h => h.Location.Contains(location));
             }
 
-            // Filtro por número mínimo de estrelas
             if (minStars.HasValue)
             {
                 query = query.Where(h => h.Stars >= minStars.Value);
             }
 
-            // Filtro por Wi-Fi
             if (hasWifi.HasValue)
             {
                 query = query.Where(h => h.Wifi == hasWifi.Value);
             }
 
-            // Filtro por Estacionamento
             if (hasParking.HasValue)
             {
                 query = query.Where(h => h.Parking == hasParking.Value);
@@ -69,16 +64,15 @@ namespace ViagemImpacta.Services
         {
             if (id != hotel.HotelId)
             {
-                return false; // Requisição inválida
+                return false; 
             }
 
             var existingHotel = await _context.Hotels.FindAsync(id);
             if (existingHotel == null)
             {
-                return false; // Hotel não encontrado
+                return false; 
             }
 
-            // Atualiza as propriedades do hotel existente com os novos valores
             _context.Entry(existingHotel).CurrentValues.SetValues(hotel);
 
             try
@@ -88,7 +82,6 @@ namespace ViagemImpacta.Services
             }
             catch (DbUpdateConcurrencyException)
             {
-                // Tratar exceção de concorrência se necessário
                 return false;
             }
         }
@@ -98,7 +91,7 @@ namespace ViagemImpacta.Services
             var hotel = await _context.Hotels.FindAsync(id);
             if (hotel == null)
             {
-                return false; // Não encontrado
+                return false; 
             }
 
             _context.Hotels.Remove(hotel);
