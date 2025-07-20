@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace ViagemImpacta.Controllers
+namespace ViagemImpacta.Controllers.ViewsControllers
 {
     public class TravelPackagesController : Controller
     {
@@ -17,12 +17,12 @@ namespace ViagemImpacta.Controllers
         }
 
         //TALVEZ DÊ PARA USAR DTO
-        [HttpPost]
-        public IActionResult Create([Bind()] )
-        {
-            //ENVIA DIRETO PELO FORMULÁRIO
-            return View();
-        }
+        //[HttpPost]
+        //public IActionResult Create([Bind()] )
+        //{
+        //    //ENVIA DIRETO PELO FORMULÁRIO
+        //    return View();
+        //}
 
         public IActionResult Edit()
         {

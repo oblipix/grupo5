@@ -44,6 +44,11 @@ namespace ViagemImpacta.Repositories.Implementations
             return entity;
         }
 
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync() > 0;
+        }
+
         public Task<T> UpdateAsync(T entity)
         {
             _context.Set<T>().Update(entity);

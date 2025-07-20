@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ViagemImpacta.Repositories;
 
-namespace ViagemImpacta.Controllers
+namespace ViagemImpacta.Controllers.ViewsControllers
 {
     public class UsersController : Controller
     {

@@ -1,30 +1,25 @@
-﻿/*
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using ApiCatalogo.Repositories;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using ViagemImpacta.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using ViagemImpacta.Models;
+using ViagemImpacta.Services.Interfaces; // Importa a interface do serviço
 
 namespace ViagemImpacta.Controllers
 {
     public class HotelsController : Controller
     {
-        private readonly IRepository<Hotel> _repository;
+        // --- ALTERAÇÃO 1: Injetar o IHotelService ---
+        private readonly IHotelService _hotelService;
 
-        public HotelsController(IRepository<Hotel> repository)
+        public HotelsController(IHotelService hotelService)
         {
-            _repository = repository;
+            _hotelService = hotelService;
         }
 
         // GET: Hotels
+        // A action Index agora busca os hotéis através do serviço
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Hoteis.ToListAsync());
+            var hotels = await _hotelService.GetAllHotelsAsync();
+            return View(hotels);
         }
 
         // GET: Hotels/Details/5
@@ -35,8 +30,7 @@ namespace ViagemImpacta.Controllers
                 return NotFound();
             }
 
-            var hotel = await _context.Hoteis
-                .FirstOrDefaultAsync(m => m.HotelId == id);
+            var hotel = await _hotelService.GetHotelByIdAsync(id.Value);
             if (hotel == null)
             {
                 return NotFound();
@@ -52,16 +46,15 @@ namespace ViagemImpacta.Controllers
         }
 
         // POST: Hotels/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // --- ALTERAÇÃO 2: Usa o serviço para criar o hotel ---
+        // Note que não há mais a chamada para SaveChangesAsync() aqui.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("HotelId,Name,Phone,Location,Image,Wifi,Parking,Stars,Gym,Restaurant")] Hotel hotel)
+        public async Task<IActionResult> Create([Bind("Name,Phone,Location,Image,Wifi,Parking,Stars,Gym,Restaurant")] Hotel hotel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(hotel);
-                await _context.SaveChangesAsync();
+                await _hotelService.CreateHotelAsync(hotel);
                 return RedirectToAction(nameof(Index));
             }
             return View(hotel);
@@ -75,7 +68,7 @@ namespace ViagemImpacta.Controllers
                 return NotFound();
             }
 
-            var hotel = await _context.Hoteis.FindAsync(id);
+            var hotel = await _hotelService.GetHotelByIdAsync(id.Value);
             if (hotel == null)
             {
                 return NotFound();
@@ -84,8 +77,8 @@ namespace ViagemImpacta.Controllers
         }
 
         // POST: Hotels/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        // POST: Hotels/Edit/5
+        // --- ALTERAÇÃO 3: Usa o serviço para atualizar ---
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("HotelId,Name,Phone,Location,Image,Wifi,Parking,Stars,Gym,Restaurant")] Hotel hotel)
@@ -97,23 +90,16 @@ namespace ViagemImpacta.Controllers
 
             if (ModelState.IsValid)
             {
-                try
+                var success = await _hotelService.UpdateHotelAsync(id, hotel);
+                if (success)
                 {
-                    _context.Update(hotel);
-                    await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
-                catch (DbUpdateConcurrencyException)
+                else
                 {
-                    if (!HotelExists(hotel.HotelId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    // Pode acontecer se o hotel for deletado por outro usuário
+                    return NotFound();
                 }
-                return RedirectToAction(nameof(Index));
             }
             return View(hotel);
         }
@@ -126,8 +112,7 @@ namespace ViagemImpacta.Controllers
                 return NotFound();
             }
 
-            var hotel = await _context.Hoteis
-                .FirstOrDefaultAsync(m => m.HotelId == id);
+            var hotel = await _hotelService.GetHotelByIdAsync(id.Value);
             if (hotel == null)
             {
                 return NotFound();
@@ -137,24 +122,26 @@ namespace ViagemImpacta.Controllers
         }
 
         // POST: Hotels/Delete/5
+        // --- ALTERAÇÃO 4: Usa o serviço para deletar ---
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var hotel = await _context.Hoteis.FindAsync(id);
-            if (hotel != null)
-            {
-                _context.Hoteis.Remove(hotel);
-            }
-
-            await _context.SaveChangesAsync();
+            await _hotelService.DeleteHotelAsync(id);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool HotelExists(int id)
+        // GET: Hotels/Search
+        // A action de busca agora usa o método de filtros do serviço.
+        public async Task<IActionResult> Search(string? location, int? minStars)
         {
-            return _context.Hoteis.Any(e => e.HotelId == id);
+            ViewBag.Location = location;
+            ViewBag.MinStars = minStars;
+
+            var hotels = await _hotelService.GetHotelsWithFiltersAsync(location, minStars, null, null);
+
+            // Reutiliza a view de busca que já tínhamos.
+            return View(hotels);
         }
     }
 }
-*/

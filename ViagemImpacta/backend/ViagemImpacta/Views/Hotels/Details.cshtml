@@ -1,0 +1,53 @@
+﻿@model ViagemImpacta.Models.Hotel
+
+@{
+    ViewData["Title"] = "Detalhes do Hotel";
+}
+
+<h1>Detalhes do Hotel</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Name)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Name)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Location)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Location)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Phone)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Phone)</dd>
+
+        <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Stars)</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Stars) ⭐</dd>
+
+        <dt class="col-sm-2">Comodidades</dt>
+        <dd class="col-sm-10">
+            @if (Model.Wifi)
+            {
+                <span>Wi-Fi |</span>
+            }
+            @if (Model.Parking)
+            {
+                <span>Estacionamento |</span>
+            }
+            @if (Model.Gym)
+            {
+                <span>Academia |</span>
+            }
+            @if (Model.Restaurant)
+            {
+                <span>Restaurante</span>
+            }
+        </dd>
+
+        <dt class="col-sm-2">Imagem</dt>
+        <dd class="col-sm-10">
+            <img src="@Model.Image" alt="Imagem do Hotel" style="max-width:300px; border-radius: 8px;" />
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.HotelId" class="btn btn-warning">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Voltar para a Lista</a>
+</div>

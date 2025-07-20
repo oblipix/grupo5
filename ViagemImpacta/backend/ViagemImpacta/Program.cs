@@ -1,8 +1,9 @@
 using ApiCatalogo.Repositories;
-using GerenciadorDeProjetos.Repositories;
-using GerenciadorDeProjetos.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using ViagemImpacta.Data;
+using ViagemImpacta.Models;
+using ViagemImpacta.Repositories;
+using ViagemImpacta.Repositories.Implementations;
 using ViagemImpacta.Services;
 using ViagemImpacta.Services.Interfaces;
 
@@ -16,7 +17,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITravelPackageService, TravelPackageService>();
-
+builder.Services.AddScoped<IHotelService, HotelService>();
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped<IRepository<Hotel>, Repository<Hotel>>();
 // Marcelo : Foi adicionado esse HttpContext para visualização da paginação na página Index
 builder.Services.AddHttpContextAccessor();
 
