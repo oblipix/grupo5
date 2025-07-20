@@ -53,6 +53,7 @@
                         <a class="btn btn-sm btn-secondary" asp-action="Reviews" asp-route-id="@user.UserId">Avaliações</a>
                         <a class="btn btn-sm btn-warning" asp-action="Reservations" asp-route-id="@user.UserId">Reservas</a>
                         <a class="btn btn-sm btn-success" asp-action="Packages" asp-route-id="@user.UserId">Pacotes</a>
+                        <a asp-action="Delete" asp-route-id="@user.UserId" class="btn btn-sm btn-danger">Deletar</a>
                     </td>
                 </tr>
             }

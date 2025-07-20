@@ -1,5 +1,5 @@
-﻿using GerenciadorDeProjetos.Repositories.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using ViagemImpacta.Repositories;
 
 namespace ViagemImpacta.Controllers
 {
@@ -25,15 +25,6 @@ namespace ViagemImpacta.Controllers
             return View(users);
         }
 
-        /*
-         TODO:
-        - Trocar possível nome da referência da página (da Action)
-         */
-        public IActionResult Business()
-        {
-            return View();
-        }
-
         public async Task<IActionResult> Details(int id)
         {
             var user = await _unitOfWork.Users.GetUserById(id);
@@ -50,9 +41,35 @@ namespace ViagemImpacta.Controllers
             return View();
         }
 
-        public IActionResult Delete()
+
+        public async Task<IActionResult> Delete(int id)
         {
-            return View();
+            var user = await _unitOfWork.Users.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var user = await _unitOfWork.Users.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            var result = await _unitOfWork.Users.SetUserDisabled(id);
+            if (!result)
+            {
+                return BadRequest("Erro ao desativar o usuário.");
+            }
+            await _unitOfWork.CommitAsync();
+            return RedirectToAction(nameof(Index));
+
         }
     }
 }

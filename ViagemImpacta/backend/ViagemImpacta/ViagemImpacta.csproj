@@ -20,6 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Controllers\ViewsControllers\" />
+    <Folder Include="DTO\" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="wwwroot\css\site.css" />
     <None Include="wwwroot\favicon.ico" />
     <None Include="wwwroot\js\site.js" />

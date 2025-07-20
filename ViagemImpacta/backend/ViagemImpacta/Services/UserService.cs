@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
-using GerenciadorDeProjetos.Repositories.Interfaces;
 using ViagemImpacta.DTO;
 using ViagemImpacta.Models;
+using ViagemImpacta.Repositories;
 using ViagemImpacta.Services.Interfaces;
 
 namespace ViagemImpacta.Services

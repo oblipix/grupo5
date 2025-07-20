@@ -1,7 +1,9 @@
-﻿using GerenciadorDeProjetos.Repositories;
-using GerenciadorDeProjetos.Repositories.Interfaces;
+using ApiCatalogo.Repositories;
 using Microsoft.EntityFrameworkCore;
 using ViagemImpacta.Data;
+using ViagemImpacta.Repositories;
+using ViagemImpacta.Services;
+using ViagemImpacta.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ViagemImpactConnection")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ITravelPackageService, TravelPackageService>();
 
 //Autenticacao JWT  
 builder.Services.AddAuthorization();

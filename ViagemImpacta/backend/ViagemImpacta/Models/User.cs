@@ -16,9 +16,9 @@ public class User
     public string Photo { get; set; }
     public string Cpf { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public DateTime UpdatedAt { get; set; }
-    public DateTime DisabledAt { get; set; }
-    public bool Active { get; set; } = true;
+    public DateTime? UpdatedAt { get; set; }
+    public DateTime? DisabledAt { get; set; }
+    public bool Active { get; set; }
 
     public ICollection<Review>? Reviews { get; set; }
 
