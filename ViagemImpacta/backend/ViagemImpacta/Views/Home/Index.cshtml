@@ -1,27 +1,22 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model ViagemImpacta.ViewModels.ReadAdminViewModel
+
+@{
+    ViewData["Title"] = "Login";
 }
 
-<form>
-    <div>
-        <label>Email</label>
-        <input placeholder="Digite seu email"></input>
+<h2>Login do Administrador</h2>
 
+<form asp-action="Login" method="post" class="mt-4">
+    <div class="form-group mb-3">
+        <label asp-for="Email">Email</label>
+        <input type="email" class="form-control" id="Email" name="Email" placeholder="Digite seu email" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>  
 
+    <div class="form-group mb-3">
+        <label asp-for="Password">Senha</label>
+        <input type="password" class="form-control" id="Password" name="Password" placeholder="Digite sua senha"/>
+        <span asp-validation-for="Password" class="text-danger"></span>
     </div>
-        <label>Senha</label>
-        <input placeholder="Digite sua senha"></input>
-    <div>
-
-
-
-    </div>
-
-    <button></button>
-    
-
-
-
-
-
+    <button type="submit" class="btn btn-primary">Entrar</button>
 </form>
