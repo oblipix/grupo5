@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using ViagemImpacta.DTO;
+using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces;
 
@@ -10,56 +10,104 @@ namespace ViagemImpacta.Controllers.ApiControllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserService _userService; // Use a INTERFACE
+        private readonly IUserService _userService;
+        private readonly IMapper _mapper; 
 
-        public UsersController(IUserService userService) // Use a INTERFACE
+        public UsersController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
+            _mapper = mapper; 
         }
 
-        [HttpGet("teste")]
-        public ActionResult Get()
-        {
-            
-            return Ok("Hello World!");
-        }
 
         [HttpPost]
-        public async Task<ActionResult<User>> CreateUser([FromBody] CreateUserDTO dto)
+        public async Task<ActionResult<UserDTO>> CreateUser([FromBody] CreateUserDTO dto)
         {
-            Console.WriteLine("Chegou no Controller");
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (dto == null)
+                return BadRequest("Usuário não pode ser nulo.");
 
             try
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                if (dto == null)
-                {
-                    return BadRequest("Usuário não pode ser nulo.");
-                }
-
                 var user = await _userService.CreateUser(dto);
-                return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, user);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(ex.Message);
+                var userDto = _mapper.Map<UserDTO>(user);
+                return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, userDto);
             }
             catch (Exception ex)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, $"Erro ao criar usuário: {ex.Message}");
+                return BadRequest(ex.Message);
             }
         }
 
-        // Adicione este método para o CreatedAtAction funcionar
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> GetUser(long id)
+        public async Task<ActionResult<UserDTO>> GetUser(int id)
         {
-            // Implementar depois
-            return Ok();
+            try
+            {
+                var user = await _userService.GetUserById(id);
+                if (user == null)
+                    return NotFound($"Usuário com ID {id} não encontrado.");
+
+                var userDto = _mapper.Map<UserDTO>(user);
+                return Ok(userDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno: {ex.Message}");
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<UserDTO>> UpdateUser(long id, [FromBody] UpdateUserDTO dto)
+        {
+            if (dto == null || id != dto.UserId || !ModelState.IsValid)
+                return BadRequest("Requisição inválida.");
+
+            try
+            {
+                var updatedUser = await _userService.UpdateUser(dto);
+                var userDto = _mapper.Map<UserDTO>(updatedUser);
+                return Ok(userDto);
+            }
+            catch (Exception ex)
+            {
+                // Trate todas as exceções igual, retornando BadRequest com a mensagem
+                return BadRequest($"Erro ao atualizar usuário: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult> DeleteUser(int id)
+        {
+            try
+            {
+                var deleted = await _userService.DeleteUser(id);
+                if (!deleted)
+                    return NotFound($"Usuário com ID {id} não encontrado.");
+
+                return NoContent(); 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno: {ex.Message}");
+            }
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers([FromQuery] int skip = 0, [FromQuery] int take = 10)
+        {
+            try
+            {
+                var users = await _userService.ListAllClients(skip, take);
+                var userDtos = _mapper.Map<IEnumerable<UserDTO>>(users);
+                return Ok(userDtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno: {ex.Message}");
+            }
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ViagemImpacta.DTO;
+using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Profiles
@@ -10,7 +10,12 @@ namespace ViagemImpacta.Profiles
         public UserProfile()
         {
             CreateMap<CreateUserDTO, User>();
-            //CreateMap<User, UserReturnInfosDTO>();
+            CreateMap<UpdateUserDTO, User>()
+                .ForAllMembers(opts => opts.Condition(
+                    (src, dest, srcMember) => srcMember != null
+                ));
+            CreateMap<User, UserDTO>();
+                //CreateMap<User, UserReturnInfosDTO>();
         }
     }
 }

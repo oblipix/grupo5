@@ -34,6 +34,7 @@ public class UserRepository : Repository<User>, IUserRepository
         if (user == null) return false;
         user.Active = false;
         user.DisabledAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
         return true;
     }
 

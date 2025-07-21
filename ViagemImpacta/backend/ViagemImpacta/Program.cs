@@ -4,6 +4,8 @@ using ViagemImpacta.Data;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Services;
 using ViagemImpacta.Services.Interfaces;
+using ViagemImpacta.Controllers;
+using ViagemImpacta.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,9 +13,6 @@ Console.WriteLine("PROGRAMA7!");
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers();
 
@@ -22,7 +21,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<ITravelPackageService, TravelPackageService>();
-builder.Services.AddScoped<IUserService, UserService>(); // ADICIONE ESTA LINHA
+builder.Services.AddScoped<IUserService, UserService>(); 
 
 // Configure AutoMapper
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -34,19 +33,27 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 // Marcelo : Foi adicionado esse HttpContext para visualização da paginação na página Index
 builder.Services.AddHttpContextAccessor();
 
+//builder.Services.AddEndpointsApiExplorer();
+
+//builder.Services.AddSwaggerGen();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 Console.WriteLine("Teste Programmmmmmm");
+
+if (app.Environment.IsDevelopment())
+{
+    //app.UseSwagger();
+    //app.UseSwaggerUI();
+};
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

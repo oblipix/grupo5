@@ -12,8 +12,8 @@ using ViagemImpacta.Data;
 namespace ViagemImpacta.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250719184833_CreateInitial")]
-    partial class CreateInitial
+    [Migration("20250721053643_CreateInitialFin")]
+    partial class CreateInitialFin
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -61,88 +61,17 @@ namespace ViagemImpacta.Migrations
                     b.Property<int>("Stars")
                         .HasColumnType("int");
 
+                    b.Property<int?>("TravelPackageId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("Wifi")
                         .HasColumnType("bit");
 
                     b.HasKey("HotelId");
 
-                    b.ToTable("Hotel");
-                });
-
-            modelBuilder.Entity("ViagemImpacta.Models.Reservation", b =>
-                {
-                    b.Property<int>("ReservationId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReservationId"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime>("ReservationDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TravelPackageId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<long?>("UserId1")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("ReservationId");
-
                     b.HasIndex("TravelPackageId");
 
-                    b.HasIndex("UserId1");
-
-                    b.ToTable("Reservation");
-                });
-
-            modelBuilder.Entity("ViagemImpacta.Models.Review", b =>
-                {
-                    b.Property<int>("ReviewId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReviewId"));
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("Rating")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TravelPackageId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<long?>("UserId1")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("ReviewId");
-
-                    b.HasIndex("TravelPackageId");
-
-                    b.HasIndex("UserId1");
-
-                    b.ToTable("Review");
+                    b.ToTable("Hotels");
                 });
 
             modelBuilder.Entity("ViagemImpacta.Models.Room", b =>
@@ -178,17 +107,12 @@ namespace ViagemImpacta.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("TravelPackageId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Type")
                         .HasColumnType("int");
 
                     b.HasKey("RoomId");
 
                     b.HasIndex("HotelId");
-
-                    b.HasIndex("TravelPackageId");
 
                     b.ToTable("Room");
                 });
@@ -210,8 +134,14 @@ namespace ViagemImpacta.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Destination")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<bool>("Promotion")
                         .HasColumnType("bit");
@@ -222,42 +152,32 @@ namespace ViagemImpacta.Migrations
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TotalSeats")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal>("Value")
-                        .HasColumnType("decimal(18,2)");
-
                     b.HasKey("TravelPackageId");
 
-                    b.ToTable("TravelPackage");
+                    b.ToTable("TravelPackages");
                 });
 
             modelBuilder.Entity("ViagemImpacta.Models.User", b =>
                 {
-                    b.Property<long>("UserId")
+                    b.Property<int>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
+                        .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("UserId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
                     b.Property<bool>("Active")
                         .HasColumnType("bit");
 
-                    b.Property<int>("Age")
-                        .HasColumnType("int");
-
                     b.Property<string>("Cpf")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("DisabledAt")
+                    b.Property<DateTime?>("DisabledAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
@@ -277,14 +197,12 @@ namespace ViagemImpacta.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Photo")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("UserId");
@@ -292,38 +210,11 @@ namespace ViagemImpacta.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("ViagemImpacta.Models.Reservation", b =>
+            modelBuilder.Entity("ViagemImpacta.Models.Hotel", b =>
                 {
-                    b.HasOne("ViagemImpacta.Models.TravelPackage", "TravelPackage")
-                        .WithMany("Reservations")
-                        .HasForeignKey("TravelPackageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ViagemImpacta.Models.User", "User")
-                        .WithMany("Reservations")
-                        .HasForeignKey("UserId1");
-
-                    b.Navigation("TravelPackage");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("ViagemImpacta.Models.Review", b =>
-                {
-                    b.HasOne("ViagemImpacta.Models.TravelPackage", "TravelPackage")
-                        .WithMany("Reviews")
-                        .HasForeignKey("TravelPackageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("ViagemImpacta.Models.User", "User")
-                        .WithMany("Reviews")
-                        .HasForeignKey("UserId1");
-
-                    b.Navigation("TravelPackage");
-
-                    b.Navigation("User");
+                    b.HasOne("ViagemImpacta.Models.TravelPackage", null)
+                        .WithMany("Hotels")
+                        .HasForeignKey("TravelPackageId");
                 });
 
             modelBuilder.Entity("ViagemImpacta.Models.Room", b =>
@@ -333,10 +224,6 @@ namespace ViagemImpacta.Migrations
                         .HasForeignKey("HotelId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("ViagemImpacta.Models.TravelPackage", null)
-                        .WithMany("Rooms")
-                        .HasForeignKey("TravelPackageId");
 
                     b.Navigation("Hotel");
                 });
@@ -348,18 +235,7 @@ namespace ViagemImpacta.Migrations
 
             modelBuilder.Entity("ViagemImpacta.Models.TravelPackage", b =>
                 {
-                    b.Navigation("Reservations");
-
-                    b.Navigation("Reviews");
-
-                    b.Navigation("Rooms");
-                });
-
-            modelBuilder.Entity("ViagemImpacta.Models.User", b =>
-                {
-                    b.Navigation("Reservations");
-
-                    b.Navigation("Reviews");
+                    b.Navigation("Hotels");
                 });
 #pragma warning restore 612, 618
         }

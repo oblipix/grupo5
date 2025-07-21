@@ -21,7 +21,7 @@ namespace ViagemImpacta.Services
             return await _context.TravelPackages
                 .Where(p =>p.Active)
                 .Include(p => p.Hotels)
-                .Include(p=>p.Reviews)
+                //.Include(p=>p.Reviews)
                 .ToListAsync();
         }
         public async Task<TravelPackage?> GetPackageByIdAsync(int id)
@@ -29,7 +29,7 @@ namespace ViagemImpacta.Services
             return await _context.TravelPackages
                 .Where(p => p.Active && p.TravelPackageId == id)
                 .Include(p => p.Hotels)
-                .Include(p => p.Reviews)
+                //.Include(p => p.Reviews)
                 .FirstOrDefaultAsync();
         }
         public async Task<IEnumerable<TravelPackage>> GetPackagesWithFiltersAsync(

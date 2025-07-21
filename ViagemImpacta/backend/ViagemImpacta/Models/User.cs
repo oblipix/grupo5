@@ -6,23 +6,23 @@ namespace ViagemImpacta.Models;
 
 public class User
 {
-    public long UserId { get; set; }
+    public int UserId { get; set; }
     public string Email { get; set; }
     public string Password { get; set; }
     public string FirstName { get; set; }
     public string LastName { get; set; }
-    public string Phone { get; set; } //Minimo 10, Max 12
-    public DateTime BirthDate { get; set; }
-    public string Photo { get; set; }
-    public string Cpf { get; set; }
+    public string? Phone { get; set; } //Minimo 10, Max 12
+   // public DateOnly BirthDate { get; set; }
+    public string? Photo { get; set; }
+    public string? Cpf { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
     public DateTime? DisabledAt { get; set; }
     public bool Active { get; set; }
 
-    public ICollection<Review>? Reviews { get; set; }
+//    public ICollection<Review>? Reviews { get; set; }
 
-    public ICollection<Reservation>? Reservations { get; set; }
+//    public ICollection<Reservation>? Reservations { get; set; }
 }
 
 /*
