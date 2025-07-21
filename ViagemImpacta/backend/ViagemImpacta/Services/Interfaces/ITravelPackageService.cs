@@ -8,7 +8,7 @@ namespace ViagemImpacta.Services.Interfaces
         Task<TravelPackage?> GetPackageByIdAsync(int id);
         Task<IEnumerable<TravelPackage>> GetPackagesWithFiltersAsync(
             string? destination = null,
-            decimal? minPrice = null, 
+            decimal? minPrice = null,
             decimal? maxPrice = null,
             DateTime? startDate = null,
             DateTime? endDate = null,
@@ -17,5 +17,8 @@ namespace ViagemImpacta.Services.Interfaces
             int take = 10
         );
         Task<IEnumerable<TravelPackage>> SearchPackagesAsync(string searchTerm);
+        Task<TravelPackage> CreatePackageAsync(TravelPackage package, List<int> hotelIds);
+        Task<bool> UpdatePackageAsync(TravelPackage package, List<int> hotelIds);
+        Task<bool> DeletePackageAsync(int id);
     }
 }

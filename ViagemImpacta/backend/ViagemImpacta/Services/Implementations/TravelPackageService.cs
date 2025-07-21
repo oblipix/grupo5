@@ -95,7 +95,38 @@ namespace ViagemImpacta.Services.Implementations
                      p.Description!.Contains(searchTerm)))
                 .ToListAsync();
         }
+        public async Task<TravelPackage> CreatePackageAsync(TravelPackage package, List<int> hotelIds)
+        {
+            // Define valores controlados pelo servidor
+            package.CreatedAt = DateTime.UtcNow;
+            package.UpdatedAt = DateTime.UtcNow;
+            package.Active = true;
 
+            // Busca as entidades completas dos hotéis com base nos IDs recebidos
+            var selectedHotels = await _context.Hotels
+                .Where(h => hotelIds.Contains(h.HotelId))
+                .ToListAsync();
 
+            // Associa a lista de hotéis ao pacote
+            package.Hotels = selectedHotels;
+
+            // Adiciona o novo pacote ao contexto do EF
+            _context.TravelPackages.Add(package);
+
+            // Salva as alterações no banco de dados
+            await _context.SaveChangesAsync();
+
+            return package;
+        }
+
+        public Task<bool> UpdatePackageAsync(TravelPackage package, List<int> hotelIds)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeletePackageAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

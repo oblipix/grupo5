@@ -1,0 +1,32 @@
+﻿@model ViagemImpacta.Models.TravelPackage
+
+@{
+    ViewData["Title"] = "Excluir Pacote";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">Atenção!</h4>
+    <p>Você tem certeza que deseja excluir (desativar) este pacote? Esta ação não pode ser desfeita facilmente.</p>
+</div>
+
+<div>
+    <h4>Pacote: @Model.Title</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">Destino</dt>
+        <dd class="col-sm-10">@Html.DisplayFor(model => model.Destination)</dd>
+
+        <dt class="col-sm-2">Preço</dt>
+        <dd class="col-sm-10">@Model.Price.ToString("C")</dd>
+    </dl>
+
+    <form asp-action="Delete">
+        @* Campo oculto para enviar o ID do pacote na confirmação *@
+        <input type="hidden" asp-for="TravelPackageId" />
+
+        <input type="submit" value="Excluir Definitivamente" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </form>
+</div>

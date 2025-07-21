@@ -18,7 +18,7 @@
 
         //TODO:
         //lista de hoteis
-        public List<Hotel> Hotels { get; set; } = new List<Hotel>();
+        public ICollection<Hotel> Hotels { get; set; } = new List<Hotel>();
 
         //rooms -> TravelPackage pode ser n:n e o Hotel = tabela intermediária
 
