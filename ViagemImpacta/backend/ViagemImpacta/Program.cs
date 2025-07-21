@@ -4,7 +4,7 @@ using ViagemImpacta.Data;
 using ViagemImpacta.Models;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Repositories.Implementations;
-using ViagemImpacta.Services;
+using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);

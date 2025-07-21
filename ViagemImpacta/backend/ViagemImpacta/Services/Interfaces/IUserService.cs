@@ -1,6 +1,6 @@
 ﻿using ViagemImpacta.Models;
 
-namespace ViagemImpacta.Services
+namespace ViagemImpacta.Services.Interfaces
 {
     public interface IUserService
     {

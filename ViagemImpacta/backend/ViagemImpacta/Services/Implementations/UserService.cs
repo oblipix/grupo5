@@ -1,7 +1,8 @@
 ﻿using ViagemImpacta.Models;
 using ViagemImpacta.Repositories;
+using ViagemImpacta.Services.Interfaces;
 
-namespace ViagemImpacta.Services
+namespace ViagemImpacta.Services.Implementations
 {
     public class UserService : IUserService
     {

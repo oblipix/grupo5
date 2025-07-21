@@ -6,7 +6,7 @@ using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces;
 
 
-namespace ViagemImpacta.Services
+namespace ViagemImpacta.Services.Implementations
 {
     public class TravelPackageService : ITravelPackageService
     {

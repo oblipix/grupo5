@@ -11,6 +11,14 @@ public class HomeController : Controller
         _logger = logger;
     }
 
+    /*
+    - TELA DO ADMIN NA VIEW INDEX 
+    - CONTROLLER TELA GET E POST DO INDEX
+    - DTO DO LOGIN DO ADMIN > E-MAIL E SENHA  
+    - FAZER O MAPPER
+    - REPOSITORY DA AUTENTICAÇÃO
+    - SERVICE DA AUTENTICAÇÃO
+     */
     public IActionResult Index()
     {
         return View();

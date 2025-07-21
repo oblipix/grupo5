@@ -3,7 +3,7 @@ using ViagemImpacta.Data;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces;
 
-namespace ViagemImpacta.Services
+namespace ViagemImpacta.Services.Implementations
 {
     public class HotelService : IHotelService
     {
