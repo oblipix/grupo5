@@ -34,7 +34,9 @@ namespace ViagemImpacta.Services
             }
 
             var user = _mapper.Map<User>(createUserDTO);
+            Console.WriteLine(user.Password);
             user.Password = BCrypt.Net.BCrypt.HashPassword(createUserDTO.Password);
+            Console.WriteLine(user.Password);
             user.Active = true;
             user.CreatedAt = DateTime.UtcNow;
 

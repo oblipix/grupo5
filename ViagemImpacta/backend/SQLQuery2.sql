@@ -1,1 +1,0 @@
-drop database ViagemImpactaLocalDb_Teste
