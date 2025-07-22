@@ -123,9 +123,7 @@ namespace ViagemImpacta.Services
             if (string.IsNullOrEmpty(email))
                 return null;
 
-            var users = await _unitOfWork.Users.GetAllAsync(u => u.Email == email && u.Active);
-            return users.FirstOrDefault();
-            
+            return await _unitOfWork.Users.GetUserByEmail(email);
         }
     }
 }

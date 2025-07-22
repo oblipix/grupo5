@@ -49,10 +49,5 @@ namespace ViagemImpacta.Repositories.Implementations
             _context.Set<T>().Update(entity);
             return Task.FromResult(entity);
         }
-
-        public async Task<IEnumerable<T>> GetAllAsync(Func<T, bool> predicate)
-        {
-            return await Task.FromResult(_context.Set<T>().Where(predicate).ToList());
-        }
     }
 }
