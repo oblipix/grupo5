@@ -15,6 +15,7 @@
             <th>@Html.DisplayNameFor(model => model.Name)</th>
             <th>@Html.DisplayNameFor(model => model.Location)</th>
             <th>@Html.DisplayNameFor(model => model.Stars)</th>
+            <th>Nº de Quartos</th>
             <th>Ações</th>
         </tr>
     </thead>
@@ -26,6 +27,10 @@
                 <td>@Html.DisplayFor(modelItem => item.Location)</td>
                 <td>@Html.DisplayFor(modelItem => item.Stars) ⭐</td>
                 <td>
+                    @* NOVA CÉLULA: Exibe a contagem de quartos *@
+                    @(item.Rooms?.Count ?? 0)
+                </td>
+                <td>
                     <a asp-action="Edit" asp-route-id="@item.HotelId" class="btn btn-sm btn-warning">Editar</a>
                     <a asp-action="Details" asp-route-id="@item.HotelId" class="btn btn-sm btn-info">Detalhes</a>
                     <a asp-action="Delete" asp-route-id="@item.HotelId" class="btn btn-sm btn-danger">Excluir</a>
@@ -33,4 +38,5 @@
             </tr>
         }
     </tbody>
+</table>
 </table>

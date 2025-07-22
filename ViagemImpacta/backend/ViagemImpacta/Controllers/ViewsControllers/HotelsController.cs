@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces; // Importa a interface do serviço
 
@@ -19,30 +20,18 @@ namespace ViagemImpacta.Controllers
             return View(hotels);
         }
 
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
 
-            var hotel = await _hotelService.GetHotelByIdAsync(id.Value);
-            if (hotel == null)
-            {
-                return NotFound();
-            }
-
-            return View(hotel);
-        }
+       
 
         public IActionResult Create()
         {
             return View();
         }
+        
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Phone,Location,Image,Wifi,Parking,Stars,Gym,Restaurant")] Hotel hotel)
+        public async Task<IActionResult> Create(Hotel hotel) 
         {
             if (ModelState.IsValid)
             {
@@ -51,7 +40,23 @@ namespace ViagemImpacta.Controllers
             }
             return View(hotel);
         }
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
+            // Chama o serviço para buscar o hotel com seus quartos
+            var hotel = await _hotelService.GetHotelWithRoomsAsync(id.Value);
+
+            if (hotel == null)
+            {
+                return NotFound();
+            }
+
+            return View(hotel);
+        }
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -59,36 +64,32 @@ namespace ViagemImpacta.Controllers
                 return NotFound();
             }
 
-            var hotel = await _hotelService.GetHotelByIdAsync(id.Value);
+            var hotel = await _hotelService.GetHotelWithRoomsAsync(id.Value);
+
             if (hotel == null)
             {
                 return NotFound();
             }
+
             return View(hotel);
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("HotelId,Name,Phone,Location,Image,Wifi,Parking,Stars,Gym,Restaurant")] Hotel hotel)
+        public async Task<IActionResult> Edit(int id, Hotel hotel)
         {
             if (id != hotel.HotelId)
             {
-                return NotFound();
+                return BadRequest();
             }
 
             if (ModelState.IsValid)
             {
-                var success = await _hotelService.UpdateHotelAsync(id, hotel);
-                if (success)
-                {
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    return NotFound();
-                }
+                await _hotelService.UpdateHotelAsync(hotel);
+                return RedirectToAction(nameof(Index));
             }
             return View(hotel);
         }
+
 
         public async Task<IActionResult> Delete(int? id)
         {
