@@ -23,6 +23,8 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddScoped<IRepository<Hotel>, Repository<Hotel>>();
 // Marcelo : Foi adicionado esse HttpContext para visualização da paginação na página Index
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

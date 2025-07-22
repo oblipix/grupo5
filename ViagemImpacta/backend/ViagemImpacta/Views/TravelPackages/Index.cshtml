@@ -1,0 +1,92 @@
+﻿@model IEnumerable<ViagemImpacta.Models.TravelPackage>
+
+@{
+    ViewData["Title"] = "Pacotes de Viagem";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>@ViewData["Title"]</h1>
+        <a asp-action="Create" class="btn btn-primary">
+            <i class="bi bi-plus-circle-fill me-2"></i>Criar Novo Pacote
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info" role="alert">
+            Ainda não há pacotes cadastrados. <a asp-action="Create" class="alert-link">Clique aqui para criar o primeiro!</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-striped table-hover align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>@Html.DisplayNameFor(model => model.Title)</th>
+                        <th>@Html.DisplayNameFor(model => model.Destination)</th>
+                        <th>@Html.DisplayNameFor(model => model.Price)</th>
+                        <th>Hotéis Incluídos</th>
+                        <th>Período</th>
+                        <th class="text-center">@Html.DisplayNameFor(model => model.Active)</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>@Html.DisplayFor(modelItem => item.Title)</td>
+                            <td>@Html.DisplayFor(modelItem => item.Destination)</td>
+                            <td>
+                                @* Formata o preço como moeda brasileira (R$) *@
+                                @item.Price.ToString("C", new System.Globalization.CultureInfo("pt-BR"))
+                            </td>
+                            <td>
+                                @* Junta os nomes dos hotéis em uma string separada por vírgula *@
+                                @if (item.Hotels != null && item.Hotels.Any())
+                                {
+                                    @string.Join(", ", item.Hotels.Select(h => h.Name))
+                                }
+                                else
+                                {
+                                    <span class="text-muted fst-italic">Nenhum</span>
+                                }
+                            </td>
+                            <td>
+                                @item.StartDate.ToString("dd/MM/yy") a @item.EndDate.ToString("dd/MM/yy")
+                            </td>
+                            <td class="text-center">
+                                @* Usa um badge colorido para indicar o status Ativo/Inativo *@
+                                @if (item.Active)
+                                {
+                                    <span class="badge bg-success">Ativo</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Inativo</span>
+                                }
+                            </td>
+                            <td class="text-end">
+                                @* Links de ação com tag helpers que geram a URL correta *@
+                                <a asp-action="Edit" asp-route-id="@item.TravelPackageId" class="btn btn-sm btn-outline-primary" title="Editar">
+                                    <i class="bi bi-pencil-square me-1"></i>Editar
+                                </a>
+                                <a asp-action="Details" asp-route-id="@item.TravelPackageId" class="btn btn-sm btn-outline-info" title="Detalhes">
+                                    <i class="bi bi-search me-1"></i>Detalhes
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.TravelPackageId" class="btn btn-sm btn-outline-danger" title="Excluir">
+                                    <i class="bi bi-trash3-fill me-1"></i>Deletar
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@* Opcional: Para usar os ícones do Bootstrap, adicione o link do CSS no seu _Layout.cshtml *@
+@* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"> *@

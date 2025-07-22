@@ -64,3 +64,6 @@ coverage/
 
 # Ignore local tools
 .tools/
+
+# Ignore Migrations
+Migrations/

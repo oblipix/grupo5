@@ -1,0 +1,55 @@
+﻿@model ViagemImpacta.Models.TravelPackage
+
+@{
+    ViewData["Title"] = "Detalhes do Pacote";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div>
+    <h4>@Model.Title</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-3">ID</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.TravelPackageId)</dd>
+
+        <dt class="col-sm-3">Destino</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Destination)</dd>
+
+        <dt class="col-sm-3">Descrição</dt>
+        <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+
+        <dt class="col-sm-3">Preço</dt>
+        <dd class="col-sm-9">@Model.Price.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</dd>
+
+        <dt class="col-sm-3">Período</dt>
+        <dd class="col-sm-9">@Model.StartDate.ToShortDateString() a @Model.EndDate.ToShortDateString()</dd>
+
+        <dt class="col-sm-3">Em Promoção</dt>
+        <dd class="col-sm-9">@(Model.Promotion ? "Sim" : "Não")</dd>
+
+        <dt class="col-sm-3">Status</dt>
+        <dd class="col-sm-9">@(Model.Active ? "Ativo" : "Inativo")</dd>
+
+        <dt class="col-sm-3">Hotéis Incluídos</dt>
+        <dd class="col-sm-9">
+            @if (Model.Hotels != null && Model.Hotels.Any())
+            {
+                <ul>
+                    @foreach (var hotel in Model.Hotels)
+                    {
+                        <li>@hotel.Name (@hotel.Stars estrelas)</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>Nenhum hotel associado.</p>
+            }
+        </dd>
+    </dl>
+</div>
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model.TravelPackageId" class="btn btn-primary">Editar</a>
+    <a asp-action="Index" class="btn btn-secondary">Voltar para a Lista</a>
+</div>

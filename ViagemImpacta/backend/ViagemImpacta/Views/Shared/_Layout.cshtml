@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="~/WebApplication1.styles.css" asp-append-version="true" />
 </head>
 <body>
-    @* <header>
+     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebApplication1</a>
@@ -31,11 +31,14 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Hotels" asp-action="Search">Pesquisar Hotels</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="TravelPackages" asp-action="Index">Pacotes</a>
+                        </li>
                     </ul>
                 </div>
             </div>
         </nav>
-    </header> *@
+    </header> 
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
