@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ViagemImpacta.Data;
-using ViagemImpacta.Data;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces;
 
@@ -22,7 +21,7 @@ namespace ViagemImpacta.Services.Implementations
             return await _context.TravelPackages
                 .Where(p =>p.Active)
                 .Include(p => p.Hotels)
-                .Include(p=>p.Reviews)
+                //.Include(p=>p.Reviews)
                 .ToListAsync();
         }
         public async Task<TravelPackage?> GetPackageByIdAsync(int id)
@@ -30,7 +29,7 @@ namespace ViagemImpacta.Services.Implementations
             return await _context.TravelPackages
                 .Where(p => p.Active && p.TravelPackageId == id)
                 .Include(p => p.Hotels)
-                .Include(p => p.Reviews)
+                //.Include(p => p.Reviews)
                 .FirstOrDefaultAsync();
         }
         public async Task<IEnumerable<TravelPackage>> GetPackagesWithFiltersAsync(

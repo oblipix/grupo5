@@ -1,40 +1,124 @@
-/* eslint-disable react-refresh/only-export-components */
-import React, { useState } from 'react'; // Importe useState
+// src/App.js
+/* eslint-disable no-unused-vars */
+import React, { useState } from 'react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import TravelSection from './components/TravelSection';
 import HeroSwiper from './components/HeroSwiper';
-import PackageDetails from './components/PackageDetails'; // Importado para ser a tela de detalhes
-
 import LoginPage from './components/LoginPage';
 import RegisterPage from './components/RegisterPage';
 import TravelCard from './components/TravelCard';
 
-import FlightsPage from './components/FlightsPage'; // Certifique-se que FlightsPage está importado
+import HotelsPage from './components/HotelsPage';
+import EventBlogSection from './components/EventBlogSection'; 
+import EventReservationForm from './components/EventReservationForm'; 
+import PromotionDetailsPage from './components/PromotionDetailsPage'; 
+import PurchasePage from './components/PurchasePage'; // <-- ATENÇÃO AQUI: Importe a página de compra
 
+// fotos para promoçoes section
+import ImageNatalRS from './assets/images/natal1RS.png'; 
+import ImageAnoNovoRJ from './assets/images/anonovoRJ.png';
+import ImageCarnavelPe from './assets/images/carnavalPE.png';
 
-// FUNÇÃO AUXILIAR PARA REMOVER ACENTOS
-export const removeAccents = (str) => { // 'export' para ser usada em FlightsPage
+// Certifique-se de que estes componentes estão importados se forem usados:
+// import FlightDetailsPage from './components/FlightDetailsPage';
+// import MyTravelsPage from './components/MyTravelsPage';
+
+const removeAccents = (str) => {
+  if (!str) return '';
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 };
 
 function App() {
   const [selectedPackageId, setSelectedPackageId] = useState(null);
-  const [rawSearchTerm, setRawSearchTerm] = useState('');
-  const [processedSearchTerm, setProcessedSearchTerm] = useState('');
-  // Adicione 'recommended' e 'hotels' como possíveis valores para currentPage
-  const [currentPage, setCurrentPage] = useState('home'); // 'home', 'flights', 'hotels', 'myTravels', 'login', 'register', 'promos', 'recommended'
+  const [selectedFlightId, setSelectedFlightId] = useState(null);
+  const [selectedPromotionId, setSelectedPromotionId] = useState(null);
+  const [currentPage, setCurrentPage] = useState('home');
   const [savedUserTravels, setSavedUserTravels] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [activeFilterButton, setActiveFilterButton] = useState(''); 
+  const [showEventReservationForm, setShowEventReservationForm] = useState(false); 
+  const [promotionToPurchase, setPromotionToPurchase] = useState(null); // <-- ATENÇÃO AQUI: Estado para a promoção de compra
+
+
+// Função para converter data de DD/MM/AAAA para AAAA-MM-DD
+const convertDdMmYyyyToYyyyMmDd = (dateString) => {
+  if (!dateString) return null;
+  const parts = dateString.split('/');
+  if (parts.length === 3) {
+    return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+  }
+  return dateString; // Retorna o original se não estiver no formato esperado
+};
+
 
   const allPromotionalTravels = [
-    { id: 1, title: 'Maldivas Paradisíacas', description: '7 dias em resorts de luxo.', imageUrl: 'https://picsum.photos/id/101/400/300', type: 'Internacional', status: 'Em Andamento' },
-    { id: 2, title: 'Trilha na Patagônia', description: 'Aventura nas montanhas e glaciares.', imageUrl: 'https://picsum.photos/id/102/400/300', type: 'Internacional', status: 'Em Andamento' },
-    { id: 3, title: 'Safari na Tanzânia', description: 'Explore a vida selvagem africana.', imageUrl: 'https://picsum.photos/id/103/400/300', type: 'Internacional', status: 'Salva' },
-    { id: 4, title: 'Culturas do Japão', description: 'Tóquio, Quioto e tradições milenares.', imageUrl: 'https://picsum.photos/id/104/400/300', type: 'Internacional', status: 'Em Andamento' },
-    { id: 5, title: 'Praias do Caribe', description: 'Sol, mar e relaxamento total.', imageUrl: 'https://picsum.photos/id/105/400/300', type: 'Internacional', status: 'Concluída' },
-    { id: 6, title: 'Nova Zelândia', description: 'Paisagens épicas e esportes radicais.', imageUrl: 'https://picsum.photos/id/106/400/300', type: 'Internacional', status: 'Concluída' },
-    { id: 7, title: 'Egito Milenar', description: 'Pirâmides e a história dos faraós.', imageUrl: 'https://picsum.photos/id/107/400/300', type: 'Internacional', status: 'Em Andamento' },
+    
+    { 
+      id: 13, 
+      title: 'Carnaval Tripz Folia em Recife!', 
+      description: 'Sinta a energia contagiante do Carnaval em Recife! Nosso Hotel Tripz, com sua arquitetura moderna e vibrante, é o cenário perfeito para você se jogar no frevo. Garanta pacotes exclusivos e esteja no coração da festa mais democrática do Brasil.', 
+      imageUrl: ImageCarnavelPe, 
+      type: 'Nacional', 
+      status: 'Em Andamento', 
+      eventDate: '15/02/2027',
+      priceFrom: 2500.00, 
+      priceTo: 1999.00, 
+      packagePrices: { 
+        casal: 3800.00,
+        solteiro: 1999.00,
+        familia: 5500.00 
+      },
+      reviews: [ 
+        { rating: 5, comment: 'Energia incrível! O hotel estava perfeito para o Carnaval. Voltarei!', guestName: 'Maria S.' },
+        { rating: 4, comment: 'Adorei a localização e a estrutura. A festa foi sensacional.', guestName: 'João P.' },
+        { rating: 5, comment: 'Recife é demais no Carnaval, e o Tripz tornou a experiência ainda melhor.', guestName: 'Ana L.' },
+      ]
+    },
+   
+    { 
+      id: 16, 
+      title: 'Réveillon Tripz: Brilho e Emoção em Copacabana!', 
+      description: 'Prepare-se para a maior festa de Réveillon do mundo! O Hotel Tripz em Copacabana te coloca no centro da celebração. Com um telão exclusivo no jardim, uma cascata de fogos de artifício no céu e a energia da praia mais famosa do Brasil, sua virada de ano será inesquecível.', 
+      imageUrl: ImageAnoNovoRJ,
+      type: 'Nacional', 
+      status: 'Em Andamento' ,
+      eventDate: '31/12/2026',
+      priceFrom: 4000.00,
+      priceTo: 3200.00,
+      packagePrices: {
+        casal: 6000.00,
+        solteiro: 3200.00,
+        familia: 8500.00
+      },
+      reviews: [
+        { rating: 5, comment: 'Melhor Réveillon da vida! A vista dos fogos foi espetacular e a festa do hotel, impecável.', guestName: 'Paula G.' },
+        { rating: 5, comment: 'Experiência única. Tudo muito bem organizado e seguro.', guestName: 'Ricardo F.' },
+        { rating: 4, comment: 'Incrível! Poderia ter mais opções de comida no buffet, mas a festa foi nota 10.', guestName: 'Camila B.' },
+      ]
+    },
+    
+    {
+      id: 18, 
+      title: 'Natal Mágico na Montanha - Tripz Garanhuns!',
+      description: 'Viva a magia do Natal em Garanhuns! Nosso hotel de arquitetura em madeira se transforma num refúgio aconchegante com decorações festivas, ceia especial e um clima europeu que encanta a todos. Perfeito para um Natal inesquecível em família.',
+      imageUrl: ImageNatalRS, 
+      type: 'Nacional',
+      status: 'Em Andamento',
+      eventDate: '24/12/2025',
+      priceFrom: 2100.00,
+      priceTo: 1850.00,
+      packagePrices: {
+        casal: 3600.00,
+        solteiro: 1850.00,
+        familia: 5200.00
+      },
+      reviews: [
+        { rating: 5, comment: 'Natal mais lindo que já tive! A decoração estava deslumbrante e a ceia maravilhosa.', guestName: 'Aline V.' },
+        { rating: 5, comment: 'O clima natalino no hotel é super acolhedor. Me senti em um filme.', guestName: 'Bruno F.' },
+        { rating: 4, comment: 'Tudo muito bom, só achei que poderia ter mais atividades para crianças pequenas.', guestName: 'Carla A.' },
+      ] 
+    },
   ];
 
   const allRecommendedTravels = [
@@ -45,17 +129,32 @@ function App() {
     { id: 12, title: 'Canadá Selvagem', description: 'Montanhas Rochosas e vida selvagem.', imageUrl: 'https://picsum.photos/id/112/400/300', type: 'Internacional', status: 'Em Andamento' },
   ];
 
+  const allFlights = [
+    { id: 401, title: 'Brasília', description: 'Ida 12/08/2025', imageUrl: 'https://picsum.photos/id/125/400/300', type: 'Nacional', status: 'Disponível', price: 94.22, category: 'Economy', connection: false, origin: 'São Paulo', subtitle: 'Brasil Int.' },
+    { id: 402, title: 'São Paulo', description: 'Ida 09/08/2025', imageUrl: 'https://picsum.photos/id/126/400/300', type: 'Nacional', status: 'Disponível', price: 94.85, category: 'Economy', connection: false, origin: 'Brasília', subtitle: 'Viracopos' },
+    { id: 403, title: 'Jaguaruna', description: 'Ida 10/09/2025', imageUrl: 'https://picsum.photos/id/127/400/300', type: 'Nacional', status: 'Disponível', price: 153.34, category: 'Economy', connection: false, origin: 'São Paulo', subtitle: 'Humberto Ghizzo Bortoluzzi Regional' },
+    { id: 404, title: 'Nova York', description: 'Ida 05/11/2025', imageUrl: 'https://picsum.photos/id/128/400/300', type: 'Internacional', status: 'Disponível', price: 3000.00, category: 'Premium Business', connection: true, origin: 'Brasília', subtitle: 'Internacional' },
+    { id: 405, title: 'Salvador', description: 'Ida 20/12/2025', imageUrl: 'https://picsum.photos/id/129/400/300', type: 'Nacional', status: 'Disponível', price: 500.00, category: 'Economy', connection: false, origin: 'São Paulo', subtitle: 'Brasil' },
+    { id: 406, title: 'Londres', description: 'Ida 15/01/2026', imageUrl: 'https://picsum.photos/id/130/400/300', type: 'Internacional', status: 'Disponível', price: 2800.00, category: 'Economy', connection: true, origin: 'São Paulo', subtitle: 'Internacional' },
+  ];
+
   const allAvailableTravels = [...allPromotionalTravels, ...allRecommendedTravels];
 
-  const filteredAllTravels = allAvailableTravels.filter(travel => {
-    const processedTitle = removeAccents(travel.title).toLowerCase();
-    const processedDescription = removeAccents(travel.description).toLowerCase();
+  // Adicionando a função para lidar com o clique nas promoções de hotéis
+  const handlePromotionClick = (promotionId) => { 
+    setSelectedPromotionId(promotionId);
+    setCurrentPage('promotionDetails'); 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-    return processedTitle.includes(processedSearchTerm) ||
-           processedDescription.includes(processedSearchTerm);            
-  });
+  // NOVA FUNÇÃO para navegar para a página de compra
+  const handleNavigateToPurchase = (promotionData) => { // <-- ATENÇÃO AQUI: Função para navegar para compra
+    setPromotionToPurchase(promotionData); 
+    setCurrentPage('purchase'); 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
 
-  const handleSaveTravel = (travelToSave) => {
+  const handleSaveTravel = (/** @type {Object} */ travelToSave) => {
     const isAlreadySaved = savedUserTravels.some(saved => saved.id === travelToSave.id);
 
     if (isAlreadySaved) {
@@ -73,31 +172,39 @@ function App() {
   };
 
   const handleGlobalSearch = (term) => {
-    setRawSearchTerm(term);
-    setProcessedSearchTerm(removeAccents(term).toLowerCase());
-    setSelectedPackageId(null);
-    setCurrentPage('home'); // Ao pesquisar, volta para a home para mostrar os resultados
-
-    setTimeout(() => {
-        const resultsSection = document.getElementById('search-results');
-        if (resultsSection) {
-            resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-    }, 100);
+    console.log("Busca no Header desativada. Termo:", term);
+    setCurrentPage('home');
+    setActiveFilterButton('');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
+  // Esta função pode ser usada para pacotes genéricos que não sejam promoções de hotéis
   const handlePackageClick = (packageId) => {
-    setSelectedPackageId(packageId);
+    console.log("Card de pacote genérico clicado:", packageId);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleFlightCardClick = (flightId) => {
+    setSelectedFlightId(flightId);
+    setCurrentPage('flightDetails');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBackToList = () => {
+    if (currentPage === 'flightDetails') {
+      setCurrentPage('flights');
+    } else if (currentPage === 'promotionDetails') { 
+      setCurrentPage('home'); 
+      setSelectedPromotionId(null);
+    } else if (currentPage === 'purchase') { // <-- ATENÇÃO AQUI: Volta da página de compra
+      setCurrentPage('promotionDetails'); // Volta para os detalhes da promoção anterior
+      setPromotionToPurchase(null); 
+    } else {
+      setCurrentPage('home');
+      setActiveFilterButton('');
+    }
     setSelectedPackageId(null);
-    setRawSearchTerm('');
-    setProcessedSearchTerm('');
-    setCurrentPage('home'); // Volta para home, ou para a página anterior se houver lógica mais complexa
+    setSelectedFlightId(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -108,32 +215,32 @@ function App() {
       setCurrentPage('myTravels');
     }
     setSelectedPackageId(null);
-    setRawSearchTerm('');
-    setProcessedSearchTerm('');
+    setSelectedFlightId(null);
+    setActiveFilterButton('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleNavigateToHome = () => {
     setCurrentPage('home');
     setSelectedPackageId(null);
-    setRawSearchTerm('');
-    setProcessedSearchTerm('');
+    setSelectedFlightId(null);
+    setActiveFilterButton('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleNavigateToLogin = () => {
     setCurrentPage('login');
     setSelectedPackageId(null);
-    setRawSearchTerm('');
-    setProcessedSearchTerm('');
+    setSelectedFlightId(null);
+    setActiveFilterButton('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleNavigateToRegister = () => {
     setCurrentPage('register');
     setSelectedPackageId(null);
-    setRawSearchTerm('');
-    setProcessedSearchTerm('');
+    setSelectedFlightId(null);
+    setActiveFilterButton('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -146,52 +253,51 @@ function App() {
   const handleNavigateToFlights = () => {
     setCurrentPage('flights');
     setSelectedPackageId(null);
-    setRawSearchTerm('');
-    setProcessedSearchTerm('');
+    setSelectedFlightId(null);
+    setActiveFilterButton('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Nova função para navegar para a página de Hotéis
+  const handleSelectPromos = () => {
+    setActiveFilterButton('promos');
+    setCurrentPage('home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSelectRecommended = () => {
+    setActiveFilterButton('recommended');
+    setCurrentPage('home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleNavigateToHotels = () => {
     setCurrentPage('hotels');
+    setActiveFilterButton('hotels');
     setSelectedPackageId(null);
-    setRawSearchTerm('');
-    setProcessedSearchTerm('');
+    setSelectedFlightId(null);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Novas funções para os botões "Viagens com Promoção" e "Recomendado por Viajantes"
-  const handleNavigateToPromos = () => {
-    // Ao clicar em promoções, a página principal deve ser 'home'
-    setCurrentPage('home');
-    setRawSearchTerm(''); // Limpa a busca para mostrar todas as promoções
-    setProcessedSearchTerm('');
-    setSelectedPackageId(null);
-    // Rola a página para a seção de promoções se ela existir
-    setTimeout(() => {
-        const section = document.getElementById('viagens-promocao');
-        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        else window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
+  // Funções para controlar a visibilidade do formulário de eventos
+  const handleOpenEventReservationForm = () => {
+    setShowEventReservationForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleNavigateToRecommended = () => {
-    // Ao clicar em recomendados, a página principal deve ser 'recommended'
-    setCurrentPage('recommended'); // Novo valor para currentPage
-    setRawSearchTerm(''); // Limpa a busca
-    setProcessedSearchTerm('');
-    setSelectedPackageId(null);
-    // Rola a página para a seção de recomendados se ela existir
-    setTimeout(() => {
-        const section = document.getElementById('recomendado-viajantes');
-        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        else window.scrollTo({ top: 0, behavior: 'smooth' });
-    }, 100);
+  const handleCloseEventReservationForm = () => {
+    setShowEventReservationForm(false);
   };
 
-
-  const selectedPackage = allAvailableTravels.find(
+  const selectedGenericPackage = allAvailableTravels.find(
     (travel) => travel.id === selectedPackageId
+  );
+  const selectedFlightData = allFlights.find(
+    (flight) => flight.id === selectedFlightId
+  );
+
+  // Encontra a promoção selecionada para passar ao componente de detalhes
+  const selectedPromotionData = allPromotionalTravels.find( 
+    (promo) => promo.id === selectedPromotionId
   );
 
   return (
@@ -201,169 +307,102 @@ function App() {
         onNavigateToMyTravels={handleNavigateToMyTravels}
         onNavigateToHome={handleNavigateToHome}
         onNavigateToFlights={handleNavigateToFlights}
-        currentPage={currentPage} // Passe currentPage para o Header se ele também precisar saber
+        onNavigateToHotels={handleNavigateToHotels}
       />
 
       <main className="flex-grow">
-        {/* CONTEÚDO SEMPRE VISÍVEL NO TOPO (Home/Busca/Detalhes/Voos/etc) */}
         {currentPage !== 'login' && currentPage !== 'register' && currentPage !== 'myTravels' && (
           <>
             <HeroSwiper />
             <section className="bg-white rounded-t-[50px] shadow-md -mt-10 md:-mt-18 relative z-10 py-4 px-6">
-              <div className="container mx-auto flex flex-wrap justify-center gap-4 text-gray-700 font-medium">
-
-                {/* BOTÃO VIAGENS COM PROMOÇÃO */}
-                {/* Convertido de <a> para <button> para controle de estado */}
-                <button
-                  onClick={handleNavigateToPromos}
-                  className={`py-2 px-4 rounded-full whitespace-nowrap
-                    ${(currentPage === 'home' && !rawSearchTerm) ? 'bg-blue-500 text-white shadow-md' : 'hover:bg-gray-100 text-gray-700'}`
-                  }
+              <div className="container mx-auto flex flex-wrap justify-center gap-4">
+                {/* VIAGENS COM PROMOÇÃO */}
+                <a
+                  href="#viagens-promocao"
+                  onClick={handleSelectPromos}
+                  className={`btn-common-style ${activeFilterButton === 'promos' ? 'btn-active-style' : 'btn-hover-style'}`}
                 >
-                  Viagens com Promoção
-                </button>
-
-                {/* BOTÃO RECOMENDADO POR VIAJANTES */}
-                {/* Convertido de <a> para <button> para controle de estado */}
-                <button
-                  onClick={handleNavigateToRecommended}
-                  className={`py-2 px-4 rounded-full whitespace-nowrap
-                    ${currentPage === 'recommended' ? 'bg-blue-500 text-white shadow-md' : 'hover:bg-gray-100 text-gray-700'}`
-                  }
+                  Promoção
+                </a>
+                {/* RECOMENDADO POR VIAJANTES */}
+                <a
+                  href="#recomendado-viajantes"
+                  onClick={handleSelectRecommended}
+                  className={`btn-common-style ${activeFilterButton === 'recommended' ? 'btn-active-style' : 'btn-hover-style'}`}
                 >
                   Recomendado por Viajantes
-                </button>
-
-                {/* BOTÃO VOOS (já estava ajustado) */}
-                <button
-                  onClick={handleNavigateToFlights}
-                  className={`py-2 px-4 rounded-full whitespace-nowrap flex items-center
-                    ${currentPage === 'flights' ? 'bg-blue-500 text-white shadow-md' : 'hover:bg-gray-100 text-gray-700'}`
-                  }
-                >
-                  <svg className="w-5 h-5 mr-1" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15H9v-2h2v2zm0-4H9v-2h2v2zm0-4H9V7h2v2zm4 8h-2v-2h2v2zm0-4h-2v-2h2v2zm0-4h-2V7h2v2z"/></svg>
-                  Voos
-                </button>
-
-                {/* BOTÃO HOTÉIS */}
-                {/* Convertido de <a> para <button> para controle de estado */}
+                </a>
+                {/* HOTÉIS */}
                 <button
                   onClick={handleNavigateToHotels}
-                  className={`py-2 px-4 rounded-full whitespace-nowrap
-                    ${currentPage === 'hotels' ? 'bg-blue-500 text-white shadow-md' : 'hover:bg-gray-100 text-gray-700'}`
-                  }
+                  className={`reset-btn-style btn-common-style ${activeFilterButton === 'hotels' ? 'btn-active-style' : 'btn-hover-style'}`}
                 >
                   Hotéis
+                </button>
+                {/* BOTÃO PARA EVENTOS */}
+                <button
+                  onClick={() => setCurrentPage('events')}
+                  className={`reset-btn-style btn-common-style ${activeFilterButton === 'events' ? 'btn-active-style' : 'btn-hover-style'}`}
+                >
+                  Eventos
                 </button>
               </div>
             </section>
           </>
         )}
 
-        {/* Botão "Limpar Busca" - Visível apenas quando há uma busca ativa E NÃO estamos em auth/myTravels pages */}
-        {rawSearchTerm && currentPage !== 'login' && currentPage !== 'register' && currentPage !== 'myTravels' && (
-            <div className="container mx-auto px-6 py-4">
-                <button onClick={() => { setRawSearchTerm(''); setProcessedSearchTerm(''); }} className="bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300">Limpar Busca</button>
-            </div>
-        )}
-
-        {/* LÓGICA DE RENDERIZAÇÃO DO CONTEÚDO PRINCIPAL (Páginas e Seções) */}
-        {selectedPackageId ? ( // Prioridade: Detalhes do Pacote
-          <PackageDetails
-            packageData={selectedPackage}
+        {/* Lógica de Renderização de Páginas */}
+        {selectedFlightId ? (
+          <p>Flight Details Page (Componente não fornecido na amostra)</p>
+        ) : currentPage === 'login' ? (
+          <LoginPage onNavigateToRegister={handleNavigateToRegister} onLoginSuccess={handleLoginSuccess} />
+        ) : currentPage === 'register' ? (
+          <RegisterPage onNavigateToLogin={handleNavigateToLogin} />
+        ) : currentPage === 'myTravels' ? (
+          <p>My Travels Page (Componente não fornecido na amostra)</p>
+        ) : currentPage === 'hotels' ? (
+          <HotelsPage />
+        ) : currentPage === 'events' ? (
+          <EventBlogSection onOpenReservationForm={handleOpenEventReservationForm} />
+        ) : currentPage === 'promotionDetails' && selectedPromotionData ? ( 
+          <PromotionDetailsPage
+            promotionData={selectedPromotionData}
             onBack={handleBackToList}
+            onNavigateToPurchase={handleNavigateToPurchase} // <-- ATENÇÃO AQUI: Passando a função para o detalhe
+          />
+        ) : currentPage === 'purchase' && promotionToPurchase ? ( // <-- ATENÇÃO AQUI: Nova condição de renderização para PurchasePage
+          <PurchasePage
+            promotionData={promotionToPurchase} 
+            onBack={handleBackToList} 
           />
         ) : (
-          // Próxima prioridade: Páginas de Autenticação ou Minhas Viagens ou Voos/Hotéis
-          currentPage === 'login' ? (
-            <LoginPage
-              onNavigateToRegister={handleNavigateToRegister}
-              onLoginSuccess={handleLoginSuccess}
-            />
-          ) : currentPage === 'register' ? (
-            <RegisterPage
-              onNavigateToLogin={handleNavigateToLogin}
-            />
-          ) : currentPage === 'myTravels' ? (
-            <MyTravelsPage
-              onCardClick={handlePackageClick}
-              savedUserTravels={savedUserTravels}
-              allAvailableTravels={allAvailableTravels}
-            />
-          ) : currentPage === 'flights' ? ( // === RENDERIZAÇÃO DA PÁGINA DE VOOS ===
-            <FlightsPage
-              onCardClick={handlePackageClick}
+          <>
+            <TravelSection
+              id="viagens-promocao"
+              title="Nossas Promoções"
+              travels={allPromotionalTravels}
+              onCardClick={handlePromotionClick} 
               onSaveTravel={handleSaveTravel}
               isTravelSaved={isTravelSaved}
+              CardComponent={TravelCard}
             />
-          ) : currentPage === 'hotels' ? ( // === RENDERIZAÇÃO DA PÁGINA DE HOTÉIS ===
-            <div className="container mx-auto px-6 py-8">
-              <h2 className="text-3xl font-bold text-gray-800 mb-6">Página de Hotéis</h2>
-              <p className="text-gray-600">Este é o conteúdo da página de Hotéis. Você precisará criar o componente HotelsPage para uma funcionalidade completa.</p>
-            </div>
-          ) : (
-            // Se nenhuma das anteriores, estamos na Home (com ou sem busca)
-            <>
-              {rawSearchTerm ? (
-                  // Exibe Resultados da Busca se houver termo
-                  <div id="search-results" className="py-8 px-6 bg-white">
-                      <div className="container mx-auto">
-                          <h2 className="text-3xl font-bold text-gray-800 mb-6">Resultados da Busca para "{rawSearchTerm}"</h2>
-
-                          {filteredAllTravels.length > 0 ? (
-                              <>
-                                  <p className="text-gray-700 text-center text-lg mb-6">
-                                      Encontramos {filteredAllTravels.length} pacotes para você! :)
-                                  </p>
-                                  <TravelSection
-                                      title=""
-                                      travels={filteredAllTravels}
-                                      onCardClick={handlePackageClick}
-                                      onSaveTravel={handleSaveTravel}
-                                      isTravelSaved={isTravelSaved}
-                                      CardComponent={TravelCard}
-                                  />
-                              </>
-                          ) : (
-                              <p className="text-gray-600 text-center text-lg mb-6">
-                                  Não encontramos resultados para "{rawSearchTerm}" :( <br />
-                                  Tente ajustar sua busca ou explore outros pacotes!
-                              </p>
-                          )}
-
-                          <div className="text-center mt-6">
-                              <button onClick={() => { setRawSearchTerm(''); setProcessedSearchTerm(''); }} className="bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300">Limpar Busca</button>
-                          </div>
-                      </div>
-                  </div>
-              ) : (
-                  // Exibe "Viagens com Promoção" e "Recomendado por Viajantes" APENAS se NÃO houver termo de busca E se estamos na home/recommended
-                  // A exibição dessas seções não muda, mas a ativação do botão sim.
-                  <>
-                      <TravelSection
-                          id="viagens-promocao"
-                          title="Viagens com Promoção"
-                          travels={allPromotionalTravels}
-                          onCardClick={handlePackageClick}
-                          onSaveTravel={handleSaveTravel}
-                          isTravelSaved={isTravelSaved}
-                          CardComponent={TravelCard}
-                      />
-                      <TravelSection
-                          id="recomendado-viajantes"
-                          title="Recomendado por Viajantes"
-                          travels={allRecommendedTravels}
-                          onCardClick={handlePackageClick}
-                          onSaveTravel={handleSaveTravel}
-                          isTravelSaved={isTravelSaved}
-                          CardComponent={TravelCard}
-                      />
-                  </>
-              )}
-            </>
-          )
+            <TravelSection
+              id="recomendado-viajantes"
+              title="Recomendado por Viajantes"
+              travels={allRecommendedTravels}
+              onCardClick={handlePackageClick} 
+              onSaveTravel={handleSaveTravel}
+              isTravelSaved={isTravelSaved}
+              CardComponent={TravelCard}
+            />
+          </>
         )}
       </main>
+
+      {/* Renderiza o formulário de reserva de eventos condicionalmente */}
+      {showEventReservationForm && (
+        <EventReservationForm onClose={handleCloseEventReservationForm} />
+      )}
 
       <Footer />
     </div>

@@ -11,6 +11,8 @@ namespace ViagemImpacta.Repositories.Interfaces
 
         Task<bool> SetUserDisabled(int id);
 
+        Task<bool> AlreadyEmailExist(string email);
+
         Task<User?> GetUserByEmail(string email);
     }
 }

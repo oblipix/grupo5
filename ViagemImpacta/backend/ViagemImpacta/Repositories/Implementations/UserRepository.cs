@@ -34,11 +34,17 @@ public class UserRepository : Repository<User>, IUserRepository
         if (user == null) return false;
         user.Active = false;
         user.DisabledAt = DateTime.UtcNow;
+        await _context.SaveChangesAsync();
         return true;
+    }
+
+    public async Task<bool> AlreadyEmailExist(string email)
+    {
+        return await _context.Users.AnyAsync(u => u.Email == email);
     }
 
     public async Task<User?> GetUserByEmail(string email)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        return await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Active);
     }
 }
