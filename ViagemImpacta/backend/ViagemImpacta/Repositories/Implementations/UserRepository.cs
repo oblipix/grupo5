@@ -7,16 +7,16 @@ using ViagemImpacta.Repositories.Interfaces;
 
 public class UserRepository : Repository<User>, IUserRepository
 {
-    private readonly AppDbContext _context;
+    private readonly AgenciaDbContext _context;
 
-    public UserRepository(AppDbContext context) : base(context)
+    public UserRepository(AgenciaDbContext context) : base(context)
     {
         _context = context;
     }
 
     public async Task<IEnumerable<User>> GetAllClientUsersWithPagination(int skip, int take)
     {
-        return await _context.Users.Skip(skip).Take(take).ToListAsync();
+        return await _context.Users.Skip(skip).Take(take).Where(u => u.Active).ToListAsync();
     }
 
     /*
@@ -24,8 +24,7 @@ public class UserRepository : Repository<User>, IUserRepository
      */
     public async Task<User?> GetUserById(int id)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
-        return user;
+        return await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
     }
 
     public async Task<bool> SetUserDisabled(int id)

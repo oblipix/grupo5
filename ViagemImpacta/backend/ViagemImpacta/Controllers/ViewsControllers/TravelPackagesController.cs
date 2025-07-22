@@ -10,9 +10,9 @@ namespace ViagemImpacta.Controllers
     public class TravelPackagesController : Controller
     {
         private readonly ITravelPackageService _packageService;
-        private readonly AppDbContext _context; // Usado para popular a lista de hotéis
+        private readonly AgenciaDbContext _context; // Usado para popular a lista de hotéis
 
-        public TravelPackagesController(ITravelPackageService packageService, AppDbContext context)
+        public TravelPackagesController(ITravelPackageService packageService, AgenciaDbContext context)
         {
             _packageService = packageService;
             _context = context;

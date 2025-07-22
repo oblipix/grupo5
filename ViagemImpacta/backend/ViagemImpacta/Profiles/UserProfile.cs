@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
+using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Profiles
 {

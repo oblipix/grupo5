@@ -7,9 +7,9 @@ namespace ViagemImpacta.Services.Implementations
 {
     public class HotelService : IHotelService
     {
-        private readonly AppDbContext _context;
+        private readonly AgenciaDbContext _context;
 
-        public HotelService(AppDbContext context)
+        public HotelService(AgenciaDbContext context)
         {
             _context = context;
         }

@@ -1,15 +1,13 @@
 using ApiCatalogo.Repositories;
-using GerenciadorDeProjetos.Repositories;
-using GerenciadorDeProjetos.Repositories.Interfaces;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using NuGet.Configuration;
 using System.Text;
-using ViagemImpacta.Controllers;
 using ViagemImpacta.Data;
-using ViagemImpacta.Services;
+using ViagemImpacta.Repositories;
+using ViagemImpacta.Repositories.Implementations;
+using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
-using ViagemImpacta;
 using Settings = ViagemImpacta.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,7 +36,7 @@ builder.Services.AddAuthentication(x =>
 
 builder.Services.AddControllers();
 
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<AgenciaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ViagemImpactConnection")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -51,17 +49,12 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddHttpContextAccessor();
 
-
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
-
 
     if (app.Environment.IsDevelopment())
     {
@@ -70,20 +63,18 @@ if (!app.Environment.IsDevelopment())
     }
 };
 
-    app.UseHttpsRedirection();
-    app.UseStaticFiles();
+app.UseHttpsRedirection();
+app.UseStaticFiles();
 
-    app.UseRouting();
+app.UseRouting();
 
+app.UseAuthentication();
+app.UseAuthorization();
 
+app.MapControllers();
 
-    app.UseAuthentication();
-    app.UseAuthorization();
+app.MapControllerRoute(
+name: "default",
+pattern: "{controller=Home}/{action=Index}/{id?}");
 
-    app.MapControllers();
-
-    app.MapControllerRoute(
-       name: "default",
-       pattern: "{controller=Home}/{action=Index}/{id?}");
-
-    app.Run();
+app.Run();

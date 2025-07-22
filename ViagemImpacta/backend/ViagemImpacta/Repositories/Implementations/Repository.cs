@@ -7,9 +7,9 @@ namespace ViagemImpacta.Repositories.Implementations
     public class Repository<T> : IRepository<T> where T : class
     {
         // Marcelo : troquei de public para privado, para evitar o erro de herança na chamada do context nas classes filhas
-        private readonly AppDbContext _context;
+        private readonly AgenciaDbContext _context;
 
-        public Repository(AppDbContext context)
+        public Repository(AgenciaDbContext context)
         {
             _context = context;
         }

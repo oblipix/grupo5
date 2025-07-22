@@ -7,7 +7,7 @@ namespace ViagemImpacta.Repositories.Implementations
 
     public class HotelRepository : Repository<Hotel>, IHotelRepository
     {
-        public HotelRepository(AppDbContext context) : base(context)
+        public HotelRepository(AgenciaDbContext context) : base(context)
         {
         }
     }

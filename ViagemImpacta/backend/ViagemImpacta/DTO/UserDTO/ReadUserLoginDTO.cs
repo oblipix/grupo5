@@ -6,3 +6,5 @@
         public string Password { get; set; }
     }
 }
+
+/*ESSE ARQUIVO VAI SER DELETADO EM BREVE, AJUSTAR COM A NOVA IMPLEMENTAÇÃO DO JWT*/

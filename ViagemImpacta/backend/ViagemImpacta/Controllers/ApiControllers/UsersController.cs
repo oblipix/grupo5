@@ -1,8 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using System.Reflection.Metadata.Ecma335;
 using ViagemImpacta.DTO.UserDTO;
-using ViagemImpacta.Models;
+using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
 
 namespace ViagemImpacta.Controllers.ApiControllers

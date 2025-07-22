@@ -9,9 +9,9 @@ namespace ViagemImpacta.Services.Implementations
 {
     public class TravelPackageService : ITravelPackageService
     {
-        private readonly AppDbContext _context;
+        private readonly AgenciaDbContext _context;
 
-        public TravelPackageService(AppDbContext context)
+        public TravelPackageService(AgenciaDbContext context)
         {
             _context = context;
         }

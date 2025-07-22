@@ -6,9 +6,9 @@ namespace ViagemImpacta.Repositories.Implementations
 {
     public class TravelPackageRepository : Repository<TravelPackage>, ITravelPackageRepository
     {
-        private readonly AppDbContext _appDbContext;
+        private readonly AgenciaDbContext _appDbContext;
 
-        public TravelPackageRepository(AppDbContext appDbContext) : base(appDbContext) 
+        public TravelPackageRepository(AgenciaDbContext appDbContext) : base(appDbContext) 
         {
             _appDbContext = appDbContext;
         }

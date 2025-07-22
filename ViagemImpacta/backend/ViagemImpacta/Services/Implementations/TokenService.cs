@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using ViagemImpacta.Models;
 
-namespace ViagemImpacta.DTO.UserDTO;
+namespace ViagemImpacta.Services.Implementations;
 
 public static class TokensService
 {

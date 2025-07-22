@@ -6,12 +6,12 @@ namespace ViagemImpacta.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly AppDbContext _context;
+        private readonly AgenciaDbContext _context;
         public IUserRepository Users { get; private set; }
         public ITravelPackageRepository TravelPackages { get; private set; }
         public IHotelRepository Hotels { get; private set; } // Adicionar
 
-        public UnitOfWork(AppDbContext context)
+        public UnitOfWork(AgenciaDbContext context)
         {
             _context = context;
             Users = new UserRepository(_context);
