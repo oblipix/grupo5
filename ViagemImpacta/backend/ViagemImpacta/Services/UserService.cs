@@ -40,7 +40,15 @@ namespace ViagemImpacta.Services
             user.Active = true;
             user.CreatedAt = DateTime.UtcNow;
 
-            await _unitOfWork.Users.AddAsync(user);
+            if(createUserDTO.roles == Models.Enums.Roles.Admin)
+            {
+                user.Role = Models.Enums.Roles.Admin; // Define o papel como Admin se especificado
+            }
+            else{
+                user.Role = Models.Enums.Roles.User;
+            }
+
+                await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CommitAsync();
             return user;
         }
@@ -108,6 +116,16 @@ namespace ViagemImpacta.Services
             await _unitOfWork.CommitAsync();
 
             return true;
+        }
+
+        public async Task<User?> GetUserByEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return null;
+
+            var users = await _unitOfWork.Users.GetAllAsync(u => u.Email == email && u.Active);
+            return users.FirstOrDefault();
+            
         }
     }
 }

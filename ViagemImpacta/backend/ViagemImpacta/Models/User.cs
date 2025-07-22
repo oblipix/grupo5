@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.ViewEngines;
+using ViagemImpacta.Models.Enums;
 
 namespace ViagemImpacta.Models;
 
@@ -20,9 +22,11 @@ public class User
     public DateTime? DisabledAt { get; set; }
     public bool Active { get; set; }
 
-//    public ICollection<Review>? Reviews { get; set; }
+    public Roles Role { get; set; } 
 
-//    public ICollection<Reservation>? Reservations { get; set; }
+    //    public ICollection<Review>? Reviews { get; set; }
+
+    //    public ICollection<Reservation>? Reservations { get; set; }
 }
 
 /*

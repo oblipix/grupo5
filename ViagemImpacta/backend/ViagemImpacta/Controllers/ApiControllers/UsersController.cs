@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata.Ecma335;
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces;
@@ -108,6 +109,34 @@ namespace ViagemImpacta.Controllers.ApiControllers
             {
                 return StatusCode(500, $"Erro interno: {ex.Message}");
             }
+        }
+
+        [HttpPost]
+        [Route("login")]
+        public async Task<ActionResult<dynamic>> LoginAsync ([FromBody]LoginAuthDTO loginAuthDTO)
+        {
+            if(loginAuthDTO == null || string.IsNullOrEmpty(loginAuthDTO.Email) || string.IsNullOrEmpty(loginAuthDTO.Password))
+            {
+                return BadRequest("Email e senha são obrigatórios.");
+            }
+
+            var user = await _userService.GetUserByEmail(loginAuthDTO.Email);
+            if(user == null)
+            {
+                return NotFound("Usuário não encontrado.");
+            }
+            var token = TokensService.GenerateToken(user);
+            if (string.IsNullOrEmpty(token))
+            {
+                return Unauthorized("Falha ao gerar token.");
+            }
+            loginAuthDTO.Password = string.Empty; // Limpa a senha do DTO para segurança
+            return new
+            {
+                user = user,
+                token = token
+            };
+
         }
     }
 }

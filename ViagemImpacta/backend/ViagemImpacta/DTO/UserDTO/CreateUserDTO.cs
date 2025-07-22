@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ViagemImpacta.Models.Enums;
 
 namespace ViagemImpacta.DTO.UserDTO
 {
@@ -19,6 +20,8 @@ namespace ViagemImpacta.DTO.UserDTO
         [Required(ErrorMessage = "Sobrenome é obrigatório.")]
         [RegularExpression(@"^[A-Za-zÀ-ÿ\s]+$", ErrorMessage = "Não é aceito o uso de caracteres especiais ou números")]
         public string LastName { get; set; }
+
+        public Roles roles { get; set; } 
 
     }
 }

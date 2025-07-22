@@ -11,6 +11,6 @@ namespace ApiCatalogo.Repositories
     Task<T> UpdateAsync(T entity);
     Task<bool> DeleteAsync(int id);
     
-
-    }
+    Task<IEnumerable<T>> GetAllAsync(Func<T, bool> predicate);
+}
 }

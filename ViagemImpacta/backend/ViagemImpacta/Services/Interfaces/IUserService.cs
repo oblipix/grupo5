@@ -1,4 +1,5 @@
-﻿using ViagemImpacta.DTO.UserDTO;
+﻿using System.Linq.Expressions;
+using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Services.Interfaces
@@ -10,5 +11,6 @@ namespace ViagemImpacta.Services.Interfaces
         Task<User?> GetUserById(int id);
         Task<User> UpdateUser(UpdateUserDTO updateUserDTO);
         Task<bool> DeleteUser(int id);
+        Task<User?> GetUserByEmail(string email);
     }
 }
