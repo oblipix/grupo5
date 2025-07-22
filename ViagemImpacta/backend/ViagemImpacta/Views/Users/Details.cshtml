@@ -3,27 +3,45 @@
     ViewData["Title"] = "Detalhes do Usuário";
 }
 
-<h1>Detalhes do Usuário</h1>
+<div class="d-flex align-items-center mb-4">
+    @if (!string.IsNullOrWhiteSpace(Model.Photo))
+    {
+        <img src="@Model.Photo" alt="Foto do usuário" class="rounded-circle me-3" style="width:56px; height:56px; object-fit:cover; border:2px solid #dee2e6;" />
+    }
+    <h1 class="m-0">Detalhes do @Model.FirstName @Model.LastName</h1>
+</div>
 
 @if (Model != null)
 {
-    <div class="card" style="max-width: 500px;">
+    <div class="card" style="max-width: 600px;">
         <div class="card-body">
-            <h5 class="card-title">@Model.FirstName</h5>
             <dl class="row">
                 <dt class="col-sm-4">ID</dt>
                 <dd class="col-sm-8">@Model.UserId</dd>
                 <dt class="col-sm-4">Email</dt>
                 <dd class="col-sm-8">@Model.Email</dd>
+                <dt class="col-sm-4">Telefone</dt>
+                <dd class="col-sm-8">@Model.Phone</dd>
                 <dt class="col-sm-4">CPF</dt>
                 <dd class="col-sm-8">@Model.Cpf</dd>
                 <dt class="col-sm-4">Idade</dt>
-               @* <dd class="col-sm-8">@Model.BirthDate</dd> *@
-                <dt class="col-sm-4">Ativo</dt> @*Ajustar botão para ficar active=false após o usuario estiver desativado.*@
+                <dd class="col-sm-8">@Model.Age</dd>
+                <dt class="col-sm-4">Ativo</dt>
                 <dd class="col-sm-8">@Model.Active</dd>
+                <dt class="col-sm-4">Criado em</dt>
+                <dd class="col-sm-8">@Model.CreatedAt</dd>
+                <dt class="col-sm-4">Atualizado em</dt>
+                <dd class="col-sm-8">@Model.UpdatedAt</dd>
+                <dt class="col-sm-4">Desativado em</dt>
+                <dd class="col-sm-8">@Model.DisabledAt</dd>
+                <dt class="col-sm-4">Role</dt>
+                <dd class="col-sm-8">@Model.Role</dd>
             </dl>
-            
-            <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+                <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-primary">Editar</a>
+                <a asp-action="Delete" asp-route-id="@Model.UserId" class="btn btn-danger">Deletar</a>
+            </div>
         </div>
     </div>
 }
