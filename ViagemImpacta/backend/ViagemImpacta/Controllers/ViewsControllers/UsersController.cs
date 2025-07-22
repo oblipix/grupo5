@@ -1,15 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ViagemImpacta.Repositories;
+using ViagemImpacta.Services.Interfaces;
 
 namespace ViagemImpacta.Controllers.ViewsControllers
 {
     public class UsersController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserService _userService;
 
-        public UsersController(IUnitOfWork unitOfWork)
+        public UsersController(IUserService userService)
         {
-            _unitOfWork = unitOfWork;
+            _userService = userService;
         }
         /*
          TODO: 
@@ -18,16 +19,16 @@ namespace ViagemImpacta.Controllers.ViewsControllers
         - Barra/Input de busca de usuários por (ALGUMA COISA) 
         - Botões de detalhar, ver avaliações, ver reservas, ver pacotes
          */
+
         public async Task<IActionResult> Index([FromQuery] int skip = 0, [FromQuery] int take = 10)
         {
-            var users = await _unitOfWork.Users
-                .GetAllClientUsersWithPagination(skip, take);
+            var users = await _userService.ListAllClients(skip, take);
             return View(users);
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            var user = await _unitOfWork.Users.GetUserById(id);
+            var user = await _userService.GetUserById(id);
             return View(user);
         }
 
@@ -44,7 +45,7 @@ namespace ViagemImpacta.Controllers.ViewsControllers
 
         public async Task<IActionResult> Delete(int id)
         {
-            var user = await _unitOfWork.Users.GetUserById(id);
+            var user = await _userService.GetUserById(id);
             if (user == null)
             {
                 return NotFound();
@@ -57,17 +58,16 @@ namespace ViagemImpacta.Controllers.ViewsControllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = await _unitOfWork.Users.GetUserById(id);
+            var user = await _userService.GetUserById(id);
             if (user == null)
             {
                 return NotFound();
             }
-            var result = await _unitOfWork.Users.SetUserDisabled(id);
+            var result = await _userService.DeleteUser(id);
             if (!result)
             {
                 return BadRequest("Erro ao desativar o usuário.");
             }
-            await _unitOfWork.CommitAsync();
             return RedirectToAction(nameof(Index));
 
         }
