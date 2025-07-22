@@ -12,5 +12,6 @@ namespace ViagemImpacta.Services.Interfaces
         Task<User> UpdateUser(UpdateUserDTO updateUserDTO);
         Task<bool> DeleteUser(int id);
         Task<User?> GetUserByEmail(string email);
+        Task<User?> ValidateUserAsync(ReadUserLoginDTO dto);
     }
 }
