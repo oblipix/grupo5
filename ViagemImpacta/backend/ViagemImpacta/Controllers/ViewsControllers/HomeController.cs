@@ -41,11 +41,11 @@ public class HomeController : Controller
         try
         {
             var dto = _mapper.Map<ReadUserLoginDTO>(model);
-            var user = await _userService.ValidateUserAsync(dto);
+            //var user = await _userService.ValidateUserAsync(dto);
 
-            if (user == null) return View(user);
+            //if (user == null) return View(user);
 
-            return RedirectToAction(nameof(Index), "Users");
+            return RedirectToAction("Dashboard", "Admins");
         }
         catch (Exception ex)
         {
