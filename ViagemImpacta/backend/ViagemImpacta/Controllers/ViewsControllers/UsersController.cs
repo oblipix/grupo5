@@ -18,7 +18,6 @@ namespace ViagemImpacta.Controllers.ViewsControllers
             _mapper = mapper;
         }
 
-        // FAZER COM QUE ELE LISTE APENAS OS USUÁRIOS CLIENTE
         public async Task<IActionResult> Index([FromQuery] int skip = 0, [FromQuery] int take = 10, [FromQuery] string search = "")
         {
             IEnumerable<User> users;
@@ -40,8 +39,6 @@ namespace ViagemImpacta.Controllers.ViewsControllers
             return View(user);
         }
 
-        // FAZER TELA DE EDIÇÃO DE USUÁRIO (GET/POST)
-        // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             var user = await _userService.GetUserById(id);
@@ -54,7 +51,6 @@ namespace ViagemImpacta.Controllers.ViewsControllers
             return View(userViewModel);
         }
 
-        // POST: Users/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, UpdateUserViewModel user)
@@ -79,7 +75,6 @@ namespace ViagemImpacta.Controllers.ViewsControllers
                 return View(user);
             }
         }
-
 
         public async Task<IActionResult> Delete(int id)
         {
