@@ -4,6 +4,7 @@ using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Services.Interfaces;
+using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Services.Implementations
 {

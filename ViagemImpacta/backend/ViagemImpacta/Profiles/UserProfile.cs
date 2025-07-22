@@ -7,7 +7,7 @@ namespace ViagemImpacta.Profiles
 {
     public class UserProfile : Profile
     {
-        public UserProfile() 
+        public UserProfile()
         {
             CreateMap<ReadAdminViewModel, ReadUserLoginDTO>();
             CreateMap<ReadUserLoginDTO, User>();
