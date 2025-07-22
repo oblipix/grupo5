@@ -1,4 +1,6 @@
 ﻿using ApiCatalogo.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Repositories.Interfaces

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Scripting;
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
@@ -24,7 +25,7 @@ namespace ViagemImpacta.Services.Implementations
 
             return users;
         }
-
+        
         public async Task<User> CreateUser(CreateUserDTO createUserDTO)
         {
             if (await _unitOfWork.Users.AlreadyEmailExist(createUserDTO.Email))
@@ -41,14 +42,12 @@ namespace ViagemImpacta.Services.Implementations
 
             if(createUserDTO.roles == Models.Enums.Roles.Admin)
             {
-                user.Role = Models.Enums.Roles.Admin; // Define o papel como Admin se especificado
+                user.Role = Models.Enums.Roles.Admin;
             }
-            else{
-                user.Role = Models.Enums.Roles.User;
-            }
-
-                await _unitOfWork.Users.AddAsync(user);
+            
+            await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CommitAsync();
+            
             return user;
         }
 
@@ -131,5 +130,8 @@ namespace ViagemImpacta.Services.Implementations
             if (user == null || user.Password != dto.Password) return null;
             return user;
         }
+
+       
+        
     }
 }

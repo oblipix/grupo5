@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using System.Linq.Expressions;
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
@@ -13,5 +14,7 @@ namespace ViagemImpacta.Services.Interfaces
         Task<bool> DeleteUser(int id);
         Task<User?> GetUserByEmail(string email);
         Task<User?> ValidateUserAsync(ReadUserLoginDTO dto);
+
+
     }
 }

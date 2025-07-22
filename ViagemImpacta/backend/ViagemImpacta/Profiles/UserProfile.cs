@@ -19,7 +19,8 @@ namespace ViagemImpacta.Profiles
                     (src, dest, srcMember) => srcMember != null
                 ));
             CreateMap<User, UserDTO>();
-                //CreateMap<User, UserReturnInfosDTO>();
+
+            CreateMap<User, CreateUserDTO>();
         }
     }
 }

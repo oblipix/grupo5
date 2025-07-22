@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using ViagemImpacta.DTO.UserDTO;
+using ViagemImpacta.Models;
 using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
 
@@ -21,6 +24,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
 
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<UserDTO>> CreateUser([FromBody] CreateUserDTO dto)
         {
             if (!ModelState.IsValid)
@@ -42,6 +46,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
         public async Task<ActionResult<UserDTO>> GetUser(int id)
         {
             try
@@ -60,6 +65,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<ActionResult<UserDTO>> UpdateUser(long id, [FromBody] UpdateUserDTO dto)
         {
             if (dto == null || id != dto.UserId || !ModelState.IsValid)
@@ -79,6 +85,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult> DeleteUser(int id)
         {
             try
@@ -96,6 +103,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers([FromQuery] int skip = 0, [FromQuery] int take = 10)
         {
             try
@@ -112,17 +120,27 @@ namespace ViagemImpacta.Controllers.ApiControllers
 
         [HttpPost]
         [Route("login")]
+
         public async Task<ActionResult<dynamic>> LoginAsync ([FromBody]LoginAuthDTO loginAuthDTO)
         {
-            if(loginAuthDTO == null || string.IsNullOrEmpty(loginAuthDTO.Email) || string.IsNullOrEmpty(loginAuthDTO.Password))
+            if (loginAuthDTO == null || string.IsNullOrEmpty(loginAuthDTO.Email) || string.IsNullOrEmpty(loginAuthDTO.Password))
             {
                 return BadRequest("Email e senha são obrigatórios.");
             }
-
             var user = await _userService.GetUserByEmail(loginAuthDTO.Email);
-            if(user == null)
+            if (user == null)
             {
                 return NotFound("Usuário não encontrado.");
+            }
+            loginAuthDTO.Role = user.Role.ToString(); // Define a role do usuário no DTO
+
+            if (!BCrypt.Net.BCrypt.Verify(loginAuthDTO.Password, user.Password))
+            {
+                return Unauthorized("Email ou senha inválidos.");
+            }
+            if (!user.Active)
+            {
+                return Unauthorized("Usuário desativado.");
             }
             var token = TokensService.GenerateToken(user);
             if (string.IsNullOrEmpty(token))
@@ -132,10 +150,18 @@ namespace ViagemImpacta.Controllers.ApiControllers
             loginAuthDTO.Password = string.Empty; // Limpa a senha do DTO para segurança
             return new
             {
-                user = user,
-                token = token
+                token = token,
+                user = new
+                {
+                    UserId = user.UserId,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    Role = user.Role
+
+                }
             };
 
         }
-    }
+        }
 }
