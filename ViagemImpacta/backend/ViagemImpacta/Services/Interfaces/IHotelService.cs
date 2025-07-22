@@ -8,7 +8,10 @@ namespace ViagemImpacta.Services.Interfaces
         Task<Hotel?> GetHotelByIdAsync(int id);
         Task<IEnumerable<Hotel>> GetHotelsWithFiltersAsync(string? location, int? minStars, bool? hasWifi, bool? hasParking);
         Task<Hotel> CreateHotelAsync(Hotel hotel);
-        Task<bool> UpdateHotelAsync(int id, Hotel hotel);
+        Task UpdateHotelAsync(Hotel hotel);
         Task<bool> DeleteHotelAsync(int id);
+        Task<Hotel> GetHotelWithRoomsAsync(int hotelId); 
+
+
     }
 }
