@@ -11,7 +11,7 @@ namespace ViagemImpacta.Models
             public Hotel? Hotel { get; set; }
             public RoomType Type { get; set; }
             public int Capacity { get; set; }
-            public List<string> Image { get; set; }
+            //public List<string> Image { get; set; }
             public decimal AverageDailyPrice { get; set; }
             public bool Available { get; set; }
             public bool Accessible { get; set; }

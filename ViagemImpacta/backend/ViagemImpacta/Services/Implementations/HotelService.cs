@@ -60,31 +60,46 @@ namespace ViagemImpacta.Services.Implementations
             return hotel;
         }
 
-        public async Task<bool> UpdateHotelAsync(int id, Hotel hotel)
+        public async Task UpdateHotelAsync(Hotel hotel)
         {
-            if (id != hotel.HotelId)
-            {
-                return false; 
-            }
+            var existingHotel = await _context.Hotels
+                .Include(h => h.Rooms)
+                .FirstOrDefaultAsync(h => h.HotelId == hotel.HotelId);
 
-            var existingHotel = await _context.Hotels.FindAsync(id);
             if (existingHotel == null)
             {
-                return false; 
+                return;
             }
 
             _context.Entry(existingHotel).CurrentValues.SetValues(hotel);
 
-            try
+            var formRoomIds = hotel.Rooms.Select(r => r.RoomId).ToHashSet();
+
+            var roomsToRemove = existingHotel.Rooms
+                .Where(dbRoom => !formRoomIds.Contains(dbRoom.RoomId))
+                .ToList();
+
+            _context.Rooms.RemoveRange(roomsToRemove);
+
+            foreach (var formRoom in hotel.Rooms)
             {
-                await _context.SaveChangesAsync();
-                return true;
+                if (formRoom.RoomId > 0)
+                {
+                    var dbRoom = existingHotel.Rooms.FirstOrDefault(r => r.RoomId == formRoom.RoomId);
+                    if (dbRoom != null)
+                    {
+                        _context.Entry(dbRoom).CurrentValues.SetValues(formRoom);
+                    }
+                }
+                else
+                {
+                    existingHotel.Rooms.Add(formRoom);
+                }
             }
-            catch (DbUpdateConcurrencyException)
-            {
-                return false;
-            }
+
+            await _context.SaveChangesAsync();
         }
+        
 
         public async Task<bool> DeleteHotelAsync(int id)
         {
@@ -97,6 +112,12 @@ namespace ViagemImpacta.Services.Implementations
             _context.Hotels.Remove(hotel);
             await _context.SaveChangesAsync();
             return true;
+        }
+        public async Task<Hotel> GetHotelWithRoomsAsync(int hotelId)
+        {
+            return await _context.Hotels
+                .Include(h => h.Rooms)
+                .FirstOrDefaultAsync(h => h.HotelId == hotelId);
         }
     }
 }

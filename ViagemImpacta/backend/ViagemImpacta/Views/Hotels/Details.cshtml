@@ -47,7 +47,40 @@
         </dd>
     </dl>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.HotelId" class="btn btn-warning">Editar</a>
+
+<hr />
+<h4>Quartos Cadastrados</h4>
+
+@if (Model.Rooms != null && Model.Rooms.Any())
+{
+    <table class="table table-bordered table-striped mt-3">
+        <thead class="table-light">
+            <tr>
+                <th>Nome do Quarto</th>
+                <th>Tipo</th>
+                <th>Capacidade</th>
+                <th>Preço da Diária</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var room in Model.Rooms)
+            {
+                <tr>
+                    <td>@room.Name</td>
+                    <td>@room.Type</td>
+                    <td>@room.Capacity pessoas</td>
+                    <td>@room.AverageDailyPrice.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">Nenhum quarto cadastrado para este hotel.</div>
+}
+
+<div class="mt-4">
+    <a asp-action="Edit" asp-route-id="@Model.HotelId" class="btn btn-primary">Editar</a>
     <a asp-action="Index" class="btn btn-secondary">Voltar para a Lista</a>
 </div>
