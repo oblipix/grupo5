@@ -118,14 +118,39 @@ namespace ViagemImpacta.Services.Implementations
             return package;
         }
 
-        public Task<bool> UpdatePackageAsync(TravelPackage package, List<int> hotelIds)
+        public async Task<bool> UpdatePackageAsync(TravelPackage package, List<int> hotelIds)
         {
-            throw new NotImplementedException();
+            var existingPackage = await _context.TravelPackages
+                .Include(p => p.Hotels)
+                .FirstOrDefaultAsync(p => p.TravelPackageId == package.TravelPackageId);
+
+            if (existingPackage == null)
+            {
+                return false; 
+            }
+
+            _context.Entry(existingPackage).CurrentValues.SetValues(package);
+            existingPackage.UpdatedAt = DateTime.UtcNow;
+
+            var selectedHotels = await _context.Hotels
+                .Where(h => hotelIds.Contains(h.HotelId))
+                .ToListAsync();
+
+         
+            existingPackage.Hotels = selectedHotels;
+
+            await _context.SaveChangesAsync();
+
+            return true; 
         }
 
         public Task<bool> DeletePackageAsync(int id)
         {
             throw new NotImplementedException();
+        }
+        public async Task<IEnumerable<Hotel>> GetAllHotelsAsync()
+        {
+            return await _context.Hotels.OrderBy(h => h.Name).ToListAsync();
         }
     }
 }

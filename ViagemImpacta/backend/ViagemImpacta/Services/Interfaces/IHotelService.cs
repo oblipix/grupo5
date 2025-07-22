@@ -12,5 +12,6 @@ namespace ViagemImpacta.Services.Interfaces
         Task<bool> DeleteHotelAsync(int id);
         Task<Hotel> GetHotelWithRoomsAsync(int hotelId); 
 
+
     }
 }

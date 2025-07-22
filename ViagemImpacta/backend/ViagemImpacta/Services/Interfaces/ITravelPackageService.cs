@@ -20,5 +20,6 @@ namespace ViagemImpacta.Services.Interfaces
         Task<TravelPackage> CreatePackageAsync(TravelPackage package, List<int> hotelIds);
         Task<bool> UpdatePackageAsync(TravelPackage package, List<int> hotelIds);
         Task<bool> DeletePackageAsync(int id);
+        Task<IEnumerable<Hotel>> GetAllHotelsAsync();
     }
 }
