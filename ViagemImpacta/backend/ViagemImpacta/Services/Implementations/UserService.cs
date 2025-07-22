@@ -18,10 +18,15 @@ namespace ViagemImpacta.Services.Implementations
             _mapper = mapper;
         }
 
+        // COPILOT FEZ
+        public async Task<IEnumerable<User>> SearchClientUsers(string search, int skip, int take)
+        {
+            return await _unitOfWork.Users.SearchClientUsers(search, skip, take);
+        }
+
         public async Task<IEnumerable<User>> ListAllClients(int skip, int take)
         {
-            var users = await _unitOfWork.Users.GetAllClientUsersWithPagination(skip, take);
-
+            var users = await _unitOfWork.Users.GetAllClients(skip, take);
             return users;
         }
 
@@ -123,13 +128,6 @@ namespace ViagemImpacta.Services.Implementations
                 return null;
 
             return await _unitOfWork.Users.GetUserByEmail(email);
-        }
-
-        public async Task<User?> ValidateUserAsync(ReadUserLoginDTO dto)
-        {
-            var user = await _unitOfWork.Users.GetUserByEmail(dto.Email.ToLower().Trim());
-            if (user == null || user.Password != dto.Password) return null;
-            return user;
         }
     }
 }
