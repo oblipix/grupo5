@@ -5,6 +5,7 @@ namespace ViagemImpacta.DTOs
 {
     public class CreateUpdateTravelPackageDto
     {
+        public int TravelPackageId { get; set; } // Adicionado para suportar edição
         public string? Title { get; set; }
         public string? Description { get; set; }
         public decimal Price { get; set; }
