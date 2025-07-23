@@ -11,6 +11,9 @@ namespace ViagemImpacta.Profiles
         public UserProfile()
         {
             CreateMap<ReadAdminViewModel, ReadUserLoginDTO>();
+            CreateMap<User, UpdateUserViewModel>();
+            CreateMap<UpdateUserViewModel, UpdateUserDTO>();
+
             CreateMap<ReadUserLoginDTO, User>();
             
             CreateMap<CreateUserDTO, User>();

@@ -1,28 +1,35 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ViagemImpacta.Repositories;
+using ViagemImpacta.Models;
+using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Services.Interfaces;
+using AutoMapper;
+using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Controllers.ViewsControllers
 {
     public class UsersController : Controller
     {
         private readonly IUserService _userService;
+        private readonly IMapper _mapper;
 
-        public UsersController(IUserService userService)
+        public UsersController(IUserService userService, IMapper mapper)
         {
             _userService = userService;
+            _mapper = mapper;
         }
-        /*
-         TODO: 
-        - Na página principal, deve listar todos os usuários (CLIENTES) cadastrados no banco de dados
-        - Limite no número de listagem (10 por página?) -> PARA O FRONT, da pra ser dinâmico com botões alternativos de 10, 20, 50 (talvez)
-        - Barra/Input de busca de usuários por (ALGUMA COISA) 
-        - Botões de detalhar, ver avaliações, ver reservas, ver pacotes
-         */
 
-        public async Task<IActionResult> Index([FromQuery] int skip = 0, [FromQuery] int take = 10)
+        public async Task<IActionResult> Index([FromQuery] int skip = 0, [FromQuery] int take = 10, [FromQuery] string search = "")
         {
-            var users = await _userService.ListAllClients(skip, take);
+            IEnumerable<User> users;
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                users = await _userService.SearchClientUsers(search, skip, take);
+            }
+            else
+            {
+                users = await _userService.ListAllClients(skip, take);
+            }
             return View(users);
         }
 
@@ -32,16 +39,42 @@ namespace ViagemImpacta.Controllers.ViewsControllers
             return View(user);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
+            var user = await _userService.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var userViewModel = _mapper.Map<UpdateUserViewModel>(user);
+            return View(userViewModel);
         }
 
-        public IActionResult Edit()
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, UpdateUserViewModel user)
         {
-            return View();
+            if (id != user.UserId)
+            {
+                return BadRequest();
+            }
+            if (!ModelState.IsValid)
+            {
+                return View(user);
+            }
+            try
+            {
+                var dto = _mapper.Map<UpdateUserDTO>(user);
+                await _userService.UpdateUser(dto);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, $"Erro ao atualizar usuário: {ex.Message}");
+                return View(user);
+            }
         }
-
 
         public async Task<IActionResult> Delete(int id)
         {

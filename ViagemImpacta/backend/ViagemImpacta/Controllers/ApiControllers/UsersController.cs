@@ -19,7 +19,6 @@ namespace ViagemImpacta.Controllers.ApiControllers
             _mapper = mapper; 
         }
 
-
         [HttpPost]
         public async Task<ActionResult<UserDTO>> CreateUser([FromBody] CreateUserDTO dto)
         {
@@ -88,21 +87,6 @@ namespace ViagemImpacta.Controllers.ApiControllers
                     return NotFound($"Usuário com ID {id} não encontrado.");
 
                 return NoContent(); 
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro interno: {ex.Message}");
-            }
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers([FromQuery] int skip = 0, [FromQuery] int take = 10)
-        {
-            try
-            {
-                var users = await _userService.ListAllClients(skip, take);
-                var userDtos = _mapper.Map<IEnumerable<UserDTO>>(users);
-                return Ok(userDtos);
             }
             catch (Exception ex)
             {
