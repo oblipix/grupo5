@@ -19,41 +19,9 @@ public class HomeController : Controller
         _userService = userService;
     }
 
-    /*
-    - TELA DO ADMIN NA VIEW INDEX 
-    - CONTROLLER TELA GET E POST DO INDEX
-    - DTO DO LOGIN DO ADMIN > E-MAIL E SENHA   || FEITO
-    - FAZER O MAPPER || FEITO
-    - REPOSITORY DA AUTENTICAÇÃO || FEITO
-    - SERVICE DA AUTENTICAÇÃO
-     */
     public IActionResult Index()
     {
         return View();
-    }
-
-    [HttpPost, ActionName("Index")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Login(ReadAdminViewModel model)
-    {
-        if (!ModelState.IsValid) return View(model);
-
-        try
-        {
-            var dto = _mapper.Map<ReadUserLoginDTO>(model);
-            //var user = await _userService.ValidateUserAsync(dto);
-
-            //if (user == null) return View(user);
-
-            return RedirectToAction("Dashboard", "Admins");
-        }
-        catch (Exception ex)
-        {
-            // FAZER UMA EXCEÇÃO
-            _logger.LogError(ex.Message);
-            return View(model);
-        }
-
     }
 
     public IActionResult Privacy()
