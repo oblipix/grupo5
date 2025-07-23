@@ -1,0 +1,79 @@
+﻿body, html {
+    height: 100%;
+    background: #f8f9fa;
+}
+
+.dashboard-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.dashboard-main {
+    flex: 1 1 auto;
+    display: flex;
+    gap: 0;
+}
+
+.dashboard-sidebar {
+    min-width: 260px;
+    background: #fff;
+    border-right: 1px solid #e3e3e3;
+    padding: 2rem 1rem 1rem 1rem;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.03);
+}
+
+.dashboard-sidebar .list-group-item {
+    font-size: 1.08rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    border: none;
+    border-radius: 0.4rem;
+    margin-bottom: 0.3rem;
+    transition: background 0.2s;
+}
+
+.dashboard-sidebar .list-group-item:hover, 
+.dashboard-sidebar .list-group-item.active {
+    background: #e9ecef;
+}
+
+.dashboard-content {
+    flex: 1 1 auto;
+    padding: 2.5rem 2.5rem 1.5rem 2.5rem;
+    background: #f8f9fa;
+    min-height: 100vh;
+}
+
+.dashboard-topbar {
+    background: linear-gradient(90deg, #0d6efd 60%, #198754 100%);
+    color: #fff;
+    padding: 2.2rem 2.5rem 2rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.dashboard-topbar .faturamento-box {
+    background: #fff;
+    color: #0d6efd;
+    border-radius: 0.7rem;
+    padding: 1.2rem 2.2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    font-size: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.dashboard-topbar .faturamento-box strong {
+    color: #198754;
+    font-size: 1.05rem;
+}
+
+.dashboard-topbar .faturamento-box .fs-4 {
+    font-size: 2.1rem !important;
+    font-weight: 600;
+}
