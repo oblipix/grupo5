@@ -10,19 +10,21 @@ namespace ViagemImpacta.Profiles
 
         public UserProfile()
         {
-            CreateMap<ReadAdminViewModel, ReadUserLoginDTO>();
+            CreateMap<ReadAdminViewModel, ReadUserLoginDto>();
             CreateMap<User, UpdateUserViewModel>();
-            CreateMap<UpdateUserViewModel, UpdateUserDTO>();
+            CreateMap<UpdateUserViewModel, UpdateUserDto>();
 
-            CreateMap<ReadUserLoginDTO, User>();
+            CreateMap<CreateEmpolyeeViewModel, CreateUserDto>();
+
+            CreateMap<ReadUserLoginDto, User>();
             
-            CreateMap<CreateUserDTO, User>();
-            CreateMap<UpdateUserDTO, User>()
+            CreateMap<CreateUserDto, User>();
+            CreateMap<UpdateUserDto, User>()
                 .ForAllMembers(opts => opts.Condition(
                     (src, dest, srcMember) => srcMember != null
                 ));
-            CreateMap<User, UserDTO>();
-                //CreateMap<User, UserReturnInfosDTO>();
+            CreateMap<User, UserDto>();
+            //CreateMap<User, UserReturnInfosDTO>();
         }
     }
 }
