@@ -1,6 +1,6 @@
-﻿using ApiCatalogo.Repositories;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ViagemImpacta.Models;
+using ViagemImpacta.Repositories.Interfaces;
 
 namespace ViagemImpacta.Controllers.ApiControllers
 {

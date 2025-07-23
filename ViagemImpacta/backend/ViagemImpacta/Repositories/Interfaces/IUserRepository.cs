@@ -1,5 +1,4 @@
-﻿using ApiCatalogo.Repositories;
-using ViagemImpacta.Models;
+﻿using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Repositories.Interfaces
 {
@@ -14,5 +13,7 @@ namespace ViagemImpacta.Repositories.Interfaces
         Task<bool> AlreadyEmailExist(string email);
 
         Task<User?> GetUserByEmail(string email);
+        Task<User?> GetByIdAsync(int id);
+        Task UpdateAsync(User existingUser);
     }
 }

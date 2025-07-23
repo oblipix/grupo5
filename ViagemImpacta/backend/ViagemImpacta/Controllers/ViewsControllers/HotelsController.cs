@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces; // Importa a interface do serviço
-
+using ViagemImpacta.Models;
 namespace ViagemImpacta.Controllers
 {
     public class HotelsController : Controller

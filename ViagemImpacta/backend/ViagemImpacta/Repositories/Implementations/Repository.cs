@@ -1,58 +1,60 @@
-﻿using ApiCatalogo.Repositories;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Query;
+using System.Linq.Expressions;
 using ViagemImpacta.Data;
+using ViagemImpacta.Repositories.Interfaces;
 
 namespace ViagemImpacta.Repositories.Implementations
 {
     public class Repository<T> : IRepository<T> where T : class
     {
-        // Marcelo : troquei de public para privado, para evitar o erro de herança na chamada do context nas classes filhas
-        private readonly AgenciaDbContext _context;
+        protected readonly AgenciaDbContext _context;
+        private readonly DbSet<T> _dbSet;
 
         public Repository(AgenciaDbContext context)
         {
             _context = context;
+            _dbSet = _context.Set<T>();
         }
 
-        public Task<T> AddAsync(T entity)
+        public async Task<T?> GetAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null)
         {
-            _context.Set<T>().Add(entity);
-            return Task.FromResult(entity);
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-           var entity=await _context.Set<T>().FindAsync(id);
-
-            if (entity == null)
+            IQueryable<T> query = _dbSet;
+            if (include != null)
             {
-                return false;
+                query = include(query);
             }
-              _context.Set<T>().Remove(entity);
-            return true;
+            return await query.FirstOrDefaultAsync(predicate);
         }
 
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null)
         {
-            return await _context.Set<T>().ToListAsync();        
+            IQueryable<T> query = _dbSet;
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
+            if (include != null)
+            {
+                query = include(query);
+            }
+            return await query.ToListAsync();
         }
 
-        public async Task<T?> GetByIdAsync(int id)
+        public async Task AddAsync(T entity)
         {
-            var entity = await _context.Set<T>().FindAsync(id);
-           
-            return entity;
+            await _dbSet.AddAsync(entity);
         }
 
-        public async Task<bool> SaveChangesAsync()
+        public void Update(T entity)
         {
-            return await _context.SaveChangesAsync() > 0;
+            _dbSet.Attach(entity);
+            _context.Entry(entity).State = EntityState.Modified;
         }
 
-        public Task<T> UpdateAsync(T entity)
+        public void Remove(T entity)
         {
-            _context.Set<T>().Update(entity);
-            return Task.FromResult(entity);
+            _dbSet.Remove(entity);
         }
     }
 }

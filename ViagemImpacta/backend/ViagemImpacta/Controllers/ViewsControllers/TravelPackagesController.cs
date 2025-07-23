@@ -42,32 +42,38 @@ namespace ViagemImpacta.Controllers
         public async Task<IActionResult> Create()
         {
             ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name");
-            return View(new TravelPackage());
+            return View(new ViagemImpacta.DTOs.CreateUpdateTravelPackageDto());
         }
 
         // POST: TravelPackages/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(TravelPackage package, [FromForm] List<int> SelectedHotelIds)
+        public async Task<IActionResult> Create(ViagemImpacta.DTOs.CreateUpdateTravelPackageDto dto)
         {
-            if (SelectedHotelIds == null || !SelectedHotelIds.Any())
+            if (dto.SelectedHotelIds == null || !dto.SelectedHotelIds.Any())
             {
-                ModelState.AddModelError("Hotels", "Você deve selecionar ao menos um hotel.");
+                ModelState.AddModelError("SelectedHotelIds", "Você deve selecionar ao menos um hotel.");
             }
-
-            // Remove a validação de propriedades de navegação que não são preenchidas pelo form
-            ModelState.Remove("Hotels");
-            ModelState.Remove("Reservations");
-            ModelState.Remove("Reviews");
 
             if (ModelState.IsValid)
             {
-                await _packageService.CreatePackageAsync(package, SelectedHotelIds);
+                var package = new TravelPackage
+                {
+                    Title = dto.Title,
+                    Description = dto.Description,
+                    Price = dto.Price,
+                    StartDate = dto.StartDate,
+                    EndDate = dto.EndDate,
+                    Destination = dto.Destination,
+                    Active = dto.Active,
+                    Promotion = dto.Promotion
+                };
+                await _packageService.CreatePackageAsync(package, dto.SelectedHotelIds);
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name", SelectedHotelIds);
-            return View(package);
+            ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name", dto.SelectedHotelIds);
+            return View(dto);
         }
 
         // GET: TravelPackages/Edit/5

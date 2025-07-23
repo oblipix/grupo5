@@ -1,4 +1,7 @@
-﻿namespace ViagemImpacta.Dtos
+﻿using System;
+using System.Collections.Generic;
+
+namespace ViagemImpacta.DTOs
 {
     public class TravelPackageDto
     {
@@ -8,7 +11,7 @@
         public decimal Price { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-        public bool Active { get; set; }
-        public List<string> HotelNames { get; set; } = new List<string>();
+        public List<string> HotelNames { get; set; } = new();
+        public List<HotelDto> Hotels { get; set; } = new();
     }
 }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ViagemImpacta.Models.Hotel>
+﻿@model IEnumerable<ViagemImpacta.DTOs.HotelDto>
 
 @{
     ViewData["Title"] = "Hotéis";
@@ -12,10 +12,10 @@
 <table class="table table-striped table-hover">
     <thead>
         <tr>
-            <th>@Html.DisplayNameFor(model => model.Name)</th>
-            <th>@Html.DisplayNameFor(model => model.Location)</th>
-            <th>@Html.DisplayNameFor(model => model.Stars)</th>
-            <th>Nº de Quartos</th>
+            <th>@Html.DisplayNameFor(model => model.First().Name)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Location)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Stars)</th>
+            <th>Quartos</th>
             <th>Ações</th>
         </tr>
     </thead>
@@ -23,13 +23,10 @@
         @foreach (var item in Model)
         {
             <tr>
-                <td>@Html.DisplayFor(modelItem => item.Name)</td>
-                <td>@Html.DisplayFor(modelItem => item.Location)</td>
-                <td>@Html.DisplayFor(modelItem => item.Stars) ⭐</td>
-                <td>
-                    @* NOVA CÉLULA: Exibe a contagem de quartos *@
-                    @(item.Rooms?.Count ?? 0)
-                </td>
+                <td>@item.Name</td>
+                <td>@item.Location</td>
+                <td>@item.Stars ⭐</td>
+                <td>@item.RoomCount</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@item.HotelId" class="btn btn-sm btn-warning">Editar</a>
                     <a asp-action="Details" asp-route-id="@item.HotelId" class="btn btn-sm btn-info">Detalhes</a>
@@ -38,5 +35,4 @@
             </tr>
         }
     </tbody>
-</table>
 </table>

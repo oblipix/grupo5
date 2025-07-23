@@ -1,22 +1,23 @@
 ﻿using ViagemImpacta.Data;
-using ViagemImpacta.Repositories.Implementations;
 using ViagemImpacta.Repositories.Interfaces;
 
-namespace ViagemImpacta.Repositories
+namespace ViagemImpacta.Repositories.Implementations
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly AgenciaDbContext _context;
-        public IUserRepository Users { get; private set; }
+
+        public IHotelRepository Hotels { get; private set; }
         public ITravelPackageRepository TravelPackages { get; private set; }
-        public IHotelRepository Hotels { get; private set; } // Adicionar
+        public IUserRepository Users { get; private set; }
 
         public UnitOfWork(AgenciaDbContext context)
         {
             _context = context;
-            Users = new UserRepository(_context);
+            Hotels = new HotelRepository(_context);
             TravelPackages = new TravelPackageRepository(_context);
-            Hotels = new HotelRepository(_context); // Adicionar
+            Users = new UserRepository(_context);
+
         }
 
         public async Task<bool> CommitAsync()

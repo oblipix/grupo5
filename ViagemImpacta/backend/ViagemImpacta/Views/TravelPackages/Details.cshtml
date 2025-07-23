@@ -1,4 +1,4 @@
-﻿@model ViagemImpacta.Models.TravelPackage
+﻿@model ViagemImpacta.DTOs.TravelPackageDto
 
 @{
     ViewData["Title"] = "Detalhes do Pacote";
@@ -11,25 +11,16 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-3">ID</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.TravelPackageId)</dd>
+        <dd class="col-sm-9">@Model.TravelPackageId</dd>
 
         <dt class="col-sm-3">Destino</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.Destination)</dd>
-
-        <dt class="col-sm-3">Descrição</dt>
-        <dd class="col-sm-9">@Html.DisplayFor(model => model.Description)</dd>
+        <dd class="col-sm-9">@Model.Destination</dd>
 
         <dt class="col-sm-3">Preço</dt>
         <dd class="col-sm-9">@Model.Price.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</dd>
 
         <dt class="col-sm-3">Período</dt>
         <dd class="col-sm-9">@Model.StartDate.ToShortDateString() a @Model.EndDate.ToShortDateString()</dd>
-
-        <dt class="col-sm-3">Em Promoção</dt>
-        <dd class="col-sm-9">@(Model.Promotion ? "Sim" : "Não")</dd>
-
-        <dt class="col-sm-3">Status</dt>
-        <dd class="col-sm-9">@(Model.Active ? "Ativo" : "Inativo")</dd>
 
         <dt class="col-sm-3">Hotéis Incluídos</dt>
         <dd class="col-sm-9">

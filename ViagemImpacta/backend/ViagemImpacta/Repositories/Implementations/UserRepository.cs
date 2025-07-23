@@ -46,4 +46,14 @@ public class UserRepository : Repository<User>, IUserRepository
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Active);
     }
+
+    public Task<User?> GetByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync(User existingUser)
+    {
+        throw new NotImplementedException();
+    }
 }

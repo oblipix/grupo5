@@ -3,6 +3,8 @@ using Microsoft.CodeAnalysis.Scripting;
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Repositories;
+using ViagemImpacta.Repositories.Interfaces;
+
 using ViagemImpacta.Services.Interfaces;
 
 namespace ViagemImpacta.Services.Implementations
