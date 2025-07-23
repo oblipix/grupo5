@@ -18,7 +18,6 @@ namespace ViagemImpacta.Services.Implementations
             _mapper = mapper;
         }
 
-        // COPILOT FEZ
         public async Task<IEnumerable<User>> SearchClientUsers(string search, int skip, int take)
         {
             return await _unitOfWork.Users.SearchClientUsers(search, skip, take);
@@ -30,7 +29,13 @@ namespace ViagemImpacta.Services.Implementations
             return users;
         }
 
-        public async Task<User> CreateUser(CreateUserDTO createUserDTO)
+        public async Task<IEnumerable<User>> ListAllEmployees(int skip, int take)
+        {
+            var users = await _unitOfWork.Users.GetAllEmployees(skip, take);
+            return users;
+        }
+
+        public async Task<User> CreateUser(CreateUserDto createUserDTO)
         {
             if (await _unitOfWork.Users.AlreadyEmailExist(createUserDTO.Email))
             {
@@ -44,7 +49,7 @@ namespace ViagemImpacta.Services.Implementations
             user.Active = true;
             user.CreatedAt = DateTime.UtcNow;
 
-            if(createUserDTO.roles == Models.Enums.Roles.Admin)
+            if(createUserDTO.Roles == Models.Enums.Roles.Admin)
             {
                 user.Role = Models.Enums.Roles.Admin; // Define o papel como Admin se especificado
             }
@@ -52,7 +57,7 @@ namespace ViagemImpacta.Services.Implementations
                 user.Role = Models.Enums.Roles.User;
             }
 
-                await _unitOfWork.Users.AddAsync(user);
+            await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CommitAsync();
             return user;
         }
@@ -71,7 +76,7 @@ namespace ViagemImpacta.Services.Implementations
             return user;
         }
 
-        public async Task<User> UpdateUser(UpdateUserDTO updateUserDTO)
+        public async Task<User> UpdateUser(UpdateUserDto updateUserDTO)
         {
             if (updateUserDTO == null || updateUserDTO.UserId <= 0)
             {
