@@ -2,7 +2,7 @@
 
 namespace ViagemImpacta.DTO.UserDTO
 {
-    public class UpdateUserDTO
+    public class UpdateUserDto
     {
         [Required]
         public int UserId { get; set; }

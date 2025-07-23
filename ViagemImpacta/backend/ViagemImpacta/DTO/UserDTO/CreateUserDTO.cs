@@ -3,7 +3,7 @@ using ViagemImpacta.Models.Enums;
 
 namespace ViagemImpacta.DTO.UserDTO
 {
-    public class CreateUserDTO
+    public class CreateUserDto
     {
         [Required(ErrorMessage = "Email é obrigatório.")]
         [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Email inválido.")]
@@ -21,7 +21,7 @@ namespace ViagemImpacta.DTO.UserDTO
         [RegularExpression(@"^[A-Za-zÀ-ÿ\s]+$", ErrorMessage = "Não é aceito o uso de caracteres especiais ou números")]
         public string LastName { get; set; }
 
-        public Roles roles { get; set; } 
+        public Roles Roles { get; set; } 
 
     }
 }

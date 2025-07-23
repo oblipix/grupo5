@@ -1,6 +1,6 @@
 ﻿namespace ViagemImpacta.DTO.UserDTO
 {
-    public class UserDTO
+    public class UserDto
     {
         public int UserId { get; set; }
 

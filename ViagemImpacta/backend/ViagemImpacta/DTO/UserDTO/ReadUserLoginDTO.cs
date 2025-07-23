@@ -1,6 +1,6 @@
 ﻿namespace ViagemImpacta.DTO.UserDTO
 {
-    public class ReadUserLoginDTO
+    public class ReadUserLoginDto
     {
         public string Email { get; set; }
         public string Password { get; set; }
