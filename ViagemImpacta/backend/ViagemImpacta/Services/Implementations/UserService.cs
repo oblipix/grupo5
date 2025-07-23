@@ -38,9 +38,11 @@ namespace ViagemImpacta.Services.Implementations
             user.Password = BCrypt.Net.BCrypt.HashPassword(createUserDTO.Password);
             Console.WriteLine(user.Password);
             user.Active = true;
-            user.CreatedAt = DateTime.UtcNow;
 
-            if(createUserDTO.roles == Models.Enums.Roles.Admin)
+            var brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));
+            user.CreatedAt = new DateTime(brazilTime.Year, brazilTime.Month, brazilTime.Day, brazilTime.Hour, brazilTime.Minute, brazilTime.Second);
+
+            if (createUserDTO.roles == Models.Enums.Roles.Admin)
             {
                 user.Role = Models.Enums.Roles.Admin;
             }
@@ -71,9 +73,10 @@ namespace ViagemImpacta.Services.Implementations
             {
                 throw new ArgumentException("Dados inválidos para atualização do usuário.");
             }
+            
 
-            // Busca o usuário existente
-            var existingUser = await _unitOfWork.Users.GetByIdAsync(updateUserDTO.UserId);
+                // Busca o usuário existente
+                var existingUser = await _unitOfWork.Users.GetByIdAsync(updateUserDTO.UserId);
             if (existingUser == null)
             {
                 throw new ArgumentException("Usuário não encontrado.");
@@ -88,7 +91,8 @@ namespace ViagemImpacta.Services.Implementations
 
             // AutoMapper mapeia apenas propriedades não-nulas do DTO para o usuário existente
             _mapper.Map(updateUserDTO, existingUser);
-            existingUser.UpdatedAt = DateTime.UtcNow;
+            var brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));
+            existingUser.UpdatedAt = new DateTime(brazilTime.Year, brazilTime.Month, brazilTime.Day, brazilTime.Hour, brazilTime.Minute, brazilTime.Second);
 
             // Atualiza no repositório
             await _unitOfWork.Users.UpdateAsync(existingUser);

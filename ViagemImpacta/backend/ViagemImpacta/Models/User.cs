@@ -14,7 +14,7 @@ public class User
     public string? FirstName { get; set; }
     public string? LastName { get; set; }
     public string? Phone { get; set; } //Minimo 10, Max 12
-    public int Age { get; set; }
+    public DateOnly? BirthDate { get; set; }
     public string? Photo { get; set; }
     public string? Cpf { get; set; }
     public DateTime CreatedAt { get; set; }
