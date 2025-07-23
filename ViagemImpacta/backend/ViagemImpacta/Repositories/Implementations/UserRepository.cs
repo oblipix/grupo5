@@ -56,13 +56,14 @@ public class UserRepository : Repository<User>, IUserRepository
     // COPILOT FEZ
     public async Task<IEnumerable<User>> SearchClientUsers(string search, int skip, int take)
     {
+        // ADICIONAR UM TRIM
         var query = _context.Users.Where(u => u.Active);
-        if (!string.IsNullOrWhiteSpace(search))
+        if (!string.IsNullOrWhiteSpace(search.Trim()))
         {
-            query = query.Where(u => u.Cpf == search || 
-            u.FirstName == search || 
-            u.LastName == search || 
-            u.Email == search);
+            query = query.Where(u => u.Cpf.Contains(search) || 
+            u.FirstName.Contains(search) || 
+            u.LastName.Contains(search) || 
+            u.Email.Contains(search));
         }
         return await query.Skip(skip).Take(take).ToListAsync();
     }
