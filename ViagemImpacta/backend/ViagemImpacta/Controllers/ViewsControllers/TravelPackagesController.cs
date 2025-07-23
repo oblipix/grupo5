@@ -42,32 +42,38 @@ namespace ViagemImpacta.Controllers
         public async Task<IActionResult> Create()
         {
             ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name");
-            return View(new TravelPackage());
+            return View(new ViagemImpacta.DTOs.CreateUpdateTravelPackageDto());
         }
 
         // POST: TravelPackages/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(TravelPackage package, [FromForm] List<int> SelectedHotelIds)
+        public async Task<IActionResult> Create(ViagemImpacta.DTOs.CreateUpdateTravelPackageDto dto)
         {
-            if (SelectedHotelIds == null || !SelectedHotelIds.Any())
+            if (dto.SelectedHotelIds == null || !dto.SelectedHotelIds.Any())
             {
-                ModelState.AddModelError("Hotels", "Você deve selecionar ao menos um hotel.");
+                ModelState.AddModelError("SelectedHotelIds", "Você deve selecionar ao menos um hotel.");
             }
-
-            // Remove a validação de propriedades de navegação que não são preenchidas pelo form
-            ModelState.Remove("Hotels");
-            ModelState.Remove("Reservations");
-            ModelState.Remove("Reviews");
 
             if (ModelState.IsValid)
             {
-                await _packageService.CreatePackageAsync(package, SelectedHotelIds);
+                var package = new TravelPackage
+                {
+                    Title = dto.Title,
+                    Description = dto.Description,
+                    Price = dto.Price,
+                    StartDate = dto.StartDate,
+                    EndDate = dto.EndDate,
+                    Destination = dto.Destination,
+                    Active = dto.Active,
+                    Promotion = dto.Promotion
+                };
+                await _packageService.CreatePackageAsync(package, dto.SelectedHotelIds);
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name", SelectedHotelIds);
-            return View(package);
+            ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name", dto.SelectedHotelIds);
+            return View(dto);
         }
 
         // GET: TravelPackages/Edit/5
@@ -87,32 +93,59 @@ namespace ViagemImpacta.Controllers
             var selectedHotelIds = travelPackage.Hotels.Select(h => h.HotelId).ToList();
             ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name", selectedHotelIds);
 
-            return View(travelPackage);
+            // Map TravelPackageDto to CreateUpdateTravelPackageDto
+            var editDto = new ViagemImpacta.DTOs.CreateUpdateTravelPackageDto
+            {
+                TravelPackageId = travelPackage.TravelPackageId,
+                Title = travelPackage.Title,
+                Description = travelPackage.Description,
+                Price = travelPackage.Price,
+                StartDate = travelPackage.StartDate,
+                EndDate = travelPackage.EndDate,
+                Destination = travelPackage.Destination,
+                Active = travelPackage.Active,
+                Promotion = travelPackage.Promotion,
+                SelectedHotelIds = selectedHotelIds
+            };
+
+            return View(editDto);
         }
 
         // POST: TravelPackages/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, TravelPackage package, [FromForm] List<int> SelectedHotelIds)
+        public async Task<IActionResult> Edit(int id, ViagemImpacta.DTOs.CreateUpdateTravelPackageDto dto)
         {
-            if (id != package.TravelPackageId)
+            if (id != dto.TravelPackageId)
             {
                 return NotFound();
             }
 
-            if (SelectedHotelIds == null || !SelectedHotelIds.Any())
+            if (dto.SelectedHotelIds == null || !dto.SelectedHotelIds.Any())
             {
-                ModelState.AddModelError("Hotels", "Você deve selecionar ao menos um hotel.");
+                ModelState.AddModelError("SelectedHotelIds", "Você deve selecionar ao menos um hotel.");
             }
 
             if (ModelState.IsValid)
             {
-                await _packageService.UpdatePackageAsync(package, SelectedHotelIds);
+                var package = new TravelPackage
+                {
+                    TravelPackageId = dto.TravelPackageId,
+                    Title = dto.Title,
+                    Description = dto.Description,
+                    Price = dto.Price,
+                    StartDate = dto.StartDate,
+                    EndDate = dto.EndDate,
+                    Destination = dto.Destination,
+                    Active = dto.Active,
+                    Promotion = dto.Promotion
+                };
+                await _packageService.UpdatePackageAsync(package, dto.SelectedHotelIds);
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name", SelectedHotelIds);
-            return View(package);
+            ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name", dto.SelectedHotelIds);
+            return View(dto);
         }
 
         // GET: TravelPackages/Delete/5
@@ -129,7 +162,7 @@ namespace ViagemImpacta.Controllers
                 return NotFound();
             }
 
-            return View(travelPackage);
+            return View(travelPackage); // travelPackage é TravelPackageDto
         }
 
         // POST: TravelPackages/Delete/5

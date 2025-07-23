@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ViagemImpacta.DTOs;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces;
 
@@ -19,7 +20,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
         /// US08 - Listar pacotes com filtros
         /// </summary>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<TravelPackage>>> GetPackages(
+        public async Task<ActionResult<IEnumerable<TravelPackageDto>>> GetPackages(
             [FromQuery] string? destination = null,
             [FromQuery] decimal? minPrice = null,
             [FromQuery] decimal? maxPrice = null,
@@ -39,7 +40,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
         /// US09 - Visualizar detalhes do pacote
         /// </summary>
         [HttpGet("{id}")]
-        public async Task<ActionResult<TravelPackage>> GetPackage(int id)
+        public async Task<ActionResult<TravelPackageDto>> GetPackage(int id)
         {
             var package = await _travelPackageService.GetPackageByIdAsync(id);
             if (package == null) return NotFound();
@@ -50,11 +51,9 @@ namespace ViagemImpacta.Controllers.ApiControllers
         /// Busca por termo livre
         /// </summary>
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<TravelPackage>>> SearchPackages(
+        public async Task<ActionResult<IEnumerable<TravelPackageDto>>> SearchPackages(
             [FromQuery] string searchTerm)
         {
-            
-
             var packages = await _travelPackageService.SearchPackagesAsync(searchTerm);
             return Ok(packages);
         }

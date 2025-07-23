@@ -1,13 +1,11 @@
-﻿using ViagemImpacta.Repositories.Interfaces;
-
-namespace ViagemImpacta.Repositories
+﻿namespace ViagemImpacta.Repositories.Interfaces
 {
     public interface IUnitOfWork : IDisposable
     {
-        IUserRepository Users { get; }
+        IHotelRepository Hotels { get; }
         ITravelPackageRepository TravelPackages { get; }
-    
-        IHotelRepository Hotels { get; } // Adicionar
+        IUserRepository Users { get; }
+
         Task<bool> CommitAsync();
     }
 }

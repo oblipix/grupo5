@@ -9,7 +9,6 @@ namespace ViagemImpacta.Controllers.ViewsControllers
 {
     public class EmployeesController : Controller
     {
-
         private readonly IUserService _userService;
         private readonly IMapper _mapper;
 
@@ -102,6 +101,7 @@ namespace ViagemImpacta.Controllers.ViewsControllers
             }
         }
 
+        // POST: Employees/Edit/5
         [HttpPost]
         public async Task<IActionResult> Edit(int id, UpdateUserViewModel user)
         {

@@ -1,4 +1,4 @@
-﻿@model ViagemImpacta.Models.TravelPackage
+﻿@model ViagemImpacta.DTOs.CreateUpdateTravelPackageDto
 
 @{
     ViewData["Title"] = "Editar Pacote";
@@ -15,7 +15,6 @@
 
             @* Este campo oculto é ESSENCIAL para que o ID do pacote seja enviado de volta ao servidor *@
             <input type="hidden" asp-for="TravelPackageId" />
-            <input type="hidden" asp-for="CreatedAt" /> @* Preserva a data de criação original *@
 
             <div class="row">
                 <div class="col-md-6 mb-3">
@@ -58,7 +57,6 @@
                 <label class="control-label">Hotéis</label>
                 @* O asp-items="ViewBag.Hotels" vai usar a lista pré-selecionada que montamos no controller *@
                 <select name="SelectedHotelIds" class="form-control" asp-items="ViewBag.Hotels" multiple="multiple" style="height: 200px;"></select>
-                <span asp-validation-for="Hotels" class="text-danger"></span>
             </div>
 
             <div class="mb-3 form-check">

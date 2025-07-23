@@ -1,14 +1,14 @@
-﻿using System.Linq.Expressions;
-using ViagemImpacta.Models;
+﻿using Microsoft.EntityFrameworkCore.Query;
+using System.Linq.Expressions;
 
-namespace ApiCatalogo.Repositories
+namespace ViagemImpacta.Repositories.Interfaces
 {
     public interface IRepository<T> where T : class
     {
-        Task<IEnumerable<T>> GetAllAsync();
-        Task<T?> GetByIdAsync(int id);
-        Task<T> AddAsync(T entity);
-        Task<T> UpdateAsync(T entity);
-        Task<bool> DeleteAsync(int id);
+        Task<T?> GetAsync(Expression<Func<T, bool>> predicate, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
+        Task<IEnumerable<T>> GetAllAsync(Expression<Func<T, bool>>? predicate = null, Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null);
+        Task AddAsync(T entity);
+        void Update(T entity);
+        void Remove(T entity);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace ViagemImpacta.Repositories.Interfaces
 {
-    public interface IHotelRepository
+    public interface IHotelRepository : IRepository<Hotel>
     {
     }
 }

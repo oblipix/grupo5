@@ -1,25 +1,20 @@
-﻿using ViagemImpacta.Models;
+﻿using ViagemImpacta.DTOs;
+using ViagemImpacta.Models;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace ViagemImpacta.Services.Interfaces
 {
     public interface ITravelPackageService
     {
-        Task<IEnumerable<TravelPackage>> GetAllPackagesAsync();
-        Task<TravelPackage?> GetPackageByIdAsync(int id);
-        Task<IEnumerable<TravelPackage>> GetPackagesWithFiltersAsync(
-            string? destination = null,
-            decimal? minPrice = null,
-            decimal? maxPrice = null,
-            DateTime? startDate = null,
-            DateTime? endDate = null,
-            bool? promotion = null,
-            int skip = 0,
-            int take = 10
-        );
-        Task<IEnumerable<TravelPackage>> SearchPackagesAsync(string searchTerm);
+        Task<IEnumerable<TravelPackageDto>> GetAllPackagesAsync();
+        Task<TravelPackageDto?> GetPackageByIdAsync(int id);
         Task<TravelPackage> CreatePackageAsync(TravelPackage package, List<int> hotelIds);
         Task<bool> UpdatePackageAsync(TravelPackage package, List<int> hotelIds);
         Task<bool> DeletePackageAsync(int id);
         Task<IEnumerable<Hotel>> GetAllHotelsAsync();
+        Task<IEnumerable<TravelPackageDto>> SearchPackagesAsync(string searchTerm);
+        Task<IEnumerable<TravelPackageDto>> GetPackagesWithFiltersAsync(string? destination, decimal? minPrice, decimal? maxPrice, DateTime? startDate, DateTime? endDate, bool? promotion, int skip, int take);
     }
 }

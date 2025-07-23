@@ -1,17 +1,16 @@
-﻿using ViagemImpacta.Models;
+﻿using ViagemImpacta.DTOs;
+using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Services.Interfaces
 {
     public interface IHotelService
     {
-        Task<IEnumerable<Hotel>> GetAllHotelsAsync();
-        Task<Hotel?> GetHotelByIdAsync(int id);
-        Task<IEnumerable<Hotel>> GetHotelsWithFiltersAsync(string? location, int? minStars, bool? hasWifi, bool? hasParking);
+        Task<IEnumerable<HotelDto>> GetAllHotelsAsync();
+        Task<Hotel?> GetHotelWithRoomsAsync(int hotelId);
+        Task<Hotel?> GetHotelByIdAsync(int hotelId);
         Task<Hotel> CreateHotelAsync(Hotel hotel);
         Task UpdateHotelAsync(Hotel hotel);
-        Task<bool> DeleteHotelAsync(int id);
-        Task<Hotel> GetHotelWithRoomsAsync(int hotelId); 
-
-
+        Task DeleteHotelAsync(int hotelId);
+        Task<IEnumerable<HotelDto>> GetHotelsWithFiltersAsync(string? location, int? minStars, int? maxPrice, int? guestCount);
     }
 }

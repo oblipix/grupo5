@@ -1,5 +1,4 @@
-﻿using ApiCatalogo.Repositories;
-using ViagemImpacta.Models;
+﻿using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Repositories.Interfaces
 {

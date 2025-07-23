@@ -1,95 +1,61 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ViagemImpacta.Data;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using ViagemImpacta.DTOs;
 using ViagemImpacta.Models;
-using ViagemImpacta.Services.Interfaces;
+using ViagemImpacta.Repositories.Interfaces;
 
-namespace ViagemImpacta.Services.Implementations
+namespace ViagemImpacta.Services.Interfaces
 {
     public class HotelService : IHotelService
     {
-        private readonly AgenciaDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public HotelService(AgenciaDbContext context)
+        public HotelService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Hotel>> GetAllHotelsAsync()
+        public async Task<IEnumerable<HotelDto>> GetAllHotelsAsync()
         {
-            return await _context.Hotels.Include(h => h.Rooms).ToListAsync();
+            var hotels = await _unitOfWork.Hotels.GetAllAsync(include: q => q.Include(h => h.Rooms));
+            return _mapper.Map<IEnumerable<HotelDto>>(hotels);
         }
 
-        public async Task<Hotel?> GetHotelByIdAsync(int id)
+        public async Task<Hotel?> GetHotelWithRoomsAsync(int hotelId)
         {
-            return await _context.Hotels
-                .Include(h => h.Rooms)
-                .FirstOrDefaultAsync(h => h.HotelId == id);
+            return await _unitOfWork.Hotels.GetAsync(h => h.HotelId == hotelId, include: q => q.Include(h => h.Rooms));
         }
 
-        public async Task<IEnumerable<Hotel>> GetHotelsWithFiltersAsync(string? location, int? minStars, bool? hasWifi, bool? hasParking)
+        public async Task<Hotel?> GetHotelByIdAsync(int hotelId)
         {
-            var query = _context.Hotels.AsQueryable();
-
-            if (!string.IsNullOrEmpty(location))
-            {
-                query = query.Where(h => h.Location.Contains(location));
-            }
-
-            if (minStars.HasValue)
-            {
-                query = query.Where(h => h.Stars >= minStars.Value);
-            }
-
-            if (hasWifi.HasValue)
-            {
-                query = query.Where(h => h.Wifi == hasWifi.Value);
-            }
-
-            if (hasParking.HasValue)
-            {
-                query = query.Where(h => h.Parking == hasParking.Value);
-            }
-
-            return await query.Include(h => h.Rooms).ToListAsync();
+            return await _unitOfWork.Hotels.GetAsync(h => h.HotelId == hotelId);
         }
 
         public async Task<Hotel> CreateHotelAsync(Hotel hotel)
         {
-            _context.Hotels.Add(hotel);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.Hotels.AddAsync(hotel);
+            await _unitOfWork.CommitAsync();
             return hotel;
         }
 
         public async Task UpdateHotelAsync(Hotel hotel)
         {
-            var existingHotel = await _context.Hotels
-                .Include(h => h.Rooms)
-                .FirstOrDefaultAsync(h => h.HotelId == hotel.HotelId);
+            var existingHotel = await _unitOfWork.Hotels.GetAsync(h => h.HotelId == hotel.HotelId, include: h => h.Include(r => r.Rooms));
+            if (existingHotel == null) return;
 
-            if (existingHotel == null)
-            {
-                return;
-            }
+            _mapper.Map(hotel, existingHotel);
 
-            _context.Entry(existingHotel).CurrentValues.SetValues(hotel);
-
-            var formRoomIds = hotel.Rooms.Select(r => r.RoomId).ToHashSet();
-
-            var roomsToRemove = existingHotel.Rooms
-                .Where(dbRoom => !formRoomIds.Contains(dbRoom.RoomId))
-                .ToList();
-
-            _context.Rooms.RemoveRange(roomsToRemove);
+            var roomsToRemove = existingHotel.Rooms.Where(dbRoom => !hotel.Rooms.Any(formRoom => formRoom.RoomId == dbRoom.RoomId)).ToList();
+            foreach (var room in roomsToRemove) existingHotel.Rooms.Remove(room);
 
             foreach (var formRoom in hotel.Rooms)
             {
-                if (formRoom.RoomId > 0)
+                var dbRoom = existingHotel.Rooms.FirstOrDefault(r => r.RoomId == formRoom.RoomId);
+                if (dbRoom != null)
                 {
-                    var dbRoom = existingHotel.Rooms.FirstOrDefault(r => r.RoomId == formRoom.RoomId);
-                    if (dbRoom != null)
-                    {
-                        _context.Entry(dbRoom).CurrentValues.SetValues(formRoom);
-                    }
+                    _mapper.Map(formRoom, dbRoom);
                 }
                 else
                 {
@@ -97,27 +63,28 @@ namespace ViagemImpacta.Services.Implementations
                 }
             }
 
-            await _context.SaveChangesAsync();
+            _unitOfWork.Hotels.Update(existingHotel);
+            await _unitOfWork.CommitAsync();
         }
-        
 
-        public async Task<bool> DeleteHotelAsync(int id)
+        public async Task DeleteHotelAsync(int hotelId)
         {
-            var hotel = await _context.Hotels.FindAsync(id);
-            if (hotel == null)
-            {
-                return false; 
-            }
+            var hotel = await _unitOfWork.Hotels.GetAsync(h => h.HotelId == hotelId);
+            if (hotel == null) return;
 
-            _context.Hotels.Remove(hotel);
-            await _context.SaveChangesAsync();
-            return true;
+            _unitOfWork.Hotels.Remove(hotel);
+            await _unitOfWork.CommitAsync();
         }
-        public async Task<Hotel> GetHotelWithRoomsAsync(int hotelId)
+
+        public async Task<IEnumerable<HotelDto>> GetHotelsWithFiltersAsync(string? location, int? minStars, int? maxPrice, int? guestCount)
         {
-            return await _context.Hotels
-                .Include(h => h.Rooms)
-                .FirstOrDefaultAsync(h => h.HotelId == hotelId);
+            var hotels = await _unitOfWork.Hotels.GetAllAsync(include: q => q.Include(h => h.Rooms));
+            if (!string.IsNullOrEmpty(location))
+                hotels = hotels.Where(h => h.Location != null && h.Location.Contains(location, StringComparison.OrdinalIgnoreCase));
+            if (minStars.HasValue)
+                hotels = hotels.Where(h => h.Stars >= minStars.Value);
+
+            return _mapper.Map<IEnumerable<HotelDto>>(hotels);
         }
     }
 }

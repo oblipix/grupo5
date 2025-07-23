@@ -1,4 +1,4 @@
-﻿@model ViagemImpacta.Models.TravelPackage
+﻿@model ViagemImpacta.DTOs.CreateUpdateTravelPackageDto
 
 @{
     ViewData["Title"] = "Criar Novo Pacote";
@@ -48,8 +48,7 @@
 
             <div class="form-group mb-3">
                 <label class="control-label fw-bold">Hotéis Inclusos</label>
-
-                <select name="SelectedHotelIds" class="form-control" asp-items="ViewBag.Hotels" multiple="multiple" style="height: 150px;"></select>
+                <select asp-for="SelectedHotelIds" class="form-control" asp-items="ViewBag.Hotels" multiple="multiple" style="height: 150px;"></select>
             </div>
 
             <div class="form-group mt-4">
@@ -64,4 +63,4 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
+}}

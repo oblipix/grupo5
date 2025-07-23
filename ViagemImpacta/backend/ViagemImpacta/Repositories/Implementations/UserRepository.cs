@@ -60,4 +60,14 @@ public class UserRepository : Repository<User>, IUserRepository
         }
         return await query.ToListAsync();
     }
+
+    public Task<User?> GetByIdAsync(int id)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task UpdateAsync(User existingUser)
+    {
+        throw new NotImplementedException();
+    }
 }

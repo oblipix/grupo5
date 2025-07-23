@@ -1,11 +1,13 @@
-using ApiCatalogo.Repositories;
+using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
+using NuGet.Protocol.Core.Types;
 using ViagemImpacta.Data;
+using ViagemImpacta.Mappings;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Repositories.Implementations;
+using ViagemImpacta.Repositories.Interfaces;
 using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
 using Settings = ViagemImpacta.Settings;
@@ -44,7 +46,7 @@ builder.Services.AddScoped<ITravelPackageService, TravelPackageService>();
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 builder.Services.AddHttpContextAccessor();
