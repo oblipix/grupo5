@@ -1,25 +1,5 @@
-﻿@model ViagemImpacta.ViewModels.ReadAdminViewModel
-
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
 @{
-    ViewData["Title"] = "Login";
 }
-
-<div class="d-flex justify-content-center align-items-center">
-    <div class="w-100" style="max-width: 400px;">
-        <h2 class="text-center mb-4">Login do Administrador</h2>
-        <form asp-action="Index" method="post">
-            <div class="form-group mb-3">
-                <label asp-for="Email">Email</label>
-                <input type="email" class="form-control" id="Email" name="Email" placeholder="Digite seu email" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>  
-
-            <div class="form-group mb-3">
-                <label asp-for="Password">Senha</label>
-                <input type="password" class="form-control" id="Password" name="Password" placeholder="Digite sua senha"/>
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <button type="submit" class="btn btn-primary w-100">Entrar</button>
-        </form>
-    </div>
-</div>
