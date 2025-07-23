@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Scripting;
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
+using ViagemImpacta.Models.Enums;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Services.Interfaces;
+using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Services.Implementations
 {
@@ -34,24 +36,46 @@ namespace ViagemImpacta.Services.Implementations
             }
 
             var user = _mapper.Map<User>(createUserDTO);
-            Console.WriteLine(user.Password);
             user.Password = BCrypt.Net.BCrypt.HashPassword(createUserDTO.Password);
-            Console.WriteLine(user.Password);
             user.Active = true;
 
             var brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));
             user.CreatedAt = new DateTime(brazilTime.Year, brazilTime.Month, brazilTime.Day, brazilTime.Hour, brazilTime.Minute, brazilTime.Second);
-
-            if (createUserDTO.roles == Models.Enums.Roles.Admin)
-            {
-                user.Role = Models.Enums.Roles.Admin;
-            }
             
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CommitAsync();
             
             return user;
         }
+
+        public async Task<User> CreateManagementAcess(CreateEmployeeViewModel employeeDTO)
+        {            
+            if (await _unitOfWork.Users.AlreadyEmailExist(employeeDTO.Email))
+            {
+                throw new InvalidOperationException("Já existe um usuário com este email.");
+            }
+
+            var user = _mapper.Map<User>(employeeDTO);
+            user.Password = BCrypt.Net.BCrypt.HashPassword(employeeDTO.Password);
+            user.Active = true;
+
+            if (employeeDTO.roles == Roles.Admin)
+            {
+                user.Role = employeeDTO.roles;
+            } else if (employeeDTO.roles == Roles.Attendant)
+                user.Role = employeeDTO.roles;
+
+
+
+            var brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));
+            user.CreatedAt = new DateTime(brazilTime.Year, brazilTime.Month, brazilTime.Day, brazilTime.Hour, brazilTime.Minute, brazilTime.Second);
+
+            await _unitOfWork.Users.AddAsync(user);
+            await _unitOfWork.CommitAsync();
+            
+            return user;
+        }
+
 
         public async Task<User?> GetUserById(int id)
         {

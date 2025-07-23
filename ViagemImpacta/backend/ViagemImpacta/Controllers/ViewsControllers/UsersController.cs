@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using ViagemImpacta.Models;
 using ViagemImpacta.Repositories;
+using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Controllers.ViewsControllers
 {
@@ -71,5 +74,28 @@ namespace ViagemImpacta.Controllers.ViewsControllers
             return RedirectToAction(nameof(Index));
 
         }
+
+        //[HttpPost]
+        //[Authorize(Roles = "Admin")]
+        //[Route("management-access")]
+        //public async Task<ActionResult<User>> CreateManagementAcess([FromBody] CreateEmployeeViewModel employeeDTO)
+        //{
+        //    if (!ModelState.IsValid)
+        //        return BadRequest(ModelState);
+
+        //    if (employeeDTO == null)
+        //        return BadRequest("Usuário não pode ser nulo.");
+
+        //    try
+        //    {
+        //         var user = await _userService.CreateManagementAcess(employeeDTO);
+        //        var userDto = _mapper.Map<CreateEmployeeViewModel>(user);
+        //        return CreatedAtAction("GetUser", "Users", new { id = user.UserId }, userDto);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return BadRequest(ex.Message);
+        ////    }
+        //}
     }
 }
