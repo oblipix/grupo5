@@ -1,6 +1,6 @@
 ﻿namespace ViagemImpacta.Repositories.Interfaces
 {
-    public interface IReviewRepository
+    public class IReviewRepository
     {
     }
 }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ViagemImpacta.Data;
 
@@ -11,9 +12,11 @@ using ViagemImpacta.Data;
 namespace ViagemImpacta.Migrations
 {
     [DbContext(typeof(AgenciaDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250720151126_populateDb")]
+    partial class populateDb
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
