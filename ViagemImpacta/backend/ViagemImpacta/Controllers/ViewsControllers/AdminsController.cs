@@ -2,10 +2,8 @@
 
 namespace ViagemImpacta.Controllers.ViewsControllers
 {
-    public class AdminController : Controller
+    public class AdminsController : Controller
     {
-        
-
         public IActionResult Dashboard()
         {
             return View();

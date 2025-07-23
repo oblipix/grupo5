@@ -4,7 +4,7 @@ namespace ViagemImpacta.Repositories.Interfaces
 {
     public interface IUserRepository : IRepository<User>
     {
-        Task<IEnumerable<User>> GetAllClientUsersWithPagination(int skip, int take);
+        Task<IEnumerable<User>> GetAllClients(int skip, int take);
 
         Task<User?> GetUserById(int id);
 
@@ -15,5 +15,8 @@ namespace ViagemImpacta.Repositories.Interfaces
         Task<User?> GetUserByEmail(string email);
         Task<User?> GetByIdAsync(int id);
         Task UpdateAsync(User existingUser);
+
+        // COPILOT FEZ
+        Task<IEnumerable<User>> SearchClientUsers(string search, int skip, int take);
     }
 }

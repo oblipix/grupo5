@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ViagemImpacta.Data;
 using ViagemImpacta.Models;
+using ViagemImpacta.Models.Enums;
 using ViagemImpacta.Repositories.Implementations;
 using ViagemImpacta.Repositories.Interfaces;
 
@@ -14,9 +15,14 @@ public class UserRepository : Repository<User>, IUserRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<User>> GetAllClientUsersWithPagination(int skip, int take)
+    // IMPLEMENTANDO A VERIFICAÇÃO DE USUÁRIO POR ROLES E SE ESTÁ ATIVO
+    public async Task<IEnumerable<User>> GetAllClients(int skip, int take)
     {
-        return await _context.Users.Skip(skip).Take(take).Where(u => u.Active).ToListAsync();
+        return await _context.Users
+            .Skip(skip)
+            .Take(take)
+            .Where(u => u.Active && u.Role == Roles.User)
+            .ToListAsync();
     }
 
     /*
@@ -45,6 +51,21 @@ public class UserRepository : Repository<User>, IUserRepository
     public async Task<User?> GetUserByEmail(string email)
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Active);
+    }
+
+    // COPILOT FEZ
+    public async Task<IEnumerable<User>> SearchClientUsers(string search, int skip, int take)
+    {
+        // ADICIONAR UM TRIM
+        var query = _context.Users.Where(u => u.Active);
+        if (!string.IsNullOrWhiteSpace(search.Trim()))
+        {
+            query = query.Where(u => u.Cpf.Contains(search) || 
+            u.FirstName.Contains(search) || 
+            u.LastName.Contains(search) || 
+            u.Email.Contains(search));
+        }
+        return await query.Skip(skip).Take(take).ToListAsync();
     }
 
     public Task<User?> GetByIdAsync(int id)
