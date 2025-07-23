@@ -20,7 +20,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<UserDTO>> CreateUser([FromBody] CreateUserDTO dto)
+        public async Task<ActionResult<UserDto>> CreateUser([FromBody] CreateUserDto dto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -31,7 +31,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
             try
             {
                 var user = await _userService.CreateUser(dto);
-                var userDto = _mapper.Map<UserDTO>(user);
+                var userDto = _mapper.Map<UserDto>(user);
                 return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, userDto);
             }
             catch (Exception ex)
@@ -41,7 +41,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> GetUser(int id)
+        public async Task<ActionResult<UserDto>> GetUser(int id)
         {
             try
             {
@@ -49,7 +49,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
                 if (user == null)
                     return NotFound($"Usuário com ID {id} não encontrado.");
 
-                var userDto = _mapper.Map<UserDTO>(user);
+                var userDto = _mapper.Map<UserDto>(user);
                 return Ok(userDto);
             }
             catch (Exception ex)
@@ -59,7 +59,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserDTO>> UpdateUser(long id, [FromBody] UpdateUserDTO dto)
+        public async Task<ActionResult<UserDto>> UpdateUser(long id, [FromBody] UpdateUserDto dto)
         {
             if (dto == null || id != dto.UserId || !ModelState.IsValid)
                 return BadRequest("Requisição inválida.");
@@ -67,7 +67,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
             try
             {
                 var updatedUser = await _userService.UpdateUser(dto);
-                var userDto = _mapper.Map<UserDTO>(updatedUser);
+                var userDto = _mapper.Map<UserDto>(updatedUser);
                 return Ok(userDto);
             }
             catch (Exception ex)
@@ -96,7 +96,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult<dynamic>> LoginAsync ([FromBody]LoginAuthDTO loginAuthDTO)
+        public async Task<ActionResult<dynamic>> LoginAsync ([FromBody]LoginAuthDto loginAuthDTO)
         {
             if(loginAuthDTO == null || string.IsNullOrEmpty(loginAuthDTO.Email) || string.IsNullOrEmpty(loginAuthDTO.Password))
             {
