@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ViagemImpacta.Models.Enums;
 
-namespace ViagemImpacta.DTO.UserDTO
+namespace ViagemImpacta.ViewModels
 {
-    public class CreateUserDto
+    public class CreateEmployeeViewModel
     {
         [Required(ErrorMessage = "Email é obrigatório.")]
         [RegularExpression(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$", ErrorMessage = "Email inválido.")]
@@ -22,7 +22,6 @@ namespace ViagemImpacta.DTO.UserDTO
         [RegularExpression(@"^[A-Za-zÀ-ÿ\s]+$", ErrorMessage = "Não é aceito o uso de caracteres especiais ou números")]
         public string LastName { get; set; }
 
-        public Roles roles { get; set; } = Roles.User;
-
+        public Roles roles { get; set; } 
     }
 }

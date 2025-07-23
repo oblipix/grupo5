@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis.Scripting;
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
+using ViagemImpacta.Models.Enums;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Repositories.Interfaces;
 
 using ViagemImpacta.Services.Interfaces;
+using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Services.Implementations
 {
@@ -36,8 +39,8 @@ namespace ViagemImpacta.Services.Implementations
             var users = await _unitOfWork.Users.GetAllEmployees(skip, take);
             return users;
         }
-
-        public async Task<User> CreateUser(CreateUserDto createUserDTO)
+        
+        public async Task<User> CreateUser(CreateUserDTO createUserDTO)
         {
             if (await _unitOfWork.Users.AlreadyEmailExist(createUserDTO.Email))
             {
@@ -45,24 +48,46 @@ namespace ViagemImpacta.Services.Implementations
             }
 
             var user = _mapper.Map<User>(createUserDTO);
-            Console.WriteLine(user.Password);
             user.Password = BCrypt.Net.BCrypt.HashPassword(createUserDTO.Password);
-            Console.WriteLine(user.Password);
             user.Active = true;
-            user.CreatedAt = DateTime.UtcNow;
 
-            if(createUserDTO.Roles == Models.Enums.Roles.Admin)
+            var brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));
+            user.CreatedAt = new DateTime(brazilTime.Year, brazilTime.Month, brazilTime.Day, brazilTime.Hour, brazilTime.Minute, brazilTime.Second);
+            
+            await _unitOfWork.Users.AddAsync(user);
+            await _unitOfWork.CommitAsync();
+            
+            return user;
+        }
+
+        public async Task<User> CreateManagementAcess(CreateEmployeeViewModel employeeDTO)
+        {            
+            if (await _unitOfWork.Users.AlreadyEmailExist(employeeDTO.Email))
             {
-                user.Role = Models.Enums.Roles.Admin; // Define o papel como Admin se especificado
+                throw new InvalidOperationException("Já existe um usuário com este email.");
             }
-            else{
-                user.Role = Models.Enums.Roles.User;
-            }
+
+            var user = _mapper.Map<User>(employeeDTO);
+            user.Password = BCrypt.Net.BCrypt.HashPassword(employeeDTO.Password);
+            user.Active = true;
+
+            if (employeeDTO.roles == Roles.Admin)
+            {
+                user.Role = employeeDTO.roles;
+            } else if (employeeDTO.roles == Roles.Attendant)
+                user.Role = employeeDTO.roles;
+
+
+
+            var brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));
+            user.CreatedAt = new DateTime(brazilTime.Year, brazilTime.Month, brazilTime.Day, brazilTime.Hour, brazilTime.Minute, brazilTime.Second);
 
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CommitAsync();
+            
             return user;
         }
+
 
         public async Task<User?> GetUserById(int id)
         {
@@ -84,9 +109,10 @@ namespace ViagemImpacta.Services.Implementations
             {
                 throw new ArgumentException("Dados inválidos para atualização do usuário.");
             }
+            
 
-            // Busca o usuário existente
-            var existingUser = await _unitOfWork.Users.GetByIdAsync(updateUserDTO.UserId);
+                // Busca o usuário existente
+                var existingUser = await _unitOfWork.Users.GetByIdAsync(updateUserDTO.UserId);
             if (existingUser == null)
             {
                 throw new ArgumentException("Usuário não encontrado.");
@@ -101,7 +127,8 @@ namespace ViagemImpacta.Services.Implementations
 
             // AutoMapper mapeia apenas propriedades não-nulas do DTO para o usuário existente
             _mapper.Map(updateUserDTO, existingUser);
-            existingUser.UpdatedAt = DateTime.UtcNow;
+            var brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));
+            existingUser.UpdatedAt = new DateTime(brazilTime.Year, brazilTime.Month, brazilTime.Day, brazilTime.Hour, brazilTime.Minute, brazilTime.Second);
 
             // Atualiza no repositório
             await _unitOfWork.Users.UpdateAsync(existingUser);
@@ -136,5 +163,15 @@ namespace ViagemImpacta.Services.Implementations
 
             return await _unitOfWork.Users.GetUserByEmail(email);
         }
+
+        public async Task<User?> ValidateUserAsync(ReadUserLoginDTO dto)
+        {
+            var user = await _unitOfWork.Users.GetUserByEmail(dto.Email.ToLower().Trim());
+            if (user == null || user.Password != dto.Password) return null;
+            return user;
+        }
+
+       
+        
     }
 }

@@ -1,13 +1,19 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 using ViagemImpacta.DTO.UserDTO;
+using ViagemImpacta.Models;
 using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
+using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Controllers.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
+    
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -19,29 +25,9 @@ namespace ViagemImpacta.Controllers.ApiControllers
             _mapper = mapper; 
         }
 
-        [HttpPost]
-        public async Task<ActionResult<UserDto>> CreateUser([FromBody] CreateUserDto dto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            if (dto == null)
-                return BadRequest("Usuário não pode ser nulo.");
-
-            try
-            {
-                var user = await _userService.CreateUser(dto);
-                var userDto = _mapper.Map<UserDto>(user);
-                return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, userDto);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
-
         [HttpGet("{id}")]
-        public async Task<ActionResult<UserDto>> GetUser(int id)
+        [Authorize]
+        public async Task<ActionResult<UserDTO>> GetUser(int id)
         {
             try
             {
@@ -58,8 +44,31 @@ namespace ViagemImpacta.Controllers.ApiControllers
             }
         }
 
+        [HttpPost]
+        [Route("createUser")]
+        public async Task<ActionResult<UserDTO>> CreateUser([FromBody] CreateUserDTO CreateUserDTO)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (CreateUserDTO == null)
+                return BadRequest("Usuário não pode ser nulo.");
+
+            try
+            {
+                var user = await _userService.CreateUser(CreateUserDTO);
+                var userDto = _mapper.Map<UserDTO>(user);
+                return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, userDto);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPut("{id}")]
-        public async Task<ActionResult<UserDto>> UpdateUser(long id, [FromBody] UpdateUserDto dto)
+        [Authorize]
+        public async Task<ActionResult<UserDTO>> UpdateUser(long id, [FromBody] UpdateUserDTO dto)
         {
             if (dto == null || id != dto.UserId || !ModelState.IsValid)
                 return BadRequest("Requisição inválida.");
@@ -78,6 +87,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize]
         public async Task<ActionResult> DeleteUser(int id)
         {
             try
@@ -94,32 +104,24 @@ namespace ViagemImpacta.Controllers.ApiControllers
             }
         }
 
-        [HttpPost]
-        [Route("login")]
-        public async Task<ActionResult<dynamic>> LoginAsync ([FromBody]LoginAuthDto loginAuthDTO)
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers([FromQuery] int skip = 0, [FromQuery] int take = 10)
         {
-            if(loginAuthDTO == null || string.IsNullOrEmpty(loginAuthDTO.Email) || string.IsNullOrEmpty(loginAuthDTO.Password))
+            try
             {
-                return BadRequest("Email e senha são obrigatórios.");
+                var users = await _userService.ListAllClients(skip, take);
+                var userDtos = _mapper.Map<IEnumerable<UserDTO>>(users);
+                return Ok(userDtos);
             }
-
-            var user = await _userService.GetUserByEmail(loginAuthDTO.Email);
-            if(user == null)
+            catch (Exception ex)
             {
-                return NotFound("Usuário não encontrado.");
+                return StatusCode(500, $"Erro interno: {ex.Message}");
             }
-            var token = TokensService.GenerateToken(user);
-            if (string.IsNullOrEmpty(token))
-            {
-                return Unauthorized("Falha ao gerar token.");
-            }
-            loginAuthDTO.Password = string.Empty; // Limpa a senha do DTO para segurança
-            return new
-            {
-                user = user,
-                token = token
-            };
-
         }
-    }
+
+        
+
+        
+        }
 }
