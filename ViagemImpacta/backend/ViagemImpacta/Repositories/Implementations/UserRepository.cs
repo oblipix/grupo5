@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using ViagemImpacta.Data;
 using ViagemImpacta.Models;
 using ViagemImpacta.Models.Enums;
@@ -15,32 +16,26 @@ public class UserRepository : Repository<User>, IUserRepository
         _context = context;
     }
 
-    // IMPLEMENTANDO A VERIFICAÇÃO DE USUÁRIO POR ROLES E SE ESTÁ ATIVO
-    public async Task<IEnumerable<User>> GetAllClients(int skip, int take)
+    public async Task<IEnumerable<User>> GetUserByPredicate(Expression<Func<User, bool>> predicate, int skip, int take)
     {
         return await _context.Users
+            .Where(u => u.Active)
+            .Where(predicate)
             .Skip(skip)
             .Take(take)
-            .Where(u => u.Active && u.Role == Roles.User)
             .ToListAsync();
     }
 
-    /*
-     Marcelo : É necessário fazer a verificação de null
-     */
-    public async Task<User?> GetUserById(int id)
+    public Task<IEnumerable<User>> GetAllClients(int skip, int take)
     {
-        return await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
+        return GetUserByPredicate(u => u.Role == Roles.User, 
+            skip, take);
     }
 
-    public async Task<bool> SetUserDisabled(int id)
+    public Task<IEnumerable<User>> GetAllEmployees(int skip, int take)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == id);
-        if (user == null) return false;
-        user.Active = false;
-        user.DisabledAt = DateTime.UtcNow;
-        await _context.SaveChangesAsync();
-        return true;
+        return GetUserByPredicate(u => u.Role != Roles.User, 
+            skip, take);
     }
 
     public async Task<bool> AlreadyEmailExist(string email)
@@ -53,18 +48,16 @@ public class UserRepository : Repository<User>, IUserRepository
         return await _context.Users.FirstOrDefaultAsync(u => u.Email == email && u.Active);
     }
 
-    // COPILOT FEZ
     public async Task<IEnumerable<User>> SearchClientUsers(string search, int skip, int take)
     {
-        // ADICIONAR UM TRIM
         var query = _context.Users.Where(u => u.Active);
-        if (!string.IsNullOrWhiteSpace(search.Trim()))
+        if (!string.IsNullOrWhiteSpace(search))
         {
             query = query.Where(u => u.Cpf.Contains(search) || 
             u.FirstName.Contains(search) || 
             u.LastName.Contains(search) || 
             u.Email.Contains(search));
         }
-        return await query.Skip(skip).Take(take).ToListAsync();
+        return await query.ToListAsync();
     }
 }
