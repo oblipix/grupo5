@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Scripting;
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Models.Enums;
-using ViagemImpacta.Repositories;
 using ViagemImpacta.Repositories.Interfaces;
-
 using ViagemImpacta.Services.Interfaces;
 using ViagemImpacta.ViewModels;
 
@@ -40,7 +36,7 @@ namespace ViagemImpacta.Services.Implementations
             return users;
         }
         
-        public async Task<User> CreateUser(CreateUserDTO createUserDTO)
+        public async Task<User> CreateUser(CreateUserDto createUserDTO)
         {
             if (await _unitOfWork.Users.AlreadyEmailExist(createUserDTO.Email))
             {
@@ -87,7 +83,6 @@ namespace ViagemImpacta.Services.Implementations
             
             return user;
         }
-
 
         public async Task<User?> GetUserById(int id)
         {
@@ -164,7 +159,7 @@ namespace ViagemImpacta.Services.Implementations
             return await _unitOfWork.Users.GetUserByEmail(email);
         }
 
-        public async Task<User?> ValidateUserAsync(ReadUserLoginDTO dto)
+        public async Task<User?> ValidateUserAsync(ReadUserLoginDto dto)
         {
             var user = await _unitOfWork.Users.GetUserByEmail(dto.Email.ToLower().Trim());
             if (user == null || user.Password != dto.Password) return null;

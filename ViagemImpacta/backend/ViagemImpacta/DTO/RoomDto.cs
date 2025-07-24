@@ -1,4 +1,4 @@
-﻿namespace ViagemImpacta.Mappings
+﻿namespace ViagemImpacta.DTO
 {
     internal class RoomDto
     {

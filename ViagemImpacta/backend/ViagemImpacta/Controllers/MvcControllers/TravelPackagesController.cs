@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using ViagemImpacta.DTO.TravelPackageDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces;
 
@@ -42,13 +43,13 @@ namespace ViagemImpacta.Controllers
         public async Task<IActionResult> Create()
         {
             ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name");
-            return View(new ViagemImpacta.DTOs.CreateUpdateTravelPackageDto());
+            return View(new ViagemImpacta.DTO.TravelPackageDTO.CreateUpdateTravelPackageDto());
         }
 
         // POST: TravelPackages/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(ViagemImpacta.DTOs.CreateUpdateTravelPackageDto dto)
+        public async Task<IActionResult> Create(CreateUpdateTravelPackageDto dto)
         {
             if (dto.SelectedHotelIds == null || !dto.SelectedHotelIds.Any())
             {
@@ -94,7 +95,7 @@ namespace ViagemImpacta.Controllers
             ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name", selectedHotelIds);
 
             // Map TravelPackageDto to CreateUpdateTravelPackageDto
-            var editDto = new ViagemImpacta.DTOs.CreateUpdateTravelPackageDto
+            var editDto = new ViagemImpacta.DTO.TravelPackageDTO.CreateUpdateTravelPackageDto
             {
                 TravelPackageId = travelPackage.TravelPackageId,
                 Title = travelPackage.Title,
@@ -114,7 +115,7 @@ namespace ViagemImpacta.Controllers
         // POST: TravelPackages/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, ViagemImpacta.DTOs.CreateUpdateTravelPackageDto dto)
+        public async Task<IActionResult> Edit(int id, CreateUpdateTravelPackageDto dto)
         {
             if (id != dto.TravelPackageId)
             {

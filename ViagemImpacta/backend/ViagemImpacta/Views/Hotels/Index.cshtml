@@ -1,4 +1,5 @@
-﻿@model IEnumerable<ViagemImpacta.DTOs.HotelDto>
+﻿@using ViagemImpacta.DTO
+@model IEnumerable<HotelDto>
 
 @{
     ViewData["Title"] = "Hotéis";
@@ -30,7 +31,7 @@
                 <td>@item.Name</td>
                 <td>@item.Location</td>
                 <td>@item.Stars ⭐</td>
-                <td>@(item.Rooms?.Count ?? 0)</td>
+                <td>@(item.RoomCount)</td>
                 <td>
                     <a asp-action="Details" asp-route-id="@item.HotelId" class="btn btn-sm btn-info">Detalhar</a>
                     <a asp-action="Edit" asp-route-id="@item.HotelId" class="btn btn-sm btn-warning">Editar</a>

@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
 using ViagemImpacta.DTO.UserDTO;
-using ViagemImpacta.Models;
-using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
-using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Controllers.ApiControllers
 {
@@ -27,7 +23,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
 
         [HttpGet("{id}")]
         [Authorize]
-        public async Task<ActionResult<UserDTO>> GetUser(int id)
+        public async Task<ActionResult<UserDto>> GetUser(int id)
         {
             try
             {
@@ -46,7 +42,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
 
         [HttpPost]
         [Route("createUser")]
-        public async Task<ActionResult<UserDTO>> CreateUser([FromBody] CreateUserDTO CreateUserDTO)
+        public async Task<ActionResult<UserDto>> CreateUser([FromBody] CreateUserDto CreateUserDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -57,7 +53,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
             try
             {
                 var user = await _userService.CreateUser(CreateUserDTO);
-                var userDto = _mapper.Map<UserDTO>(user);
+                var userDto = _mapper.Map<UserDto>(user);
                 return CreatedAtAction(nameof(GetUser), new { id = user.UserId }, userDto);
             }
             catch (Exception ex)
@@ -68,7 +64,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<ActionResult<UserDTO>> UpdateUser(long id, [FromBody] UpdateUserDTO dto)
+        public async Task<ActionResult<UserDto>> UpdateUser(long id, [FromBody] UpdateUserDto dto)
         {
             if (dto == null || id != dto.UserId || !ModelState.IsValid)
                 return BadRequest("Requisição inválida.");
@@ -106,12 +102,12 @@ namespace ViagemImpacta.Controllers.ApiControllers
 
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult<IEnumerable<UserDTO>>> GetAllUsers([FromQuery] int skip = 0, [FromQuery] int take = 10)
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers([FromQuery] int skip = 0, [FromQuery] int take = 10)
         {
             try
             {
                 var users = await _userService.ListAllClients(skip, take);
-                var userDtos = _mapper.Map<IEnumerable<UserDTO>>(users);
+                var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
                 return Ok(userDtos);
             }
             catch (Exception ex)
@@ -119,9 +115,5 @@ namespace ViagemImpacta.Controllers.ApiControllers
                 return StatusCode(500, $"Erro interno: {ex.Message}");
             }
         }
-
-        
-
-        
-        }
+    }   
 }

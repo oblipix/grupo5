@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using ViagemImpacta.Mappings;
 using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Profiles

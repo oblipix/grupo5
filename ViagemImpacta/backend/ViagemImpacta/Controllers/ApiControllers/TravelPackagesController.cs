@@ -1,7 +1,5 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using ViagemImpacta.DTOs;
-using ViagemImpacta.Models;
+using ViagemImpacta.DTO.TravelPackageDTO;
 using ViagemImpacta.Services.Interfaces;
 
 namespace ViagemImpacta.Controllers.ApiControllers

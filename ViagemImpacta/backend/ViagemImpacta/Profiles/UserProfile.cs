@@ -18,21 +18,18 @@ namespace ViagemImpacta.Profiles
 
             CreateMap<ReadUserLoginDto, User>();
             
-            CreateMap<CreateUserDTO, User>();
+            CreateMap<CreateUserDto, User>();
 
-            CreateMap<UpdateUserDTO, User>()
+            CreateMap<UpdateUserDto, User>()
                 .ForMember(dest => dest.UserId, opt => opt.Ignore())
                 .ForMember(dest => dest.Password, opt => opt.Ignore())
                 .ForMember(dest => dest.CreatedAt, opt => opt.Ignore())
                 .ForMember(dest => dest.Active, opt => opt.Ignore())
                 .ForMember(dest => dest.Role, opt => opt.Ignore());
 
-            CreateMap<User, UserDTO>();
-
+            CreateMap<User, UserDto>();
             CreateMap<CreateEmployeeViewModel, User>();
-          
-
-            CreateMap<User, CreateUserDTO>();
+            CreateMap<User, CreateUserDto>();
         }
     }
 }

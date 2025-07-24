@@ -1,12 +1,8 @@
 ﻿using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ViagemImpacta.DTO.UserDTO;
-using ViagemImpacta.Models;
 using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
-using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Controllers.ApiControllers
 {
@@ -26,7 +22,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
 
         [HttpPost]
         [Route("login")]
-        public async Task<ActionResult<dynamic>> LoginAsync([FromBody] LoginAuthDTO loginAuthDTO)
+        public async Task<ActionResult<dynamic>> LoginAsync([FromBody] LoginAuthDto loginAuthDTO)
         {
             if (loginAuthDTO == null || string.IsNullOrEmpty(loginAuthDTO.Email) || string.IsNullOrEmpty(loginAuthDTO.Password))
             {

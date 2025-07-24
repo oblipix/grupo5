@@ -10,5 +10,8 @@ namespace ViagemImpacta.Repositories.Interfaces
         Task AddAsync(T entity);
         void Update(T entity);
         void Remove(T entity);
+        //COMENTAR SOBRE MÉTODOS PARECIDOS DE COM RETORNO DIFERENTE
+        Task<T> UpdateAsync(T entity);
+        Task<T?> GetByIdAsync(int id);
     }
 }

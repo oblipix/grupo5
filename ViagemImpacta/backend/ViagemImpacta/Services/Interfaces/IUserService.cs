@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-using System.Linq.Expressions;
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.ViewModels;
@@ -16,9 +14,6 @@ namespace ViagemImpacta.Services.Interfaces
         Task<User> UpdateUser(UpdateUserDto updateUserDTO);
         Task<bool> DeleteUser(int id);
         Task<User?> GetUserByEmail(string email);
-        Task<User?> ValidateUserAsync(ReadUserLoginDTO dto);
         Task<User> CreateManagementAcess(CreateEmployeeViewModel employeeDTO);
-
-
     }
 }

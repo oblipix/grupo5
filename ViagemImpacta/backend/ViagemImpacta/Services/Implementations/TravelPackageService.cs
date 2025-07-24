@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using ViagemImpacta.DTOs;
+using ViagemImpacta.DTO.TravelPackageDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Repositories.Interfaces;
 using ViagemImpacta.Services.Interfaces;
@@ -20,7 +20,8 @@ namespace ViagemImpacta.Services.Implementations
 
         public async Task<IEnumerable<TravelPackageDto>> GetAllPackagesAsync()
         {
-            var packages = await _unitOfWork.TravelPackages.GetAllAsync(p => p.Active, include: q => q.Include(p => p.Hotels));
+            var packages = await _unitOfWork.TravelPackages.GetAllAsync(p => p.Active, 
+                include: q => q.Include(p => p.Hotels));
             return _mapper.Map<IEnumerable<TravelPackageDto>>(packages);
         }
 

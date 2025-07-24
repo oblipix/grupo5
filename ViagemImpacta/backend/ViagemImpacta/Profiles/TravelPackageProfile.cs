@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ViagemImpacta.DTOs;
+using ViagemImpacta.DTO.TravelPackageDTO;
 using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Profiles
@@ -9,8 +9,10 @@ namespace ViagemImpacta.Profiles
         public TravelPackageProfile() 
         {
             CreateMap<TravelPackage, TravelPackageDto>()
-                .ForMember(dest => dest.HotelNames, opt => opt.MapFrom(src => src.Hotels.Select(h => h.Name)))
-                .ForMember(dest => dest.Hotels, opt => opt.MapFrom(src => src.Hotels));
+                .ForMember(dest => dest.HotelNames, 
+                opt => opt.MapFrom(src => src.Hotels.Select(h => h.Name)))
+                .ForMember(dest => dest.Hotels, 
+                opt => opt.MapFrom(src => src.Hotels));
 
             CreateMap<CreateUpdateTravelPackageDto, TravelPackage>();
         }

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using ViagemImpacta.Data;
 using ViagemImpacta.Models;
@@ -65,7 +64,6 @@ public class UserRepository : Repository<User>, IUserRepository
     {
         throw new NotImplementedException();
     }
-
     public Task UpdateAsync(User existingUser)
     {
         throw new NotImplementedException();

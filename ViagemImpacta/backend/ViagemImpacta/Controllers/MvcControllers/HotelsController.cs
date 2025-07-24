@@ -1,8 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces; // Importa a interface do serviço
-using ViagemImpacta.Models;
 namespace ViagemImpacta.Controllers
 {
     public class HotelsController : Controller
@@ -19,9 +17,6 @@ namespace ViagemImpacta.Controllers
             var hotels = await _hotelService.GetAllHotelsAsync();
             return View(hotels);
         }
-
-
-       
 
         public IActionResult Create()
         {
@@ -57,6 +52,7 @@ namespace ViagemImpacta.Controllers
 
             return View(hotel);
         }
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -73,6 +69,7 @@ namespace ViagemImpacta.Controllers
 
             return View(hotel);
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, Hotel hotel)
@@ -89,7 +86,6 @@ namespace ViagemImpacta.Controllers
             }
             return View(hotel);
         }
-
 
         public async Task<IActionResult> Delete(int? id)
         {

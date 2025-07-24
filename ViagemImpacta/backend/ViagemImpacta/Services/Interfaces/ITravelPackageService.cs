@@ -1,8 +1,5 @@
-﻿using ViagemImpacta.DTOs;
+﻿using ViagemImpacta.DTO.TravelPackageDTO;
 using ViagemImpacta.Models;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace ViagemImpacta.Services.Interfaces
 {

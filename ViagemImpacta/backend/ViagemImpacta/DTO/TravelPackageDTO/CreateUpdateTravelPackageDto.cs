@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace ViagemImpacta.DTOs
+﻿namespace ViagemImpacta.DTO.TravelPackageDTO
 {
     public class CreateUpdateTravelPackageDto
     {
