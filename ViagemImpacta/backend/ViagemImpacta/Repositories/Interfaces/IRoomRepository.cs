@@ -1,6 +1,6 @@
 ﻿namespace ViagemImpacta.Repositories.Interfaces
 {
-    public interface IRoomRepository
+    public class IRoomRepository
     {
     }
 }

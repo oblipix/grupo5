@@ -1,39 +1,52 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ViagemImpacta.Data;
-using ViagemImpacta.Data;
+﻿using AutoMapper;
+using GerenciadorDeProjetos.Repositories.Interfaces;
+using ViagemImpacta.DTO.TravelPackage;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces;
 
-
 namespace ViagemImpacta.Services
 {
+    /// <summary>
+    /// Service responsável pela lógica de negócio de pacotes de viagem
+    /// Retorna DTOs organizados por entidade para proteger as entidades
+    /// </summary>
     public class TravelPackageService : ITravelPackageService
     {
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
 
-        public TravelPackageService(AppDbContext context)
+        public TravelPackageService(IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<TravelPackage>> GetAllPackagesAsync()
+        /// <summary>
+        /// Retorna todos os pacotes ativos como DTOs de listagem
+        /// </summary>
+        public async Task<IEnumerable<TravelPackageListResponse>> GetAllPackagesAsync()
         {
-            return await _context.TravelPackages
-                .Where(p =>p.Active)
-                .Include(p => p.Hotels)
-                .Include(p=>p.Reviews)
-                .ToListAsync();
+            var packages = await _unitOfWork.TravelPackages.GetActivePackagesAsync();
+            return _mapper.Map<IEnumerable<TravelPackageListResponse>>(packages);
         }
-        public async Task<TravelPackage?> GetPackageByIdAsync(int id)
+
+        /// <summary>
+        /// Retorna pacote específico com detalhes completos como DTO
+        /// </summary>
+        public async Task<TravelPackageResponse?> GetPackageByIdAsync(int id)
         {
-            return await _context.TravelPackages
-                .Where(p => p.Active && p.TravelPackageId == id)
-                .Include(p => p.Hotels)
-                .Include(p => p.Reviews)
-                .FirstOrDefaultAsync();
+            var package = await _unitOfWork.TravelPackages.GetPackageWithDetailsAsync(id);
+            
+            if (package == null)
+                return null;
+            
+            return _mapper.Map<TravelPackageResponse>(package);
         }
-        public async Task<IEnumerable<TravelPackage>> GetPackagesWithFiltersAsync(
+
+        /// <summary>
+        /// Busca pacotes com filtros e retorna DTOs de listagem
+        /// </summary>
+        public async Task<IEnumerable<TravelPackageListResponse>> GetPackagesWithFiltersAsync(
             string? destination = null,
             decimal? minPrice = null,
             decimal? maxPrice = null,
@@ -43,59 +56,106 @@ namespace ViagemImpacta.Services
             int skip = 0,
             int take = 10)
         {
-            var query = _context.TravelPackages
-                .Include(p => p.Hotels)
-                .Where(p => p.Active);
-
-            //Filtros
-
-            //por Destinos apenas descrição ou título
+            var packages = await _unitOfWork.TravelPackages.GetActivePackagesAsync();
+            var filtered = packages.AsQueryable();
+            
             if (!string.IsNullOrEmpty(destination))
-                query = query.Where(p => p.Destination.Contains(destination));
-            //por menor preço
+                filtered = filtered.Where(p =>
+                    p.Destination != null && p.Destination.Contains(destination, StringComparison.OrdinalIgnoreCase));
+            
             if (minPrice.HasValue)
-                query = query.Where(p => p.Price >= minPrice.Value);
-            // por maior preço
+                filtered = filtered.Where(p => p.Price >= minPrice.Value);
+            
             if (maxPrice.HasValue)
-                query = query.Where(p => p.Price <= maxPrice.Value);
-
-            //por data de início disponivel
+                filtered = filtered.Where(p => p.Price <= maxPrice.Value);
+            
             if (startDate.HasValue)
-                query = query.Where(p => p.StartDate >= startDate.Value);
-
-            //por data de término
+                filtered = filtered.Where(p => p.StartDate >= startDate.Value);
+            
             if (endDate.HasValue)
-                query = query.Where(p => p.EndDate <= endDate.Value);
-
-            //por promoção
-            if (promotion.HasValue && promotion.Value)
-                query = query.Where(p => p.Promotion);
-
-
-            return await query
-                .Skip(skip)
-                .Take(take)
-                .ToListAsync();
+                filtered = filtered.Where(p => p.EndDate <= endDate.Value);
+            
+            if (promotion.HasValue)
+                filtered = filtered.Where(p => p.Promotion == promotion.Value);
+            
+            var paginatedPackages = filtered.Skip(skip).Take(take).ToList();
+            
+            return _mapper.Map<IEnumerable<TravelPackageListResponse>>(paginatedPackages);
         }
 
-        public async Task<IEnumerable<TravelPackage>> SearchPackagesAsync(string searchTerm)
+        /// <summary>
+        /// Busca pacotes por termo e retorna DTOs de listagem
+        /// </summary>
+        public async Task<IEnumerable<TravelPackageListResponse>> SearchPackagesAsync(string searchTerm)
         {
-            /*
-             *US10 - Busca por termo livre
-             *TODO:
-             *proteger contra SQL Injection
-             *proteger contra multiplas palavras
-             *campo branco tratar como vazio?
-             */
+            if (string.IsNullOrWhiteSpace(searchTerm))
+                return Enumerable.Empty<TravelPackageListResponse>();
 
-            return await _context.TravelPackages
-                .Include(p => p.Hotels)
-                .Where(p => p.Active &&
-                    (p.Title!.Contains(searchTerm) ||
-                     p.Description!.Contains(searchTerm)))
-                .ToListAsync();
+            var packages = await _unitOfWork.TravelPackages.SearchPackagesAsync(searchTerm.Trim());
+            
+            return _mapper.Map<IEnumerable<TravelPackageListResponse>>(packages);
         }
-
-
     }
 }
+
+    /*
+     🎓 GUIA COMPLETO - SERVICE LAYER
+     
+     1. 🏗️ O QUE É UM SERVICE?
+        - Camada intermediária entre Controller e Repository
+        - Contém LÓGICA DE NEGÓCIO da aplicação
+        - Coordena operações complexas
+        - Aplica validações de domínio
+        - Orquestra múltiplos repositories quando necessário
+     
+     2. 🎯 RESPONSABILIDADES DO SERVICE:
+        ✅ Implementar regras de negócio
+        ✅ Validar dados de entrada
+        ✅ Coordenar operações entre repositories
+        ✅ Transformar dados entre camadas
+        ✅ Aplicar cálculos de domínio
+        ❌ NÃO fazer queries diretas ao banco
+        ❌ NÃO retornar dados HTTP específicos
+        ❌ NÃO conter lógica de apresentação
+     
+     3. 🔧 DEPENDENCY INJECTION NO SERVICE:
+        - Service recebe dependências via construtor
+        - UnitOfWork coordena múltiplos repositories
+        - Permite testes unitários (mock das dependências)
+        - Lifecycle: Scoped (uma instância por request)
+     
+     4. 🛡️ VALIDAÇÕES DE NEGÓCIO:
+        - Sempre validar parâmetros de entrada
+        - Retornar valores seguros (lista vazia vs exception)
+        - Aplicar regras de domínio específicas
+        - Exemplo: searchTerm vazio = lista vazia
+     
+     5. ⚡ CONSIDERAÇÕES DE PERFORMANCE:
+        ✅ Delegar queries complexas para Repository
+        ✅ Usar Include apenas quando necessário
+        ✅ Aplicar filtros no banco, não em memória
+        ❌ Não buscar todos os dados e filtrar depois (problema atual)
+        ❌ Não fazer múltiplas queries desnecessárias
+     
+     6. 🎨 PADRÕES APLICADOS:
+        - Service Layer Pattern
+        - Dependency Injection
+        - Repository Pattern (via UnitOfWork)
+        - Domain Validation
+        - Fail-Safe Defaults
+     
+     7. 🧪 COMO TESTAR SERVICES:
+        - Mock do IUnitOfWork
+        - Testar regras de negócio isoladamente
+        - Verificar validações de entrada
+        - Teste de cenários de erro
+        
+        Exemplo:    ```csharp
+    [Test]
+    public async Task SearchPackagesAsync_EmptyTerm_ReturnsEmpty()
+    {
+        var result = await service.SearchPackagesAsync("");
+        Assert.That(result, Is.Empty);
+    }
+}
+*/
