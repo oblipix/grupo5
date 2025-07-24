@@ -1,22 +1,12 @@
-﻿using AutoMapper;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 using ViagemImpacta.Models;
-using ViagemImpacta.Services.Interfaces;
 
+[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
-    private readonly IMapper _mapper;
-    private readonly IUserService _userService;
-
-    public HomeController(ILogger<HomeController> logger, IMapper mapper, IUserService userService)
-    {
-        _logger = logger;
-        _mapper = mapper;
-        _userService = userService;
-    }
-
     public IActionResult Index()
     {
         return View();

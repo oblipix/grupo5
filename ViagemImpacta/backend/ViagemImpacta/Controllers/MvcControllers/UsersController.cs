@@ -1,128 +1,130 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces;
 using ViagemImpacta.ViewModels;
 
-namespace ViagemImpacta.Controllers.ViewsControllers
+namespace ViagemImpacta.Controllers.ViewsControllers;
+
+[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
+public class UsersController : Controller
 {
-    public class UsersController : Controller
+    private readonly IUserService _userService;
+    private readonly IMapper _mapper;
+
+    public UsersController(IUserService userService, IMapper mapper)
     {
-        private readonly IUserService _userService;
-        private readonly IMapper _mapper;
+        _userService = userService;
+        _mapper = mapper;
+    }
 
-        public UsersController(IUserService userService, IMapper mapper)
+    public async Task<IActionResult> Index(
+        [FromQuery] int skip = 0,
+        [FromQuery] int take = 10,
+        [FromQuery] string search = "")
+    {
+        try
         {
-            _userService = userService;
-            _mapper = mapper;
-        }
+            IEnumerable<User> users;
 
-        public async Task<IActionResult> Index(
-            [FromQuery] int skip = 0,
-            [FromQuery] int take = 10,
-            [FromQuery] string search = "")
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                users = await _userService.SearchClientUsers(search, skip, take);
+            }
+            else
+            {
+                users = await _userService.ListAllClients(skip, take);
+            }
+            return View(users);
+        }
+        catch (Exception ex)
         {
-            try
-            {
-                IEnumerable<User> users;
-
-                if (!string.IsNullOrWhiteSpace(search))
-                {
-                    users = await _userService.SearchClientUsers(search, skip, take);
-                }
-                else
-                {
-                    users = await _userService.ListAllClients(skip, take);
-                }
-                return View(users);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, $"Erro ao carregar usuários: {ex.Message}");
-                return View(Enumerable.Empty<User>());
-            }
+            ModelState.AddModelError(string.Empty, $"Erro ao carregar usuários: {ex.Message}");
+            return View(Enumerable.Empty<User>());
         }
+    }
 
-        public async Task<IActionResult> Details(int id)
+    public async Task<IActionResult> Details(int id)
+    {
+        try
         {
-            try
-            {
-                var user = await _userService.GetUserById(id);
-                if (user == null) return NotFound();
-                return View(user);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, $"Erro ao carregar detalhes do usuário: {ex.Message}");
-                return View(null);
-            }
+            var user = await _userService.GetUserById(id);
+            if (user == null) return NotFound();
+            return View(user);
         }
-
-        public async Task<IActionResult> Edit(int id)
+        catch (Exception ex)
         {
-            try
-            {
-                var user = await _userService.GetUserById(id);
-                if (user == null) return NotFound();
-
-                var userViewModel = _mapper.Map<UpdateUserViewModel>(user);
-                return View(userViewModel);
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, $"Erro ao carregar funcionário: {ex.Message}");
-                return View(nameof(Edit)); // Verificar essa lógica
-            }
+            ModelState.AddModelError(string.Empty, $"Erro ao carregar detalhes do usuário: {ex.Message}");
+            return View(null);
         }
+    }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, UpdateUserViewModel user)
-        {
-            if (id != user.UserId) return BadRequest();
-            if (!ModelState.IsValid) return View(user);
-
-            try
-            {
-                var dto = _mapper.Map<UpdateUserDto>(user);
-                await _userService.UpdateUser(dto);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, $"Erro ao atualizar usuário: {ex.Message}");
-                return View(user);
-            }
-        }
-
-        public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Edit(int id)
+    {
+        try
         {
             var user = await _userService.GetUserById(id);
             if (user == null) return NotFound();
 
+            var userViewModel = _mapper.Map<UpdateUserViewModel>(user);
+            return View(userViewModel);
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, $"Erro ao carregar funcionário: {ex.Message}");
+            return View(nameof(Edit)); // Verificar essa lógica
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, UpdateUserViewModel user)
+    {
+        if (id != user.UserId) return BadRequest();
+        if (!ModelState.IsValid) return View(user);
+
+        try
+        {
+            var dto = _mapper.Map<UpdateUserDto>(user);
+            await _userService.UpdateUser(dto);
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, $"Erro ao atualizar usuário: {ex.Message}");
             return View(user);
         }
+    }
 
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> Delete(int id)
+    {
+        var user = await _userService.GetUserById(id);
+        if (user == null) return NotFound();
+
+        return View(user);
+    }
+
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(int id)
+    {
+        try
         {
-            try
-            {
-                var user = await _userService.GetUserById(id);
-                if (user == null) return NotFound();
+            var user = await _userService.GetUserById(id);
+            if (user == null) return NotFound();
 
-                var result = await _userService.DeleteUser(id);
-                if (!result) return BadRequest("Erro ao desativar o usuário.");
+            var result = await _userService.DeleteUser(id);
+            if (!result) return BadRequest("Erro ao desativar o usuário.");
 
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                ModelState.AddModelError(string.Empty, $"Erro ao excluir funcionário: {ex.Message}");
-                return View("Delete");
-            }
+            return RedirectToAction(nameof(Index));
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, $"Erro ao excluir funcionário: {ex.Message}");
+            return View("Delete");
         }
     }
 }
