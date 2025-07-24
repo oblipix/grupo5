@@ -8,8 +8,6 @@ namespace ViagemImpacta.Controllers.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    
-    
     public class UsersController : ControllerBase
     {
         private readonly IUserService _userService;
