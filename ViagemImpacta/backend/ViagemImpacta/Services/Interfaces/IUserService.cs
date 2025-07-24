@@ -14,6 +14,6 @@ namespace ViagemImpacta.Services.Interfaces
         Task<User> UpdateUser(UpdateUserDto updateUserDTO);
         Task<bool> DeleteUser(int id);
         Task<User?> GetUserByEmail(string email);
-        Task<User> CreateManagementAcess(CreateEmployeeViewModel employeeDTO);
+        Task<User> CreateManagementAccess(CreateUserDto dto);
     }
 }

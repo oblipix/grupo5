@@ -77,7 +77,7 @@ public class EmployeesController : Controller
         try
         {
             var dto = _mapper.Map<CreateUserDto>(model);
-            await _userService.CreateManagementAcess(dto);
+            await _userService.CreateManagementAccess(dto);
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
