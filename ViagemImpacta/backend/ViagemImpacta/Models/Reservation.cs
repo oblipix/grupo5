@@ -11,5 +11,6 @@
         public bool IsConfirmed { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        //campo cancelado (data e boolean)
     }
 }

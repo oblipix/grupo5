@@ -1,4 +1,4 @@
-using ViagemImpacta.Models;
+﻿using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Repositories.Interfaces
 {

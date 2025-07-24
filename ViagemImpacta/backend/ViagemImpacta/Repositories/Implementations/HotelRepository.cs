@@ -1,13 +1,17 @@
-﻿using ViagemImpacta.Data;
-using ViagemImpacta.Models;
-using ViagemImpacta.Repositories.Interfaces;
+﻿using ViagemImpacta.Repositories.Interfaces;
 
 namespace ViagemImpacta.Repositories.Implementations
 {
-    public class HotelRepository : Repository<Hotel>, IHotelRepository
+    using ViagemImpacta.Data;
+    using ViagemImpacta.Models;
+
+    public class HotelRepository : Repository<Hotel>
     {
-        public HotelRepository(AgenciaDbContext context) : base(context)
+        private readonly AppDbContext _context;
+
+        public HotelRepository(AppDbContext context) : base(context)
         {
+            _context = context;
         }
     }
 }
