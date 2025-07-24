@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using ViagemImpacta.Models.Enums;
 
 namespace ViagemImpacta.ViewModels
 {
@@ -9,5 +10,7 @@ namespace ViagemImpacta.ViewModels
         [Required(ErrorMessage = "O campo senha é obrigatório.")]
         [DataType(DataType.Password)]
         public string Password { get; set; }
+
+        public Roles Role { get; set; }
     }
 }
