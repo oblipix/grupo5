@@ -4,7 +4,7 @@
 }
 
 <div class="d-flex align-items-center mb-4">
-    @if (!string.IsNullOrWhiteSpace(Model.Photo))
+   @if (!string.IsNullOrWhiteSpace(Model.Photo))
     {
         <img src="@Model.Photo" alt="Foto do usuário" class="rounded-circle me-3" style="width:56px; height:56px; object-fit:cover; border:2px solid #dee2e6;" />
     }
