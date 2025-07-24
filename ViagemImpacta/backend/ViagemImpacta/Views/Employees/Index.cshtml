@@ -1,0 +1,108 @@
+﻿@using ViagemImpacta.Models.Enums
+@model IEnumerable<ViagemImpacta.Models.User>
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    ViewData["Title"] = "Usuários";
+    int pageSize = 10;
+    int skip = 0;
+    string search = "";
+    var request = HttpContextAccessor?.HttpContext?.Request;
+    if (request != null)
+    {
+        if (!string.IsNullOrEmpty(request.Query["take"]))
+            int.TryParse(request.Query["take"], out pageSize);
+        if (!string.IsNullOrEmpty(request.Query["skip"]))
+            int.TryParse(request.Query["skip"], out skip);
+        search = request.Query["search"].ToString() ?? "";
+    }
+    int page = (skip / pageSize) + 1;
+}
+
+<!-- Material Symbols Outlined (inclui assignment_ind e outros ícones) -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Funcionários</h1>
+    <a class="btn btn-secondary" asp-controller="Admins" asp-action="Dashboard">Voltar ao Dashboard</a>
+</div>
+
+<form method="get" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="search" class="form-control" placeholder="Buscar cliente pelo Nome, Email e CPF" value="@search" />
+        <button class="btn btn-primary" type="submit">Buscar</button>
+    </div>
+</form>
+
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-success">Adicionar Novo Funcionário</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>CPF</th>
+            <th>Cargo</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var user in Model)
+            {
+                <tr>
+                    <td>@user.UserId</td>
+                    <td>@user.FirstName @user.LastName</td>
+                    <td>@user.Email</td>
+                    <td>@user.Cpf</td>
+                    <td>
+                        @if (user.Role == Roles.Admin)
+                        {
+                            <span title="Administrador" class="d-flex align-items-md-center gap-1">
+                                <span class="material-symbols-outlined">
+                                    shield_person
+                                </span>
+                                Administrador
+                            </span>
+                        }
+                        else if (user.Role == Roles.Attendant)
+                        {
+                            <span title="Funcionário" class="d-flex align-items-md-center gap-1">
+                                <span class="material-symbols-outlined">
+                                    assignment_ind
+                                </span>
+                                Atendente
+                            </span>
+                        }
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@user.UserId">Detalhar</a>
+                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@user.UserId">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@user.UserId" class="btn btn-sm btn-danger">Deletar</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="4">Nenhum usuário encontrado.</td></tr>
+        }
+    </tbody>
+</table>
+
+<nav>
+    <ul class="pagination">
+        <li class="page-item @(page == 1 ? "disabled" : "")">
+            <a class="page-link" href="?skip=@(skip - pageSize)&take=@pageSize&search=@search">Anterior</a>
+        </li>
+        <li class="page-item">
+            <span class="page-link">Página @(page.ToString())</span>
+        </li>
+        <li class="page-item @(Model == null || Model.Count() < pageSize ? "disabled" : "")">
+            <a class="page-link" href="?skip=@(skip + pageSize)&take=@pageSize&search=@search">Próxima</a>
+        </li>
+    </ul>
+</nav>

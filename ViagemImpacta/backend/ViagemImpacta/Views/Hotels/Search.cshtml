@@ -1,0 +1,62 @@
+﻿@using ViagemImpacta.DTO
+@model IEnumerable<HotelDto>
+
+@{
+    ViewData["Title"] = "Busca de Hotéis";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Search" method="get">
+            <div class="row align-items-end">
+                <div class="col-md-5 form-group">
+                    <label class="control-label">Cidade</label>
+                    <input type="text" name="location" class="form-control" value="@ViewBag.Location" />
+                </div>
+                <div class="col-md-5 form-group">
+                    <label class="control-label">Mínimo de Estrelas</label>
+                    <input type="number" name="minStars" class="form-control" value="@ViewBag.MinStars" />
+                </div>
+                <div class="col-md-2 form-group">
+                    <input type="submit" value="Buscar" class="btn btn-primary" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<hr />
+
+@if (!Model.Any() && ViewBag.Message == null)
+{
+    <p>Nenhum hotel encontrado com os critérios especificados.</p>
+}
+else if (ViewBag.Message != null)
+{
+    <p class="alert alert-info">@ViewBag.Message</p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>@Html.DisplayNameFor(model => model.First().Name)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Location)</th>
+            <th>@Html.DisplayNameFor(model => model.First().Stars)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Location</td>
+                <td>@item.Stars ⭐</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.HotelId" class="btn btn-sm btn-info">Detalhes</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

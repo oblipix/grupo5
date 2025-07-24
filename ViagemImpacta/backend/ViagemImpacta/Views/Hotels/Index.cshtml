@@ -1,0 +1,43 @@
+﻿@using ViagemImpacta.DTO
+@model IEnumerable<HotelDto>
+
+@{
+    ViewData["Title"] = "Hotéis";
+}
+
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Lista de Hotéis</h1>
+    <a class="btn btn-secondary" asp-controller="Admins" asp-action="Dashboard">Voltar ao Dashboard</a>
+</div>
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-success">Cadastrar Novo Hotel</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Localização</th>
+            <th>Estrelas</th>
+            <th>Nº de Quartos</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Name</td>
+                <td>@item.Location</td>
+                <td>@item.Stars ⭐</td>
+                <td>@(item.RoomCount)</td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.HotelId" class="btn btn-sm btn-info">Detalhar</a>
+                    <a asp-action="Edit" asp-route-id="@item.HotelId" class="btn btn-sm btn-warning">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@item.HotelId" class="btn btn-sm btn-danger">Deletar</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,91 @@
+﻿@{
+    var adminName = ViewBag.AdminName ?? User.Identity.Name ?? "Admin";
+    var faturamentoMes = 125000.00;
+}
+
+<!-- Bootstrap CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+<!-- Google Fonts Icons -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="~/css/dashboard.css"/>
+
+<div class="dashboard-container">
+    <div class="dashboard-topbar">
+        <h4 class="mb-0">Olá, @adminName</h4>
+        <div class="faturamento-box">
+            <strong>Faturamento do mês:</strong>
+            <span class="fs-4">R$ @faturamentoMes.ToString("N2")</span>
+        </div>
+    </div>
+    <div class="dashboard-main">
+        <aside class="dashboard-sidebar">
+            <h5 class="mb-3">Gerenciamento</h5>
+            <div class="list-group mb-4">
+                <a href="/users/index" class="list-group-item list-group-item-action"><span class="material-icons">group</span> Usuários</a>
+                <a href="/employees/index" class="list-group-item list-group-item-action"><span class="material-icons">badge</span> Funcionários</a>
+                <a href="/travelpackages/index" class="list-group-item list-group-item-action"><span class="material-icons">card_travel</span> Pacotes</a>
+                <a href="/hotels/index" class="list-group-item list-group-item-action"><span class="material-icons">hotel</span> Hotéis</a>
+                <a href="/reservations/index" class="list-group-item list-group-item-action"><span class="material-icons">event</span> Reservas</a>
+                <a href="/Admin/Comentarios" class="list-group-item list-group-item-action"><span class="material-icons">rate_review</span> Avaliações</a>
+            </div>
+        </aside>
+        <section class="dashboard-content">
+            <div class="row g-4">
+                <div class="col-lg-6 col-md-12">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Faturamento por Pacote</h5>
+                            <canvas id="faturamentoPacoteChart" style="min-height: 260px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 col-md-12">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title mb-4">Faturamento por Hotel</h5>
+                            <canvas id="faturamentoHotelChart" style="min-height: 260px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end mt-4">
+                <a href="/Admin/FaturamentoDetalhado" class="btn btn-outline-primary"><span class="material-icons align-middle">bar_chart</span> Ver detalhes do faturamento</a>
+            </div>
+        </section>
+    </div>
+</div>
+<script>
+    const faturamentoPacoteData = {
+        labels: ["Pacote A", "Pacote B", "Pacote C"],
+        datasets: [{
+            label: "Faturamento (R$)",
+            data: [40000, 50000, 35000],
+            backgroundColor: ["#0d6efd", "#6c757d", "#198754"],
+        }]
+    };
+    const faturamentoHotelData = {
+        labels: ["Hotel X", "Hotel Y", "Hotel Z", "Hotel W", "Hotel V", "Hotel U"],
+        datasets: [{
+            label: "Faturamento (R$)",
+            data: [10000, 60000, 35000, 45000, 25000, 55000],
+            backgroundColor: ["#ffc107", "#dc3545", "#20c997", "#6f42c1", "#fd7e14", "#e83e8c"],
+        }]
+    };
+
+    new Chart(document.getElementById('faturamentoPacoteChart'), {
+        type: 'pie',
+        data: faturamentoPacoteData,
+        options: {
+            responsive: true,
+        }
+    });
+    new Chart(document.getElementById('faturamentoHotelChart'), {
+        type: 'pie',
+        data: faturamentoHotelData,
+        options: {
+            responsive: true,
+        }
+    });
+</script>

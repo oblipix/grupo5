@@ -1,0 +1,135 @@
+﻿@model ViagemImpacta.Models.Hotel
+@using ViagemImpacta.Models.Enums;
+
+@{
+    ViewData["Title"] = "Cadastrar Hotel";
+}
+
+<h1>Cadastrar Novo Hotel</h1>
+<hr />
+<form asp-action="Create">
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Dados do Hotel</h4>
+            <div asp-validation-summary="All" class="text-danger"></div>
+
+            <div class="form-group mb-2">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Location" class="control-label"></label>
+                <input asp-for="Location" class="form-control" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Phone" class="control-label"></label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Stars" class="control-label"></label>
+                <input asp-for="Stars" class="form-control" type="number" min="1" max="5" />
+                <span asp-validation-for="Stars" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Image" class="control-label">URL da Imagem</label>
+                <input asp-for="Image" class="form-control" />
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Wifi" /> @Html.DisplayNameFor(model => model.Wifi)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Parking" /> @Html.DisplayNameFor(model => model.Parking)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Gym" /> @Html.DisplayNameFor(model => model.Gym)
+                </label>
+            </div>
+            <div class="form-group form-check mb-3">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Restaurant" /> @Html.DisplayNameFor(model => model.Restaurant)
+                </label>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h4>Quartos</h4>
+            <div id="roomsContainer"></div>
+
+            <div class="mt-2">
+                <button type="button" id="addRoomBtn" class="btn btn-info btn-sm">Adicionar Quarto</button>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+    <div class="form-group mt-4">
+        <input type="submit" value="Salvar Hotel e Quartos" class="btn btn-success" />
+        <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+    </div>
+</form>
+
+<div id="roomTemplate" style="display: none;">
+    <div class="room-entry border p-3 mb-3">
+        <h5>Novo Quarto <button type="button" class="btn btn-danger btn-sm float-end remove-room-btn">Remover</button></h5>
+        <div class="form-group mb-2">
+            <label>Nome do Quarto</label>
+            <input type="text" name="Rooms[__index__].Name" class="form-control" />
+        </div>
+        <div class="form-group mb-2">
+            <label>Tipo de Quarto</label>
+            <select name="Rooms[__index__].Type" class="form-control" asp-items="Html.GetEnumSelectList<RoomType>()"></select>
+        </div>
+        <div class="form-group mb-2">
+            <label>Preço Médio Diária</label>
+            <input type="number" step="0.01" name="Rooms[__index__].AverageDailyPrice" class="form-control" />
+        </div>
+        <div class="form-group mb-2">
+            <label>Capacidade</label>
+            <input type="number" name="Rooms[__index__].Capacity" class="form-control" />
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // A mágica acontece aqui
+        document.addEventListener("DOMContentLoaded", function () {
+            let roomIndex = 0;
+
+            document.getElementById("addRoomBtn").addEventListener("click", function () {
+                // Pega o conteúdo do template
+                const template = document.getElementById("roomTemplate").innerHTML;
+
+                // Substitui o placeholder de índice pelo índice atual
+                const newRoomHtml = template.replace(/__index__/g, roomIndex);
+
+                // Adiciona o novo formulário de quarto ao container
+                document.getElementById("roomsContainer").insertAdjacentHTML('beforeend', newRoomHtml);
+
+                // Incrementa o índice para o próximo quarto
+                roomIndex++;
+            });
+
+            // Adiciona um listener para os botões de remover
+            document.getElementById("roomsContainer").addEventListener("click", function (e) {
+                if (e.target && e.target.classList.contains("remove-room-btn")) {
+                    // Remove o elemento pai do botão (o div .room-entry)
+                    e.target.closest(".room-entry").remove();
+                }
+            });
+        });
+    </script>
+}

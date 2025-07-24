@@ -1,0 +1,66 @@
+﻿@model ViagemImpacta.DTO.TravelPackageDTO.CreateUpdateTravelPackageDto
+@{
+    ViewData["Title"] = "Editar Pacote";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<h4>@Model.Title</h4>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="control-label"></label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label asp-for="Price" class="control-label"></label>
+                    <input asp-for="Price" class="form-control" />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="StartDate" class="control-label"></label>
+                    <input asp-for="StartDate" class="form-control" type="date" />
+                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label asp-for="EndDate" class="control-label"></label>
+                    <input asp-for="EndDate" class="form-control" type="date" />
+                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="control-label">Hotéis</label>
+                @* O asp-items="ViewBag.Hotels" vai usar a lista pré-selecionada que montamos no controller *@
+                <select name="SelectedHotelIds" class="form-control" asp-items="ViewBag.Hotels" multiple="multiple" style="height: 200px;"></select>
+            </div>
+
+            <div class="mb-3 form-check">
+                <input class="form-check-input" asp-for="Active" />
+                <label class="form-check-label" asp-for="Active">@Html.DisplayNameFor(model => model.Active)</label>
+            </div>
+            <div class="mb-3 form-check">
+                <input class="form-check-input" asp-for="Promotion" />
+                <label class="form-check-label" asp-for="Promotion">@Html.DisplayNameFor(model => model.Promotion)</label>
+            </div>
+
+            <div class="form-group mt-4">
+                <input type="submit" value="Salvar Alterações" class="btn btn-primary" />
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

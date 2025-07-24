@@ -1,0 +1,77 @@
+@model IEnumerable<ViagemImpacta.DTO.TravelPackageDTO.TravelPackageDto>
+
+@{
+    ViewData["Title"] = "Pacotes de Viagem";
+}
+
+
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Pacotes de Viagem</h1>
+    <a class="btn btn-secondary" asp-controller="Admins" asp-action="Dashboard">Voltar ao Dashboard</a>
+</div>
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-success">Adicionar Novo Pacote</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info" role="alert">
+        Ainda não há pacotes cadastrados. <a asp-action="Create" class="alert-link">Clique aqui para criar o primeiro!</a>
+    </div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Destino</th>
+                <th>Preço</th>
+                <th>Hotéis Incluídos</th>
+                <th>Período</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Title</td>
+                    <td>@item.Destination</td>
+                    <td>@item.Price.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
+                    <td>
+                        @if (item.Hotels != null && item.Hotels.Any())
+                        {
+                            @string.Join(", ", item.Hotels.Select(h => h.Name))
+                        }
+                        else
+                        {
+                            <span class="text-muted fst-italic">Nenhum</span>
+                        }
+                    </td>
+                    <td>@item.StartDate.ToString("dd/MM/yy") a @item.EndDate.ToString("dd/MM/yy")</td>
+                    <td>
+                        @if (item.Active)
+                        {
+                            <span class="badge bg-success">Ativo</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Inativo</span>
+                        }
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@item.TravelPackageId">Detalhar</a>
+                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@item.TravelPackageId">Editar</a>
+                        <a class="btn btn-sm btn-danger" asp-action="Delete" asp-route-id="@item.TravelPackageId">Deletar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@* Opcional: Para usar os ícones do Bootstrap, adicione o link do CSS no seu _Layout.cshtml *@
+@* <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"> *@

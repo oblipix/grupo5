@@ -1,0 +1,27 @@
+﻿@model ViagemImpacta.Models.User
+
+@{
+    ViewData["Title"] = "Deletar Funcionário";
+}
+
+<h2>Deletar Usuário</h2>
+
+<h4>Tem certeza que deseja desativar o usuário abaixo?</h4>
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">Nome</dt>
+        <dd class="col-sm-10">@Model.FirstName @Model.LastName</dd>
+        <dt class="col-sm-2">Email</dt>
+        <dd class="col-sm-10">@Model.Email</dd>
+        <dt class="col-sm-2">Telefone</dt>
+        <dd class="col-sm-10">@Model.Phone</dd>
+        <dt class="col-sm-2">CPF</dt>
+        <dd class="col-sm-10">@Model.Cpf</dd>
+    </dl>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="UserId" />
+    <button type="submit" class="btn btn-danger">Desativar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

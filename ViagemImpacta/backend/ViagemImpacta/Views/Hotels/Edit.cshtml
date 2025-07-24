@@ -1,0 +1,167 @@
+﻿@model ViagemImpacta.Models.Hotel
+@using ViagemImpacta.Models.Enums
+
+@{
+    ViewData["Title"] = "Editar Hotel";
+}
+
+<h1>Editar Hotel: @Model.Name</h1>
+<hr />
+<form asp-action="Edit">
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Dados do Hotel</h4>
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input type="hidden" asp-for="HotelId" />
+
+            <div class="form-group mb-2">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Location" class="control-label"></label>
+                <input asp-for="Location" class="form-control" />
+                <span asp-validation-for="Location" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Phone" class="control-label"></label>
+                <input asp-for="Phone" class="form-control" />
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Stars" class="control-label"></label>
+                <input asp-for="Stars" class="form-control" type="number" min="1" max="5" />
+                <span asp-validation-for="Stars" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
+                <label asp-for="Image" class="control-label">URL da Imagem</label>
+                <input asp-for="Image" class="form-control" />
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Wifi" /> @Html.DisplayNameFor(model => model.Wifi)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Parking" /> @Html.DisplayNameFor(model => model.Parking)
+                </label>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Gym" /> @Html.DisplayNameFor(model => model.Gym)
+                </label>
+            </div>
+            <div class="form-group form-check mb-3">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="Restaurant" /> @Html.DisplayNameFor(model => model.Restaurant)
+                </label>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <h4>Quartos</h4>
+            <div id="roomsContainer">
+                @{
+                    int i = 0;
+                }
+                @foreach (var room in Model.Rooms)
+                {
+                    <div class="room-entry border p-3 mb-3">
+                        <h5>Quarto <button type="button" class="btn btn-danger btn-sm float-end remove-room-btn">Remover</button></h5>
+
+                        <input type="hidden" name="Rooms[@i].RoomId" value="@room.RoomId" />
+                        <input type="hidden" name="Rooms[@i].HotelId" value="@room.HotelId" />
+
+                        <div class="form-group mb-2">
+                            <label>Nome do Quarto</label>
+                            <input type="text" name="Rooms[@i].Name" value="@room.Name" class="form-control" />
+                        </div>
+                        <div class="form-group mb-2">
+                            <label>Tipo de Quarto</label>
+                            <select name="Rooms[@i].Type" class="form-control">
+                                @foreach (var type in Html.GetEnumSelectList<ViagemImpacta.Models.Enums.RoomType>())
+                                {
+                                    <option value="@type.Value" selected="@(type.Value == room.Type.ToString())">
+                                        @type.Text
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group mb-2">
+                            <label>Preço Médio Diária</label>
+                            <input type="number" step="0.01" name="Rooms[@i].AverageDailyPrice" value="@room.AverageDailyPrice" class="form-control" />
+                        </div>
+                        <div class="form-group mb-2">
+                            <label>Capacidade</label>
+                            <input type="number" name="Rooms[@i].Capacity" value="@room.Capacity" class="form-control" />
+                        </div>
+                    </div>
+
+                    i++;
+                }
+            </div>
+
+            <div class="mt-2">
+                <button type="button" id="addRoomBtn" class="btn btn-info btn-sm">Adicionar Novo Quarto</button>
+            </div>
+        </div>
+    </div>
+
+    <hr />
+    <div class="form-group mt-4">
+        <input type="submit" value="Salvar Alterações" class="btn btn-success" />
+        <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+    </div>
+</form>
+
+<div id="roomTemplate" style="display: none;">
+    <div class="room-entry border p-3 mb-3">
+        <h5>Novo Quarto <button type="button" class="btn btn-danger btn-sm float-end remove-room-btn">Remover</button></h5>
+        <div class="form-group mb-2">
+            <label>Nome do Quarto</label>
+            <input type="text" name="Rooms[__index__].Name" class="form-control" />
+        </div>
+        <div class="form-group mb-2">
+            <label>Tipo de Quarto</label>
+            <select name="Rooms[__index__].Type" class="form-control" asp-items="Html.GetEnumSelectList<RoomType>()"></select>
+        </div>
+        <div class="form-group mb-2">
+            <label>Preço Médio Diária</label>
+            <input type="number" step="0.01" name="Rooms[__index__].AverageDailyPrice" class="form-control" value="0" />
+        </div>
+        <div class="form-group mb-2">
+            <label>Capacidade</label>
+            <input type="number" name="Rooms[__index__].Capacity" class="form-control" value="1" />
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // O índice para novos quartos deve começar DEPOIS dos quartos existentes.
+            let roomIndex = @Model.Rooms.Count;
+
+            document.getElementById("addRoomBtn").addEventListener("click", function () {
+                const template = document.getElementById("roomTemplate").innerHTML;
+                const newRoomHtml = template.replace(/__index__/g, roomIndex);
+                document.getElementById("roomsContainer").insertAdjacentHTML('beforeend', newRoomHtml);
+                roomIndex++;
+            });
+
+            document.getElementById("roomsContainer").addEventListener("click", function (e) {
+                if (e.target && e.target.classList.contains("remove-room-btn")) {
+                    e.target.closest(".room-entry").remove();
+                }
+            });
+        });
+    </script>
+}
