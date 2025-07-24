@@ -4,7 +4,6 @@ using ViagemImpacta.Models;
 using ViagemImpacta.Models.Enums;
 using ViagemImpacta.Repositories.Interfaces;
 using ViagemImpacta.Services.Interfaces;
-using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Services.Implementations
 {
@@ -12,6 +11,7 @@ namespace ViagemImpacta.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly TimeZoneInfo BrazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
 
         public UserService(IUnitOfWork unitOfWork, IMapper mapper)
         {
@@ -46,37 +46,30 @@ namespace ViagemImpacta.Services.Implementations
             var user = _mapper.Map<User>(createUserDTO);
             user.Password = BCrypt.Net.BCrypt.HashPassword(createUserDTO.Password);
             user.Active = true;
+            user.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, BrazilTimeZone);
 
-            var brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));
-            user.CreatedAt = new DateTime(brazilTime.Year, brazilTime.Month, brazilTime.Day, brazilTime.Hour, brazilTime.Minute, brazilTime.Second);
-            
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CommitAsync();
             
             return user;
         }
 
-        public async Task<User> CreateManagementAcess(CreateEmployeeViewModel employeeDTO)
+        public async Task<User> CreateManagementAccess(CreateUserDto dto)
         {            
-            if (await _unitOfWork.Users.AlreadyEmailExist(employeeDTO.Email))
+            if (await _unitOfWork.Users.AlreadyEmailExist(dto.Email))
             {
+                // VER COMO SERÁ TRATADO NO FRONT
                 throw new InvalidOperationException("Já existe um usuário com este email.");
             }
 
-            var user = _mapper.Map<User>(employeeDTO);
-            user.Password = BCrypt.Net.BCrypt.HashPassword(employeeDTO.Password);
+            var user = _mapper.Map<User>(dto);
+            user.Password = BCrypt.Net.BCrypt.HashPassword(dto.Password);
             user.Active = true;
 
-            if (employeeDTO.roles == Roles.Admin)
-            {
-                user.Role = employeeDTO.roles;
-            } else if (employeeDTO.roles == Roles.Attendant)
-                user.Role = employeeDTO.roles;
+            if (dto.roles == Roles.Admin) user.Role = dto.roles;
+            else if (dto.roles == Roles.Attendant) user.Role = dto.roles;
 
-
-
-            var brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));
-            user.CreatedAt = new DateTime(brazilTime.Year, brazilTime.Month, brazilTime.Day, brazilTime.Hour, brazilTime.Minute, brazilTime.Second);
+            user.CreatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, BrazilTimeZone);
 
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CommitAsync();
@@ -86,15 +79,10 @@ namespace ViagemImpacta.Services.Implementations
 
         public async Task<User?> GetUserById(int id)
         {
-            if (id <= 0)
-                return null;
-
+            if (id <= 0) return null;
             var user = await _unitOfWork.Users.GetByIdAsync(id);
-    
             // CORREÇÃO: Só retorna se o usuário existir E estiver ativo
-            if (user == null || !user.Active)
-                return null;
-        
+            if (user == null || !user.Active) return null;
             return user;
         }
 
@@ -105,9 +93,8 @@ namespace ViagemImpacta.Services.Implementations
                 throw new ArgumentException("Dados inválidos para atualização do usuário.");
             }
             
-
-                // Busca o usuário existente
-                var existingUser = await _unitOfWork.Users.GetByIdAsync(updateUserDTO.UserId);
+            // Busca o usuário existente
+            var existingUser = await _unitOfWork.Users.GetByIdAsync(updateUserDTO.UserId);
             if (existingUser == null)
             {
                 throw new ArgumentException("Usuário não encontrado.");
@@ -122,8 +109,7 @@ namespace ViagemImpacta.Services.Implementations
 
             // AutoMapper mapeia apenas propriedades não-nulas do DTO para o usuário existente
             _mapper.Map(updateUserDTO, existingUser);
-            var brazilTime = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time"));
-            existingUser.UpdatedAt = new DateTime(brazilTime.Year, brazilTime.Month, brazilTime.Day, brazilTime.Hour, brazilTime.Minute, brazilTime.Second);
+            existingUser.UpdatedAt = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, BrazilTimeZone);
 
             // Atualiza no repositório
             await _unitOfWork.Users.UpdateAsync(existingUser);
@@ -157,16 +143,6 @@ namespace ViagemImpacta.Services.Implementations
                 return null;
 
             return await _unitOfWork.Users.GetUserByEmail(email);
-        }
-
-        public async Task<User?> ValidateUserAsync(ReadUserLoginDto dto)
-        {
-            var user = await _unitOfWork.Users.GetUserByEmail(dto.Email.ToLower().Trim());
-            if (user == null || user.Password != dto.Password) return null;
-            return user;
-        }
-
-       
-        
+        }     
     }
 }
