@@ -1,5 +1,4 @@
 ﻿using System.Linq.Expressions;
-using ApiCatalogo.Repositories;
 using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Repositories.Interfaces

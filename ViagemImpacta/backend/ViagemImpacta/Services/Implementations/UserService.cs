@@ -2,7 +2,7 @@
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Models.Enums;
-using ViagemImpacta.Repositories.Interfaces;
+using ViagemImpacta.Repositories;
 using ViagemImpacta.Services.Interfaces;
 
 namespace ViagemImpacta.Services.Implementations

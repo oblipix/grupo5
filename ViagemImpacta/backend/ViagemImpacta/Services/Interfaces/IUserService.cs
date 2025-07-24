@@ -1,6 +1,5 @@
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
-using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Services.Interfaces
 {

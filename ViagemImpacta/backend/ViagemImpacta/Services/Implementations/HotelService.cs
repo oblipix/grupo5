@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using ViagemImpacta.DTO;
 using ViagemImpacta.Models;
-using ViagemImpacta.Repositories.Interfaces;
+using ViagemImpacta.Repositories;
 
 namespace ViagemImpacta.Services.Interfaces
 {

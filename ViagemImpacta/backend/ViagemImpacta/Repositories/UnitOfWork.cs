@@ -1,6 +1,4 @@
-﻿using GerenciadorDeProjetos.Repositories.Interfaces;
-using ViagemImpacta.Data;
-using ViagemImpacta.Repositories;
+﻿using ViagemImpacta.Data;
 using ViagemImpacta.Repositories.Interfaces;
 
 namespace ViagemImpacta.Repositories.Implementations

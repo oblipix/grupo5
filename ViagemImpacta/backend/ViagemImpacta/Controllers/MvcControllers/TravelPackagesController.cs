@@ -11,9 +11,9 @@ namespace ViagemImpacta.Controllers;
 [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
 public class TravelPackagesController : Controller
 {
-    private readonly ITravelPackageService _packageService;
+    private readonly ITravelPackageServiceView _packageService;
 
-    public TravelPackagesController(ITravelPackageService packageService)
+    public TravelPackagesController(ITravelPackageServiceView packageService)
     {
         _packageService = packageService;
     }
@@ -46,7 +46,7 @@ public class TravelPackagesController : Controller
     public async Task<IActionResult> Create()
     {
         ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name");
-        return View(new ViagemImpacta.DTO.TravelPackageDTO.CreateUpdateTravelPackageDto());
+        return View(new CreateUpdateTravelPackageDto());
     }
 
     // POST: TravelPackages/Create
@@ -98,7 +98,7 @@ public class TravelPackagesController : Controller
         ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name", selectedHotelIds);
 
         // Map TravelPackageDto to CreateUpdateTravelPackageDto
-        var editDto = new ViagemImpacta.DTO.TravelPackageDTO.CreateUpdateTravelPackageDto
+        var editDto = new CreateUpdateTravelPackageDto
         {
             TravelPackageId = travelPackage.TravelPackageId,
             Title = travelPackage.Title,

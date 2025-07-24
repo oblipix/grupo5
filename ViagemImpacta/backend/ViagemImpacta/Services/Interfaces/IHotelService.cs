@@ -1,4 +1,5 @@
-﻿using ViagemImpacta.Models;
+﻿using ViagemImpacta.DTO;
+using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Services.Interfaces
 {

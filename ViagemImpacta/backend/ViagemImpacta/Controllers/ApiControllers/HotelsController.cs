@@ -1,6 +1,6 @@
-﻿using GerenciadorDeProjetos.Repositories.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ViagemImpacta.Models;
+using ViagemImpacta.Repositories;
 
 namespace ViagemImpacta.Controllers.ApiControllers
 {

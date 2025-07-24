@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ViagemImpacta.Data;
+using ViagemImpacta.Mappings.Profiles;
+using ViagemImpacta.Repositories;
 using ViagemImpacta.Repositories.Implementations;
 using ViagemImpacta.Repositories.Interfaces;
 using ViagemImpacta.Services.Implementations;
@@ -55,6 +57,7 @@ builder.Services.AddDbContext<AgenciaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ViagemImpactConnection")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ITravelPackageServiceView, TravelPackageServiceView>();
 builder.Services.AddScoped<ITravelPackageService, TravelPackageService>();
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -111,7 +114,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 

@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
-using Microsoft.EntityFrameworkCore;
-using ViagemImpacta.DTO.TravelPackageDTO;
-using ViagemImpacta.Models;
-using ViagemImpacta.Repositories.Interfaces;
+using ViagemImpacta.DTO.TravelPackage;
+using ViagemImpacta.Repositories;
 using ViagemImpacta.Services.Interfaces;
 
 namespace ViagemImpacta.Services.Implementations
 {
+    /// <summary>
+    /// Service responsável pela lógica de negócio de pacotes de viagem
+    /// Retorna DTOs organizados por entidade para proteger as entidades
+    /// </summary>
     public class TravelPackageService : ITravelPackageService
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -18,86 +20,141 @@ namespace ViagemImpacta.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<TravelPackageDto>> GetAllPackagesAsync()
+        /// <summary>
+        /// Retorna todos os pacotes ativos como DTOs de listagem
+        /// </summary>
+        public async Task<IEnumerable<TravelPackageListResponse>> GetAllPackagesAsync()
         {
-            var packages = await _unitOfWork.TravelPackages.GetAllAsync(p => p.Active, 
-                include: q => q.Include(p => p.Hotels));
-            return _mapper.Map<IEnumerable<TravelPackageDto>>(packages);
+            var packages = await _unitOfWork.TravelPackages.GetActivePackagesAsync();
+            return _mapper.Map<IEnumerable<TravelPackageListResponse>>(packages);
         }
 
-        public async Task<TravelPackageDto?> GetPackageByIdAsync(int id)
+        /// <summary>
+        /// Retorna pacote específico com detalhes completos como DTO
+        /// </summary>
+        public async Task<TravelPackageResponse?> GetPackageByIdAsync(int id)
         {
-            var package = await _unitOfWork.TravelPackages.GetAsync(p => p.TravelPackageId == id && p.Active, include: q => q.Include(p => p.Hotels));
-            return package == null ? null : _mapper.Map<TravelPackageDto>(package);
+            var package = await _unitOfWork.TravelPackages.GetPackageWithDetailsAsync(id);
+            
+            if (package == null)
+                return null;
+            
+            return _mapper.Map<TravelPackageResponse>(package);
         }
 
-        public async Task<TravelPackage> CreatePackageAsync(TravelPackage package, List<int> hotelIds)
+        /// <summary>
+        /// Busca pacotes com filtros e retorna DTOs de listagem
+        /// </summary>
+        public async Task<IEnumerable<TravelPackageListResponse>> GetPackagesWithFiltersAsync(
+            string? destination = null,
+            decimal? minPrice = null,
+            decimal? maxPrice = null,
+            DateTime? startDate = null,
+            DateTime? endDate = null,
+            bool? promotion = null,
+            int skip = 0,
+            int take = 10)
         {
-            package.CreatedAt = DateTime.UtcNow;
-            package.UpdatedAt = DateTime.UtcNow;
-
-            var selectedHotels = await _unitOfWork.Hotels.GetAllAsync(h => hotelIds.Contains(h.HotelId));
-            package.Hotels = selectedHotels.ToList();
-
-            await _unitOfWork.TravelPackages.AddAsync(package);
-            await _unitOfWork.CommitAsync();
-
-            return package;
+            var packages = await _unitOfWork.TravelPackages.GetActivePackagesAsync();
+            var filtered = packages.AsQueryable();
+            
+            if (!string.IsNullOrEmpty(destination))
+                filtered = filtered.Where(p =>
+                    p.Destination != null && p.Destination.Contains(destination, StringComparison.OrdinalIgnoreCase));
+            
+            if (minPrice.HasValue)
+                filtered = filtered.Where(p => p.Price >= minPrice.Value);
+            
+            if (maxPrice.HasValue)
+                filtered = filtered.Where(p => p.Price <= maxPrice.Value);
+            
+            if (startDate.HasValue)
+                filtered = filtered.Where(p => p.StartDate >= startDate.Value);
+            
+            if (endDate.HasValue)
+                filtered = filtered.Where(p => p.EndDate <= endDate.Value);
+            
+            if (promotion.HasValue)
+                filtered = filtered.Where(p => p.Promotion == promotion.Value);
+            
+            var paginatedPackages = filtered.Skip(skip).Take(take).ToList();
+            
+            return _mapper.Map<IEnumerable<TravelPackageListResponse>>(paginatedPackages);
         }
 
-        public async Task<bool> UpdatePackageAsync(TravelPackage package, List<int> hotelIds)
+        /// <summary>
+        /// Busca pacotes por termo e retorna DTOs de listagem
+        /// </summary>
+        public async Task<IEnumerable<TravelPackageListResponse>> SearchPackagesAsync(string searchTerm)
         {
-            var existingPackage = await _unitOfWork.TravelPackages.GetAsync(p => p.TravelPackageId == package.TravelPackageId, include: q => q.Include(p => p.Hotels));
-            if (existingPackage == null) return false;
+            if (string.IsNullOrWhiteSpace(searchTerm))
+                return Enumerable.Empty<TravelPackageListResponse>();
 
-            _mapper.Map(package, existingPackage);
-
-            var selectedHotels = await _unitOfWork.Hotels.GetAllAsync(h => hotelIds.Contains(h.HotelId));
-            existingPackage.Hotels = selectedHotels.ToList();
-
-            _unitOfWork.TravelPackages.Update(existingPackage);
-            await _unitOfWork.CommitAsync();
-
-            return true;
-        }
-
-        public async Task<bool> DeletePackageAsync(int id)
-        {
-            var packageToDelete = await _unitOfWork.TravelPackages.GetAsync(p => p.TravelPackageId == id);
-            if (packageToDelete == null) return false;
-
-            packageToDelete.Active = false;
-            _unitOfWork.TravelPackages.Update(packageToDelete);
-            await _unitOfWork.CommitAsync();
-
-            return true;
-        }
-
-        public async Task<IEnumerable<Hotel>> GetAllHotelsAsync()
-        {
-            return await _unitOfWork.Hotels.GetAllAsync();
-        }
-
-        public async Task<IEnumerable<TravelPackageDto>> SearchPackagesAsync(string searchTerm)
-        {
-            var packages = await _unitOfWork.TravelPackages.GetAllAsync(
-                p => p.Active && (p.Title.Contains(searchTerm) || p.Description.Contains(searchTerm)),
-                include: q => q.Include(p => p.Hotels));
-            return _mapper.Map<IEnumerable<TravelPackageDto>>(packages);
-        }
-
-        public async Task<IEnumerable<TravelPackageDto>> GetPackagesWithFiltersAsync(string? destination, decimal? minPrice, decimal? maxPrice, DateTime? startDate, DateTime? endDate, bool? promotion, int skip, int take)
-        {
-            var packages = await _unitOfWork.TravelPackages.GetAllAsync(
-                p => p.Active &&
-                    (string.IsNullOrEmpty(destination) || p.Destination.Contains(destination)) &&
-                    (!minPrice.HasValue || p.Price >= minPrice.Value) &&
-                    (!maxPrice.HasValue || p.Price <= maxPrice.Value) &&
-                    (!startDate.HasValue || p.StartDate >= startDate.Value) &&
-                    (!endDate.HasValue || p.EndDate <= endDate.Value) &&
-                    (!promotion.HasValue || p.Promotion == promotion.Value),
-                include: q => q.Include(p => p.Hotels));
-            return _mapper.Map<IEnumerable<TravelPackageDto>>(packages.Skip(skip).Take(take));
+            var packages = await _unitOfWork.TravelPackages.SearchPackagesAsync(searchTerm.Trim());
+            
+            return _mapper.Map<IEnumerable<TravelPackageListResponse>>(packages);
         }
     }
 }
+
+    /*
+     🎓 GUIA COMPLETO - SERVICE LAYER
+     
+     1. 🏗️ O QUE É UM SERVICE?
+        - Camada intermediária entre Controller e Repository
+        - Contém LÓGICA DE NEGÓCIO da aplicação
+        - Coordena operações complexas
+        - Aplica validações de domínio
+        - Orquestra múltiplos repositories quando necessário
+     
+     2. 🎯 RESPONSABILIDADES DO SERVICE:
+        ✅ Implementar regras de negócio
+        ✅ Validar dados de entrada
+        ✅ Coordenar operações entre repositories
+        ✅ Transformar dados entre camadas
+        ✅ Aplicar cálculos de domínio
+        ❌ NÃO fazer queries diretas ao banco
+        ❌ NÃO retornar dados HTTP específicos
+        ❌ NÃO conter lógica de apresentação
+     
+     3. 🔧 DEPENDENCY INJECTION NO SERVICE:
+        - Service recebe dependências via construtor
+        - UnitOfWork coordena múltiplos repositories
+        - Permite testes unitários (mock das dependências)
+        - Lifecycle: Scoped (uma instância por request)
+     
+     4. 🛡️ VALIDAÇÕES DE NEGÓCIO:
+        - Sempre validar parâmetros de entrada
+        - Retornar valores seguros (lista vazia vs exception)
+        - Aplicar regras de domínio específicas
+        - Exemplo: searchTerm vazio = lista vazia
+     
+     5. ⚡ CONSIDERAÇÕES DE PERFORMANCE:
+        ✅ Delegar queries complexas para Repository
+        ✅ Usar Include apenas quando necessário
+        ✅ Aplicar filtros no banco, não em memória
+        ❌ Não buscar todos os dados e filtrar depois (problema atual)
+        ❌ Não fazer múltiplas queries desnecessárias
+     
+     6. 🎨 PADRÕES APLICADOS:
+        - Service Layer Pattern
+        - Dependency Injection
+        - Repository Pattern (via UnitOfWork)
+        - Domain Validation
+        - Fail-Safe Defaults
+     
+     7. 🧪 COMO TESTAR SERVICES:
+        - Mock do IUnitOfWork
+        - Testar regras de negócio isoladamente
+        - Verificar validações de entrada
+        - Teste de cenários de erro
+        
+        Exemplo:    ```csharp
+    [Test]
+    public async Task SearchPackagesAsync_EmptyTerm_ReturnsEmpty()
+    {
+        var result = await service.SearchPackagesAsync("");
+        Assert.That(result, Is.Empty);
+    }
+}
+*/
