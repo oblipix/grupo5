@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ViagemImpacta.Data;
-using ViagemImpacta.Mappings.Profiles;
+using ViagemImpacta.Profiles;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Repositories.Implementations;
 using ViagemImpacta.Repositories.Interfaces;
