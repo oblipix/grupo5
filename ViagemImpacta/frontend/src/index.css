@@ -1,0 +1,485 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@300;400;500;600;700&display=swap');
+
+
+@import "tailwindcss";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* === SCROLL SUAVE PARA LINKS DE ÂNCORA === */
+html {
+  scroll-behavior: smooth;
+}
+
+
+body {
+  font-family: sans-serif;
+
+}
+
+
+
+/* src/index.css */
+
+/*
+  Base style for all buttons/links EXCLUDING Hotéis,
+  when they are NOT active.
+*/
+.btn-common-style {
+  padding: 8px 16px; /* py-2 px-4 */
+  border-radius: 9999px; /* rounded-full */
+  white-space: nowrap; /* whitespace-nowrap */
+  font-weight: 500; /* font-medium */
+  transition: all 0.2s ease-in-out; /* transition-colors duration-200 */
+  
+  /* Cores padrão para não-selecionado */
+  background-color: #ffffff; /* Fundo branco */
+  color: #4a5568; /* Texto cinza-700 */
+  border: 1px solid transparent; /* Borda transparente */
+  outline: none; /* Remove outline de foco padrão */
+  appearance: none; /* Reset nativo para alguns estilos de UI */
+  -webkit-appearance: none; /* Safari */
+  -moz-appearance: none; /* Firefox */
+}
+
+/* Hover effect for common buttons */
+.btn-common-style:hover {
+  background-color: #e2e8f0; /* Fundo gray-100 no hover */
+  color: #2b6cb0;
+}
+
+/* Style for the ACTIVE state of common buttons */
+.btn-active-style {
+  background-color: #2b6cb0 !important; /* Fundo azul-600 FORÇADO */
+  color: #ffffff !important; /* Texto branco FORÇADO */
+  border-color: #2b6cb0 !important; /* Borda da mesma cor do fundo ativo FORÇADA */
+  outline: none !important; /* Remove outline de foco no estado ativo */
+}
+
+
+/* --- CLASSES ESPECÍFICAS PARA O BOTÃO "HOTÉIS" --- */
+
+.btn-hotels {
+  /* Reset mais agressivo para o elemento <button> */
+  all: unset; /* Zera a maioria dos estilos padrão do navegador */
+  display: inline-block; /* Re-aplica display, importante para layout */
+  cursor: pointer; /* Re-aplica cursor */
+  box-sizing: border-box; /* Re-aplica box-sizing padrão */
+  -webkit-appearance: none; /* Para safari/webkit browsers */
+  -moz-appearance: none; /* For firefox */
+  appearance: none; /* Standard */
+  outline: none !important; /* Remove outline */
+
+  /* Estilos base para o botão de Hotéis (quando NÃO ativo) */
+  padding: 8px 16px; /* py-2 px-4 */
+  border-radius: 9999px; /* rounded-full */
+  white-space: nowrap; /* whitespace-nowrap */
+  font-weight: 500; /* font-medium */
+  transition: all 0.2s ease-in-out; /* transição suave */
+
+  background-color: #ffffff !important; /* Fundo branco FORÇADO */
+  color: #4a5568 !important; /* Texto cinza-700 FORÇADO */
+  border: 1px solid transparent !important; /* Borda transparente FORÇADA */
+}
+
+.btn-hotels:hover {
+  background-color: #e2e8f0 !important; /* Fundo gray-100 no hover FORÇADO */
+}
+
+.btn-hotels.active { /* Classe para o estado ativo do botão Hotéis */
+  background-color: #2b6cb0 !important; /* Fundo azul-600 FORÇADO */
+  color: #ffffff !important; /* Texto branco FORÇADO */
+  border-color: #2b6cb0 !important; /* Borda da mesma cor do fundo ativo FORÇADA */
+}
+
+
+
+
+/* Esta classe deve ser aplicada nos botões no JSX, por exemplo: className="main-action-button" */
+.main-action-button,
+.promotion-data-button,
+.next-purchase,
+.reservation-button,
+.event-submit,
+.search-button
+ {
+  background: linear-gradient(90deg, #111b32 0%, #60A5FA 100%) !important; 
+  color: #FFFFFF !important; 
+  cursor: pointer;
+         
+}
+
+.main-action-button:hover,
+.promotion-data-button:hover,
+.next-purchase:hover,
+.reservation-button:hover,
+.event-submit:hover,
+.search-button:hover {
+  background: linear-gradient(90deg, #60A5FA 0%,  #111b32 100%) !important; 
+}
+
+
+
+
+.searchHotelsBar,
+.HotelsSeachForm,
+.NewsLetterSection {
+  align-items: center;
+  text-align: center;
+  background-image: linear-gradient(to right, #c9f0fdb4, #f9f3f3cf); /* Azul claro para Branco */
+}
+
+
+.HotelsSeachForm input{
+  text-align: center;
+}
+
+.HotelsSeachForm{
+  position: relative;
+  margin-bottom: 65px;
+  top: 55px;
+}
+
+
+.TitleSection{
+  
+ font-family: 'Lexend Deca';
+  font-style: normal;
+  font-weight: 200;
+  color: #1e3a8a;
+  text-align: center;
+  margin-bottom: 80px;
+  background-color: #f2f2f2;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.psearchhotelsbar{
+  position: absolute;
+  color:#686868;
+  font-size: 8px;
+ right: 10px;
+}
+
+
+/* === ESTILOS ROBUSTOS PARA POSICIONAR A PAGINAÇÃO DO SWIPER ABAIXO DOS CARDS === */
+
+/* Garante que o container Swiper tenha altura e espaço para a paginação abaixo */
+/* Adicione padding-bottom no Swiper para empurrar o conteúdo e dar espaço para a paginação */
+.travel-pagination-bottom {
+  padding-bottom: 40px; /* Aumenta o padding interno do Swiper. Ajuste este valor! */
+  /* Aumentei para 40px para ter certeza que há espaço */
+}
+
+/* Posiciona as bolinhas da paginação absolutamente no fundo da área do Swiper */
+/* O bottom negativo as empurra para fora da área dos slides, mas ainda dentro do padding-bottom do Swiper */
+.travel-pagination-bottom .swiper-pagination-bullets {
+  position: relative !important; /* Garante que é absoluto */
+  margin-top: 50px;       /* Fixa no fundo do Swiper (onde está o padding-bottom) */
+  left: 50% !important;         /* Centraliza horizontalmente */
+  transform: translateX(-50%) !important; /* Ajusta o centralização perfeita */
+  top: auto !important;         /* Reseta qualquer 'top' padrão do Swiper */
+  z-index: 10;                  /* Garante que esteja acima de outros elementos se houver sobreposição inesperada */
+}
+
+
+
+.logo {
+font-size: 35px;
+font-weight: bold;
+background-image: linear-gradient(to right, #1e3a8a, #60a5fa); /* Azul escuro (#1e3a8a) para azul claro (#60a5fa) */
+-webkit-background-clip: text;
+color: transparent;
+ font-family: "Pacifico", cursive;
+  font-weight: 400;
+  font-style: normal;
+  z-index: 10001; 
+  height: 70px;
+  
+}
+
+.buttonHeader{
+  background-color: transparent; /* Azul escuro */
+  color: white; /* Texto branco */
+  padding: 10px 20px; /* Espaçamento interno */
+  border-radius: 9999px; /* Borda arredondada completa */
+  text-decoration: none; /* Remove sublinhado */
+  font-weight:normal; /* Texto em negrito */
+  transition: background-color 0.3s ease; /* Transição suave para hover */
+   cursor: pointer;
+}
+
+.buttonHeader:hover {
+  background-color: #1e3a8a; /* Azul escuro no hover */
+  color: white; /* Texto branco no hover */
+}
+
+
+/* Nova classe para o link ATIVO */
+.active-link {
+  color: white !important; /* Força o texto a ficar branco quando ativo */
+}
+
+/* O traço curvado mágico! */
+.active-link::after {
+  content: ''; /* Necessário para o pseudo-elemento aparecer */
+  position: absolute; /* Posição relativa ao botão */
+  bottom: 0; /* Alinha na parte de baixo do botão */
+  left: 0;
+  right: 0;
+  margin: 0 auto; /* Centraliza o traço horizontalmente */
+  
+  width: 90%; /* O traço terá 90% da largura do texto */
+  height: 8px;  /* Altura da "curva" */
+  
+  /* A mágica da curva acontece aqui: */
+  border-bottom: 4px solid #22d3ee; /* Cor (ciano) e espessura do traço */
+  border-radius: 0 0 10px 10px; /* Arredonda as bordas inferiores para criar o arco */
+}
+
+
+
+
+.footer-curve::before {
+  content: '';
+  position: absolute;
+  top: 0; /* Posiciona a curva no topo do footer */
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 15px; /* A "profundidade" da curva */
+
+  /* A mágica da curva invertida: */
+  border-top: 5px solid #22d3ee; /* Cor (ciano) e espessura do traço */
+  border-radius: 15px 15px 0 0; /* Arredonda as bordas superiores para criar o arco */
+}
+
+
+.pHotelDetails{
+color: #1e3a8a;
+}
+
+a{
+  text-decoration: none;
+}
+
+
+.bgHotelDetails1{
+  background-color: #e3f2fb;
+}
+
+.bgHotelDetails2{
+  background-color: #fbf9e3;
+}
+
+
+.explore{
+  font-size: 12px;
+   background-image: linear-gradient(to right, #ADD8E6, #FFFFFF); 
+   padding: 10px;
+   margin-bottom: 50px;
+   align-content: center;
+   align-items: center;
+   text-align: center;
+  color: #48497f;
+  border-color: #1e3a8a;
+  border-radius: 9999px; 
+}
+
+/* preço do hotel em hotels  */
+
+.priceHotelsDetails{
+  width: 250px;
+  background-image: linear-gradient(to right, #ADD8E6, #FFFFFF);
+  color: #145217;  
+  font-size: 15px;
+  border-radius: 20px;
+  padding: 10px;
+}
+
+
+/* Estilos para o react-calendar */
+.react-calendar__tile--booked {
+  background-color: #9cb7e5cd; /* Um tom de vermelho claro */
+  color: #0f1559; /* Texto mais escuro */
+  font-weight: bold;
+}
+
+.react-calendar__tile--available {
+  background-color: #2f47b4; /* Um tom de verde claro */
+  color: #065f46; /* Texto mais escuro */
+  font-weight: bold;
+}
+
+/* Opcional: para tornar os dias clicáveis mais óbvios */
+.react-calendar__tile:enabled:hover {
+    background-color: #e0e0e0;
+}
+.react-calendar__tile--active {
+    background-color: #3b82f6 !important; /* Cor azul para a data selecionada */
+    color: white !important;
+}
+
+
+.react-calendar__month-view__days__day--weekend{
+  color: #bcbcbc !important;
+}
+
+/* Estilo para dias específicos do evento (destaque) */
+.react-calendar__tile--event-highlight {
+  background-color: #bfdbfe; /* Um azul bem clarinho (tailwind blue-200) */
+  font-weight: bold;
+}
+
+/* Garante que o destaque de evento não seja sobrescrito facilmente */
+.react-calendar__tile--event-highlight:hover {
+    background-color: #93c5fd !important; /* Azul um pouco mais escuro no hover */
+}
+
+/* Prioriza as cores de status sobre o destaque do evento */
+.react-calendar__tile--booked {
+  background-color: #f1ff55 !important; /* Um tom de vermelho claro */
+  color: #115e30 !important; /* Texto mais escuro */
+}
+.react-calendar__tile--available {
+  background-color: #a7e1f3 !important; /* Um tom de verde claro */
+  color: #065f46 !important; /* Texto mais escuro */
+}
+
+/* Estilo para dias desabilitados no react-calendar */
+.react-calendar__tile:disabled {
+  background-color: #f0f0f0 !important; /* Um cinza bem claro */
+  color: #a0a0a0 !important; /* Cor do texto cinza */
+  cursor: not-allowed !important; /* Cursor de "proibido" */
+  opacity: 0.8; /* Um pouco de transparência */
+}
+.react-calendar__tile:disabled:hover {
+  background-color: #f0f0f0 !important;
+}
+
+
+
+
+
+.react-datepicker__input-container input {
+    width: 100% !important; /* Força a largura para 100% */
+    display: block !important; /* Garante que se comporte como bloco */
+    box-sizing: border-box !important; /* Inclui padding na largura */
+}
+
+/* Garante que o container do DatePicker também se estenda */
+.react-datepicker-wrapper {
+    width: 100% !important; /* Força a largura total do wrapper */
+}
+
+/* Opcional: Ajustar o cursor e aparência do calendário */
+.react-datepicker__input-container {
+    cursor: pointer;
+}
+
+/* Estilos para a borda vermelha de erro, caso já não esteja funcionando */
+.react-datepicker__input-container input.border-red-500 {
+    border-color: #EF4444 !important; /* Tailwind red-500 */
+}
+.react-datepicker__input-container input.border-green-500 {
+    border-color: #22C55E !important; /* Tailwind green-500 */
+}
+
+/* Estilos gerais para os inputs, se não estiverem em outro lugar */
+.shadow.appearance-none.border.rounded.w-full.py-2.px-3.text-gray-700.leading-tight.focus\:outline-none.focus\:shadow-outline {
+    /* Estas classes já vêm do Tailwind, mas se você precisar garantir a aplicação, pode repetir aqui */
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #E2E8F0; /* gray-300 */
+    border-radius: 0.25rem; /* rounded */
+    width: 100%;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    color: #4A5568; /* gray-700 */
+    line-height: 1.25;
+    outline: none; /* focus:outline-none */
+}
+.shadow.appearance-none.border.rounded.w-full.py-2.px-3.text-gray-700.leading-tight.focus\:outline-none.focus\:shadow-outline:focus {
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* focus:shadow-outline, blue-500 semi-transparent */
+}
+
+
+
+
+
+a {
+  color: #686868;
+  transition: color 0.3s ease, background-color 0.3s ease; 
+}
+
+a:hover {
+  color: #1e3a8a; /* Azul escuro do Tailwind */
+  background-color: #d2e6ff6b; /* Azul claro do Tailwind */
+  text-decoration: none; /* Remove underline no hover */
+}
+
+
+
+
+/* Estilos de cor das bolinhas, para combinar com seu tema */
+.travel-pagination-bottom .swiper-pagination-bullet {
+  background: #60a5fa; /* Cor azul suave do Tailwind para as bolinhas inativas */
+  opacity: 0.6;
+}
+
+.travel-pagination-bottom .swiper-pagination-bullet-active {
+  background: #2563eb; /* Cor azul mais forte do Tailwind para a bolinha ativa */
+  opacity: 1;
+}
+
+
+/*NOVO AJUSTE: SUBIR A PAGINAÇÃO DO HERO SWIPER === */
+/* Aumente o valor do 'bottom' para fazer as bolinhas subirem mais */
+.hero-swiper-pagination .swiper-pagination-bullets {
+  bottom: 90px !important; /* Ajuste este valor! Ex: 20px, 30px, 40px */
+  /* Quanto maior o valor, mais as bolinhas sobem */
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  top: auto !important;
+  z-index: 20; /* Certifique-se de que esteja acima da próxima seção arredondada */
+}
+
+/* Opcional: Estilo para as bolinhas do Hero, se quiserem ser diferentes */
+.hero-swiper-pagination .swiper-pagination-bullet {
+  background: white; /* Bolinhas brancas para contraste no hero */
+  opacity: 0.7;
+}
+
+.hero-swiper-pagination .swiper-pagination-bullet-active {
+  background: white; /* Bolinha ativa branca */
+  opacity: 1;
+}
+
+
+
+
+
+
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}

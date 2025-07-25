@@ -1,0 +1,198 @@
+.labelForms {
+   font-family: "Open Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 400;
+  font-style: normal;
+  font-weight: bold;
+    color: #2c5282; 
+    font-size: 1.0rem; 
+
+   
+}
+
+input[type="checkbox"],
+input[type="rage"], 
+.labelOption {
+    position: relative;
+   top: 20px;
+   color: #2c5282;
+}
+
+.labelForms {
+    font-family: "Open Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    font-weight: bold;
+    color: #2c5282;
+    font-size: 1.0rem;
+    /* Adicionado para espaçamento se houver outros elementos acima */
+    margin-bottom: 0.5rem;
+}
+
+input[type="checkbox"],
+input[type="range"], /* Corrigi "rage" para "range" */
+.labelOption {
+    position: relative;
+    /* top: 20px; Removido ou ajustado. Isso pode causar desalinhamento */
+    color: #2c5282;
+}
+
+/* Estilos gerais para labels e inputs (se você já tiver, pode manter) */
+/* Estilos gerais para labels e inputs */
+.labelForms {
+    font-family: "Open Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 700; /* Bold para as labels */
+    font-style: normal;
+    color: #2c5282;
+    font-size: 1.0rem;
+    margin-bottom: 0.5rem; /* Espaçamento abaixo do título */
+    display: block; /* Garante que a label ocupe sua própria linha */
+}
+
+/* Remove qualquer top: 20px de inputs ou labels que possa estar desalinhando */
+input[type="checkbox"],
+input[type="range"],
+.labelOption {
+    position: initial; /* Remove position: relative; top: 20px; */
+}
+
+
+/* Estilos para o container do dropdown de Comodidades */
+/* .comodidades-wrapper foi removido do JSX para dar lugar a uma estrutura de dropdown */
+/* O container principal agora é a div com `ref={amenitiesDropdownRef}` */
+
+
+/* Estilo para o "botão" que abre o dropdown de comodidades */
+.amenities-dropdown-trigger {
+    /* As classes bg-white rounded-lg px-3 py-2 shadow-sm cursor-pointer já dão a base */
+    border: 1px solid #e2e8f0; /* Borda sutil como os outros inputs */
+    min-height: 40px; /* Altura mínima para ficar parecido com os selects */
+}
+
+/* Estilo para o painel que contém as opções do dropdown */
+.amenities-dropdown-panel {
+    /* As classes absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto já dão a base */
+    top: 100%; /* Posiciona o painel abaixo do trigger */
+    left: 0;
+    /* Adicione padding se necessário */
+}
+
+/* Contêiner das comodidades dentro do painel do dropdown, ainda em GRID */
+.comodidades-grid {
+    display: grid; /* Essencial para o layout em grade */
+    grid-template-columns: 1fr; /* Padrão: 1 coluna em mobile */
+    gap: 0.75rem 1.5rem; /* Espaçamento entre as linhas (0.75rem) e colunas (1.5rem) */
+    padding: 0.5rem; /* Padding interno para as comodidades */
+}
+
+/* Estilos para CADA ITEM de comodidade (a label que contém o checkbox e o texto) */
+.comodidade-item {
+    display: flex;            /* Garante que o checkbox, estrela e texto se comportem como flex items */
+    align-items: center;      /* Centraliza verticalmente */
+    justify-content: flex-start; /* Alinha ao início */
+    color: #2d3748;
+    font-size: 0.875rem;
+    cursor: pointer;
+    white-space: nowrap;      /* Impede que o texto quebre em várias linhas */
+    padding: 0.25rem 0; /* Pequeno padding para cada item selecionável */
+}
+
+/* Estilos para o checkbox dentro do item de comodidade */
+.comodidade-item input[type="checkbox"] {
+    margin-right: 0.5rem; /* Espaçamento entre o checkbox e o texto/estrela */
+    height: 1rem;
+    width: 1rem;
+    accent-color: #2b6cb0; /* Cor de destaque para o checkbox */
+    border-radius: 0.25rem;
+}
+
+/* Estilo para o ícone de estrela quando está junto à comodidade (Wi-Fi Grátis) */
+.star-icon-inline {
+    width: 1rem; /* Tamanho da estrela */
+    height: 1rem; /* Tamanho da estrela */
+    margin-right: 0.25rem; /* Pequeno espaçamento entre a estrela e o texto da comodidade */
+    color: #FFD700; /* Cor dourada para a estrela (Gold) */
+    vertical-align: middle; /* Alinha a estrela verticalmente com o texto */
+    display: inline-block; /* Garante que ela ocupe seu próprio espaço inline */
+}
+
+/* Estilos para a barra de range (mantidos) */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: #e2e8f0;
+  border-radius: 9999px;
+  outline: none;
+  height: 0.5rem;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: #2b6cb0;
+  cursor: pointer;
+  margin-top: -0.25rem;
+  box-shadow: 0 0 0 3px #fff;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  background: #2b6cb0;
+  cursor: pointer;
+  box-shadow: 0 0 0 3px #fff;
+}
+
+input[type="range"].range-blue::-webkit-slider-runnable-track {
+    background: linear-gradient(to right, #2b6cb0 var(--range-progress), #e2e8f0 var(--range-progress));
+    border-radius: 9999px;
+    height: 0.5rem;
+}
+
+input[type="range"].range-blue::-moz-range-track {
+    background: linear-gradient(to right, #2b6cb0 var(--range-progress), #e2e8f0 var(--range-progress));
+    border-radius: 9999px;
+    height: 0.5rem;
+}
+
+
+/* Media queries para responsividade do grid de comodidades DENTRO do dropdown */
+@media (min-width: 640px) { /* sm breakpoint */
+    .comodidades-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 colunas */
+    }
+}
+
+@media (min-width: 768px) { /* md breakpoint */
+    .comodidades-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 colunas */
+    }
+}
+
+@media (min-width: 1024px) { /* lg breakpoint */
+    .comodidades-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr)); /* 4 colunas em telas maiores */
+    }
+}
+
+@media (min-width: 1280px) { /* xl breakpoint - Adicionado para mais colunas em telas muito grandes */
+    .comodidades-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr)); /* 5 colunas */
+    }
+}
+
+/* Media queries para responsividade do grid */
+@media (min-width: 640px) { /* sm breakpoint */
+    .comodidades-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 colunas */
+    }
+}
+
+
+

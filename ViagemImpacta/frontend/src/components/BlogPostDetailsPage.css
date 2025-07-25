@@ -1,0 +1,158 @@
+
+/* Garante que estes estilos não causem conflito se já estiverem em outro lugar */
+.institutional-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 150px; /* Largura base, ajuste conforme necessário */
+    height: 200px; /* Altura base para proporção 3x4 (150 * 4/3 = 200) */
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .institutional-card img {
+    filter: grayscale(100%);
+    transition: filter 0.3s ease-in-out, transform 0.3s ease-in-out;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .institutional-card img:hover {
+    filter: grayscale(0%);
+    transform: scale(1.05);
+  }
+  
+  
+
+
+.TitleSection{
+  font-size: 30px;
+  font-weight: bold;
+  color: #1e3a8a;
+  text-align: center;
+  margin-bottom: 80px;
+  background-color: #f2f2f2;
+  padding: 40px;
+  border-radius: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.TittleDetails{
+     font-family: "Anton", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+   text-transform: uppercase;
+   font-size: 35px;
+   background-color: #f2f2f2;
+   padding: 20px;
+}
+
+
+  /* --- NOVOS ESTILOS PARA O CONTEÚDO DO BLOG (BlogPostDetailsPage) --- */
+  
+  /* Basic styling for the content injected by dangerouslySetInnerHTML */
+  /* Estes estilos se aplicarão a elementos DENTRO da div com a classe 'prose' */
+  .prose p {
+    margin-bottom: 1.25rem; /* Espaço entre parágrafos */
+    line-height: 1.75;    /* Melhora a legibilidade do texto */
+    font-size: 1.125rem;  /* text-lg */
+    color: #4a5568; /* Cor um pouco mais escura para o texto (gray-700 do Tailwind) */
+  }
+  
+  /* Estilos para cabeçalhos (h1, h2, h3, etc.) dentro do conteúdo do blog */
+  .prose h1 {
+    font-size: 2.5rem; /* Equivalente a text-4xl */
+    font-weight: 800; /* Extra bold */
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+    color: #a4c2e5; /* Um azul mais escuro */
+  }
+  
+  .prose h2 {
+    font-size: 2rem; /* Equivalente a text-3xl */
+    font-weight: 700; /* Bold */
+    margin-top: 2rem;
+    margin-bottom: 1.25rem;
+    color: #2c5282;
+  }
+  
+  .prose h3 {
+    font-size: 1.625rem; /* Equivalente a text-2xl */
+    font-weight: 600; /* Semibold */
+    margin-top: 1.75rem;
+    margin-bottom: 1rem;
+    color: #2c5282;
+  }
+  
+  /* Estilos para texto em negrito e itálico */
+  .prose strong {
+    font-weight: bold;
+    color: #2d3748; /* Mais escuro para destacar */
+  }
+  
+  .prose em {
+    font-style: italic;
+    color: #4a5568;
+  }
+  
+  /* Estilos para listas */
+  .prose ul {
+    list-style-type: disc; /* Marcadores de disco (bolinhas) */
+    margin-left: 2rem;     /* Recuo para a lista */
+    margin-bottom: 1.25rem;
+    padding-left: 0;
+  }
+  
+  .prose ol {
+    list-style-type: decimal; /* Marcadores numéricos */
+    margin-left: 2rem;
+    margin-bottom: 1.25rem;
+    padding-left: 0;
+  }
+  
+  .prose li {
+    margin-bottom: 0.75rem; /* Espaço entre itens da lista */
+  }
+  
+  /* Estilos para links */
+  .prose a {
+    color: #3182ce; /* Um azul vibrante */
+    text-decoration: underline;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .prose a:hover {
+    color: #2b6cb0; /* Azul mais escuro no hover */
+  }
+  
+  /* Garante que imagens dentro do conteúdo sejam responsivas e bem espaçadas */
+  .prose img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem; /* Borda arredondada */
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    display: block; /* Garante que as margens funcionem corretamente */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Sutil sombra para destacar */
+  }
+  
+  /* Estilos para blocos de citação (blockquote) */
+  .prose blockquote {
+    border-left: 4px solid #a0aec0; /* Uma linha cinza à esquerda */
+    padding-left: 1rem;
+    margin-left: 0;
+    font-style: italic;
+    color: #718096;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Estilos para linhas horizontais (hr) */
+  .prose hr {
+    border-top: 1px solid #e2e8f0;
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
+  }

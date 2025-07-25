@@ -1,0 +1,49 @@
+/* src/components/InstitutionalPage.css */
+
+.institutional-card {
+  position: relative; /* Já deve ter */
+  overflow: hidden;   /* Já deve ter */
+  border-radius: 0.5rem; /* Já deve ter (rounded-lg) */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Já deve ter (shadow-lg) */
+
+  /* NOVO: Define um tamanho fixo para o card, para controlar a proporção da imagem */
+  width: 150px; /* Largura base, ajuste conforme necessário */
+  height: 200px; /* Altura base para proporção 3x4 (150 * 4/3 = 200) */
+  margin-left: auto; /* Centraliza o card individualmente dentro do grid */
+  margin-right: auto;/* Centraliza o card individualmente dentro do grid */
+}
+
+
+.institutional-card img {
+  filter: grayscale(100%);
+  transition: filter 0.3s ease-in-out, transform 0.3s ease-in-out;
+
+  /* JÁ DEVE TER: Garante que a imagem preencha a div do card */
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* MUITO IMPORTANTE: Corta a imagem para preencher o espaço, sem distorcer */
+}
+
+/* Remove o filtro P&B ao passar o mouse */
+.institutional-card img:hover {
+  filter: grayscale(0%);
+  transform: scale(1.05); /* Pequeno zoom no hover */
+}
+
+b{
+  color: blue;
+}
+
+.member-name{
+  font-size: 10px;
+}
+
+/* Opcional: Ajustar o grid para melhor visualização dos tamanhos fixos */
+/* Se a proporção 3x4 tornar os cards muito grandes para o lg:grid-cols-4,
+   você pode ajustar aqui. Exemplo: */
+
+@media (min-width: 1024px) {
+  .grid-cols-lg-4-adjusted {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  }
+}
