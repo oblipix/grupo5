@@ -1,4 +1,4 @@
-﻿@model ViagemImpacta.DTO.TravelPackageDTO.CreateUpdateTravelPackageDto
+﻿@model ViagemImpacta.DTO.ReservationBookDTO.CreateUpdateReservationBookDto
 @{
     ViewData["Title"] = "Editar Pacote";
 }
@@ -20,19 +20,19 @@
 
             <div class="row">
                 <div class="col-md-4 mb-3">
-                    <label asp-for="Price" class="control-label"></label>
-                    <input asp-for="Price" class="form-control" />
-                    <span asp-validation-for="Price" class="text-danger"></span>
+                    <label asp-for="FinalPrice" class="control-label">Preço Final</label>
+                    <input asp-for="FinalPrice" class="form-control" />
+                    <span asp-validation-for="FinalPrice" class="text-danger"></span>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label asp-for="StartDate" class="control-label"></label>
-                    <input asp-for="StartDate" class="form-control" type="date" />
-                    <span asp-validation-for="StartDate" class="text-danger"></span>
+                    <label asp-for="CheckIn" class="control-label">Check-in</label>
+                    <input asp-for="CheckIn" class="form-control" type="date" />
+                    <span asp-validation-for="CheckIn" class="text-danger"></span>
                 </div>
                 <div class="col-md-4 mb-3">
-                    <label asp-for="EndDate" class="control-label"></label>
-                    <input asp-for="EndDate" class="form-control" type="date" />
-                    <span asp-validation-for="EndDate" class="text-danger"></span>
+                    <label asp-for="CheckOut" class="control-label">Check-out</label>
+                    <input asp-for="CheckOut" class="form-control" type="date" />
+                    <span asp-validation-for="CheckOut" class="text-danger"></span>
                 </div>
             </div>
 
@@ -52,8 +52,8 @@
             </div>
 
             <div class="form-group mt-4">
-                <input type="submit" value="Salvar Alterações" class="btn btn-primary" />
-                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                <input type="submit" value="Salvar Alterações" class="btn btn-success" />
+                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
             </div>
         </form>
     </div>

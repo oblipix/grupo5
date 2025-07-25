@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ViagemImpacta.DTO.TravelPackage;
+using ViagemImpacta.DTO.ReservationBook;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Services.Interfaces;
 
@@ -9,12 +9,12 @@ namespace ViagemImpacta.Services.Implementations
     /// Service responsável pela lógica de negócio de pacotes de viagem
     /// Retorna DTOs organizados por entidade para proteger as entidades
     /// </summary>
-    public class TravelPackageService : ITravelPackageService
+    public class ReservationBookService : IReservationBookService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public TravelPackageService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ReservationBookService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
@@ -23,39 +23,39 @@ namespace ViagemImpacta.Services.Implementations
         /// <summary>
         /// Retorna todos os pacotes ativos como DTOs de listagem
         /// </summary>
-        public async Task<IEnumerable<TravelPackageListResponse>> GetAllPackagesAsync()
+        public async Task<IEnumerable<ReservationBookListResponse>> GetAllPackagesAsync()
         {
-            var packages = await _unitOfWork.TravelPackages.GetActivePackagesAsync();
-            return _mapper.Map<IEnumerable<TravelPackageListResponse>>(packages);
+            var packages = await _unitOfWork.ReservationBooks.GetActivePackagesAsync();
+            return _mapper.Map<IEnumerable<ReservationBookListResponse>>(packages);
         }
 
         /// <summary>
         /// Retorna pacote específico com detalhes completos como DTO
         /// </summary>
-        public async Task<TravelPackageResponse?> GetPackageByIdAsync(int id)
+        public async Task<ReservationBookResponse?> GetPackageByIdAsync(int id)
         {
-            var package = await _unitOfWork.TravelPackages.GetPackageWithDetailsAsync(id);
+            var package = await _unitOfWork.ReservationBooks.GetPackageWithDetailsAsync(id);
             
             if (package == null)
                 return null;
             
-            return _mapper.Map<TravelPackageResponse>(package);
+            return _mapper.Map<ReservationBookResponse>(package);
         }
 
         /// <summary>
         /// Busca pacotes com filtros e retorna DTOs de listagem
         /// </summary>
-        public async Task<IEnumerable<TravelPackageListResponse>> GetPackagesWithFiltersAsync(
+        public async Task<IEnumerable<ReservationBookListResponse>> GetPackagesWithFiltersAsync(
             string? destination = null,
             decimal? minPrice = null,
             decimal? maxPrice = null,
-            DateTime? startDate = null,
-            DateTime? endDate = null,
+            DateTime? checkIn = null,
+            DateTime? checkOut = null,
             bool? promotion = null,
             int skip = 0,
             int take = 10)
         {
-            var packages = await _unitOfWork.TravelPackages.GetActivePackagesAsync();
+            var packages = await _unitOfWork.ReservationBooks.GetActivePackagesAsync();
             var filtered = packages.AsQueryable();
             
             if (!string.IsNullOrEmpty(destination))
@@ -63,36 +63,36 @@ namespace ViagemImpacta.Services.Implementations
                     p.Destination != null && p.Destination.Contains(destination, StringComparison.OrdinalIgnoreCase));
             
             if (minPrice.HasValue)
-                filtered = filtered.Where(p => p.Price >= minPrice.Value);
+                filtered = filtered.Where(p => p.FinalPrice >= minPrice.Value);
             
             if (maxPrice.HasValue)
-                filtered = filtered.Where(p => p.Price <= maxPrice.Value);
+                filtered = filtered.Where(p => p.FinalPrice <= maxPrice.Value);
             
-            if (startDate.HasValue)
-                filtered = filtered.Where(p => p.StartDate >= startDate.Value);
+            if (checkIn.HasValue)
+                filtered = filtered.Where(p => p.CheckIn >= checkIn.Value);
             
-            if (endDate.HasValue)
-                filtered = filtered.Where(p => p.EndDate <= endDate.Value);
+            if (checkOut.HasValue)
+                filtered = filtered.Where(p => p.CheckOut <= checkOut.Value);
             
             if (promotion.HasValue)
                 filtered = filtered.Where(p => p.Promotion == promotion.Value);
             
             var paginatedPackages = filtered.Skip(skip).Take(take).ToList();
             
-            return _mapper.Map<IEnumerable<TravelPackageListResponse>>(paginatedPackages);
+            return _mapper.Map<IEnumerable<ReservationBookListResponse>>(paginatedPackages);
         }
 
         /// <summary>
         /// Busca pacotes por termo e retorna DTOs de listagem
         /// </summary>
-        public async Task<IEnumerable<TravelPackageListResponse>> SearchPackagesAsync(string searchTerm)
+        public async Task<IEnumerable<ReservationBookListResponse>> SearchPackagesAsync(string searchTerm)
         {
             if (string.IsNullOrWhiteSpace(searchTerm))
-                return Enumerable.Empty<TravelPackageListResponse>();
+                return Enumerable.Empty<ReservationBookListResponse>();
 
-            var packages = await _unitOfWork.TravelPackages.SearchPackagesAsync(searchTerm.Trim());
+            var packages = await _unitOfWork.ReservationBooks.SearchPackagesAsync(searchTerm.Trim());
             
-            return _mapper.Map<IEnumerable<TravelPackageListResponse>>(packages);
+            return _mapper.Map<IEnumerable<ReservationBookListResponse>>(packages);
         }
     }
 }

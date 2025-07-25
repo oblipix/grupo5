@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ViagemImpacta.DTO.TravelPackage;
+using ViagemImpacta.DTO.ReservationBook;
 using ViagemImpacta.Services.Interfaces;
 
 namespace ViagemImpacta.Controllers.ApiControllers
@@ -10,13 +10,13 @@ namespace ViagemImpacta.Controllers.ApiControllers
     /// </summary>
     [ApiController]
     [Route("api/[controller]")]
-    public class TravelPackagesController : ControllerBase
+    public class ReservationBooksController : ControllerBase
     {
-        private readonly ITravelPackageService _travelPackageService;
+        private readonly IReservationBookService _reservationBookService;
 
-        public TravelPackagesController(ITravelPackageService travelPackageService)
+        public ReservationBooksController(IReservationBookService reservationBookService)
         {
-            _travelPackageService = travelPackageService;
+            _reservationBookService = reservationBookService;
         }
 
         /// <summary>
@@ -25,12 +25,12 @@ namespace ViagemImpacta.Controllers.ApiControllers
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<TravelPackageListResponse>>> GetPackages(
+        public async Task<ActionResult<IEnumerable<ReservationBookListResponse>>> GetPackages(
             [FromQuery] string? destination = null,
             [FromQuery] decimal? minPrice = null,
             [FromQuery] decimal? maxPrice = null,
-            [FromQuery] DateTime? startDate = null,
-            [FromQuery] DateTime? endDate = null,
+            [FromQuery] DateTime? checkIn = null,
+            [FromQuery] DateTime? checkOut = null,
             [FromQuery] bool? promotion = null,
             [FromQuery] int skip = 0,
             [FromQuery] int take = 10)
@@ -41,11 +41,11 @@ namespace ViagemImpacta.Controllers.ApiControllers
             if (minPrice.HasValue && maxPrice.HasValue && minPrice > maxPrice)
                 return BadRequest("Preço mínimo não pode ser maior que o máximo");
                 
-            if (startDate.HasValue && endDate.HasValue && startDate > endDate)
-                return BadRequest("Data de início não pode ser maior que data final");
+            if (checkIn.HasValue && checkOut.HasValue && checkIn > checkOut)
+                return BadRequest("Data de check-in não pode ser maior que data de check-out");
 
-            var packages = await _travelPackageService.GetPackagesWithFiltersAsync(
-                destination, minPrice, maxPrice, startDate, endDate, promotion, skip, take);
+            var packages = await _reservationBookService.GetPackagesWithFiltersAsync(
+                destination, minPrice, maxPrice, checkIn, checkOut, promotion, skip, take);
 
             return Ok(packages);
         }
@@ -57,12 +57,12 @@ namespace ViagemImpacta.Controllers.ApiControllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        public async Task<ActionResult<TravelPackageResponse>> GetPackage(int id)
+        public async Task<ActionResult<ReservationBookResponse>> GetPackage(int id)
         {
             if (id <= 0) 
                 return BadRequest("ID deve ser um número positivo");
 
-            var package = await _travelPackageService.GetPackageByIdAsync(id);
+            var package = await _reservationBookService.GetPackageByIdAsync(id);
             
             if (package == null) 
                 return NotFound($"Pacote com ID {id} não encontrado");
@@ -76,16 +76,16 @@ namespace ViagemImpacta.Controllers.ApiControllers
         [HttpGet("search")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<ActionResult<IEnumerable<TravelPackageListResponse>>> SearchPackages(
+        public async Task<ActionResult<IEnumerable<ReservationBookListResponse>>> SearchPackages(
             [FromQuery] string searchTerm)
         {
             if (string.IsNullOrWhiteSpace(searchTerm))
                 return BadRequest("Termo de busca é obrigatório");
-                
+
             if (searchTerm.Length < 2)
                 return BadRequest("Termo de busca deve ter pelo menos 2 caracteres");
 
-            var packages = await _travelPackageService.SearchPackagesAsync(searchTerm);
+            var packages = await _reservationBookService.SearchPackagesAsync(searchTerm);
             
             return Ok(packages);
         }

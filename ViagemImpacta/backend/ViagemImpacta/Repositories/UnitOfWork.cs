@@ -7,14 +7,14 @@ namespace ViagemImpacta.Repositories.Implementations
     {
         private readonly AgenciaDbContext _context;
         public IUserRepository Users { get; private set; }
-        public ITravelPackageRepository TravelPackages { get; private set; }
+        public IReservationBookRepository ReservationBooks { get; private set; }
         public IHotelRepository Hotels { get; private set; }
 
         public UnitOfWork(AgenciaDbContext context)
         {
             _context = context;
             Users = new UserRepository(_context);
-            TravelPackages = new TravelPackageRepository(_context);
+            ReservationBooks = new ReservationBookRepository(_context);
             Hotels = new HotelRepository(_context);
         }
 

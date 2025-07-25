@@ -1,20 +1,20 @@
 ﻿using AutoMapper;
-using ViagemImpacta.DTO.TravelPackageDTO;
+using ViagemImpacta.DTO.ReservationBookDTO;
 using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Profiles
 {
-    public class TravelPackageProfile : Profile
+    public class ReservationBookProfile : Profile
     {
-        public TravelPackageProfile() 
+        public ReservationBookProfile() 
         {
-            CreateMap<TravelPackage, TravelPackageDto>()
+            CreateMap<ReservationBook, ReservationBookDto>()
                 .ForMember(dest => dest.HotelNames, 
                 opt => opt.MapFrom(src => src.Hotels.Select(h => h.Name)))
                 .ForMember(dest => dest.Hotels, 
                 opt => opt.MapFrom(src => src.Hotels));
 
-            CreateMap<CreateUpdateTravelPackageDto, TravelPackage>();
+            CreateMap<CreateUpdateReservationBookDto, ReservationBook>();
         }
     }
 }

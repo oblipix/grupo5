@@ -76,11 +76,11 @@ namespace ViagemImpacta.Services.Interfaces
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<IEnumerable<HotelDto>> GetHotelsWithFiltersAsync(string? location, int? minStars, int? maxPrice, int? guestCount)
+        public async Task<IEnumerable<HotelDto>> GetHotelsWithFiltersAsync(string? hotelAddress, int? minStars, int? maxPrice, int? guestCount)
         {
             var hotels = await _unitOfWork.Hotels.GetAllAsync(include: q => q.Include(h => h.Rooms));
-            if (!string.IsNullOrEmpty(location))
-                hotels = hotels.Where(h => h.Location != null && h.Location.Contains(location, StringComparison.OrdinalIgnoreCase));
+            if (!string.IsNullOrEmpty(hotelAddress))
+                hotels = hotels.Where(h => h.HotelAddress != null && h.HotelAddress.Contains(hotelAddress, StringComparison.OrdinalIgnoreCase));
             if (minStars.HasValue)
                 hotels = hotels.Where(h => h.Stars >= minStars.Value);
 

@@ -57,8 +57,8 @@ builder.Services.AddDbContext<AgenciaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ViagemImpactConnection")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<ITravelPackageServiceView, TravelPackageServiceView>();
-builder.Services.AddScoped<ITravelPackageService, TravelPackageService>();
+builder.Services.AddScoped<IReservationBookServiceView, ReservationBookServiceView>();
+builder.Services.AddScoped<IReservationBookService, ReservationBookService>();
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<AuthService>();
@@ -71,30 +71,30 @@ builder.Services.AddHttpContextAccessor();
 #region AutoMapper Configuration Options
 
 // ✅ OPÇÃO 1: EXPLÍCITO (Controle total - sua abordagem atual)
-//builder.Services.AddAutoMapper(typeof(TravelPackageProfile), 
+//builder.Services.AddAutoMapper(typeof(ReservationBookProfile), 
 //                               typeof(HotelProfile), 
 //                               typeof(UserProfile));
 
 // ✅ OPÇÃO 2: ASSEMBLY ESPECÍFICO (RECOMENDADO - automático mas controlado)
-builder.Services.AddAutoMapper(typeof(TravelPackageProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(ReservationBookProfile).Assembly);
 
 // ⚠️ OPÇÃO 3: TODOS OS ASSEMBLIES (CUIDADO - pode incluir profiles externos)
 //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 // ✅ OPÇÃO 4: MÚLTIPLOS ASSEMBLIES ESPECÍFICOS (Para projetos maiores)
 //builder.Services.AddAutoMapper(
-//    typeof(TravelPackageProfile).Assembly,  // Assembly atual
+//    typeof(ReservationBookProfile).Assembly,  // Assembly atual
 //    typeof(SomeExternalProfile).Assembly    // Outro assembly se houver
 //);
 
 // ✅ OPÇÃO 5: COM CONFIGURAÇÃO PERSONALIZADA
 //builder.Services.AddAutoMapper(cfg =>
 //{
-//    cfg.AddProfile<TravelPackageProfile>();
+//    cfg.AddProfile<ReservationBookProfile>();
 //    cfg.AddProfile<HotelProfile>();
 //    cfg.AddProfile<UserProfile>();
 //    // Configurações globais aqui se necessário
-//}, typeof(TravelPackageProfile).Assembly);
+//}, typeof(ReservationBookProfile).Assembly);
 
 #endregion
 

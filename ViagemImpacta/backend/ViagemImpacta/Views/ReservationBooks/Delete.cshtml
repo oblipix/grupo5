@@ -1,5 +1,5 @@
-﻿@using ViagemImpacta.DTO.TravelPackageDTO
-@model TravelPackageDto
+﻿@using ViagemImpacta.DTO.ReservationBookDTO
+@model ReservationBookDto
 
 @{
     ViewData["Title"] = "Excluir Pacote";
@@ -19,12 +19,12 @@
         <dt class="col-sm-2">Destino</dt>
         <dd class="col-sm-10">@Model.Destination</dd>
 
-        <dt class="col-sm-2">Preço</dt>
-        <dd class="col-sm-10">@Model.Price.ToString("C")</dd>
+        <dt class="col-sm-2">Preço Final</dt>
+        <dd class="col-sm-10">@Model.FinalPrice.ToString("C")</dd>
     </dl>
 
     <form asp-action="Delete">
-        <input type="hidden" asp-for="TravelPackageId" />
+        <input type="hidden" asp-for="ReservationBookId" />
         <input type="submit" value="Excluir Definitivamente" class="btn btn-danger" />
         <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
     </form>

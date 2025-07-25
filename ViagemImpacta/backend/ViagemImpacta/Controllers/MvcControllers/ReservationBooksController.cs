@@ -2,30 +2,30 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using ViagemImpacta.DTO.TravelPackageDTO;
+using ViagemImpacta.DTO.ReservationBookDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces;
 
 namespace ViagemImpacta.Controllers;
 
 [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
-public class TravelPackagesController : Controller
+public class ReservationBooksController : Controller
 {
-    private readonly ITravelPackageServiceView _packageService;
+    private readonly IReservationBookServiceView _packageService;
 
-    public TravelPackagesController(ITravelPackageServiceView packageService)
+    public ReservationBooksController(IReservationBookServiceView packageService)
     {
         _packageService = packageService;
     }
 
-    // GET: /TravelPackages
+    // GET: /ReservationBooks
     public async Task<IActionResult> Index()
     {
         var allPackages = await _packageService.GetAllPackagesAsync();
         return View(allPackages);
     }
 
-    // GET: TravelPackages/Details/5
+    // GET: ReservationBooks/Details/5
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -33,26 +33,26 @@ public class TravelPackagesController : Controller
             return NotFound();
         }
 
-        var travelPackage = await _packageService.GetPackageByIdAsync(id.Value);
-        if (travelPackage == null)
+        var reservationBook = await _packageService.GetPackageByIdAsync(id.Value);
+        if (reservationBook == null)
         {
             return NotFound();
         }
 
-        return View(travelPackage);
+        return View(reservationBook);
     }
 
-    // GET: TravelPackages/Create
+    // GET: ReservationBooks/Create
     public async Task<IActionResult> Create()
     {
         ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name");
-        return View(new CreateUpdateTravelPackageDto());
+        return View(new CreateUpdateReservationBookDto());
     }
 
-    // POST: TravelPackages/Create
+    // POST: ReservationBooks/Create
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CreateUpdateTravelPackageDto dto)
+    public async Task<IActionResult> Create(CreateUpdateReservationBookDto dto)
     {
         if (dto.SelectedHotelIds == null || !dto.SelectedHotelIds.Any())
         {
@@ -61,13 +61,13 @@ public class TravelPackagesController : Controller
 
         if (ModelState.IsValid)
         {
-            var package = new TravelPackage
+            var package = new ReservationBook
             {
                 Title = dto.Title,
                 Description = dto.Description,
-                Price = dto.Price,
-                StartDate = dto.StartDate,
-                EndDate = dto.EndDate,
+                FinalPrice = dto.FinalPrice,
+                CheckIn = dto.CheckIn,
+                CheckOut = dto.CheckOut,
                 Destination = dto.Destination,
                 Active = dto.Active,
                 Promotion = dto.Promotion
@@ -80,7 +80,7 @@ public class TravelPackagesController : Controller
         return View(dto);
     }
 
-    // GET: TravelPackages/Edit/5
+    // GET: ReservationBooks/Edit/5
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -88,39 +88,39 @@ public class TravelPackagesController : Controller
             return NotFound();
         }
 
-        var travelPackage = await _packageService.GetPackageByIdAsync(id.Value);
-        if (travelPackage == null)
+        var reservationBook = await _packageService.GetPackageByIdAsync(id.Value);
+        if (reservationBook == null)
         {
             return NotFound();
         }
 
-        var selectedHotelIds = travelPackage.Hotels.Select(h => h.HotelId).ToList();
+        var selectedHotelIds = reservationBook.Hotels.Select(h => h.HotelId).ToList();
         ViewBag.Hotels = new MultiSelectList(await _packageService.GetAllHotelsAsync(), "HotelId", "Name", selectedHotelIds);
 
-        // Map TravelPackageDto to CreateUpdateTravelPackageDto
-        var editDto = new CreateUpdateTravelPackageDto
+        // Map ReservationBookDto to CreateUpdateReservationBookDto
+        var editDto = new CreateUpdateReservationBookDto
         {
-            TravelPackageId = travelPackage.TravelPackageId,
-            Title = travelPackage.Title,
-            Description = travelPackage.Description,
-            Price = travelPackage.Price,
-            StartDate = travelPackage.StartDate,
-            EndDate = travelPackage.EndDate,
-            Destination = travelPackage.Destination,
-            Active = travelPackage.Active,
-            Promotion = travelPackage.Promotion,
+            ReservationBookId = reservationBook.ReservationBookId,
+            Title = reservationBook.Title,
+            Description = reservationBook.Description,
+            FinalPrice = reservationBook.FinalPrice,
+            CheckIn = reservationBook.CheckIn,
+            CheckOut = reservationBook.CheckOut,
+            Destination = reservationBook.Destination,
+            Active = reservationBook.Active,
+            Promotion = reservationBook.Promotion,
             SelectedHotelIds = selectedHotelIds
         };
 
         return View(editDto);
     }
 
-    // POST: TravelPackages/Edit/5
+    // POST: ReservationBooks/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, CreateUpdateTravelPackageDto dto)
+    public async Task<IActionResult> Edit(int id, CreateUpdateReservationBookDto dto)
     {
-        if (id != dto.TravelPackageId)
+        if (id != dto.ReservationBookId)
         {
             return NotFound();
         }
@@ -132,14 +132,14 @@ public class TravelPackagesController : Controller
 
         if (ModelState.IsValid)
         {
-            var package = new TravelPackage
+            var package = new ReservationBook
             {
-                TravelPackageId = dto.TravelPackageId,
+                ReservationBookId = dto.ReservationBookId,
                 Title = dto.Title,
                 Description = dto.Description,
-                Price = dto.Price,
-                StartDate = dto.StartDate,
-                EndDate = dto.EndDate,
+                FinalPrice = dto.FinalPrice,
+                CheckIn = dto.CheckIn,
+                CheckOut = dto.CheckOut,
                 Destination = dto.Destination,
                 Active = dto.Active,
                 Promotion = dto.Promotion
@@ -152,7 +152,7 @@ public class TravelPackagesController : Controller
         return View(dto);
     }
 
-    // GET: TravelPackages/Delete/5
+    // GET: ReservationBooks/Delete/5
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -160,16 +160,16 @@ public class TravelPackagesController : Controller
             return NotFound();
         }
 
-        var travelPackage = await _packageService.GetPackageByIdAsync(id.Value);
-        if (travelPackage == null)
+        var reservationBook = await _packageService.GetPackageByIdAsync(id.Value);
+        if (reservationBook == null)
         {
             return NotFound();
         }
 
-        return View(travelPackage); // travelPackage é TravelPackageDto
+        return View(reservationBook); // reservationBook é ReservationBookDto
     }
 
-    // POST: TravelPackages/Delete/5
+    // POST: ReservationBooks/Delete/5
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteConfirmed(int id)

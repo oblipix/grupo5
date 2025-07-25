@@ -1,5 +1,5 @@
-﻿@using ViagemImpacta.DTO.TravelPackageDTO
-@model TravelPackageDto
+﻿@using ViagemImpacta.DTO.ReservationBookDTO
+@model ReservationBookDto
 
 @{
     ViewData["Title"] = "Detalhes do Pacote";
@@ -12,16 +12,16 @@
     <hr />
     <dl class="row">
         <dt class="col-sm-3">ID</dt>
-        <dd class="col-sm-9">@Model.TravelPackageId</dd>
+        <dd class="col-sm-9">@Model.ReservationBookId</dd>
 
         <dt class="col-sm-3">Destino</dt>
         <dd class="col-sm-9">@Model.Destination</dd>
 
-        <dt class="col-sm-3">Preço</dt>
-        <dd class="col-sm-9">@Model.Price.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</dd>
+        <dt class="col-sm-3">Preço Final</dt>
+        <dd class="col-sm-9">@Model.FinalPrice.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</dd>
 
         <dt class="col-sm-3">Período</dt>
-        <dd class="col-sm-9">@Model.StartDate.ToShortDateString() a @Model.EndDate.ToShortDateString()</dd>
+        <dd class="col-sm-9">@Model.CheckIn.ToShortDateString() a @Model.CheckOut.ToShortDateString()</dd>
 
         <dt class="col-sm-3">Hotéis Incluídos</dt>
         <dd class="col-sm-9">
@@ -42,6 +42,6 @@
     </dl>
 </div>
 <div class="mt-4">
-    <a asp-action="Edit" asp-route-id="@Model.TravelPackageId" class="btn btn-primary">Editar</a>
+    <a asp-action="Edit" asp-route-id="@Model.ReservationBookId" class="btn btn-primary">Editar</a>
     <a asp-action="Index" class="btn btn-secondary">Voltar para a Lista</a>
 </div>

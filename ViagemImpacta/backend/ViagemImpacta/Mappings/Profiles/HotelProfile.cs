@@ -27,7 +27,7 @@ namespace ViagemImpacta.Mappings.Profiles
         /// </summary>
         private void ConfigureHotelMappings()
         {
-            // ? ENTITY ? RESPONSE
+            // ?? ENTITY ? RESPONSE
             CreateMap<Hotel, HotelResponse>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.HotelId))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Image))
@@ -36,7 +36,7 @@ namespace ViagemImpacta.Mappings.Profiles
                 .ForMember(dest => dest.HasGym, opt => opt.MapFrom(src => src.Gym))
                 .ForMember(dest => dest.HasRestaurant, opt => opt.MapFrom(src => src.Restaurant));
 
-            // ? ENTITY ? LIST RESPONSE
+            // ?? ENTITY ? LIST RESPONSE
             CreateMap<Hotel, HotelListResponse>()
                 .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.HotelId))
                 .ForMember(dest => dest.ImageUrl, opt => opt.MapFrom(src => src.Image))

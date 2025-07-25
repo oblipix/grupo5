@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace ViagemImpacta.DTO.TravelPackage
+namespace ViagemImpacta.DTO.ReservationBook
 {
     /// <summary>
     /// ?? Request para criar um novo pacote de viagem
-    /// Usado em: POST /api/travelpackages
+    /// Usado em: POST /api/reservationbooks
     /// </summary>
-    public class TravelPackageRequest
+    public class ReservationBookRequest
     {
         [Required(ErrorMessage = "Título é obrigatório")]
         [StringLength(200, ErrorMessage = "Título deve ter no máximo 200 caracteres")]
@@ -19,19 +19,19 @@ namespace ViagemImpacta.DTO.TravelPackage
         [StringLength(100, ErrorMessage = "Destino deve ter no máximo 100 caracteres")]
         public string Destination { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Preço é obrigatório")]
-        [Range(0.01, double.MaxValue, ErrorMessage = "Preço deve ser maior que zero")]
-        public decimal Price { get; set; }
+        [Required(ErrorMessage = "Preço final é obrigatório")]
+        [Range(0.01, double.MaxValue, ErrorMessage = "Preço final deve ser maior que zero")]
+        public decimal FinalPrice { get; set; }
 
         public bool IsPromotion { get; set; }
 
-        [Required(ErrorMessage = "Data de início é obrigatória")]
-        [FutureDate(ErrorMessage = "Data de início deve ser futura")]
-        public DateTime StartDate { get; set; }
+        [Required(ErrorMessage = "Data de check-in é obrigatória")]
+        [FutureDate(ErrorMessage = "Data de check-in deve ser futura")]
+        public DateTime CheckIn { get; set; }
 
-        [Required(ErrorMessage = "Data de fim é obrigatória")]
-        [DateGreaterThan("StartDate", ErrorMessage = "Data de fim deve ser posterior à data de início")]
-        public DateTime EndDate { get; set; }
+        [Required(ErrorMessage = "Data de check-out é obrigatória")]
+        [DateGreaterThan("CheckIn", ErrorMessage = "Data de check-out deve ser posterior ao check-in")]
+        public DateTime CheckOut { get; set; }
 
         public List<int>? HotelIds { get; set; }
     }

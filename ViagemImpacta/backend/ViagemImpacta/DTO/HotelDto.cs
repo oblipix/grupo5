@@ -6,7 +6,7 @@ namespace ViagemImpacta.DTO
     {
         public int HotelId { get; set; }
         public string? Name { get; set; }
-        public string? Location { get; set; }
+        public string? HotelAddress { get; set; }
         public int Stars { get; set; }
         public int RoomCount { get; set; }
     }

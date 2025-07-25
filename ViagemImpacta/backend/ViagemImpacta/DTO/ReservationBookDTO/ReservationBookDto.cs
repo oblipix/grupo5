@@ -1,13 +1,15 @@
-﻿namespace ViagemImpacta.DTO.TravelPackageDTO
+﻿using ViagemImpacta.DTO;
+
+namespace ViagemImpacta.DTO.ReservationBookDTO
 {
-    public class TravelPackageDto
+    public class ReservationBookDto
     {
-        public int TravelPackageId { get; set; }
+        public int ReservationBookId { get; set; }
         public string? Title { get; set; }
         public string? Destination { get; set; }
-        public decimal Price { get; set; }
-        public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public decimal FinalPrice { get; set; }
+        public DateTime CheckIn { get; set; }
+        public DateTime CheckOut { get; set; }
         public string? Description { get; set; }
         public bool Active { get; set; }
         public bool Promotion { get; set; }
