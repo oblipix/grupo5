@@ -7,6 +7,9 @@ namespace ViagemImpacta.Models
         public int PaymentId { get; set; }
         public int ReservationId { get; set; }
         public decimal Amount { get; set; }
+
+        //confirmacao pagamento
+        //talvez email de confirmacao
         public PaymentMethod PaymentMethod { get; set; }
     }
 }
