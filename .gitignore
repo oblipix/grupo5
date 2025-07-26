@@ -41,8 +41,6 @@ publish/
 # Node.js / Frontend
 node_modules/
 build/
-.env
-.env.*
 yarn.lock
 package-lock.json
 npm-debug.log
