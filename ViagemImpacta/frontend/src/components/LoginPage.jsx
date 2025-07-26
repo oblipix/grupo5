@@ -86,7 +86,7 @@ function LoginPage({ onNavigateToRegister, onLoginSuccess }) {
             src="https://images.unsplash.com/photo-1524686612423-3d942a9615e8?q=80&w=1887&auto=format&fit=crop"
             alt="Vista da janela do avião"
             className="w-full h-full object-cover"
-            onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/800x600/000000/FFFFFF?text=Imagem+Nao+Disponivel'; }}
+            onError={(e) => { e.target.onerror = null; e.target.src='https://picsum.photos/id/10/800/600'; }}
           />
         </div>
 
