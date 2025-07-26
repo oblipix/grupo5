@@ -57,13 +57,11 @@ builder.Services.AddDbContext<AgenciaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ViagemImpactConnection")));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<IReservationBookServiceView, ReservationBookServiceView>();
-builder.Services.AddScoped<IReservationBookService, ReservationBookService>();
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>) );
+builder.Services.AddAutoMapper(typeof(HotelProfile).Assembly, typeof(UserProfile).Assembly);
 
 builder.Services.AddHttpContextAccessor();
 
@@ -76,7 +74,7 @@ builder.Services.AddHttpContextAccessor();
 //                               typeof(UserProfile));
 
 // ✅ OPÇÃO 2: ASSEMBLY ESPECÍFICO (RECOMENDADO - automático mas controlado)
-builder.Services.AddAutoMapper(typeof(ReservationBookProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(HotelProfile).Assembly, typeof(UserProfile).Assembly);
 
 // ⚠️ OPÇÃO 3: TODOS OS ASSEMBLIES (CUIDADO - pode incluir profiles externos)
 //builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
