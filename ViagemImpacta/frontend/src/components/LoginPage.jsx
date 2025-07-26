@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import MyTravelsPage from './MyTravelsPage';
+import RegisterPage from './RegisterPage';
 
 // Componente de Login
 // Aceita props para navegar para o cadastro (onNavigateToRegister) e para lidar com o sucesso do login (onLoginSuccess)
@@ -147,7 +149,7 @@ function LoginPage({ onNavigateToRegister, onLoginSuccess }) {
             <button
               type="submit"
               disabled={isLoading} // Desabilita o botão durante o carregamento
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-transform transform hover:scale-105 disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center justify-center"
+              className="main-action-button w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-transform transform hover:scale-105 disabled:bg-blue-300 disabled:cursor-not-allowed flex items-center justify-center"
             >
               {isLoading ? (
                 // Animação de carregamento simples
@@ -180,7 +182,8 @@ function LoginPage({ onNavigateToRegister, onLoginSuccess }) {
 // --- COMPONENTE PRINCIPAL DA APLICAÇÃO (EXEMPLO DE USO) ---
 export default function App() {
   const [currentPage, setCurrentPage] = useState('login'); // 'login' ou 'register'
-
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // ✅ ADICIONANDO ESTE ESTADO
+  const [loggedInUser, setLoggedInUser] = useState(null); // ✅ ADICIONANDO ESTE ESTADO
   const handleNavigateToRegister = () => {
     setCurrentPage('register');
     console.log("Navegando para a página de registro...");
@@ -191,28 +194,14 @@ export default function App() {
     console.log("Navegando para a página de login...");
   };
 
-  const handleLoginSuccess = (data) => {
-    console.log('Login bem-sucedido!', data);
-    // Aqui você normalmente salvaria o token de autenticação e redirecionaria o usuário
-    // Ex: localStorage.setItem('authToken', data.token);
-    // Ex: window.location.href = '/dashboard';
+  // Esta é a versão correta, do seu App.js completo
+  const handleLoginSuccess = (userData) => {
+    setIsLoggedIn(true);
+    setLoggedInUser(userData);
+    // ✅ Esta é a linha que faz o redirecionamento
+    setCurrentPage('MyTravelsPage'); 
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
-
-  // Simples componente de Registro para demonstração
-  const RegisterPage = ({ onNavigateToLogin }) => (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="bg-white p-8 rounded-lg shadow-2xl max-w-md w-full text-center">
-            <h2 className="text-2xl font-bold mb-6">Página de Cadastro</h2>
-            <p className="mb-6">Esta é a página de cadastro. Clique abaixo para voltar ao login.</p>
-            <button
-                onClick={onNavigateToLogin}
-                className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition"
-            >
-                Voltar para Login
-            </button>
-        </div>
-    </div>
-  );
 
   // Renderiza a página atual com base no estado
   switch (currentPage) {
@@ -220,6 +209,12 @@ export default function App() {
       return <LoginPage onNavigateToRegister={handleNavigateToRegister} onLoginSuccess={handleLoginSuccess} />;
     case 'register':
       return <RegisterPage onNavigateToLogin={handleNavigateToLogin} />;
+    case 'MyTravelsPage':
+      return <MyTravelsPage loggedInUser={loggedInUser} onLogout={() => {
+        setIsLoggedIn(false);
+        setLoggedInUser(null);
+        setCurrentPage('login');
+      }} />;
     default:
       return <LoginPage onNavigateToRegister={handleNavigateToRegister} onLoginSuccess={handleLoginSuccess} />;
   }

@@ -663,7 +663,9 @@ const handleSaveTravel = (travelToSave) => {
     };
 
     const handleBackToList = () => {
-        if (currentPage === 'mapHotelDetails') {
+        if (currentPage === 'login' || currentPage === 'register' || currentPage === 'myTravels' || currentPage === 'institutional') {
+
+        } else if (currentPage === 'mapHotelDetails') {
             setCurrentPage('home');
             setSelectedHotelIdFromMap(null);
         } else if (currentPage === 'promotionDetails' || currentPage === 'purchase') {
