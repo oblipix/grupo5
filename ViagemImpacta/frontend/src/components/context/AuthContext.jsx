@@ -29,7 +29,7 @@ export const AuthProvider = ({ children }) => {
     const [savedHotels, setSavedHotels] = useState([]);
     const [visitedHotels, setVisitedHotels] = useState([]);
     const [isLoadingAuth, setIsLoadingAuth] = useState(true); // Para indicar que a checagem inicial está acontecendo
-    
+
     // Usar navigate de forma segura
     let navigate;
     try {
@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const storedToken = localStorage.getItem('authToken');
         const storedUser = localStorage.getItem('authUser');
-        
+
         if (storedToken && storedUser) {
             try {
                 const user = JSON.parse(storedUser);
@@ -85,14 +85,14 @@ export const AuthProvider = ({ children }) => {
         }
 
         try {
-            const response = await fetch('http://localhost:5155/api/Auth/login', {
+            const response = await fetch('https://localhost:7010/api/Auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ 
-                    email: email.trim(), 
-                    password: password 
+                body: JSON.stringify({
+                    email: email.trim(),
+                    password: password
                 })
             });
 
@@ -100,15 +100,24 @@ export const AuthProvider = ({ children }) => {
             if (!response.ok) {
                 // Tenta extrair mensagem de erro da resposta
                 let errorMessage = 'Erro no login';
-                
-                try {
-                    const errorData = await response.json();
-                    errorMessage = errorData.message || errorData.error || `Erro ${response.status}: ${response.statusText}`;
-                } catch {
-                    // Se não conseguir parsear o JSON do erro
-                    errorMessage = `Erro ${response.status}: ${response.statusText}`;
+
+                // Trata especificamente o erro 401 (Unauthorized)
+                if (response.status === 401) {
+                    errorMessage = 'Email ou senha inválidos';
+                } else if (response.status === 404) {
+                    errorMessage = 'Usuário não encontrado';
+                } else if (response.status === 400) {
+                    errorMessage = 'Dados de login inválidos';
+                } else {
+                    try {
+                        const errorData = await response.json();
+                        errorMessage = errorData.message || errorData.error || `Erro ${response.status}: ${response.statusText}`;
+                    } catch {
+                        // Se não conseguir parsear o JSON do erro
+                        errorMessage = `Erro ${response.status}: ${response.statusText}`;
+                    }
                 }
-                
+
                 throw new Error(errorMessage);
             }
 
@@ -123,10 +132,10 @@ export const AuthProvider = ({ children }) => {
 
             // Tenta extrair token de diferentes possíveis propriedades
             const receivedToken = data.token || data.accessToken || data.jwt || data.authToken;
-            
+
             // Tenta extrair informações do usuário de diferentes possíveis propriedades
             const userInfo = data.user || data.profile || data.userData || data;
-            
+
             // Debug: mostra o que foi extraído
             console.log('userInfo extraído:', userInfo);
             console.log('Token extraído:', receivedToken);
@@ -167,14 +176,14 @@ export const AuthProvider = ({ children }) => {
 
         } catch (error) {
             console.error('Erro no login:', error);
-            
+
             // Limpa dados em caso de erro
             setCurrentUser(null);
             setIsLoggedIn(false);
             setToken(null);
             localStorage.removeItem('authToken');
             localStorage.removeItem('authUser');
-            
+
             // Re-lança o erro para que o componente de Login possa exibir a mensagem
             throw error;
         }
@@ -189,7 +198,7 @@ export const AuthProvider = ({ children }) => {
         setVisitedHotels([]);
         localStorage.removeItem('authToken');
         localStorage.removeItem('authUser');
-        
+
         // Navega para login de forma segura
         try {
             navigate('/login');
@@ -230,7 +239,7 @@ export const AuthProvider = ({ children }) => {
 
             console.log('Enviando dados para atualização:', dataToSend);
 
-            const response = await fetch(`http://localhost:5155/api/Users/${userId}`, {
+            const response = await fetch(`https://localhost:7010/api/Auth/users/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -239,17 +248,18 @@ export const AuthProvider = ({ children }) => {
                 body: JSON.stringify(dataToSend)
             });
 
+
             if (!response.ok) {
                 // Tenta extrair mensagem de erro da resposta
                 let errorMessage = 'Erro ao atualizar perfil';
-                
+
                 try {
                     const errorData = await response.json();
                     errorMessage = errorData.message || errorData.error || errorData || `Erro ${response.status}: ${response.statusText}`;
                 } catch {
                     errorMessage = `Erro ${response.status}: ${response.statusText}`;
                 }
-                
+
                 throw new Error(errorMessage);
             }
 
@@ -270,7 +280,7 @@ export const AuthProvider = ({ children }) => {
 
         } catch (error) {
             console.error('Erro ao atualizar perfil:', error);
-            
+
             // Re-lança o erro para que o componente possa tratar
             throw error;
         }
@@ -295,7 +305,7 @@ export const AuthProvider = ({ children }) => {
             throw new Error("Todos os campos são obrigatórios");
         }
 
-        if (typeof firstName !== 'string' || typeof lastName !== 'string' || 
+        if (typeof firstName !== 'string' || typeof lastName !== 'string' ||
             typeof email !== 'string' || typeof password !== 'string') {
             throw new Error("Todos os campos devem ser strings válidas");
         }
@@ -329,8 +339,8 @@ export const AuthProvider = ({ children }) => {
                 roles: 0 // 0 = User (conforme enum Roles)
             };
 
-            console.log('Dados validados - enviando para registro:', { 
-                ...dataToSend, 
+            console.log('Dados validados - enviando para registro:', {
+                ...dataToSend,
                 Password: '***',
                 firstNameLength: dataToSend.FirstName.length,
                 lastNameLength: dataToSend.LastName.length,
@@ -349,11 +359,11 @@ export const AuthProvider = ({ children }) => {
             if (!response.ok) {
                 // Tenta extrair mensagem de erro da resposta
                 let errorMessage = 'Erro no cadastro';
-                
+
                 try {
                     const errorData = await response.json();
                     console.log('Erro detalhado do backend:', errorData);
-                    
+
                     // Se for um objeto com ModelState (validações do ASP.NET)
                     if (errorData.errors) {
                         const errors = Object.values(errorData.errors).flat();
@@ -367,7 +377,7 @@ export const AuthProvider = ({ children }) => {
                 } catch {
                     errorMessage = `Erro ${response.status}: ${response.statusText}`;
                 }
-                
+
                 console.error('Erro no cadastro - Status:', response.status, 'Message:', errorMessage);
                 throw new Error(errorMessage);
             }
@@ -377,20 +387,20 @@ export const AuthProvider = ({ children }) => {
             console.log('Cadastro bem-sucedido:', data);
 
             // Não faz login automático, apenas retorna sucesso
-            return { 
-                success: true, 
+            return {
+                success: true,
                 message: 'Cadastro realizado com sucesso! Você pode fazer login agora.',
-                user: data 
+                user: data
             };
 
         } catch (error) {
             console.error('Erro no cadastro:', error);
-            
+
             // Verifica se é um erro de rede (fetch falhou)
             if (error.name === 'TypeError' && error.message.includes('fetch')) {
                 throw new Error('Não foi possível conectar com o servidor. Verifique se o backend está rodando em http://localhost:7010');
             }
-            
+
             // Re-lança o erro para que o componente possa exibir a mensagem
             throw error;
         }
