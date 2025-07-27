@@ -58,6 +58,8 @@ namespace ViagemImpacta.Controllers.ApiControllers
                     Email = user.Email,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
+                    Cpf=user.Cpf,
+                    Phone=user.Phone,
                     Role = user.Role
 
                 }

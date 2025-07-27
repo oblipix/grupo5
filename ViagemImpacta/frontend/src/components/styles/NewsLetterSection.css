@@ -1,0 +1,47 @@
+/* src/styles/NewsletterSection.css */
+
+/* Remova ou comente todas as regras relacionadas a .newsletter-input e .newsletter-input input[type="email"] */
+/* .newsletter-input {
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: #f0f8ff;
+    color: #333;
+    border-radius: 20px;
+}
+
+.newsletter-input input[type="email"] {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    font-size: 16px;
+    outline: none;
+    justify-content: center;
+    justify-items: center;
+    align-items: center;
+    text-align: center;
+} */
+
+/* Mantenha o que for para a seção principal ou para os botões */
+.newsletter-section-container {
+    padding: 20px;
+    background-color: #f5f5f5;
+} 
+
+.insc-action-button{
+   
+    background: linear-gradient(90deg, #111b32 0%, #60A5FA 100%) !important; 
+    color: #FFFFFF !important; 
+    cursor: pointer;
+   
+}
+
+.insc-action-button:hover {
+    background: linear-gradient(90deg, #60A5FA 0%, #111b32 100%) !important; 
+    color: #FFFFFF !important; 
+}
+
+.bg{
+    align-items: center;
+    text-align: center;
+    background-image: linear-gradient(to right, #c9f0fdb4, #f9f3f3cf); /* Azul claro para Branco */
+}
