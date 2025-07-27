@@ -4,6 +4,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { allHotelsData } from '../data/hotels.js'; // Certifique-se de que o caminho está correto
 import ImageModal from '../common/ImageModal.jsx';
 import { Icons } from '../layout/Icons.jsx'; // Importando os ícones centralizados
+import '../styles/HotelDetailsPage.css'; // Importando o CSS específico para esta página
 
 // Importa o carrossel e seus estilos
 import Slider from 'react-slick';
@@ -109,7 +110,7 @@ function HotelDetailsPage() {
 
     return (
         <div className="container mx-auto py-8 px-6">
-            <button onClick={() => navigate(-1)} className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mb-8">
+            <button onClick={() => navigate(-1)} className="main-action-button bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mb-8">
                 &larr; Voltar
             </button>
 

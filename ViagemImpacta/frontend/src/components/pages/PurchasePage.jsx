@@ -6,6 +6,8 @@ import { useParams, useNavigate } from 'react-router-dom'; // 1. Importar hooks 
 // 2. Importar os dados de todas as promoções
 // (Certifique-se de ter criado este arquivo 'promotions.js' na pasta 'src/data')
 import { allPromotionalTravels } from '../data/promotions.js';
+import '../styles/PurchasePage.css'; // Importar o CSS específico para esta página
+
 
 const PurchasePage = () => {
     // 3. Obter o ID da promoção da URL e a função de navegação
@@ -27,7 +29,7 @@ const PurchasePage = () => {
         return (
             <div className="container mx-auto p-4 text-center">
                 <p className="text-xl text-red-600 mb-4">Erro: Dados da promoção não foram encontrados.</p>
-                <button onClick={() => navigate('/')} className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition duration-300">
+                <button onClick={() => navigate('/')} className="main-action-button px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition duration-300">
                     Voltar para a Home
                 </button>
             </div>
@@ -39,7 +41,7 @@ const PurchasePage = () => {
             {/* 5. O botão "Voltar" agora usa a função navigate para voltar à página anterior */}
             <button
                 onClick={() => navigate(-1)}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 mb-6"
+                className="main-action-button px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 mb-6"
             >
                 ← Voltar para Detalhes da Promoção
             </button>
@@ -76,7 +78,7 @@ const PurchasePage = () => {
                             <h3 className="text-2xl font-bold capitalize mb-2">
                                 {type === 'solteiro' ? 'Pacote Individual' : type === 'casal' ? 'Pacote Casal' : 'Pacote Família'}
                             </h3>
-                            <p className="text-4xl font-extrabold text-blue-700">
+                            <p className="text-3xl font-extrabold text-blue-700">
                                 {formatCurrency(price)}
                             </p>
                             <p className="text-sm text-gray-500 mt-1">

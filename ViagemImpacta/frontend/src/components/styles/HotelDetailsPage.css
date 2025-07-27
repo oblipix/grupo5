@@ -1,0 +1,14 @@
+@media (max-width: 800px) {
+    h2 {
+        font-size: 25px; /* Equivalente a text-3xl do Tailwind (30px) */
+    }
+}
+
+/* Media Query para telas com NO MÁXIMO 500px de largura */
+@media (max-width: 500px) {
+    h2{
+        font-size: 25px; /* Equivalente a text-2xl do Tailwind (24px) */
+    }
+}
+
+

@@ -4,6 +4,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // Importa o contexto para ações do usuário
 import { StarIcon } from '@heroicons/react/24/solid'; // Para a avaliação
+import '../styles/HotelCard.css'; // Importa o CSS específico do card
 
 function HotelCard({ hotel }) {
     // Usa o contexto para gerenciar o estado de "salvo"
@@ -59,7 +60,7 @@ function HotelCard({ hotel }) {
             <div className="p-4 flex-grow flex flex-col justify-between">
                 <div>
                     {/* Título: Mantido com background azul e fonte branca */}
-                    <h3 className="inline-block bg-blue-600 text-white px-3 py-1 rounded-md font-bold text-xl mb-2 truncate">
+                    <h3 className="Tittle inline-block bg-blue-600 text-white px-3 py-1 rounded-md font-bold text-xl mb-2 truncate">
                         {hotel.title}
                     </h3>
                     <p className="text-gray-600 text-sm mb-2 flex items-center">

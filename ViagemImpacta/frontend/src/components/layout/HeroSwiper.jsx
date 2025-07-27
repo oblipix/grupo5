@@ -11,7 +11,7 @@ import { heroSlidesData } from '../data/heroSlides.js';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
-import '../styles/HeroSwiper.css'; // Importar o CSS específico do HeroSwiper
+import '../styles/HeroSwiper.css'; 
 
 function HeroSwiper() {
   return (
@@ -36,7 +36,7 @@ function HeroSwiper() {
             style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)), url(${slide.imageUrl})` }}
           >
             <div className="z-10 max-w-3xl animate-fade-in-up"> 
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-14 drop-shadow-md">
+            <h1 className="title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-4 drop-shadow-lg max-w-4xl">
                 {slide.title}
               </h1>
               <p className="text-base md:text-lg lg:text-xl drop-shadow-sm">

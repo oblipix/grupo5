@@ -5,6 +5,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { allHotelsData } from '../data/hotels.js';
 import { Icons } from '../layout/Icons.jsx'; // Certifique-se de que o caminho esteja correto
 import ImageModal from '../common/ImageModal.jsx'; // Importe o modal de imagens
+import '../styles/RecommendedHotelDetailsPage.css'; // Importe o CSS específico para esta página
 
 // Componente para renderizar estrelas de avaliação
 const RatingDisplay = ({ rating }) => {
@@ -55,7 +56,7 @@ function RecommendedHotelDetailsPage() {
         return (
             <div className="container mx-auto py-8 px-6 text-center">
                 <h2 className="text-2xl font-bold">Hotel não encontrado.</h2>
-                <button onClick={() => navigate('/')} className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md">
+                <button onClick={() => navigate('/')} className="main-action-button mt-4 bg-blue-600 text-white px-6 py-2 rounded-md">
                     Voltar para a Home
                 </button>
             </div>
@@ -73,7 +74,7 @@ function RecommendedHotelDetailsPage() {
     return (
         <div className="bg-gray-50 min-h-screen">
             <div className="container mx-auto py-8 px-6">
-                <button onClick={() => navigate(-1)} className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 rounded mb-8">
+                <button onClick={() => navigate(-1)} className="main-action-button bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 rounded mb-8">
                     &larr; Voltar
                 </button>
 
@@ -90,7 +91,7 @@ function RecommendedHotelDetailsPage() {
                     {hotel.galleryImages && hotel.galleryImages.length > 0 && (
                         <div className="mb-8">
                             <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                                {hotel.galleryImages.slice(0, 6).map(img => ( // Mostra até 6 miniaturas
+                                {hotel.galleryImages.slice(0, 10).map(img => ( // Mostra até 10 miniaturas
                                     <img
                                         key={img.id}
                                         src={img.url}
@@ -104,7 +105,7 @@ function RecommendedHotelDetailsPage() {
                     )}
 
                     <div className="text-center mb-8 border-t pt-8">
-                        <span className="bg-yellow-400 text-yellow-900 text-sm font-bold mr-3 px-3 py-1 rounded-full uppercase">★ Recomendado pelos Viajantes ★</span>
+                        <span className="recomendadoFrase bg-yellow-400 text-yellow-900 text-sm font-bold mr-3 px-3 py-2 rounded-full uppercase">★ Recomendado pelos Viajantes ★</span>
                         <h1 className="text-4xl font-extrabold text-blue-800 mt-4">{hotel.title}</h1>
                         <p className="text-gray-500 text-lg">{hotel.location}</p>
                     </div>

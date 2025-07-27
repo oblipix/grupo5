@@ -1,0 +1,11 @@
+.main-action-button {
+  background: linear-gradient(90deg, #111b32 0%, #60A5FA 100%) !important; 
+  color: #FFFFFF !important; 
+  cursor: pointer;
+         
+}
+
+.main-action-button:hover{
+
+  background: linear-gradient(90deg, #60A5FA 0%,  #111b32 100%) !important; 
+}

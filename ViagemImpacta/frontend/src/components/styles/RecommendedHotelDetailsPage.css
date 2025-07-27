@@ -1,0 +1,9 @@
+
+
+
+
+@media (max-width: 500px) { /* Este é o breakpoint 'lg' do Tailwind CSS */
+    .recomendadoFrase {
+        font-size: 12px; /* Exemplo de tamanho ainda maior para telas grandes */
+    }
+}

@@ -19,7 +19,7 @@ function BlogPostDetailsPage() {
         <h2 className="text-2xl font-bold text-gray-800 mb-4">Postagem não encontrada.</h2>
         <button
           onClick={() => navigate('/')} // Navega para a home se o post não existir
-          className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+          className="main-action-button bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
         >
           Voltar para a Home
         </button>
@@ -32,7 +32,7 @@ function BlogPostDetailsPage() {
       {/* 5. O botão "Voltar" usa a função navigate */}
       <button
         onClick={() => navigate(-1)} // Volta para a página anterior (a lista de posts)
-        className="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mb-8"
+        className="main-action-button bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mb-8"
       >
         &larr; Voltar
       </button>

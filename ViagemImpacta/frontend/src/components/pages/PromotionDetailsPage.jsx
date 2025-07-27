@@ -46,7 +46,7 @@ const PromotionDetailsPage = () => {
         return (
             <div className="container mx-auto p-4 text-center">
                 <p className="text-xl text-red-600 mb-4">Ops! Promoção não encontrada.</p>
-                <button onClick={() => navigate('/')} className="px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400">
+                <button onClick={() => navigate('/')} className="main-action-button px-6 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400">
                     ← Voltar para a Home
                 </button>
             </div>
@@ -91,7 +91,7 @@ const PromotionDetailsPage = () => {
             {/* 5. Botão "Voltar" usa o navigate */}
             <button 
                 onClick={() => navigate(-1)} 
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 mb-6 main-action-button"
+                className="main-action-button px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 mb-6 main-action-button"
             >
                 ← Voltar
             </button>

@@ -1,0 +1,8 @@
+
+@media (max-width: 500px) { /* Este é o breakpoint 'md' do Tailwind CSS */
+  .precoPor {
+        font-size: 30px; 
+       
+        
+    }
+ }

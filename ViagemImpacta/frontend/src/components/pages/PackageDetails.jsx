@@ -4,6 +4,7 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { allPromotionalTravels } from '../data/promotions.js';
 import { Icons } from '../layout/Icons.jsx'; // Importando os ícones
+import '../styles/PackageDetails.css'; // Importando estilos específicos para o componente
 
 // Componente para renderizar estrelas de avaliação
 const RatingDisplay = ({ rating }) => {
@@ -31,7 +32,7 @@ function PackageDetails() {
         return (
             <div className="container mx-auto p-4 text-center">
                 <p className="text-xl text-red-600 mb-4">Ops! Promoção não encontrada.</p>
-                <button onClick={() => navigate('/')} className="px-6 py-2 bg-gray-300 rounded-lg">
+                <button onClick={() => navigate('/')} className="main-action-button px-6 py-2 bg-gray-300 rounded-lg">
                     Voltar para a Home
                 </button>
             </div>
@@ -41,7 +42,7 @@ function PackageDetails() {
     return (
         <div className="bg-gray-50">
             <div className="container mx-auto py-8 px-6">
-                <button onClick={() => navigate(-1)} className="bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 rounded mb-8">
+                <button onClick={() => navigate(-1)} className="main-action-button bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 rounded mb-8">
                     &larr; Voltar
                 </button>
 
@@ -58,7 +59,7 @@ function PackageDetails() {
                         {/* Seção de Preços */}
                         <div className="text-center my-6 p-4 bg-blue-50 rounded-lg">
                             <p className="text-xl text-gray-500 line-through">De: {formatCurrency(packageData.priceFrom)}</p>
-                            <p className="text-4xl font-bold text-green-600 mt-1">Por: {formatCurrency(packageData.priceTo)}</p>
+                            <p className="precoPor text-4xl font-bold text-green-600 mt-1">Por: {formatCurrency(packageData.priceTo)}</p>
                             <p className="text-sm text-gray-500 mt-1">por pessoa</p>
                         </div>
 
