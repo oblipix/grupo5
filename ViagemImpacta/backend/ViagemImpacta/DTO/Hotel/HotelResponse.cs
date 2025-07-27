@@ -8,13 +8,13 @@ namespace ViagemImpacta.DTO.Hotel
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string HotelAddress { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
         public int Stars { get; set; }
         public bool HasWifi { get; set; }
         public bool HasParking { get; set; }
         public bool HasGym { get; set; }
         public bool HasRestaurant { get; set; }
-        public string ImageUrl { get; set; } = string.Empty;
     }
 
     /// <summary>
@@ -25,8 +25,8 @@ namespace ViagemImpacta.DTO.Hotel
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string HotelAddress { get; set; } = string.Empty;
+        public string City { get; set; } = string.Empty;
         public int Stars { get; set; }
-        public string ImageUrl { get; set; } = string.Empty;
         public bool HasWifi { get; set; }
         public bool HasParking { get; set; }
     }

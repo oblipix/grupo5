@@ -8,12 +8,18 @@ namespace ViagemImpacta.Repositories.Implementations
         private readonly AgenciaDbContext _context;
         public IUserRepository Users { get; private set; }
         public IHotelRepository Hotels { get; private set; }
+        public IReservationRepository Reservations { get; private set; }
+        public IRoomRepository Rooms { get; private set; }
+        public ITravellerRepository Travellers { get; private set; }
 
         public UnitOfWork(AgenciaDbContext context)
         {
             _context = context;
             Users = new UserRepository(_context);
             Hotels = new HotelRepository(_context);
+            Reservations = new ReservationRepository(_context);
+            Rooms = new RoomRepository(_context);
+            Travellers = new TravellerRepository(_context);
         }
 
         public async Task<bool> CommitAsync()

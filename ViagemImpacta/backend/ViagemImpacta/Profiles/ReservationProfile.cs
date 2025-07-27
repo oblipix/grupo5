@@ -1,0 +1,43 @@
+using AutoMapper;
+using ViagemImpacta.DTO.ReservationDTO;
+using ViagemImpacta.DTO.TravellerDTO;
+using ViagemImpacta.Models;
+
+namespace ViagemImpacta.Profiles
+{
+    public class ReservationProfile : Profile
+    {
+        public ReservationProfile()
+        {
+            // Reservation mappings
+            CreateMap<CreateReservationDto, Reservation>()
+                .ForMember(dest => dest.ReservationId, opt => opt.Ignore())
+                .ForMember(dest => dest.ReservationDate, opt => opt.MapFrom(src => DateTime.Now))
+                .ForMember(dest => dest.IsConfirmed, opt => opt.MapFrom(src => false))
+                .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.Now))
+                .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.Now))
+                .ForMember(dest => dest.TotalPrice, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.Room, opt => opt.Ignore())
+                .ForMember(dest => dest.Hotel, opt => opt.Ignore())
+                .ForMember(dest => dest.Travellers, opt => opt.Ignore());
+
+            CreateMap<Reservation, ReservationResponseDto>()
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => $"{src.User!.FirstName} {src.User.LastName}"))
+                .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User!.Email))
+                .ForMember(dest => dest.RoomName, opt => opt.MapFrom(src => src.Room!.Name))
+                .ForMember(dest => dest.RoomType, opt => opt.MapFrom(src => src.Room!.Type))
+                .ForMember(dest => dest.HotelName, opt => opt.MapFrom(src => src.Hotel!.Name))
+                .ForMember(dest => dest.TotalDays, opt => opt.MapFrom(src => (src.CheckOut - src.CheckIn).Days))
+                .ForMember(dest => dest.Travellers, opt => opt.MapFrom(src => src.Travellers));
+
+            // Traveller mappings
+            CreateMap<CreateTravellerDto, Travellers>()
+                .ForMember(dest => dest.TravellersId, opt => opt.Ignore())
+                .ForMember(dest => dest.ReservationId, opt => opt.Ignore())
+                .ForMember(dest => dest.Reservation, opt => opt.Ignore());
+
+            CreateMap<Travellers, TravellerResponseDto>();
+        }
+    }
+}

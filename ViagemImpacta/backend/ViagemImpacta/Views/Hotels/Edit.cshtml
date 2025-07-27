@@ -25,6 +25,11 @@
                 <span asp-validation-for="HotelAddress" class="text-danger"></span>
             </div>
             <div class="form-group mb-2">
+                <label asp-for="City" class="control-label">Cidade</label>
+                <input asp-for="City" class="form-control" />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-2">
                 <label asp-for="Phone" class="control-label"></label>
                 <input asp-for="Phone" class="form-control" />
                 <span asp-validation-for="Phone" class="text-danger"></span>
@@ -33,11 +38,6 @@
                 <label asp-for="Stars" class="control-label"></label>
                 <input asp-for="Stars" class="form-control" type="number" min="1" max="5" />
                 <span asp-validation-for="Stars" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-2">
-                <label asp-for="Image" class="control-label">URL da Imagem</label>
-                <input asp-for="Image" class="form-control" />
-                <span asp-validation-for="Image" class="text-danger"></span>
             </div>
 
             <div class="form-group form-check">
@@ -75,14 +75,15 @@
 
                         <input type="hidden" name="Rooms[@i].RoomId" value="@room.RoomId" />
                         <input type="hidden" name="Rooms[@i].HotelId" value="@room.HotelId" />
+                        <input type="hidden" name="Rooms[@i].Available" value="@room.Available.ToString().ToLower()" />
 
                         <div class="form-group mb-2">
-                            <label>Nome do Quarto</label>
-                            <input type="text" name="Rooms[@i].Name" value="@room.Name" class="form-control" />
-    </div>
+                            <label>Nome do Quarto <span class="text-danger">*</span></label>
+                            <input type="text" name="Rooms[@i].Name" value="@room.Name" class="form-control" required />
+                        </div>
                         <div class="form-group mb-2">
-                            <label>Tipo de Quarto</label>
-                            <select name="Rooms[@i].Type" class="form-control">
+                            <label>Tipo de Quarto <span class="text-danger">*</span></label>
+                            <select name="Rooms[@i].Type" class="form-control" required>
                                 @foreach (var type in Html.GetEnumSelectList<ViagemImpacta.Models.Enums.RoomType>())
                                 {
                                     <option value="@type.Value" selected="@(type.Value == room.Type.ToString())">
@@ -92,12 +93,12 @@
                             </select>
                         </div>
                         <div class="form-group mb-2">
-                            <label>Preço Médio Diária</label>
-                            <input type="number" step="0.01" name="Rooms[@i].AverageDailyPrice" value="@room.AverageDailyPrice" class="form-control" />
+                            <label>Preço Médio Diária <span class="text-danger">*</span></label>
+                            <input type="number" step="0.01" min="0.01" name="Rooms[@i].AverageDailyPrice" value="@room.AverageDailyPrice" class="form-control" required />
                         </div>
                         <div class="form-group mb-2">
-                            <label>Capacidade</label>
-                            <input type="number" name="Rooms[@i].Capacity" value="@room.Capacity" class="form-control" />
+                            <label>Capacidade <span class="text-danger">*</span></label>
+                            <input type="number" min="1" max="20" name="Rooms[@i].Capacity" value="@room.Capacity" class="form-control" required />
                         </div>
                     </div>
 
@@ -122,21 +123,29 @@
     <div class="room-entry border p-3 mb-3">
         <h5>Novo Quarto <button type="button" class="btn btn-danger btn-sm float-end remove-room-btn">Remover</button></h5>
         <div class="form-group mb-2">
-            <label>Nome do Quarto</label>
-            <input type="text" name="Rooms[__index__].Name" class="form-control" />
+            <label>Nome do Quarto <span class="text-danger">*</span></label>
+            <input type="text" name="Rooms[__index__].Name" class="form-control" required />
         </div>
         <div class="form-group mb-2">
-            <label>Tipo de Quarto</label>
-            <select name="Rooms[__index__].Type" class="form-control" asp-items="Html.GetEnumSelectList<RoomType>()"></select>
+            <label>Tipo de Quarto <span class="text-danger">*</span></label>
+            <select name="Rooms[__index__].Type" class="form-control" required>
+                <option value="">Selecione o tipo</option>
+                @foreach (var type in Html.GetEnumSelectList<RoomType>())
+                {
+                    <option value="@type.Value">@type.Text</option>
+                }
+            </select>
         </div>
         <div class="form-group mb-2">
-            <label>Preço Médio Diária</label>
-            <input type="number" step="0.01" name="Rooms[__index__].AverageDailyPrice" class="form-control" value="0" />
+            <label>Preço Médio Diária <span class="text-danger">*</span></label>
+            <input type="number" step="0.01" min="0.01" name="Rooms[__index__].AverageDailyPrice" class="form-control" required />
         </div>
         <div class="form-group mb-2">
-            <label>Capacidade</label>
-            <input type="number" name="Rooms[__index__].Capacity" class="form-control" value="1" />
+            <label>Capacidade <span class="text-danger">*</span></label>
+            <input type="number" min="1" max="20" name="Rooms[__index__].Capacity" class="form-control" value="1" required />
         </div>
+        <!-- Campo Hidden para Available com valor padrão true -->
+        <input type="hidden" name="Rooms[__index__].Available" value="true" />
     </div>
 </div>
 

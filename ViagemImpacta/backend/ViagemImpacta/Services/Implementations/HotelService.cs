@@ -35,6 +35,16 @@ namespace ViagemImpacta.Services.Interfaces
 
         public async Task<Hotel> CreateHotelAsync(Hotel hotel)
         {
+            // Garantir que todos os quartos tenham Available = true se não foi definido
+            foreach (var room in hotel.Rooms)
+            {
+                if (room.Available == default)
+                {
+                    room.Available = true;
+                }
+                room.HotelId = hotel.HotelId; // Garantir que o HotelId seja definido
+            }
+
             await _unitOfWork.Hotels.AddAsync(hotel);
             await _unitOfWork.CommitAsync();
             return hotel;
@@ -45,20 +55,36 @@ namespace ViagemImpacta.Services.Interfaces
             var existingHotel = await _unitOfWork.Hotels.GetAsync(h => h.HotelId == hotel.HotelId, include: h => h.Include(r => r.Rooms));
             if (existingHotel == null) return;
 
+            // Atualizar propriedades do hotel
             _mapper.Map(hotel, existingHotel);
 
+            // Remover quartos que não existem mais
             var roomsToRemove = existingHotel.Rooms.Where(dbRoom => !hotel.Rooms.Any(formRoom => formRoom.RoomId == dbRoom.RoomId)).ToList();
-            foreach (var room in roomsToRemove) existingHotel.Rooms.Remove(room);
+            foreach (var room in roomsToRemove) 
+            {
+                existingHotel.Rooms.Remove(room);
+            }
 
+            // Atualizar ou adicionar quartos
             foreach (var formRoom in hotel.Rooms)
             {
+                // Garantir que Available tenha valor válido
+                if (formRoom.Available == default)
+                {
+                    formRoom.Available = true;
+                }
+                
+                formRoom.HotelId = hotel.HotelId; // Garantir que o HotelId seja definido
+
                 var dbRoom = existingHotel.Rooms.FirstOrDefault(r => r.RoomId == formRoom.RoomId);
                 if (dbRoom != null)
                 {
+                    // Atualizar quarto existente
                     _mapper.Map(formRoom, dbRoom);
                 }
                 else
                 {
+                    // Adicionar novo quarto
                     existingHotel.Rooms.Add(formRoom);
                 }
             }

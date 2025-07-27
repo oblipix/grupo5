@@ -59,9 +59,10 @@ builder.Services.AddDbContext<AgenciaDbContext>(options =>
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>) );
-builder.Services.AddAutoMapper(typeof(HotelProfile).Assembly, typeof(UserProfile).Assembly);
+builder.Services.AddAutoMapper(typeof(HotelProfile).Assembly, typeof(UserProfile).Assembly, typeof(ReservationProfile).Assembly);
 
 builder.Services.AddHttpContextAccessor();
 
