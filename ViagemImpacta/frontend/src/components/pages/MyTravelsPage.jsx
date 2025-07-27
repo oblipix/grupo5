@@ -84,9 +84,17 @@ function MyTravelsPage() {
       console.log('Dados do currentUser:', currentUser);
       console.log('Nome extraído:', getUserDisplayName());
       
+      // Extrai primeiro e último nome do nome completo
+      const fullName = getUserFullName();
+      const nameParts = fullName.trim().split(' ').filter(part => part.length > 0);
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
+      
       setFormData({
         ...currentUser,
-        name: getUserFullName(), // Usa a função para obter o nome completo
+        name: fullName, // Mantém o nome completo para compatibilidade
+        firstName: currentUser.FirstName || firstName,
+        lastName: currentUser.LastName || lastName,
         email: currentUser.Email || currentUser.email || '', // Campo Email do backend
         phone: currentUser.Phone || currentUser.phone || '', // Campo Phone do backend
         points: currentUser.points || 0,
@@ -129,8 +137,8 @@ function MyTravelsPage() {
 
     try {
       // Validações básicas no frontend
-      if (!formData.name?.trim()) {
-        throw new Error('Nome é obrigatório');
+      if (!formData.firstName?.trim() || !formData.lastName?.trim()) {
+        throw new Error('Primeiro nome e último nome são obrigatórios');
       }
 
       if (!formData.email?.trim()) {
@@ -143,8 +151,16 @@ function MyTravelsPage() {
         throw new Error('Por favor, insira um email válido');
       }
 
+      // Prepara os dados no formato correto para o backend
+      const updateData = {
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone?.trim() || ''
+      };
+
       // Chama a função de atualização do contexto
-      const result = await updateUser(formData);
+      const result = await updateUser(updateData);
       
       if (result.success) {
         setUpdateMessage(result.message);
@@ -171,15 +187,7 @@ function MyTravelsPage() {
   
   return (
     <div className="container mx-auto p-6 md:p-10 bg-white shadow-lg rounded-lg my-8 animate-fade-in">
-        <div className="flex justify-between items-center mb-8">
-            <button
-                onClick={() => navigate(-1)}
-                className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded transition-colors"
-            >
-                ← Voltar
-            </button>
-            
-        </div>
+      
 
         <h1 className="text-4xl font-extrabold text-blue-800 mb-8 text-center">Meu Perfil Tripz</h1>
 
@@ -218,15 +226,71 @@ function MyTravelsPage() {
 
               {isEditing ? (
                 <>
-                  <input id="name" type="text" value={formData.name || ''} onChange={handleFormChange} className="mt-1 block w-full p-2 border rounded-md mb-2" placeholder="Nome completo" required />
-                  <input id="email" type="email" value={formData.email || ''} onChange={handleFormChange} className="mt-1 block w-full p-2 border rounded-md mb-2" placeholder="Seu email" required />
-                  <input id="phone" type="text" value={formData.phone || ''} onChange={handleFormChange} className="mt-1 block w-full p-2 border rounded-md mb-4" placeholder="Telefone" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <label htmlFor="firstName" className="block text-gray-700 text-sm font-bold mb-2 text-left">
+                        Primeiro Nome
+                      </label>
+                      <input 
+                        id="firstName" 
+                        type="text" 
+                        value={formData.firstName || ''} 
+                        onChange={handleFormChange} 
+                        className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                        placeholder="Primeiro nome" 
+                        required 
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="lastName" className="block text-gray-700 text-sm font-bold mb-2 text-left">
+                        Último Nome
+                      </label>
+                      <input 
+                        id="lastName" 
+                        type="text" 
+                        value={formData.lastName || ''} 
+                        onChange={handleFormChange} 
+                        className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                        placeholder="Último nome" 
+                        required 
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2 text-left">
+                      Email
+                    </label>
+                    <input 
+                      id="email" 
+                      type="email" 
+                      value={formData.email || ''} 
+                      onChange={handleFormChange} 
+                      className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                      placeholder="Seu email" 
+                      required 
+                    />
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label htmlFor="phone" className="block text-gray-700 text-sm font-bold mb-2 text-left">
+                      Telefone (opcional)
+                    </label>
+                    <input 
+                      id="phone" 
+                      type="text" 
+                      value={formData.phone || ''} 
+                      onChange={handleFormChange} 
+                      className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                      placeholder="Telefone (opcional)" 
+                    />
+                  </div>
                   
                   <div className="flex space-x-2">
                     <button 
                       onClick={handleSaveChanges} 
                       disabled={isUpdating}
-                      className={`flex-1 ${isUpdating ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white font-bold py-2 px-6 rounded-full transition-colors`}
+                      className={`main-action-button flex-1 ${isUpdating ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white font-bold py-2 px-6 rounded-full transition-colors`}
                     >
                       {isUpdating ? (
                         <span className="flex items-center justify-center">
@@ -248,7 +312,7 @@ function MyTravelsPage() {
                         setUpdateMessage('');
                       }} 
                       disabled={isUpdating}
-                      className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-full transition-colors"
+                      className="main-action-button flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-full transition-colors"
                     >
                       Cancelar
                     </button>

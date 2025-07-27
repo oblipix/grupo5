@@ -221,8 +221,8 @@ export const AuthProvider = ({ children }) => {
             // Prepara os dados para envio conforme o DTO esperado pelo backend
             const dataToSend = {
                 UserId: userId,
-                FirstName: updatedData.name?.trim().split(' ')[0] || currentUser.FirstName,
-                LastName: updatedData.name?.trim().split(' ').slice(1).join(' ') || currentUser.LastName,
+                FirstName: updatedData.firstName?.trim() || currentUser.FirstName,
+                LastName: updatedData.lastName?.trim() || currentUser.LastName,
                 Email: updatedData.email?.trim() || currentUser.Email,
                 Phone: updatedData.phone?.trim() || currentUser.Phone,
                 Cpf: currentUser.Cpf // Mantém o CPF existente
@@ -230,7 +230,7 @@ export const AuthProvider = ({ children }) => {
 
             console.log('Enviando dados para atualização:', dataToSend);
 
-            const response = await fetch(`https://localhost:7010/api/Users/${userId}`, {
+            const response = await fetch(`http://localhost:5155/api/Users/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -388,7 +388,7 @@ export const AuthProvider = ({ children }) => {
             
             // Verifica se é um erro de rede (fetch falhou)
             if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                throw new Error('Não foi possível conectar com o servidor. Verifique se o backend está rodando em https://localhost:7010');
+                throw new Error('Não foi possível conectar com o servidor. Verifique se o backend está rodando em http://localhost:7010');
             }
             
             // Re-lança o erro para que o componente possa exibir a mensagem
