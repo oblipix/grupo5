@@ -69,11 +69,24 @@
 }
 
 .dashboard-topbar .faturamento-box strong {
-    color: #198754;
+    color: #065290;
     font-size: 1.05rem;
 }
 
 .dashboard-topbar .faturamento-box .fs-4 {
     font-size: 2.1rem !important;
     font-weight: 600;
+}
+
+.logo {
+    font-size: 35px;
+    font-weight: bold;
+    background-image: linear-gradient(to right, #1e3a8a, #60a5fa); /* Azul escuro (#1e3a8a) para azul claro (#60a5fa) */
+    -webkit-background-clip: text;
+    color: transparent;
+    font-family: "Pacifico", cursive;
+    font-weight: 400;
+    font-style: normal;
+    z-index: 10001;
+    height: 70px;
 }

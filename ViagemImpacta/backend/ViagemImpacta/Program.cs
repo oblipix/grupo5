@@ -50,6 +50,9 @@ builder.Services.AddAuthentication(options =>
 {
     options.LoginPath = "/Admins/Index";
     options.AccessDeniedPath = "/Admins/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+    options.SlidingExpiration = true;
+    options.Cookie.IsEssential = true;
 });
 
 builder.Services.AddAuthorization();

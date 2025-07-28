@@ -6,9 +6,16 @@
     <title>@ViewData["Title"] - Tripz</title>
 
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+
     <link rel="stylesheet" href="~/WebApplication1.styles.css" asp-append-version="true" />
-    <link rel="icon" type="image/svg+xml" href="../../../../frontend/public/faviconn.png" />
+    <link rel="icon" type="image/svg+xml" href="https://i.postimg.cc/BvdZVb8q/icon.png" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
 
 </head>
 <body>
@@ -20,5 +27,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script src="~/js/dashboard.js"></script>
 </body>
 </html>

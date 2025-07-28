@@ -33,7 +33,7 @@ public class StripeController : ControllerBase
 
             StripeConfiguration.ApiKey = _model.SecretKey;
 
-            var amountInCents = (long)(res.TotalPrice * 100);
+            var amountInCents = (long)(res.TotalPrice * 100); 
             var customerOptions = new CustomerCreateOptions
             {
                 Name = $"{firstName} {lastName}",
@@ -65,7 +65,7 @@ public class StripeController : ControllerBase
                 Mode = "payment",
                 PaymentMethodTypes = ["card", "boleto"],
                 SuccessUrl = "https://localhost:7054/success",
-                ExpiresAt = DateTime.UtcNow + TimeSpan.FromHours(2),
+                ExpiresAt = DateTime.UtcNow + TimeSpan.FromMinutes(15),
             };
             var service = new SessionService();
             var session = service.Create(options);

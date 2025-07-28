@@ -26,7 +26,7 @@ namespace ViagemImpacta.Services.Implementations
             var pending = doc.RootElement.GetProperty("pending");
             var amount = pending[0].GetProperty("amount").GetDecimal();
 
-            decimal actualBalance = amount / 100;
+            decimal actualBalance = amount / 100; 
 
             return actualBalance;
         }
