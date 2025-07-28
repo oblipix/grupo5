@@ -1,10 +1,6 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
-using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
@@ -16,11 +12,13 @@ public class AdminsController : Controller
 {
     private readonly IUserService _userService;
     private readonly AuthService _authService;
+    private readonly StripeService _stripeService;
 
-    public AdminsController(IUserService userService, AuthService authService)
+    public AdminsController(IUserService userService, AuthService authService, StripeService stripeService)
     {
         _userService = userService;
         _authService = authService;
+        _stripeService = stripeService;
     }
 
     public IActionResult Index()
@@ -31,11 +29,8 @@ public class AdminsController : Controller
     [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
     public IActionResult Dashboard()
     {
-        var claims = User.Claims.Select(c => $"{c.Type} = {c.Value}").ToList();
-        foreach (var claim in claims)
-        {
-            Console.WriteLine(claim);
-        }
+        var balance = _stripeService.GetBalance();
+        ViewBag.Balance = balance;
 
         return View();
     }
@@ -54,7 +49,7 @@ public class AdminsController : Controller
                 return View(model);
             }
 
-            _authService.AuthenticationWithCookies(admin);
+            await _authService.AuthenticationWithCookies(admin);
 
             return RedirectToAction("Dashboard");
         }

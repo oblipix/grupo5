@@ -1,6 +1,6 @@
 ﻿@{
     var adminName = ViewBag.AdminName ?? User.Identity.Name ?? "Admin";
-    var faturamentoMes = 125000.00;
+    var balance = ViewBag.Balance ?? 0.0;
 }
 
 <!-- Bootstrap CDN -->
@@ -15,8 +15,8 @@
     <div class="dashboard-topbar">
         <h4 class="mb-0">Olá, @adminName</h4>
         <div class="faturamento-box">
-            <strong>Faturamento do mês:</strong>
-            <span class="fs-4">R$ @faturamentoMes.ToString("N2")</span>
+            <strong>Faturamento:</strong>
+            <span class="fs-4">R$ @balance.ToString("N2")</span>
         </div>
     </div>
     <div class="dashboard-main">

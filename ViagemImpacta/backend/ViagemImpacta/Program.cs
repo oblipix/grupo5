@@ -64,6 +64,7 @@ builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<StripeService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>) );
 builder.Services.AddAutoMapper(typeof(HotelProfile).Assembly, typeof(UserProfile).Assembly, typeof(ReservationProfile).Assembly);
 
