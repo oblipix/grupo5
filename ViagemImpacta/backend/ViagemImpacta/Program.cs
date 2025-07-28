@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using ViagemImpacta.Data;
+using ViagemImpacta.Models;
 using ViagemImpacta.Profiles;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Repositories.Implementations;
@@ -14,7 +15,7 @@ using Settings = ViagemImpacta.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 var key = Encoding.ASCII.GetBytes(Settings.Secret);
-// Add services to the container.
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 
@@ -56,6 +57,8 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AgenciaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ViagemImpactConnection")));
 
+builder.Services.Configure<StripeModel>(builder.Configuration.GetSection("StripeSettings"));
+
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IUserService, UserService>();
@@ -65,37 +68,6 @@ builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>) );
 builder.Services.AddAutoMapper(typeof(HotelProfile).Assembly, typeof(UserProfile).Assembly, typeof(ReservationProfile).Assembly);
 
 builder.Services.AddHttpContextAccessor();
-
-// 🎯 AutoMapper - DEMONSTRANDO TODAS AS ALTERNATIVAS
-#region AutoMapper Configuration Options
-
-// ✅ OPÇÃO 1: EXPLÍCITO (Controle total - sua abordagem atual)
-//builder.Services.AddAutoMapper(typeof(ReservationBookProfile), 
-//                               typeof(HotelProfile), 
-//                               typeof(UserProfile));
-
-// ✅ OPÇÃO 2: ASSEMBLY ESPECÍFICO (RECOMENDADO - automático mas controlado)
-builder.Services.AddAutoMapper(typeof(HotelProfile).Assembly, typeof(UserProfile).Assembly);
-
-// ⚠️ OPÇÃO 3: TODOS OS ASSEMBLIES (CUIDADO - pode incluir profiles externos)
-//builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-// ✅ OPÇÃO 4: MÚLTIPLOS ASSEMBLIES ESPECÍFICOS (Para projetos maiores)
-//builder.Services.AddAutoMapper(
-//    typeof(ReservationBookProfile).Assembly,  // Assembly atual
-//    typeof(SomeExternalProfile).Assembly    // Outro assembly se houver
-//);
-
-// ✅ OPÇÃO 5: COM CONFIGURAÇÃO PERSONALIZADA
-//builder.Services.AddAutoMapper(cfg =>
-//{
-//    cfg.AddProfile<ReservationBookProfile>();
-//    cfg.AddProfile<HotelProfile>();
-//    cfg.AddProfile<UserProfile>();
-//    // Configurações globais aqui se necessário
-//}, typeof(ReservationBookProfile).Assembly);
-
-#endregion
 
 builder.Services.AddCors(options =>
 {
