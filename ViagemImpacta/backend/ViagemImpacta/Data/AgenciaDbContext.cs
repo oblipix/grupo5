@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ViagemImpacta.Models;
+using ViagemImpacta.Models.Enums;
 
 namespace ViagemImpacta.Data
 {
@@ -93,6 +94,22 @@ namespace ViagemImpacta.Data
                     .HasForeignKey(e => e.ReservationId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
+
+            //modelBuilder.Entity<User>().HasData(
+            //    new User
+            //    {
+            //        UserId = 1,
+            //        Email = "admin@tripz.com",
+            //        Password = "$2a$11$zMC5qcoZXYNaPQasD9OkkOp14kasuLjc3XPDJPH9m2PDZEji0n8Oi",
+            //        FirstName = "Tripz",
+            //        LastName = "Admin",
+            //        Phone = "+5581954320943",
+            //        Cpf = "123987345-09",
+            //        CreatedAt = DateTime.Now,
+            //        Active = true,
+            //        Role = Roles.Admin,
+            //    }
+            //);
         }
     }
 }
