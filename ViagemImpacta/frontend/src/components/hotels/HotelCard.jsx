@@ -14,6 +14,22 @@ function HotelCard({ hotel }) {
 
     const isSaved = savedHotels?.some(saved => saved.id === hotel.id);
 
+    // Calcula o menor preço dos quartos disponíveis
+    const getMinPrice = () => {
+        console.log('HotelCard - Hotel data:', hotel);
+        console.log('HotelCard - Room options:', hotel.roomOptions);
+        
+        if (hotel.roomOptions && hotel.roomOptions.length > 0) {
+            const prices = hotel.roomOptions.map(room => room.price).filter(price => price > 0);
+            console.log('HotelCard - Prices found:', prices);
+            return prices.length > 0 ? Math.min(...prices) : hotel.price || 0;
+        }
+        console.log('HotelCard - Using fallback price:', hotel.price);
+        return hotel.price || 0;
+    };
+
+    const minPrice = getMinPrice();
+
     const handleSaveClick = (e) => {
         e.preventDefault();  // Impede que o clique no botão ative o Link do card
         e.stopPropagation(); // Para a propagação do evento
@@ -40,7 +56,7 @@ function HotelCard({ hotel }) {
                 <img
                     src={hotel.mainImageUrl}
                     alt={hotel.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    className="w-full100 h-full object-cover transition-transform duration-300 group-hover:scale-110"
                 />
                 {/* Botão de "Salvar" */}
                 <button
@@ -83,7 +99,7 @@ function HotelCard({ hotel }) {
                 </div>
 
                 <div className="mt-4 pt-4 border-t border-gray-100">
-                    {hotel.price && (
+                    {minPrice > 0 && (
                         <p className="text-lg font-bold">
                             {/* "Diárias a partir de": Removido o background, agora é apenas texto cinza */}
                             <span className="bg-yellow-100 text-gray-500 text-base font-normal mr-1">
@@ -91,7 +107,7 @@ function HotelCard({ hotel }) {
                             </span>
                             {/* Preço: Mantido o destaque azul e tamanho maior */}
                             <span className="bg-yellow-100 text-xl text-gray-600">
-                                R$ {hotel.price.toFixed(2).replace('.', ',')}
+                                R$ {minPrice.toFixed(2).replace('.', ',')}
                             </span>
                         </p>
                     )}

@@ -55,6 +55,34 @@ namespace ViagemImpacta.Repositories.Interfaces
         /// <param name="gym">Filtrar por academia/fitness</param>
         /// <returns>Lista de hotéis que atendem aos critérios</returns>
         Task<IEnumerable<Hotel>> GetHotelsWithAmenitiesAsync(bool wifi, bool parking, bool gym);
+
+        /// <summary>
+        /// 🏨 Busca hotel por ID incluindo quartos
+        /// 
+        /// PROPÓSITO: Carregar dados completos do hotel incluindo informações dos quartos
+        /// ÚTIL: Para exibir detalhes completos na página de detalhes do hotel
+        /// 
+        /// SQL GERADO: 
+        /// SELECT h.*, r.* FROM Hotels h 
+        /// LEFT JOIN Rooms r ON h.HotelId = r.HotelId 
+        /// WHERE h.HotelId = @id
+        /// </summary>
+        /// <param name="id">ID do hotel</param>
+        /// <returns>Hotel com lista de quartos populada</returns>
+        Task<Hotel?> GetHotelWithRoomsAsync(int id);
+
+        /// <summary>
+        /// 🏨 Busca todos os hotéis incluindo quartos
+        /// 
+        /// PROPÓSITO: Carregar lista completa de hotéis com informações dos quartos
+        /// ÚTIL: Para exibir preços e detalhes dos quartos na listagem geral
+        /// 
+        /// SQL GERADO: 
+        /// SELECT h.*, r.* FROM Hotels h 
+        /// LEFT JOIN Rooms r ON h.HotelId = r.HotelId
+        /// </summary>
+        /// <returns>Lista de hotéis com quartos populados</returns>
+        Task<IEnumerable<Hotel>> GetAllHotelsWithRoomsAsync();
     }
 
     /*

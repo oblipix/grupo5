@@ -32,13 +32,20 @@ const leisureIconMap = {
     'Sala de Cinema': Icons.Cinema,
     'Bar': Icons.Bar,
     'Restaurante': Icons.Restaurant,
+    'Jardim': Icons.Garden,
     'Jardim Amplo': Icons.Garden,
     'Salão de Jogos': Icons.Saloon,
     'Área Kids': Icons.KidsArea,
     'Piscina Aquecida': Icons.Pool,
     'Wi-Fi Grátis': Icons.Wifi,
     'Estacionamento': Icons.Parking,
-    'Bar na piscina': Icons.Bar, // Adicionado mapping para "Bar na piscina"
+    'Bar na piscina': Icons.Bar,
+    'Serviço de Quarto': Icons.Restaurant, // Usando ícone de restaurante para room service
+    'Acessibilidade': Icons.Accessibility || Icons.KidsArea, // Fallback se não existir ícone específico
+    'Pet Friendly': Icons.Garden, // Usando jardim como representação
+    'Café da Manhã Incluso': Icons.Restaurant,
+    'Recepção 24h': Icons.Restaurant, // Fallback
+    'Serviço de Limpeza': Icons.Restaurant, // Fallback
     // Adicione outros mapeamentos aqui conforme necessário
 };
  

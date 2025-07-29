@@ -74,10 +74,10 @@ namespace ViagemImpacta.Controllers.ApiControllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<Hotel>>> GetAllHotels()
         {
-            // 🎯 DELEGAÇÃO PARA REPOSITORY VIA UNITOFWORK
+            // 🎯 DELEGAÇÃO PARA REPOSITORY VIA UNITOFWORK INCLUINDO QUARTOS
             // UnitOfWork.Hotels acessa o HotelRepository
-            // GetAllAsync() é herdado do Repository<Hotel> genérico
-            var hotels = await _unitOfWork.Hotels.GetAllAsync();
+            // GetAllHotelsWithRoomsAsync() carrega hotéis com quartos
+            var hotels = await _unitOfWork.Hotels.GetAllHotelsWithRoomsAsync();
             
             // ✅ RETORNO PADRONIZADO
             // Ok() = 200 HTTP Status Code
@@ -119,9 +119,9 @@ namespace ViagemImpacta.Controllers.ApiControllers
             if (id <= 0) 
                 return BadRequest("ID deve ser maior que zero");
 
-            // 🔍 BUSCA NO REPOSITORY
-            // GetByIdAsync() é método do repository genérico
-            var hotel = await _unitOfWork.Hotels.GetByIdAsync(id);
+            // 🔍 BUSCA NO REPOSITORY INCLUINDO QUARTOS
+            // GetHotelWithRoomsAsync() carrega hotel com quartos em uma única query
+            var hotel = await _unitOfWork.Hotels.GetHotelWithRoomsAsync(id);
             
             // 🚫 VERIFICAÇÃO DE EXISTÊNCIA
             // Se hotel não existe, retorna 404 com mensagem descritiva

@@ -1,6 +1,6 @@
 // src/services/hotelService.js
  
-const API_BASE_URL = 'https://localhost:7010/api';
+const API_BASE_URL = 'http://localhost:5155/api';
  
 /**
  * Serviço para gerenciar operações relacionadas a hotéis
@@ -146,6 +146,9 @@ class HotelService {
    * @returns {Object} Hotel no formato do frontend
    */
   transformSingleHotelData(backendHotel) {
+    // Debug: vamos ver o que está vindo do backend
+    console.log('Backend Hotel Data:', backendHotel);
+    
     return {
       // Mapeia os campos do backend para o frontend
       id: backendHotel.hotelId || backendHotel.HotelId,
@@ -191,7 +194,7 @@ class HotelService {
       elevators: 4,
       mapUrl: this.generateMapUrl(backendHotel),
      
-      // Dados mockados até serem implementados no backend
+      // Dados dos quartos - agora usando dados reais do backend
       leisureFacilities: this.generateLeisureFacilities(backendHotel),
       roomOptions: this.generateRoomOptions(backendHotel),
       feedbacks: this.generateFeedbacks(backendHotel)
@@ -218,9 +221,21 @@ class HotelService {
   }
  
   /**
-   * Gera preço baseado nas estrelas e localização
+   * Gera preço baseado nos quartos reais ou nas estrelas
    */
   generatePrice(hotel) {
+    // Se tem quartos com preços reais, usa o menor preço
+    if (hotel.rooms && Array.isArray(hotel.rooms) && hotel.rooms.length > 0) {
+      const prices = hotel.rooms.map(room => 
+        parseFloat(room.averageDailyPrice || room.AverageDailyPrice || 0)
+      ).filter(price => price > 0);
+      
+      if (prices.length > 0) {
+        return Math.min(...prices);
+      }
+    }
+    
+    // Fallback: gera preço baseado nas estrelas
     const stars = hotel.stars || hotel.Stars || 3;
     const basePrice = stars * 200;
     return basePrice + Math.floor(Math.random() * 500);
@@ -294,19 +309,27 @@ class HotelService {
   }
  
   /**
-   * Gera facilidades de lazer baseadas nas comodidades
+   * Gera facilidades de lazer baseadas nas comodidades do backend
    */
   generateLeisureFacilities(hotel) {
     const facilities = [];
    
+    // Usa dados reais do backend
     if (hotel.pool || hotel.Pool) facilities.push('Piscina');
     if (hotel.gym || hotel.Gym) facilities.push('Academia');
     if (hotel.theater || hotel.Theater) facilities.push('Sala de Cinema');
     if (hotel.bar || hotel.Bar) facilities.push('Bar');
+    if (hotel.restaurant || hotel.Restaurant) facilities.push('Restaurante');
     if (hotel.garden || hotel.Garden) facilities.push('Jardim');
     if (hotel.warmPool || hotel.WarmPool) facilities.push('Piscina Aquecida');
+    if (hotel.wifi || hotel.Wifi) facilities.push('Wi-Fi Grátis');
+    if (hotel.parking || hotel.Parking) facilities.push('Estacionamento');
+    if (hotel.roomService || hotel.RoomService) facilities.push('Serviço de Quarto');
+    if (hotel.accessibility || hotel.Accessibility) facilities.push('Acessibilidade');
+    if (hotel.petFriendly || hotel.PetFriendly) facilities.push('Pet Friendly');
+    if (hotel.breakfastIncludes || hotel.BreakfastIncludes) facilities.push('Café da Manhã Incluso');
    
-    // Adiciona facilidades padrão se a lista estiver vazia
+    // Se não há facilidades específicas, adiciona básicas
     if (facilities.length === 0) {
       facilities.push('Recepção 24h', 'Serviço de Limpeza');
     }
@@ -315,15 +338,36 @@ class HotelService {
   }
  
   /**
-   * Gera opções de quartos (temporário até implementar no backend)
+   * Gera opções de quartos baseadas nos dados reais do backend
    */
   generateRoomOptions(hotel) {
+    // Debug: vamos ver se os quartos estão chegando
+    console.log('Hotel rooms data:', hotel.rooms);
+    console.log('Full hotel object:', hotel);
+    
+    // Se o hotel tem dados de quartos do backend, usa eles
+    if (hotel.rooms && Array.isArray(hotel.rooms) && hotel.rooms.length > 0) {
+      console.log('Using real room data from backend');
+      return hotel.rooms.map(room => ({
+        type: this.getRoomTypeName(room.typeName || room.TypeName),
+        description: this.getRoomDescription(room.typeName || room.TypeName, room.capacity || room.Capacity),
+        price: parseFloat(room.averageDailyPrice || room.AverageDailyPrice || 0),
+        capacity: room.capacity || room.Capacity || 2,
+        minCapacity: 1,
+        available: room.totalRooms || room.TotalRooms || 1,
+        bathrooms: 1,
+        beds: this.getBedConfiguration(room.capacity || room.Capacity)
+      }));
+    }
+    
+    // Fallback: gera opções básicas se não há dados do backend
+    console.log('Using fallback room data - no backend data found');
     const stars = hotel.stars || hotel.Stars || 3;
     const basePrice = stars * 150;
    
     return [
       {
-        type: 'Quarto Casal Standard',
+        type: 'Quarto Standard',
         description: 'Conforto e praticidade para sua estadia.',
         price: basePrice,
         capacity: 2,
@@ -331,18 +375,51 @@ class HotelService {
         available: 5,
         bathrooms: 1,
         beds: '1 Cama Casal'
-      },
-      {
-        type: 'Quarto Família',
-        description: 'Ideal para famílias, com espaço amplo.',
-        price: basePrice * 1.5,
-        capacity: 4,
-        minCapacity: 2,
-        available: 3,
-        bathrooms: 1,
-        beds: '1 Cama Casal + 2 Solteiros'
       }
     ];
+  }
+
+  /**
+   * Converte o enum RoomType para nome legível
+   */
+  getRoomTypeName(roomType) {
+    const typeNames = {
+      0: 'Quarto Standard',
+      1: 'Quarto Luxo', 
+      2: 'Suíte',
+      'Standard': 'Quarto Standard',
+      'Luxo': 'Quarto Luxo',
+      'Suite': 'Suíte'
+    };
+    
+    return typeNames[roomType] || 'Quarto Standard';
+  }
+
+  /**
+   * Gera descrição baseada no tipo e capacidade do quarto
+   */
+  getRoomDescription(roomType, capacity) {
+    const descriptions = {
+      'Standard': `Conforto essencial para até ${capacity} pessoa${capacity > 1 ? 's' : ''}.`,
+      'Luxo': `Elegância e sofisticação para até ${capacity} pessoa${capacity > 1 ? 's' : ''}.`,
+      'Suite': `Máximo luxo e espaço amplo para até ${capacity} pessoa${capacity > 1 ? 's' : ''}.`,
+      0: `Conforto essencial para até ${capacity} pessoa${capacity > 1 ? 's' : ''}.`,
+      1: `Elegância e sofisticação para até ${capacity} pessoa${capacity > 1 ? 's' : ''}.`,
+      2: `Máximo luxo e espaço amplo para até ${capacity} pessoa${capacity > 1 ? 's' : ''}.`
+    };
+    
+    return descriptions[roomType] || `Acomodação confortável para até ${capacity} pessoa${capacity > 1 ? 's' : ''}.`;
+  }
+
+  /**
+   * Define configuração de camas baseada na capacidade
+   */
+  getBedConfiguration(capacity) {
+    if (capacity <= 1) return '1 Cama Solteiro';
+    if (capacity === 2) return '1 Cama Casal';
+    if (capacity === 3) return '1 Cama Casal + 1 Solteiro';
+    if (capacity >= 4) return '2 Camas Casal';
+    return '1 Cama Casal';
   }
  
   /**

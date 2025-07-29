@@ -129,6 +129,68 @@ namespace ViagemImpacta.Repositories.Implementations
                            (!gym || h.Gym))                // 💪 Filtro academia condicional
                 .ToListAsync();
         }
+
+        /// <summary>
+        /// 🏨 MÉTODO: Buscar hotel por ID incluindo quartos
+        /// 
+        /// 🎯 PROPÓSITO:
+        /// Carrega dados completos do hotel incluindo informações dos quartos
+        /// Útil para exibir detalhes completos na página de detalhes do hotel
+        /// 
+        /// 🔍 IMPLEMENTAÇÃO:
+        /// - Include() força eager loading dos quartos
+        /// - FirstOrDefaultAsync() para busca por ID
+        /// - Retorna null se hotel não encontrado
+        /// 
+        /// 💾 SQL GERADO:
+        /// SELECT [h].[HotelId], [h].[Name], [h].[Stars], [r].[RoomId], [r].[TypeName]...
+        /// FROM [Hotels] AS [h]
+        /// LEFT JOIN [Rooms] AS [r] ON [h].[HotelId] = [r].[HotelId]
+        /// WHERE [h].[HotelId] = @id
+        /// 
+        /// ⚡ PERFORMANCE:
+        /// - Um única query com JOIN
+        /// - Evita problema N+1 queries
+        /// - Carrega todos os dados necessários de uma vez
+        /// </summary>
+        /// <param name="id">ID do hotel</param>
+        /// <returns>Hotel com lista de quartos populada ou null se não encontrado</returns>
+        public async Task<Hotel?> GetHotelWithRoomsAsync(int id)
+        {
+            return await _context.Hotels
+                .Include(h => h.Rooms)
+                .FirstOrDefaultAsync(h => h.HotelId == id);
+        }
+
+        /// <summary>
+        /// 🏨 MÉTODO: Buscar todos os hotéis incluindo quartos
+        /// 
+        /// 🎯 PROPÓSITO:
+        /// Carrega lista completa de hotéis incluindo informações dos quartos
+        /// Útil para exibir preços e detalhes na listagem geral
+        /// 
+        /// 🔍 IMPLEMENTAÇÃO:
+        /// - Include() força eager loading dos quartos para todos os hotéis
+        /// - ToListAsync() materializa todos os resultados
+        /// - Uma única query com JOIN
+        /// 
+        /// 💾 SQL GERADO:
+        /// SELECT [h].[HotelId], [h].[Name], [h].[Stars], [r].[RoomId], [r].[TypeName]...
+        /// FROM [Hotels] AS [h]
+        /// LEFT JOIN [Rooms] AS [r] ON [h].[HotelId] = [r].[HotelId]
+        /// 
+        /// ⚡ PERFORMANCE:
+        /// - Uma única query para todos os hotéis e quartos
+        /// - Evita problema N+1 queries
+        /// - Pode ser pesada se houver muitos hotéis/quartos
+        /// </summary>
+        /// <returns>Lista de hotéis com quartos populados</returns>
+        public async Task<IEnumerable<Hotel>> GetAllHotelsWithRoomsAsync()
+        {
+            return await _context.Hotels
+                .Include(h => h.Rooms)
+                .ToListAsync();
+        }
     }
 
     /*
