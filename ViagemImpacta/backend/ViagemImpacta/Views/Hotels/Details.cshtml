@@ -23,27 +23,81 @@
 
         <dt class="col-sm-2">@Html.DisplayNameFor(model => model.Stars)</dt>
         <dd class="col-sm-10">@Html.DisplayFor(model => model.Stars) ⭐</dd>
+    </dl>
+</div>
 
-        <dt class="col-sm-2">Comodidades</dt>
-        <dd class="col-sm-10">
+<div class="row mt-4">
+    <div class="col-md-6">
+        <h4>Comodidades Básicas</h4>
+        <ul class="list-unstyled">
             @if (Model.Wifi)
             {
-                <span>Wi-Fi |</span>
+                <li><i class="fas fa-wifi text-success"></i> WiFi Gratuito</li>
             }
             @if (Model.Parking)
             {
-                <span>Estacionamento |</span>
+                <li><i class="fas fa-parking text-success"></i> Estacionamento</li>
             }
-            @if (Model.Gym)
+            @if (Model.Accessibility)
             {
-                <span>Academia |</span>
+                <li><i class="fas fa-wheelchair text-success"></i> Acessibilidade</li>
+            }
+            @if (Model.PetFriendly)
+            {
+                <li><i class="fas fa-paw text-success"></i> Pet Friendly</li>
+            }
+            @if (Model.BreakfastIncludes)
+            {
+                <li><i class="fas fa-coffee text-success"></i> Café da Manhã Incluso</li>
+            }
+        </ul>
+    </div>
+    
+    <div class="col-md-6">
+        <h4>Serviços e Entretenimento</h4>
+        <ul class="list-unstyled">
+            @if (Model.RoomService)
+            {
+                <li><i class="fas fa-concierge-bell text-success"></i> Room Service</li>
             }
             @if (Model.Restaurant)
             {
-                <span>Restaurante</span>
+                <li><i class="fas fa-utensils text-success"></i> Restaurante</li>
             }
-        </dd>
-    </dl>
+            @if (Model.Bar)
+            {
+                <li><i class="fas fa-cocktail text-success"></i> Bar</li>
+            }
+            @if (Model.Gym)
+            {
+                <li><i class="fas fa-dumbbell text-success"></i> Academia</li>
+            }
+            @if (Model.Theater)
+            {
+                <li><i class="fas fa-theater-masks text-success"></i> Teatro</li>
+            }
+        </ul>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-12">
+        <h4>Área de Lazer</h4>
+        <ul class="list-unstyled">
+            @if (Model.Pool)
+            {
+                <li><i class="fas fa-swimming-pool text-primary"></i> Piscina</li>
+            }
+            @if (Model.WarmPool)
+            {
+                <li><i class="fas fa-hot-tub text-primary"></i> Piscina Aquecida</li>
+            }
+            @if (Model.Garden)
+            {
+                <li><i class="fas fa-leaf text-success"></i> Jardim</li>
+            }
+        </ul>
+    </div>
 </div>
 
 <hr />
