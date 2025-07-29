@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useHotels } from '../hooks/useHotels.js';
 import ImageModal from '../common/ImageModal.jsx';
+import ReservationModal from '../modals/ReservationModal.jsx';
 import { Icons } from '../layout/Icons.jsx'; // Importando os ícones centralizados
 import '../styles/HotelDetailsPage.css'; // Importando o CSS específico para esta página
  
@@ -60,6 +61,10 @@ function HotelDetailsPage() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalImages, setModalImages] = useState([]);
     const [initialImageId, setInitialImageId] = useState(null);
+    
+    // Estados para o modal de reserva
+    const [isReservationModalOpen, setIsReservationModalOpen] = useState(false);
+    const [selectedRoom, setSelectedRoom] = useState(null);
  
     useEffect(() => {
         const loadHotel = async () => {
@@ -108,6 +113,25 @@ function HotelDetailsPage() {
  
     const handleCloseModal = () => {
         setIsModalOpen(false);
+    };
+
+    // Funções para o modal de reserva
+    const handleReserveRoom = (room) => {
+        console.log('Selected room data:', room);
+        console.log('Hotel data:', hotel);
+        setSelectedRoom(room);
+        setIsReservationModalOpen(true);
+    };
+
+    const handleCloseReservationModal = () => {
+        setIsReservationModalOpen(false);
+        setSelectedRoom(null);
+    };
+
+    const handleReservationSuccess = (reservation) => {
+        alert(`Reserva criada com sucesso! ID: ${reservation.id}`);
+        // Aqui você pode redirecionar para uma página de confirmação ou atualizar a UI
+        console.log('Reserva criada:', reservation);
     };
  
     // Configurações do Carrossel de Feedbacks
@@ -211,7 +235,7 @@ function HotelDetailsPage() {
                         <h2 className="text-2xl font-bold text-gray-800 mb-4">Opções de Quartos</h2>
                         <div className="space-y-6">
                             {hotel.roomOptions.map((room, index) => (
-                                <div key={index} className="border border-gray-200 rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center shadow-md">
+                                <div key={room.id || index} className="border border-gray-200 rounded-lg p-4 flex flex-col md:flex-row justify-between items-start md:items-center shadow-md">
                                     <div>
                                         <h3 className="text-xl font-semibold text-gray-800">{room.type}</h3>
                                         <p className="text-gray-600 text-sm mb-2">{room.description}</p>
@@ -224,7 +248,7 @@ function HotelDetailsPage() {
                                         </p>
                                         {/* Botão "Reservar" agora abaixo do preço (devido ao flex-col e items-end) */}
                                         <button
-                                            onClick={() => navigate(`/payment?type=hotel&id=${hotel.id}&subitem=${encodeURIComponent(room.type)}`)}
+                                            onClick={() => handleReserveRoom(room)}
                                             className="reservation-button bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition shadow mt-2"
                                         >
                                             Reservar
@@ -266,6 +290,16 @@ function HotelDetailsPage() {
                     images={modalImages}
                     initialImageId={initialImageId}
                     onClose={handleCloseModal}
+                />
+            )}
+
+            {isReservationModalOpen && selectedRoom && (
+                <ReservationModal
+                    isOpen={isReservationModalOpen}
+                    onClose={handleCloseReservationModal}
+                    hotel={hotel}
+                    room={selectedRoom}
+                    onSuccess={handleReservationSuccess}
                 />
             )}
         </div>

@@ -348,16 +348,21 @@ class HotelService {
     // Se o hotel tem dados de quartos do backend, usa eles
     if (hotel.rooms && Array.isArray(hotel.rooms) && hotel.rooms.length > 0) {
       console.log('Using real room data from backend');
-      return hotel.rooms.map(room => ({
-        type: this.getRoomTypeName(room.typeName || room.TypeName),
-        description: this.getRoomDescription(room.typeName || room.TypeName, room.capacity || room.Capacity),
-        price: parseFloat(room.averageDailyPrice || room.AverageDailyPrice || 0),
-        capacity: room.capacity || room.Capacity || 2,
-        minCapacity: 1,
-        available: room.totalRooms || room.TotalRooms || 1,
-        bathrooms: 1,
-        beds: this.getBedConfiguration(room.capacity || room.Capacity)
-      }));
+      return hotel.rooms.map(room => {
+        const roomData = {
+          id: room.roomId || room.RoomId || room.id, // Mapea o ID corretamente
+          type: this.getRoomTypeName(room.typeName || room.TypeName),
+          description: this.getRoomDescription(room.typeName || room.TypeName, room.capacity || room.Capacity),
+          price: parseFloat(room.averageDailyPrice || room.AverageDailyPrice || 0),
+          capacity: room.capacity || room.Capacity || 2,
+          minCapacity: 1,
+          available: room.totalRooms || room.TotalRooms || 1,
+          bathrooms: 1,
+          beds: this.getBedConfiguration(room.capacity || room.Capacity)
+        };
+        console.log('Mapped room data:', roomData);
+        return roomData;
+      });
     }
     
     // Fallback: gera opções básicas se não há dados do backend
@@ -367,6 +372,7 @@ class HotelService {
    
     return [
       {
+        id: 999, // ID temporário para quartos fallback
         type: 'Quarto Standard',
         description: 'Conforto e praticidade para sua estadia.',
         price: basePrice,
