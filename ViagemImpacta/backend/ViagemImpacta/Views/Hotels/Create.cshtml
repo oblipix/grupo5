@@ -61,11 +61,44 @@
         </div>
 
         <div class="col-md-6">
-            <h4>Quartos</h4>
-            <div id="roomsContainer"></div>
-
-            <div class="mt-2">
-                <button type="button" id="addRoomBtn" class="btn btn-info btn-sm">Adicionar Quarto</button>
+            <h4>Configuração de Quartos</h4>
+            <p class="text-muted">Configure a quantidade de quartos por tipo</p>
+            
+            <div id="roomTypesContainer">
+                @{
+                    int index = 0;
+                }
+                @foreach (var roomType in Enum.GetValues<RoomType>())
+                {
+                    <div class="room-type-entry border p-3 mb-3">
+                        <h5>@roomType.ToString()</h5>
+                        
+                        <input type="hidden" name="Rooms[@index].TypeName" value="@roomType" />
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group mb-2">
+                                    <label>Quantidade <span class="text-danger">*</span></label>
+                                    <input type="number" min="0" max="100" name="Rooms[@index].TotalRooms" class="form-control" value="0" />
+                                    <small class="text-muted">0 = não oferecer este tipo</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-2">
+                                    <label>Capacidade <span class="text-danger">*</span></label>
+                                    <input type="number" min="1" max="4" name="Rooms[@index].Capacity" class="form-control" value="2" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-2">
+                                    <label>Preço Diária (R$) <span class="text-danger">*</span></label>
+                                    <input type="number" step="0.01" min="0.01" name="Rooms[@index].AverageDailyPrice" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    index++;
+                }
             </div>
         </div>
     </div>
@@ -77,65 +110,53 @@
     </div>
 </form>
 
-<div id="roomTemplate" style="display: none;">
-    <div class="room-entry border p-3 mb-3">
-        <h5>Novo Quarto <button type="button" class="btn btn-danger btn-sm float-end remove-room-btn">Remover</button></h5>
-        <div class="form-group mb-2">
-            <label>Nome do Quarto <span class="text-danger">*</span></label>
-            <input type="text" name="Rooms[__index__].Name" class="form-control" required />
-            <div class="invalid-feedback">Nome do quarto é obrigatório.</div>
-        </div>
-        <div class="form-group mb-2">
-            <label>Tipo de Quarto <span class="text-danger">*</span></label>
-            <select name="Rooms[__index__].Type" class="form-control" asp-items="Html.GetEnumSelectList<RoomType>()" required>
-                <option value="">Selecione o tipo</option>
-            </select>
-            <div class="invalid-feedback">Tipo do quarto é obrigatório.</div>
-        </div>
-        <div class="form-group mb-2">
-            <label>Preço Médio Diária <span class="text-danger">*</span></label>
-            <input type="number" step="0.01" min="0.01" name="Rooms[__index__].AverageDailyPrice" class="form-control" required />
-            <div class="invalid-feedback">Preço médio diário é obrigatório e deve ser maior que zero.</div>
-        </div>
-        <div class="form-group mb-2">
-            <label>Capacidade <span class="text-danger">*</span></label>
-            <input type="number" min="1" max="20" name="Rooms[__index__].Capacity" class="form-control" required />
-            <div class="invalid-feedback">Capacidade é obrigatória e deve ser entre 1 e 20 pessoas.</div>
-        </div>
-        <!-- Campo Hidden para Available com valor padrão true -->
-        <input type="hidden" name="Rooms[__index__].Available" value="true" />
-    </div>
-</div>
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
     <script>
-        // A mágica acontece aqui
         document.addEventListener("DOMContentLoaded", function () {
-            let roomIndex = 0;
-
-            document.getElementById("addRoomBtn").addEventListener("click", function () {
-                // Pega o conteúdo do template
-                const template = document.getElementById("roomTemplate").innerHTML;
-
-                // Substitui o placeholder de índice pelo índice atual
-                const newRoomHtml = template.replace(/__index__/g, roomIndex);
-
-                // Adiciona o novo formulário de quarto ao container
-                document.getElementById("roomsContainer").insertAdjacentHTML('beforeend', newRoomHtml);
-
-                // Incrementa o índice para o próximo quarto
-                roomIndex++;
-            });
-
-            // Adiciona um listener para os botões de remover
-            document.getElementById("roomsContainer").addEventListener("click", function (e) {
-                if (e.target && e.target.classList.contains("remove-room-btn")) {
-                    // Remove o elemento pai do botão (o div .room-entry)
-                    e.target.closest(".room-entry").remove();
+            // Adicionar validação customizada
+            const form = document.querySelector('form');
+            
+            form.addEventListener('submit', function(e) {
+                const totalRoomsInputs = document.querySelectorAll('input[name*="TotalRooms"]');
+                let hasRooms = false;
+                
+                totalRoomsInputs.forEach(input => {
+                    if (parseInt(input.value) > 0) {
+                        hasRooms = true;
+                    }
+                });
+                
+                if (!hasRooms) {
+                    e.preventDefault();
+                    alert('É necessário configurar pelo menos um tipo de quarto com quantidade maior que 0.');
+                    return false;
+                }
+                
+                // Validar preços para quartos com quantidade > 0
+                for (let i = 0; i < totalRoomsInputs.length; i++) {
+                    const totalRooms = parseInt(totalRoomsInputs[i].value);
+                    if (totalRooms > 0) {
+                        const priceInput = document.querySelector(`input[name="Rooms[${i}].AverageDailyPrice"]`);
+                        const capacityInput = document.querySelector(`input[name="Rooms[${i}].Capacity"]`);
+                        
+                        if (!priceInput.value || parseFloat(priceInput.value) <= 0) {
+                            e.preventDefault();
+                            alert('Preço é obrigatório para quartos com quantidade maior que 0.');
+                            priceInput.focus();
+                            return false;
+                        }
+                        
+                        if (!capacityInput.value || parseInt(capacityInput.value) <= 0) {
+                            e.preventDefault();
+                            alert('Capacidade é obrigatória para quartos com quantidade maior que 0.');
+                            capacityInput.focus();
+                            return false;
+                        }
+                    }
                 }
             });
         });

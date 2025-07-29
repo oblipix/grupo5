@@ -63,51 +63,49 @@
         </div>
 
         <div class="col-md-6">
-            <h4>Quartos</h4>
-            <div id="roomsContainer">
+            <h4>Configuração de Quartos</h4>
+            <p class="text-muted">Edite a quantidade de quartos por tipo</p>
+            
+            <div id="roomTypesContainer">
                 @{
-                    int i = 0;
+                    int index = 0;
+                    var existingRooms = Model.Rooms.ToDictionary(r => r.TypeName, r => r);
                 }
-                @foreach (var room in Model.Rooms)
+                @foreach (var roomType in Enum.GetValues<RoomType>())
                 {
-                    <div class="room-entry border p-3 mb-3">
-                        <h5>Quarto <button type="button" class="btn btn-danger btn-sm float-end remove-room-btn">Remover</button></h5>
-
-                        <input type="hidden" name="Rooms[@i].RoomId" value="@room.RoomId" />
-                        <input type="hidden" name="Rooms[@i].HotelId" value="@room.HotelId" />
-                        <input type="hidden" name="Rooms[@i].Available" value="@room.Available.ToString().ToLower()" />
-
-                        <div class="form-group mb-2">
-                            <label>Nome do Quarto <span class="text-danger">*</span></label>
-                            <input type="text" name="Rooms[@i].Name" value="@room.Name" class="form-control" required />
-                        </div>
-                        <div class="form-group mb-2">
-                            <label>Tipo de Quarto <span class="text-danger">*</span></label>
-                            <select name="Rooms[@i].Type" class="form-control" required>
-                                @foreach (var type in Html.GetEnumSelectList<ViagemImpacta.Models.Enums.RoomType>())
-                                {
-                                    <option value="@type.Value" selected="@(type.Value == room.Type.ToString())">
-                                        @type.Text
-                                    </option>
-                                }
-                            </select>
-                        </div>
-                        <div class="form-group mb-2">
-                            <label>Preço Médio Diária <span class="text-danger">*</span></label>
-                            <input type="number" step="0.01" min="0.01" name="Rooms[@i].AverageDailyPrice" value="@room.AverageDailyPrice" class="form-control" required />
-                        </div>
-                        <div class="form-group mb-2">
-                            <label>Capacidade <span class="text-danger">*</span></label>
-                            <input type="number" min="1" max="20" name="Rooms[@i].Capacity" value="@room.Capacity" class="form-control" required />
+                    var existingRoom = existingRooms.ContainsKey(roomType) ? existingRooms[roomType] : null;
+                    
+                    <div class="room-type-entry border p-3 mb-3">
+                        <h5>@roomType.ToString()</h5>
+                        
+                        <input type="hidden" name="Rooms[@index].RoomId" value="@(existingRoom?.RoomId ?? 0)" />
+                        <input type="hidden" name="Rooms[@index].TypeName" value="@roomType" />
+                        <input type="hidden" name="Rooms[@index].HotelId" value="@Model.HotelId" />
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group mb-2">
+                                    <label>Quantidade <span class="text-danger">*</span></label>
+                                    <input type="number" min="0" max="100" name="Rooms[@index].TotalRooms" class="form-control" value="@(existingRoom?.TotalRooms ?? 0)" />
+                                    <small class="text-muted">0 = não oferecer este tipo</small>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-2">
+                                    <label>Capacidade <span class="text-danger">*</span></label>
+                                    <input type="number" min="1" max="4" name="Rooms[@index].Capacity" class="form-control" value="@(existingRoom?.Capacity ?? 2)" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mb-2">
+                                    <label>Preço Diária (R$) <span class="text-danger">*</span></label>
+                                    <input type="number" step="0.01" min="0.01" name="Rooms[@index].AverageDailyPrice" class="form-control" value="@(existingRoom?.AverageDailyPrice ?? 0)" />
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    i++;
+                    index++;
                 }
-            </div>
-
-            <div class="mt-2">
-                <button type="button" id="addRoomBtn" class="btn btn-info btn-sm">Adicionar Novo Quarto</button>
             </div>
         </div>
     </div>
@@ -119,36 +117,6 @@
     </div>
 </form>
 
-<div id="roomTemplate" style="display: none;">
-    <div class="room-entry border p-3 mb-3">
-        <h5>Novo Quarto <button type="button" class="btn btn-danger btn-sm float-end remove-room-btn">Remover</button></h5>
-        <div class="form-group mb-2">
-            <label>Nome do Quarto <span class="text-danger">*</span></label>
-            <input type="text" name="Rooms[__index__].Name" class="form-control" required />
-        </div>
-        <div class="form-group mb-2">
-            <label>Tipo de Quarto <span class="text-danger">*</span></label>
-            <select name="Rooms[__index__].Type" class="form-control" required>
-                <option value="">Selecione o tipo</option>
-                @foreach (var type in Html.GetEnumSelectList<RoomType>())
-                {
-                    <option value="@type.Value">@type.Text</option>
-                }
-            </select>
-        </div>
-        <div class="form-group mb-2">
-            <label>Preço Médio Diária <span class="text-danger">*</span></label>
-            <input type="number" step="0.01" min="0.01" name="Rooms[__index__].AverageDailyPrice" class="form-control" required />
-        </div>
-        <div class="form-group mb-2">
-            <label>Capacidade <span class="text-danger">*</span></label>
-            <input type="number" min="1" max="20" name="Rooms[__index__].Capacity" class="form-control" value="1" required />
-        </div>
-        <!-- Campo Hidden para Available com valor padrão true -->
-        <input type="hidden" name="Rooms[__index__].Available" value="true" />
-    </div>
-</div>
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
@@ -156,19 +124,46 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            // O índice para novos quartos deve começar DEPOIS dos quartos existentes.
-            let roomIndex = @Model.Rooms.Count;
-
-            document.getElementById("addRoomBtn").addEventListener("click", function () {
-                const template = document.getElementById("roomTemplate").innerHTML;
-                const newRoomHtml = template.replace(/__index__/g, roomIndex);
-                document.getElementById("roomsContainer").insertAdjacentHTML('beforeend', newRoomHtml);
-                roomIndex++;
-            });
-
-            document.getElementById("roomsContainer").addEventListener("click", function (e) {
-                if (e.target && e.target.classList.contains("remove-room-btn")) {
-                    e.target.closest(".room-entry").remove();
+            // Adicionar validação customizada
+            const form = document.querySelector('form');
+            
+            form.addEventListener('submit', function(e) {
+                const totalRoomsInputs = document.querySelectorAll('input[name*="TotalRooms"]');
+                let hasRooms = false;
+                
+                totalRoomsInputs.forEach(input => {
+                    if (parseInt(input.value) > 0) {
+                        hasRooms = true;
+                    }
+                });
+                
+                if (!hasRooms) {
+                    e.preventDefault();
+                    alert('É necessário configurar pelo menos um tipo de quarto com quantidade maior que 0.');
+                    return false;
+                }
+                
+                // Validar preços para quartos com quantidade > 0
+                for (let i = 0; i < totalRoomsInputs.length; i++) {
+                    const totalRooms = parseInt(totalRoomsInputs[i].value);
+                    if (totalRooms > 0) {
+                        const priceInput = document.querySelector(`input[name="Rooms[${i}].AverageDailyPrice"]`);
+                        const capacityInput = document.querySelector(`input[name="Rooms[${i}].Capacity"]`);
+                        
+                        if (!priceInput.value || parseFloat(priceInput.value) <= 0) {
+                            e.preventDefault();
+                            alert('Preço é obrigatório para quartos com quantidade maior que 0.');
+                            priceInput.focus();
+                            return false;
+                        }
+                        
+                        if (!capacityInput.value || parseInt(capacityInput.value) <= 0) {
+                            e.preventDefault();
+                            alert('Capacidade é obrigatória para quartos com quantidade maior que 0.');
+                            capacityInput.focus();
+                            return false;
+                        }
+                    }
                 }
             });
         });

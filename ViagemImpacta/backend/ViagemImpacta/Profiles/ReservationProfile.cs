@@ -9,10 +9,11 @@ namespace ViagemImpacta.Profiles
     {
         public ReservationProfile()
         {
+
             // Reservation mappings
             CreateMap<CreateReservationDto, Reservation>()
                 .ForMember(dest => dest.ReservationId, opt => opt.Ignore())
-                .ForMember(dest => dest.ReservationDate, opt => opt.MapFrom(src => DateTime.Now))
+                //.ForMember(dest => dest.ReservationDate, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.IsConfirmed, opt => opt.MapFrom(src => false))
                 .ForMember(dest => dest.CreatedAt, opt => opt.MapFrom(src => DateTime.Now))
                 .ForMember(dest => dest.UpdatedAt, opt => opt.MapFrom(src => DateTime.Now))
@@ -25,8 +26,7 @@ namespace ViagemImpacta.Profiles
             CreateMap<Reservation, ReservationResponseDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => $"{src.User!.FirstName} {src.User.LastName}"))
                 .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User!.Email))
-                .ForMember(dest => dest.RoomName, opt => opt.MapFrom(src => src.Room!.Name))
-                .ForMember(dest => dest.RoomType, opt => opt.MapFrom(src => src.Room!.Type))
+                .ForMember(dest => dest.RoomType, opt => opt.MapFrom(src => src.Room!.TypeName))
                 .ForMember(dest => dest.HotelName, opt => opt.MapFrom(src => src.Hotel!.Name))
                 .ForMember(dest => dest.TotalDays, opt => opt.MapFrom(src => (src.CheckOut - src.CheckIn).Days))
                 .ForMember(dest => dest.Travellers, opt => opt.MapFrom(src => src.Travellers));

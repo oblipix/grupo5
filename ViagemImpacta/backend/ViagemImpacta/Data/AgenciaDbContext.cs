@@ -34,9 +34,7 @@ namespace ViagemImpacta.Data
             modelBuilder.Entity<Room>(entity =>
             {
                 entity.HasKey(e => e.RoomId);
-                entity.Property(e => e.Name).HasMaxLength(100).IsRequired();
                 entity.Property(e => e.AverageDailyPrice).HasColumnType("decimal(18,2)");
-                entity.Property(e => e.Available).HasDefaultValue(true);
                 
                 // Relacionamento com Hotel
                 entity.HasOne(e => e.Hotel)
@@ -61,7 +59,7 @@ namespace ViagemImpacta.Data
             {
                 entity.HasKey(e => e.ReservationId);
                 entity.Property(e => e.TotalPrice).HasColumnType("decimal(18,2)");
-                entity.Property(e => e.SpecialRequests).HasMaxLength(500);
+                entity.Property(e => e.Description).HasMaxLength(500);
                 
                 // Relacionamentos
                 entity.HasOne(e => e.User)

@@ -11,7 +11,7 @@ namespace ViagemImpacta.Profiles
         {
             CreateMap<Hotel, HotelDto>()
                 .ForMember(dest => dest.RoomCount, 
-                opt => opt.MapFrom(src => src.Rooms.Count));
+                opt => opt.MapFrom(src => src.Rooms.Sum(r => r.TotalRooms)));
             
             // Mapeamento bidirecional para Hotel
             CreateMap<Hotel, Hotel>()
@@ -21,8 +21,7 @@ namespace ViagemImpacta.Profiles
             // Mapeamento bidirecional para Room
             CreateMap<Room, Room>()
                 .ForMember(dest => dest.RoomId, opt => opt.Condition(src => src.RoomId > 0))
-                .ForMember(dest => dest.Hotel, opt => opt.Ignore())
-                .ForMember(dest => dest.Available, opt => opt.Condition(src => src.Available != default));
+                .ForMember(dest => dest.Hotel, opt => opt.Ignore());
 
             // 📋 ENTITY → RESPONSE
             CreateMap<Hotel, HotelResponse>()

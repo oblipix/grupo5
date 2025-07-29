@@ -54,8 +54,8 @@
     <table class="table table-bordered table-striped mt-3">
         <thead class="table-light">
             <tr>
-                <th>Nome do Quarto</th>
                 <th>Tipo</th>
+                <th>Quantidade</th>
                 <th>Capacidade</th>
                 <th>Preço da Diária</th>
             </tr>
@@ -64,14 +64,20 @@
             @foreach (var room in Model.Rooms)
             {
                 <tr>
-                    <td>@room.Name</td>
-                    <td>@room.Type</td>
+                    <td>@room.TypeName</td>
+                    <td>@room.TotalRooms quartos</td>
                     <td>@room.Capacity pessoas</td>
                     <td>@room.AverageDailyPrice.ToString("C")</td>
                 </tr>
             }
         </tbody>
     </table>
+    
+    <div class="mt-3">
+        <p class="text-muted">
+            <strong>Total de quartos:</strong> @Model.Rooms.Sum(r => r.TotalRooms) quartos disponíveis
+        </p>
+    </div>
 }
 else
 {

@@ -35,19 +35,64 @@ namespace ViagemImpacta.Services.Interfaces
 
         public async Task<Hotel> CreateHotelAsync(Hotel hotel)
         {
-            // Garantir que todos os quartos tenham Available = true se não foi definido
-            foreach (var room in hotel.Rooms)
+            // Primeiro, criar o hotel para obter o ID
+            var hotelToCreate = new Hotel
             {
-                if (room.Available == default)
+                Name = hotel.Name,
+                Phone = hotel.Phone,
+                HotelAddress = hotel.HotelAddress,
+                City = hotel.City,
+                Stars = hotel.Stars,
+                Wifi = hotel.Wifi,
+                Parking = hotel.Parking,
+                Gym = hotel.Gym,
+                Restaurant = hotel.Restaurant,
+                Bar = hotel.Bar,
+                RoomService = hotel.RoomService,
+                Accessibility = hotel.Accessibility,
+                WarmPool = hotel.WarmPool,
+                Theater = hotel.Theater,
+                Garden = hotel.Garden,
+                PetFriendly = hotel.PetFriendly,
+                Pool = hotel.Pool,
+                BreakfastIncludes = hotel.BreakfastIncludes
+            };
+
+            await _unitOfWork.Hotels.AddAsync(hotelToCreate);
+            await _unitOfWork.CommitAsync();
+
+            // Agora processar os quartos - apenas criar registros para tipos com quantidade > 0
+            var roomsToCreate = new List<Room>();
+            
+            foreach (var roomConfig in hotel.Rooms)
+            {
+                if (roomConfig.TotalRooms > 0)
                 {
-                    room.Available = true;
+                    var roomToCreate = new Room
+                    {
+                        HotelId = hotelToCreate.HotelId,
+                        TypeName = roomConfig.TypeName,
+                        TotalRooms = roomConfig.TotalRooms,
+                        Capacity = roomConfig.Capacity,
+                        AverageDailyPrice = roomConfig.AverageDailyPrice
+                    };
+                    
+                    roomsToCreate.Add(roomToCreate);
                 }
-                room.HotelId = hotel.HotelId; // Garantir que o HotelId seja definido
             }
 
-            await _unitOfWork.Hotels.AddAsync(hotel);
-            await _unitOfWork.CommitAsync();
-            return hotel;
+            // Adicionar os quartos configurados
+            if (roomsToCreate.Any())
+            {
+                foreach (var room in roomsToCreate)
+                {
+                    await _unitOfWork.Rooms.AddAsync(room);
+                }
+                await _unitOfWork.CommitAsync();
+            }
+
+            // Retornar o hotel criado com os quartos
+            return await GetHotelWithRoomsAsync(hotelToCreate.HotelId) ?? hotelToCreate;
         }
 
         public async Task UpdateHotelAsync(Hotel hotel)
@@ -55,37 +100,58 @@ namespace ViagemImpacta.Services.Interfaces
             var existingHotel = await _unitOfWork.Hotels.GetAsync(h => h.HotelId == hotel.HotelId, include: h => h.Include(r => r.Rooms));
             if (existingHotel == null) return;
 
-            // Atualizar propriedades do hotel
-            _mapper.Map(hotel, existingHotel);
+            // Atualizar propriedades do hotel (exceto quartos)
+            existingHotel.Name = hotel.Name;
+            existingHotel.Phone = hotel.Phone;
+            existingHotel.HotelAddress = hotel.HotelAddress;
+            existingHotel.City = hotel.City;
+            existingHotel.Stars = hotel.Stars;
+            existingHotel.Wifi = hotel.Wifi;
+            existingHotel.Parking = hotel.Parking;
+            existingHotel.Gym = hotel.Gym;
+            existingHotel.Restaurant = hotel.Restaurant;
+            existingHotel.Bar = hotel.Bar;
+            existingHotel.RoomService = hotel.RoomService;
+            existingHotel.Accessibility = hotel.Accessibility;
+            existingHotel.WarmPool = hotel.WarmPool;
+            existingHotel.Theater = hotel.Theater;
+            existingHotel.Garden = hotel.Garden;
+            existingHotel.PetFriendly = hotel.PetFriendly;
+            existingHotel.Pool = hotel.Pool;
+            existingHotel.BreakfastIncludes = hotel.BreakfastIncludes;
 
-            // Remover quartos que não existem mais
-            var roomsToRemove = existingHotel.Rooms.Where(dbRoom => !hotel.Rooms.Any(formRoom => formRoom.RoomId == dbRoom.RoomId)).ToList();
-            foreach (var room in roomsToRemove) 
+            // Processar quartos com nova lógica
+            foreach (var roomConfig in hotel.Rooms)
             {
-                existingHotel.Rooms.Remove(room);
-            }
-
-            // Atualizar ou adicionar quartos
-            foreach (var formRoom in hotel.Rooms)
-            {
-                // Garantir que Available tenha valor válido
-                if (formRoom.Available == default)
-                {
-                    formRoom.Available = true;
-                }
+                var existingRoom = existingHotel.Rooms.FirstOrDefault(r => r.TypeName == roomConfig.TypeName);
                 
-                formRoom.HotelId = hotel.HotelId; // Garantir que o HotelId seja definido
-
-                var dbRoom = existingHotel.Rooms.FirstOrDefault(r => r.RoomId == formRoom.RoomId);
-                if (dbRoom != null)
+                if (roomConfig.TotalRooms > 0)
                 {
-                    // Atualizar quarto existente
-                    _mapper.Map(formRoom, dbRoom);
+                    if (existingRoom != null)
+                    {
+                        // Atualizar quarto existente
+                        existingRoom.TotalRooms = roomConfig.TotalRooms;
+                        existingRoom.Capacity = roomConfig.Capacity;
+                        existingRoom.AverageDailyPrice = roomConfig.AverageDailyPrice;
+                    }
+                    else
+                    {
+                        // Criar novo quarto para este tipo
+                        var newRoom = new Room
+                        {
+                            HotelId = hotel.HotelId,
+                            TypeName = roomConfig.TypeName,
+                            TotalRooms = roomConfig.TotalRooms,
+                            Capacity = roomConfig.Capacity,
+                            AverageDailyPrice = roomConfig.AverageDailyPrice
+                        };
+                        existingHotel.Rooms.Add(newRoom);
+                    }
                 }
-                else
+                else if (existingRoom != null)
                 {
-                    // Adicionar novo quarto
-                    existingHotel.Rooms.Add(formRoom);
+                    // Remover quarto se quantidade for 0
+                    existingHotel.Rooms.Remove(existingRoom);
                 }
             }
 

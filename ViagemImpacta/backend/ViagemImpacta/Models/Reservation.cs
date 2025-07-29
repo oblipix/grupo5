@@ -7,7 +7,6 @@
         public User? User { get; set; }
         public DateTime CheckIn { get; set; }
         public DateTime CheckOut { get; set; }
-        public DateTime ReservationDate { get; set; }
         public bool IsConfirmed { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
@@ -16,8 +15,7 @@
         public int HotelId { get; set; }
         public Hotel? Hotel { get; set; }
         public decimal TotalPrice { get; set; }
-        public int NumberOfGuests { get; set; }
-        public string? SpecialRequests { get; set; }
+        public string? Description { get; set; }
 
         public ICollection<Travellers>? Travellers { get; set; }
     }

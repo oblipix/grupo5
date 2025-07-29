@@ -36,7 +36,7 @@ namespace ViagemImpacta.Repositories.Implementations
             return await _context.Rooms
                 .Include(r => r.Hotel)
                 .Where(r => r.HotelId == hotelId && 
-                           r.Available && 
+
                            !unavailableRoomIds.Contains(r.RoomId))
                 .ToListAsync();
         }

@@ -1,4 +1,5 @@
 using AutoMapper;
+using System.Collections;
 using ViagemImpacta.DTO.ReservationDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Repositories;
@@ -80,7 +81,7 @@ namespace ViagemImpacta.Services.Implementations
             var createdReservation = await _unitOfWork.Reservations.GetReservationWithDetailsAsync(reservation.ReservationId);
             return _mapper.Map<ReservationResponseDto>(createdReservation);
         }
-
+        
         public async Task<ReservationResponseDto?> GetReservationByIdAsync(int reservationId)
         {
             var reservation = await _unitOfWork.Reservations.GetReservationWithDetailsAsync(reservationId);
