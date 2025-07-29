@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ViagemImpacta.DTO;
 using ViagemImpacta.DTO.Hotel;
+using ViagemImpacta.DTO.HotelDTO;
 using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Profiles

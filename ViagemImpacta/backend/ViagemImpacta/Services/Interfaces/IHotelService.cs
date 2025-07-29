@@ -1,4 +1,4 @@
-﻿using ViagemImpacta.DTO;
+﻿using ViagemImpacta.DTO.HotelDTO;
 using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Services.Interfaces

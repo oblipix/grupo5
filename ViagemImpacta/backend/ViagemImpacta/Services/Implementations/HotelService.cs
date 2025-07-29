@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using ViagemImpacta.DTO;
+using ViagemImpacta.DTO.HotelDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Repositories;
 

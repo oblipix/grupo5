@@ -3,7 +3,7 @@ using ViagemImpacta.Models.Enums;
 
 namespace ViagemImpacta.DTO.ReservationDTO
 {
-    public class ReservationResponseDto
+    public class ReservationDto
     {
         public int ReservationId { get; set; }
         public int UserId { get; set; }
@@ -21,15 +21,8 @@ namespace ViagemImpacta.DTO.ReservationDTO
         public int NumberOfGuests { get; set; }
         public string? SpecialRequests { get; set; }
         public int TotalDays { get; set; }
-        public List<TravellerResponseDto> Travellers { get; set; } = new();
+        public List<TravellerDto> Travellers { get; set; } = new();
     }
 
-    public class TravellerResponseDto
-    {
-        public int TravellersId { get; set; }
-        public string FirstName { get; set; } = string.Empty;
-        public string LastName { get; set; } = string.Empty;
-        public string Cpf { get; set; } = string.Empty;
-        public string FullName => $"{FirstName} {LastName}";
-    }
+    
 }

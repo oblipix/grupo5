@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ViagemImpacta.DTO
+﻿namespace ViagemImpacta.DTO.HotelDTO
 {
     public class HotelDto
     {

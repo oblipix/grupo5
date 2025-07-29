@@ -23,7 +23,7 @@ namespace ViagemImpacta.Profiles
                 .ForMember(dest => dest.Hotel, opt => opt.Ignore())
                 .ForMember(dest => dest.Travellers, opt => opt.Ignore());
 
-            CreateMap<Reservation, ReservationResponseDto>()
+            CreateMap<Reservation, ReservationDto>()
                 .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => $"{src.User!.FirstName} {src.User.LastName}"))
                 .ForMember(dest => dest.UserEmail, opt => opt.MapFrom(src => src.User!.Email))
                 .ForMember(dest => dest.RoomType, opt => opt.MapFrom(src => src.Room!.TypeName))
@@ -37,7 +37,7 @@ namespace ViagemImpacta.Profiles
                 .ForMember(dest => dest.ReservationId, opt => opt.Ignore())
                 .ForMember(dest => dest.Reservation, opt => opt.Ignore());
 
-            CreateMap<Travellers, TravellerResponseDto>();
+            CreateMap<Travellers, TravellerDto>();
         }
     }
 }

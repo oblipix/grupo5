@@ -13,8 +13,6 @@ namespace ViagemImpacta.Models
         public string LastName { get; set; } 
 
         [Required]
-        [StringLength(11, MinimumLength = 11)]
-        [RegularExpression(@"^\d{11}$", ErrorMessage = "CPF deve conter apenas 11 dígitos")]
         public string Cpf { get; set; } 
 
 

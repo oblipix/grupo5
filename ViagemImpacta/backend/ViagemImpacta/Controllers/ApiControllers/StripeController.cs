@@ -31,7 +31,7 @@ public class StripeController : ControllerBase
         {
 
             var result = await _unitOfWork.Reservations.GetByIdAsync(id);
-            var res = _mapper.Map<ReservationResponseDto>(result);
+            var res = _mapper.Map<ReservationDto>(result);
             if (result == null) return BadRequest();
 
            

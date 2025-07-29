@@ -18,7 +18,7 @@ namespace ViagemImpacta.Services.Implementations
             _mapper = mapper;
         }
 
-        public async Task<ReservationResponseDto> CreateReservationAsync(CreateReservationDto createReservationDto)
+        public async Task<Reservation> CreateReservationAsync(CreateReservationDto createReservationDto)
         {
             // Validações de negócio
             await ValidateReservationAsync(createReservationDto);
@@ -91,27 +91,27 @@ namespace ViagemImpacta.Services.Implementations
 
             // Buscar reserva com detalhes para retorno
             var createdReservation = await _unitOfWork.Reservations.GetReservationWithDetailsAsync(reservation.ReservationId);
-            return _mapper.Map<ReservationResponseDto>(createdReservation);
+            return createdReservation;
         }
 
 
         
-        public async Task<ReservationResponseDto?> GetReservationByIdAsync(int reservationId)
+        public async Task<Reservation?> GetReservationByIdAsync(int reservationId)
         {
             var reservation = await _unitOfWork.Reservations.GetReservationWithDetailsAsync(reservationId);
-            return reservation == null ? null : _mapper.Map<ReservationResponseDto>(reservation);
+            return reservation;
         }
 
-        public async Task<IEnumerable<ReservationResponseDto>> GetReservationsByUserIdAsync(int userId)
+        public async Task<IEnumerable<Reservation>> GetReservationsByUserIdAsync(int userId)
         {
             var reservations = await _unitOfWork.Reservations.GetReservationsByUserIdAsync(userId);
-            return _mapper.Map<IEnumerable<ReservationResponseDto>>(reservations);
+            return reservations;
         }
 
-        public async Task<IEnumerable<ReservationResponseDto>> GetReservationsByHotelIdAsync(int hotelId)
+        public async Task<IEnumerable<Reservation>> GetReservationsByHotelIdAsync(int hotelId)
         {
             var reservations = await _unitOfWork.Reservations.GetReservationsByHotelIdAsync(hotelId);
-            return _mapper.Map<IEnumerable<ReservationResponseDto>>(reservations);
+            return reservations;
         }
 
         public async Task<bool> CancelReservationAsync(int reservationId, int userId)
