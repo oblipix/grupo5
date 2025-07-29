@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ViagemImpacta.Data;
 using ViagemImpacta.Models;
+using ViagemImpacta.Models.Enums;
 using ViagemImpacta.Repositories.Interfaces;
 
 namespace ViagemImpacta.Repositories.Implementations
@@ -94,6 +95,36 @@ namespace ViagemImpacta.Repositories.Implementations
                 .Where(r => r.CheckIn >= startDate && r.CheckOut <= endDate)
                 .OrderBy(r => r.CheckIn)
                 .ToListAsync();
+        }
+
+        public async Task<int> GetOccupiedRoomCountByTypeAsync(int hotelId, RoomType roomType, DateTime checkIn, DateTime checkOut, int? excludeReservationId = null)
+        {
+            return await _context.Reservations
+                .Include(r => r.Room)
+                .Where(r => r.HotelId == hotelId &&
+                           r.Room!.TypeName == roomType &&
+                           r.IsConfirmed &&
+                           (excludeReservationId == null || r.ReservationId != excludeReservationId) &&
+                           ((r.CheckIn < checkOut && r.CheckOut > checkIn)))
+                .CountAsync();
+        }
+
+        public async Task<bool> IsRoomTypeAvailableAsync(int hotelId, RoomType roomType, DateTime checkIn, DateTime checkOut, int? excludeReservationId = null)
+        {
+            // Buscar o total de quartos deste tipo no hotel
+            var totalRoomsOfType = await _context.Rooms
+                .Where(r => r.HotelId == hotelId && r.TypeName == roomType)
+                .Select(r => r.TotalRooms)
+                .FirstOrDefaultAsync();
+
+            if (totalRoomsOfType == 0)
+                return false; // Não há quartos deste tipo no hotel
+
+            // Contar quantos quartos deste tipo estão ocupados no período
+            var occupiedRooms = await GetOccupiedRoomCountByTypeAsync(hotelId, roomType, checkIn, checkOut, excludeReservationId);
+    
+            // Verificar se há pelo menos um quarto disponível
+            return occupiedRooms < totalRoomsOfType;
         }
     }
 }

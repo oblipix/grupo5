@@ -7,12 +7,13 @@ namespace ViagemImpacta.Profiles
 {
     public class HotelProfile : Profile
     {
-        public HotelProfile() 
+        public HotelProfile()
         {
             CreateMap<Hotel, HotelDto>()
-                .ForMember(dest => dest.RoomCount, 
-                opt => opt.MapFrom(src => src.Rooms.Sum(r => r.TotalRooms)));
-            
+            .ForMember(dest => dest.RoomCount, 
+            opt => opt.MapFrom(src => src.Rooms.Sum(r => r.TotalRooms)));
+
+
             // Mapeamento bidirecional para Hotel
             CreateMap<Hotel, Hotel>()
                 .ForMember(dest => dest.HotelId, opt => opt.Ignore())
@@ -37,5 +38,7 @@ namespace ViagemImpacta.Profiles
                 .ForMember(dest => dest.HasWifi, opt => opt.MapFrom(src => src.Wifi))
                 .ForMember(dest => dest.HasParking, opt => opt.MapFrom(src => src.Parking));
         }
+
+
     }
 }

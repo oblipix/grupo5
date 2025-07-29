@@ -44,14 +44,26 @@ namespace ViagemImpacta.Services.Implementations
             if (createReservationDto.Travellers.Count != createReservationDto.NumberOfGuests)
                 throw new ArgumentException("Número de viajantes deve ser igual ao número de hóspedes");
 
-            // Verificar disponibilidade do quarto
-            var isAvailable = await _unitOfWork.Reservations.IsRoomAvailableAsync(
-                createReservationDto.RoomId, 
-                createReservationDto.CheckIn, 
+            // NOVA VALIDAÇÃO: Verificar disponibilidade por tipo de quarto
+            var isRoomTypeAvailable = await _unitOfWork.Reservations.IsRoomTypeAvailableAsync(
+                createReservationDto.HotelId,
+                room.TypeName,
+                createReservationDto.CheckIn,
                 createReservationDto.CheckOut);
 
-            if (!isAvailable)
-                throw new InvalidOperationException("Quarto não está disponível para o período solicitado");
+            if (!isRoomTypeAvailable)
+            {
+                var occupiedRooms = await _unitOfWork.Reservations.GetOccupiedRoomCountByTypeAsync(
+                    createReservationDto.HotelId,
+                    room.TypeName,
+                    createReservationDto.CheckIn,
+                    createReservationDto.CheckOut);
+                
+                throw new InvalidOperationException(
+                    $"Não há quartos do tipo {room.TypeName} disponíveis para o período solicitado. " +
+                    $"Total de quartos ocupados: {occupiedRooms}/{room.TotalRooms}");
+            }
+
 
             // Calcular preço total
             var totalDays = (createReservationDto.CheckOut - createReservationDto.CheckIn).Days;
@@ -81,6 +93,8 @@ namespace ViagemImpacta.Services.Implementations
             var createdReservation = await _unitOfWork.Reservations.GetReservationWithDetailsAsync(reservation.ReservationId);
             return _mapper.Map<ReservationResponseDto>(createdReservation);
         }
+
+
         
         public async Task<ReservationResponseDto?> GetReservationByIdAsync(int reservationId)
         {
