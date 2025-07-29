@@ -1,9 +1,13 @@
 // src/components/modals/ReservationModal.jsx
 
 import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext.jsx';
 import { reservationService } from '../../services/reservationService.js';
+import { paymentService } from '../../services/paymentService.js';
 
 const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
+  const { currentUser, isLoggedIn } = useAuth();
+  
   const [formData, setFormData] = useState({
     checkIn: '',
     checkOut: '',
@@ -22,8 +26,10 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
   const [errors, setErrors] = useState([]);
   const [calculatedTotal, setCalculatedTotal] = useState(null);
 
-  // Simula um usuário logado - em um app real, isso viria do contexto de autenticação
-  const currentUserId = 1; // TODO: Pegar do contexto de usuário
+  // Verifica se o usuário está logado
+  if (!isLoggedIn || !currentUser) {
+    return null; // Não renderiza o modal se não estiver logado
+  }
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -81,36 +87,31 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
       // Debug: vamos ver os dados que estão sendo enviados
       console.log('Room data:', room);
       console.log('Hotel data:', hotel);
+      console.log('Current user:', currentUser);
 
-      // Prepara os dados da reserva
-      const reservationData = {
-        userId: currentUserId,
-        roomId: room.id || null,
+      // Prepara os dados da reserva usando o paymentService
+      const reservationData = paymentService.formatReservationData(
+        formData, 
+        room, 
+        hotel, 
+        currentUser.id || currentUser.userId
+      );
+
+      console.log('Reservation data being sent:', reservationData);
+
+      // Valida os dados
+      const validation = reservationService.validateReservationData({
+        ...reservationData,
+        userId: currentUser.id || currentUser.userId,
+        roomId: room.id || 1,
         hotelId: hotel.id,
         checkIn: formData.checkIn,
         checkOut: formData.checkOut,
         numberOfGuests: parseInt(formData.numberOfGuests),
         specialRequests: formData.specialRequests,
-        travellers: formData.travellers.map(traveller => ({
-          firstName: traveller.firstName,
-          lastName: traveller.lastName,
-          cpf: traveller.cpf.replace(/\D/g, '') // Remove caracteres não numéricos do CPF
-        }))
-      };
+        travellers: formData.travellers
+      });
 
-      console.log('Reservation data being sent:', reservationData);
-
-      // Se não temos roomId válido, criar um temporário baseado no tipo
-      if (!reservationData.roomId) {
-        console.warn('Room ID not found, using fallback room selection');
-        // Em um sistema real, você criaria uma interface para o usuário selecionar o quarto específico
-        // Por enquanto, vamos usar o primeiro quarto disponível do mesmo tipo
-        reservationData.roomId = 1; // Fallback temporário
-        setErrors(['Aviso: Usando seleção automática de quarto. Em breve implementaremos seleção específica.']);
-      }
-
-      // Valida os dados
-      const validation = reservationService.validateReservationData(reservationData);
       if (!validation.isValid) {
         console.log('Validation errors:', validation.errors);
         setErrors(validation.errors);
@@ -118,13 +119,11 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
         return;
       }
 
-      // Cria a reserva
-      const newReservation = await reservationService.createReservation(reservationData);
+      // Processa a reserva e redireciona para o pagamento
+      await paymentService.processReservationAndPayment(reservationData);
       
-      // Chama o callback de sucesso
-      onSuccess && onSuccess(newReservation);
-      
-      // Fecha o modal
+      // Se chegou até aqui, o processo foi iniciado com sucesso
+      // O usuário será redirecionado para o Stripe, então fechamos o modal
       onClose();
 
     } catch (error) {
@@ -357,7 +356,7 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
                 disabled={loading}
                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:bg-blue-300"
               >
-                {loading ? 'Processando...' : 'Confirmar Reserva'}
+                {loading ? 'Processando...' : 'Reservar e Pagar'}
               </button>
             </div>
           </form>

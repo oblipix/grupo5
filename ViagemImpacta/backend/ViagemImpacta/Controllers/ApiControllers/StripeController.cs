@@ -29,16 +29,43 @@ public class StripeController : ControllerBase
     {
         try
         {
+            Console.WriteLine($"=== STRIPE CHECKOUT DEBUG ===");
+            Console.WriteLine($"Received checkout request for reservation ID: {id}");
 
+            if (id <= 0)
+            {
+                Console.WriteLine("Invalid reservation ID received");
+                return BadRequest("ID da reserva é obrigatório e deve ser maior que zero");
+            }
+
+            Console.WriteLine("Searching for reservation in database...");
             var result = await _unitOfWork.Reservations.GetByIdAsync(id);
+            
+            if (result == null) 
+            {
+                Console.WriteLine($"Reservation with ID {id} not found in database");
+                return BadRequest($"Reserva com ID {id} não encontrada");
+            }
+
+            Console.WriteLine($"Reservation found: {result.ReservationId}");
+            Console.WriteLine("Mapping reservation to DTO...");
             var res = _mapper.Map<ReservationDto>(result);
-            if (result == null) return BadRequest();
+            
+            if (res == null)
+            {
+                Console.WriteLine("Failed to map reservation to DTO");
+                return BadRequest("Erro ao processar dados da reserva");
+            }
 
-           
+            Console.WriteLine($"Mapped reservation - Total Price: {res.TotalPrice}, User: {res.UserName}");
 
+            Console.WriteLine("Configuring Stripe...");
             StripeConfiguration.ApiKey = _model.SecretKey;
 
-            var amountInCents = (long)(res.TotalPrice * 100); 
+            var amountInCents = (long)(res.TotalPrice * 100);
+            Console.WriteLine($"Amount in cents: {amountInCents}");
+            
+            Console.WriteLine("Creating Stripe customer...");
             var customerOptions = new CustomerCreateOptions
             {
                 Name = res.UserName,
@@ -47,6 +74,9 @@ public class StripeController : ControllerBase
 
             var customerService = new CustomerService();
             var customer = customerService.Create(customerOptions);
+            Console.WriteLine($"Stripe customer created: {customer.Id}");
+            
+            Console.WriteLine("Creating Stripe session options...");
             var options = new SessionCreateOptions
             {
                 Customer = customer.Id,
@@ -69,7 +99,8 @@ public class StripeController : ControllerBase
                 },
                 Mode = "payment",
                 PaymentMethodTypes = ["card", "boleto"],
-                SuccessUrl = "https://localhost:7054/success",
+                SuccessUrl = "http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}",
+                CancelUrl = "http://localhost:5173/hoteis",
                 ExpiresAt = DateTime.UtcNow + TimeSpan.FromMinutes(45),
             };
             var service = new SessionService();
@@ -78,6 +109,7 @@ public class StripeController : ControllerBase
         }
         catch (Exception ex) 
         { 
+            Console.WriteLine($"Error in checkout: {ex.Message}");
             return BadRequest(ex.Message);
         }
     }

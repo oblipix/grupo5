@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useHotels } from '../hooks/useHotels.js';
+import { useAuth } from '../context/AuthContext.jsx';
 import ImageModal from '../common/ImageModal.jsx';
 import ReservationModal from '../modals/ReservationModal.jsx';
 import { Icons } from '../layout/Icons.jsx'; // Importando os ícones centralizados
@@ -54,6 +55,7 @@ function HotelDetailsPage() {
     const { hotelId } = useParams();
     const navigate = useNavigate();
     const { getHotelById } = useHotels();
+    const { isLoggedIn, currentUser } = useAuth();
    
     const [hotel, setHotel] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -117,8 +119,16 @@ function HotelDetailsPage() {
 
     // Funções para o modal de reserva
     const handleReserveRoom = (room) => {
+        // Verifica se o usuário está logado
+        if (!isLoggedIn) {
+            alert('Você precisa estar logado para fazer uma reserva. Redirecionando para o login...');
+            navigate('/login');
+            return;
+        }
+
         console.log('Selected room data:', room);
         console.log('Hotel data:', hotel);
+        console.log('Current user:', currentUser);
         setSelectedRoom(room);
         setIsReservationModalOpen(true);
     };
@@ -249,9 +259,13 @@ function HotelDetailsPage() {
                                         {/* Botão "Reservar" agora abaixo do preço (devido ao flex-col e items-end) */}
                                         <button
                                             onClick={() => handleReserveRoom(room)}
-                                            className="reservation-button bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition shadow mt-2"
+                                            className={`reservation-button font-bold py-2 px-4 rounded transition shadow mt-2 ${
+                                                isLoggedIn 
+                                                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                                                    : 'bg-gray-400 hover:bg-gray-500 text-white'
+                                            }`}
                                         >
-                                            Reservar
+                                            {isLoggedIn ? 'Reservar' : 'Fazer Login para Reservar'}
                                         </button>
                                     </div>
                                 </div>
