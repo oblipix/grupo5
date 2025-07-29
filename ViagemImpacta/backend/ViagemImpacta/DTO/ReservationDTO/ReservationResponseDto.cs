@@ -10,7 +10,6 @@ namespace ViagemImpacta.DTO.ReservationDTO
         public string UserName { get; set; } = string.Empty;
         public string UserEmail { get; set; } = string.Empty;
         public int RoomId { get; set; }
-        public string RoomName { get; set; } = string.Empty;
         public RoomType RoomType { get; set; }
         public int HotelId { get; set; }
         public string HotelName { get; set; } = string.Empty;

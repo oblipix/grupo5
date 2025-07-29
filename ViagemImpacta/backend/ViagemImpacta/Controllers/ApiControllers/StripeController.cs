@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
+using ViagemImpacta.DTO.ReservationDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Repositories;
 
@@ -13,11 +15,13 @@ public class StripeController : ControllerBase
 {
     private readonly StripeModel _model;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public StripeController(IOptions<StripeModel> model, IUnitOfWork unitOfWork)
+    public StripeController(IOptions<StripeModel> model, IUnitOfWork unitOfWork, IMapper mapper)
     {
         _model = model.Value;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     [HttpPost("/checkout")]
@@ -25,19 +29,20 @@ public class StripeController : ControllerBase
     {
         try
         {
-            var res = await _unitOfWork.Reservations.GetByIdAsync(id);
-            if (res == null) return BadRequest();
 
-            var firstName = res.User.FirstName;
-            var lastName = res.User.LastName;
+            var result = await _unitOfWork.Reservations.GetByIdAsync(id);
+            var res = _mapper.Map<ReservationResponseDto>(result);
+            if (result == null) return BadRequest();
+
+           
 
             StripeConfiguration.ApiKey = _model.SecretKey;
 
             var amountInCents = (long)(res.TotalPrice * 100); 
             var customerOptions = new CustomerCreateOptions
             {
-                Name = $"{firstName} {lastName}",
-                Email = res.User.Email,
+                Name = res.UserName,
+                Email = res.UserEmail,
             };
 
             var customerService = new CustomerService();
@@ -53,9 +58,10 @@ public class StripeController : ControllerBase
                         PriceData = new SessionLineItemPriceDataOptions
                         {
                             UnitAmount = amountInCents,
+                            Currency = "BRL",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
-                                Name = res.Hotel.Name,
+                                Name = res.HotelName,
                                 //Alguns campos como "Descrição" e "Imagem" estão faltando pois não existe nas entidades
                             }
                         },
@@ -65,7 +71,7 @@ public class StripeController : ControllerBase
                 Mode = "payment",
                 PaymentMethodTypes = ["card", "boleto"],
                 SuccessUrl = "https://localhost:7054/success",
-                ExpiresAt = DateTime.UtcNow + TimeSpan.FromMinutes(15),
+                ExpiresAt = DateTime.UtcNow + TimeSpan.FromMinutes(45),
             };
             var service = new SessionService();
             var session = service.Create(options);
