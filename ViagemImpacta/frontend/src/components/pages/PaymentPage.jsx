@@ -1,11 +1,12 @@
+/* eslint-disable no-unused-vars */
 // src/pages/PaymentPage.jsx
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 // 1. Importar hooks do router e useLocation para ler os parâmetros da URL
 import { useNavigate, useLocation } from 'react-router-dom';
 
 // 2. Importar todas as fontes de dados necessárias
-import { allHotelsData } from '../data/hotels.js';
+import { useHotels } from '../hooks/useHotels.js';
 import { allPromotionalTravels } from '../data/promotions.js';
 
 // Função auxiliar para formatar moeda
@@ -17,12 +18,31 @@ const formatCurrency = (value) => {
 const PaymentPage = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { getHotelById } = useHotels();
+    const [hotel, setHotel] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     // 3. Usar URLSearchParams para ler os parâmetros da URL (ex: /payment?type=promotion&id=13&package=casal)
     const queryParams = new URLSearchParams(location.search);
     const purchaseType = queryParams.get('type'); // 'promotion' ou 'hotel'
     const itemId = parseInt(queryParams.get('id'));
     const subItemId = queryParams.get('subitem'); // Pode ser o tipo de pacote ('casal') ou o tipo de quarto
+
+    // Carregar dados do hotel se necessário
+    useEffect(() => {
+        if (purchaseType === 'hotel' && itemId) {
+            setLoading(true);
+            getHotelById(itemId)
+                .then(hotelData => {
+                    setHotel(hotelData);
+                    setLoading(false);
+                })
+                .catch(error => {
+                    console.error('Erro ao carregar hotel:', error);
+                    setLoading(false);
+                });
+        }
+    }, [purchaseType, itemId, getHotelById]);
 
     let purchaseDetails = null;
 
@@ -37,9 +57,8 @@ const PaymentPage = () => {
                 price: promotion.packagePrices[subItemId]
             };
         }
-    } else if (purchaseType === 'hotel' && itemId && subItemId) {
-        const hotel = allHotelsData.find(h => h.id === itemId);
-        const room = hotel?.roomOptions.find(r => r.type === subItemId);
+    } else if (purchaseType === 'hotel' && itemId && subItemId && hotel) {
+        const room = hotel?.roomOptions?.find(r => r.type === subItemId);
         if (hotel && room) {
             purchaseDetails = {
                 type: 'Reserva de Hotel',
@@ -69,7 +88,7 @@ const PaymentPage = () => {
     const handlePaymentSubmit = () => {
         // Lógica de pagamento real iria aqui
         alert(`Pagamento de ${formatCurrency(purchaseDetails.price)} para "${purchaseDetails.title}" confirmado com sucesso!`);
-        
+
         // 5. Após o "pagamento", navega para uma página de confirmação ou de "minhas viagens"
         navigate('/minhas-viagens'); 
     };
@@ -111,3 +130,4 @@ const PaymentPage = () => {
 };
 
 export default PaymentPage;
+ 

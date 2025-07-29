@@ -10,14 +10,11 @@ namespace ViagemImpacta.Profiles
 
         public UserProfile()
         {
-            CreateMap<ReadAdminViewModel, ReadUserLoginDto>(); // esse readuserlogin dto e usados?
             CreateMap<User, UpdateUserViewModel>();
             CreateMap<UpdateUserViewModel, UpdateUserDto>();
 
             CreateMap<CreateEmpolyeeViewModel, CreateUserDto>();
-
-            CreateMap<ReadUserLoginDto, User>(); // Mesmo caso comentado acima
-            
+           
             CreateMap<CreateUserDto, User>();
 
             CreateMap<UpdateUserDto, User>()

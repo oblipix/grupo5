@@ -1,17 +1,16 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { allHotelsData } from '../data/hotels.js'; // Certifique-se de que o caminho está correto
+import { useHotels } from '../hooks/useHotels.js';
 import ImageModal from '../common/ImageModal.jsx';
 import { Icons } from '../layout/Icons.jsx'; // Importando os ícones centralizados
 import '../styles/HotelDetailsPage.css'; // Importando o CSS específico para esta página
-
+ 
 // Importa o carrossel e seus estilos
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-
-
+ 
+ 
 // Componente para renderizar estrelas de avaliação
 const RatingDisplay = ({ rating }) => {
     const fullStars = Math.floor(rating);
@@ -23,7 +22,7 @@ const RatingDisplay = ({ rating }) => {
         </div>
     );
 };
-
+ 
 // Mapeamento de nomes de comodidades para componentes de ícone
 const leisureIconMap = {
     'Piscina': Icons.Pool,
@@ -42,37 +41,68 @@ const leisureIconMap = {
     'Bar na piscina': Icons.Bar, // Adicionado mapping para "Bar na piscina"
     // Adicione outros mapeamentos aqui conforme necessário
 };
-
+ 
 function HotelDetailsPage() {
     const { hotelId } = useParams();
     const navigate = useNavigate();
-    const hotel = allHotelsData.find(h => h.id === parseInt(hotelId));
-
+    const { getHotelById } = useHotels();
+   
+    const [hotel, setHotel] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalImages, setModalImages] = useState([]);
     const [initialImageId, setInitialImageId] = useState(null);
-
-    if (!hotel) {
+ 
+    useEffect(() => {
+        const loadHotel = async () => {
+            try {
+                setLoading(true);
+                const hotelData = await getHotelById(parseInt(hotelId));
+                setHotel(hotelData);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+ 
+        if (hotelId) {
+            loadHotel();
+        }
+    }, [hotelId, getHotelById]);
+ 
+    if (loading) {
+        return (
+            <div className="container mx-auto py-8 px-6 text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                <p className="text-gray-600">Carregando hotel...</p>
+            </div>
+        );
+    }
+ 
+    if (error || !hotel) {
         return (
             <div className="container mx-auto py-8 px-6 text-center">
                 <h2 className="text-2xl font-bold">Hotel não encontrado.</h2>
+                <p className="text-gray-600 mb-4">{error}</p>
                 <button onClick={() => navigate('/hoteis')} className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-md">
                     Ver todos os Hotéis
                 </button>
             </div>
         );
     }
-
+ 
     const handleImageClick = (imagesArray, clickedImageId) => {
         setModalImages(imagesArray);
         setInitialImageId(clickedImageId);
         setIsModalOpen(true);
     };
-
+ 
     const handleCloseModal = () => {
         setIsModalOpen(false);
     };
-
+ 
     // Configurações do Carrossel de Feedbacks
     const sliderSettings = {
         dots: true,
@@ -107,13 +137,13 @@ function HotelDetailsPage() {
             }
         ]
     };
-
+ 
     return (
         <div className="container mx-auto py-8 px-6">
             <button onClick={() => navigate(-1)} className="main-action-button bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded mb-8">
                 &larr; Voltar
             </button>
-
+ 
             <div className="bg-white rounded-lg shadow-lg p-8">
                 <img
                     src={hotel.mainImageUrl}
@@ -121,18 +151,18 @@ function HotelDetailsPage() {
                     className="w-full h-96 object-cover rounded-lg mb-6 cursor-pointer shadow-md"
                     onClick={() => handleImageClick(hotel.galleryImages || [], hotel.galleryImages?.[0]?.id)}
                 />
-
+ 
                 {/* Título do Hotel com Background Azul e Fonte Branca */}
                 <h1 className="inline-block bg-blue-700 text-white text-4xl font-extrabold py-2 px-4 rounded-lg mb-4 shadow-md">
                     {hotel.title}
                 </h1>
                 <p className="text-gray-500 text-lg mb-4">{hotel.location}</p>
-
+ 
                 {/* Descrição do Hotel com Background Cinza Claro e Fonte Cinza Escura */}
                 <p className="bg-gray-50 text-gray-800 leading-relaxed p-4 rounded-lg mb-8 shadow-sm">
                     {hotel.description}
                 </p>
-
+ 
                 {hotel.galleryImages && hotel.galleryImages.length > 0 && (
                     <div className="mb-8">
                         <h2 className="text-2xl font-bold text-gray-800 mb-4">Galeria de Fotos</h2>
@@ -149,7 +179,7 @@ function HotelDetailsPage() {
                         </div>
                     </div>
                 )}
-
+ 
                 {/* Seção "O que o hotel oferece" com Background AMARELO e Fonte Cinza Escura */}
                 <div className="my-8 py-6 border-t border-b border-gray-200">
                     {/* Título "O que o hotel oferece" com Background AMARELO e Fonte Cinza Escura */}
@@ -168,7 +198,7 @@ function HotelDetailsPage() {
                         })}
                     </div>
                 </div>
-
+ 
                 {hotel.roomOptions?.length > 0 && (
                     <div className="mb-8">
                         <h2 className="text-2xl font-bold text-gray-800 mb-4">Opções de Quartos</h2>
@@ -188,7 +218,7 @@ function HotelDetailsPage() {
                                         {/* Botão "Reservar" agora abaixo do preço (devido ao flex-col e items-end) */}
                                         <button
                                             onClick={() => navigate(`/payment?type=hotel&id=${hotel.id}&subitem=${encodeURIComponent(room.type)}`)}
-                                            className="reservation-button bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition shadow mt-2" 
+                                            className="reservation-button bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition shadow mt-2"
                                         >
                                             Reservar
                                         </button>
@@ -198,7 +228,7 @@ function HotelDetailsPage() {
                         </div>
                     </div>
                 )}
-
+ 
                 {/* Seção de Avaliações (Feedbacks) - Carrossel abaixo de Opções de Quartos */}
                 {hotel.feedbacks && hotel.feedbacks.length > 0 && (
                     <div className="mb-8">
@@ -223,7 +253,7 @@ function HotelDetailsPage() {
                     </div>
                 )}
             </div>
-
+ 
             {isModalOpen && (
                 <ImageModal
                     images={modalImages}
@@ -234,5 +264,5 @@ function HotelDetailsPage() {
         </div>
     );
 }
-
+ 
 export default HotelDetailsPage;

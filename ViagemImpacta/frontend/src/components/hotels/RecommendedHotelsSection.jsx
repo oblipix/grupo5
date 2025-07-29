@@ -1,14 +1,41 @@
 // src/components/RecommendedHotelsSection.jsx
-
+ 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { allHotelsData } from '../data/hotels.js';
-
+import { useHotels } from '../hooks/useHotels.js';
+ 
 const RecommendedHotelsSection = () => {
-    const topRatedHotels = [...allHotelsData]
+    const { hotels, loading, error } = useHotels();
+   
+    const topRatedHotels = [...hotels]
         .sort((a, b) => b.rating - a.rating)
         .slice(0, 3);
-
+ 
+    if (loading) {
+        return (
+            <section id="recomendado-viajantes" className="py-12 bg-gray-50 px-6">
+                <div className="container mx-auto">
+                    <div className="text-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                        <p className="text-gray-600">Carregando recomendações...</p>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+ 
+    if (error) {
+        return (
+            <section id="recomendado-viajantes" className="py-12 bg-gray-50 px-6">
+                <div className="container mx-auto">
+                    <div className="text-center py-8">
+                        <p className="text-red-600">Erro ao carregar recomendações</p>
+                    </div>
+                </div>
+            </section>
+        );
+    }
+ 
     return (
         <section id="recomendado-viajantes" className="py-12 bg-gray-50 px-6">
             <div className="container mx-auto">
@@ -49,5 +76,5 @@ const RecommendedHotelsSection = () => {
         </section>
     );
 };
-
+ 
 export default RecommendedHotelsSection;

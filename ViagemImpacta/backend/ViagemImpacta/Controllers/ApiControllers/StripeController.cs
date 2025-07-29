@@ -61,8 +61,7 @@ public class StripeController : ControllerBase
                             Currency = "BRL",
                             ProductData = new SessionLineItemPriceDataProductDataOptions
                             {
-                                Name = res.HotelName,
-                                //Alguns campos como "Descrição" e "Imagem" estão faltando pois não existe nas entidades
+                                Name = string.IsNullOrWhiteSpace(res.HotelName) ? "Reserva de Hotel" : res.HotelName,
                             }
                         },
                         Quantity = 1,

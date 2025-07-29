@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // 1. Importar o Link para navegação
-import { allHotelsData } from '../data/hotels.js'; // 2. Importar os dados dos hotéis
+import { useHotels } from '../hooks/useHotels.js'; // 2. Importar o hook para hotéis da API
 import { Icons } from '../Icons.jsx'; // 3. Importar os ícones
 
 const HotelSearchSection = () => {
@@ -10,23 +10,25 @@ const HotelSearchSection = () => {
   const [filteredHotels, setFilteredHotels] = useState([]);
   const [showNoResults, setShowNoResults] = useState(false);
 
-  // O useEffect agora usa `allHotelsData` importado
+  const { hotels, loading } = useHotels(); // Obter hotéis da API
+
+  // O useEffect agora usa dados da API
   useEffect(() => {
-    if (searchTerm.trim() === '') {
+    if (searchTerm.trim() === '' || !hotels.length) {
       setFilteredHotels([]);
       setShowNoResults(false);
       return;
     }
 
     const lowercasedSearchTerm = searchTerm.toLowerCase();
-    const results = allHotelsData.filter(hotel =>
-      hotel.title.toLowerCase().includes(lowercasedSearchTerm) ||
-      hotel.description.toLowerCase().includes(lowercasedSearchTerm) ||
-      hotel.location.toLowerCase().includes(lowercasedSearchTerm)
+    const results = hotels.filter(hotel =>
+      hotel.title?.toLowerCase().includes(lowercasedSearchTerm) ||
+      hotel.description?.toLowerCase().includes(lowercasedSearchTerm) ||
+      hotel.location?.toLowerCase().includes(lowercasedSearchTerm)
     );
     setFilteredHotels(results);
     setShowNoResults(results.length === 0);
-  }, [searchTerm]);
+  }, [searchTerm, hotels]);
 
   return (
     <section className="w-full max-w-4xl bg-white p-8 rounded-xl shadow-lg my-8 mx-auto">

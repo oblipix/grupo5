@@ -1,12 +1,12 @@
 // src/pages/RecommendedHotelDetailsPage.jsx
-
-import React, { useState } from 'react';
+ 
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { allHotelsData } from '../data/hotels.js';
+import { useHotels } from '../hooks/useHotels.js';
 import { Icons } from '../layout/Icons.jsx'; // Certifique-se de que o caminho esteja correto
 import ImageModal from '../common/ImageModal.jsx'; // Importe o modal de imagens
 import '../styles/RecommendedHotelDetailsPage.css'; // Importe o CSS específico para esta página
-
+ 
 // Componente para renderizar estrelas de avaliação
 const RatingDisplay = ({ rating }) => {
     const fullStars = Math.floor(rating);
@@ -18,7 +18,7 @@ const RatingDisplay = ({ rating }) => {
         </div>
     );
 };
-
+ 
 // Mapeamento de nomes de comodidades para componentes de ícone
 const leisureIconMap = {
     'Piscina': Icons.Pool,
@@ -41,18 +41,51 @@ const leisureIconMap = {
     'Estacionamento': Icons.Parking,
     'Restaurante': Icons.Restaurant
 };
-
+ 
 function RecommendedHotelDetailsPage() {
     const { hotelId } = useParams();
     const navigate = useNavigate();
-    const hotel = allHotelsData.find(h => h.id === parseInt(hotelId));
-
+    const { getHotelById } = useHotels();
+   
+    const [hotel, setHotel] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+ 
     // Estado para controlar o modal de imagens
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalImages, setModalImages] = useState([]);
     const [initialImageId, setInitialImageId] = useState(null);
-
-    if (!hotel) {
+ 
+    // Carregar dados do hotel
+    useEffect(() => {
+        const loadHotel = async () => {
+            try {
+                setLoading(true);
+                const hotelData = await getHotelById(parseInt(hotelId));
+                setHotel(hotelData);
+                setError(null);
+            } catch (err) {
+                console.error('Erro ao carregar hotel:', err);
+                setError('Erro ao carregar dados do hotel');
+            } finally {
+                setLoading(false);
+            }
+        };
+ 
+        if (hotelId) {
+            loadHotel();
+        }
+    }, [hotelId, getHotelById]);
+ 
+    if (loading) {
+        return (
+            <div className="container mx-auto py-8 px-6 text-center">
+                <h2 className="text-2xl font-bold">Carregando...</h2>
+            </div>
+        );
+    }
+ 
+    if (error || !hotel) {
         return (
             <div className="container mx-auto py-8 px-6 text-center">
                 <h2 className="text-2xl font-bold">Hotel não encontrado.</h2>
@@ -62,22 +95,22 @@ function RecommendedHotelDetailsPage() {
             </div>
         );
     }
-
+ 
     const handleImageClick = (imagesArray, clickedImageId) => {
         setModalImages(imagesArray);
         setInitialImageId(clickedImageId);
         setIsModalOpen(true);
     };
-
+ 
     const handleCloseModal = () => setIsModalOpen(false);
-
+ 
     return (
         <div className="bg-gray-50 min-h-screen">
             <div className="container mx-auto py-8 px-6">
                 <button onClick={() => navigate(-1)} className="main-action-button bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-bold py-2 px-4 rounded mb-8">
                     &larr; Voltar
                 </button>
-
+ 
                 <div className="bg-white rounded-lg shadow-lg overflow-hidden p-8">
                     {/* Imagem Principal */}
                     <img
@@ -86,7 +119,7 @@ function RecommendedHotelDetailsPage() {
                         className="w-full h-96 object-cover rounded-lg mb-6 cursor-pointer"
                         onClick={() => handleImageClick(hotel.galleryImages || [], hotel.galleryImages?.[0]?.id)}
                     />
-
+ 
                     {/* Galeria de Miniaturas */}
                     {hotel.galleryImages && hotel.galleryImages.length > 0 && (
                         <div className="mb-8">
@@ -103,13 +136,13 @@ function RecommendedHotelDetailsPage() {
                             </div>
                         </div>
                     )}
-
+ 
                     <div className="text-center mb-8 border-t pt-8">
                         <span className="recomendadoFrase bg-yellow-400 text-yellow-900 text-sm font-bold mr-3 px-3 py-2 rounded-full uppercase">★ Recomendado pelos Viajantes ★</span>
                         <h1 className="text-4xl font-extrabold text-blue-800 mt-4">{hotel.title}</h1>
                         <p className="text-gray-500 text-lg">{hotel.location}</p>
                     </div>
-
+ 
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div className="bg-gray-50 p-6 rounded-lg">
                             <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">O que o hotel oferece</h2>
@@ -125,7 +158,7 @@ function RecommendedHotelDetailsPage() {
                                 })}
                             </div>
                         </div>
-
+ 
                         <div className="bg-gray-50 p-6 rounded-lg">
                             <h2 className="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">O que os hóspedes dizem</h2>
                             <div className="flex items-center justify-center bg-blue-100 p-4 rounded-lg mb-6">
@@ -150,7 +183,7 @@ function RecommendedHotelDetailsPage() {
                     </div>
                 </div>
             </div>
-
+ 
             {isModalOpen && (
                 <ImageModal
                     images={modalImages}
@@ -161,5 +194,6 @@ function RecommendedHotelDetailsPage() {
         </div>
     );
 }
-
+ 
 export default RecommendedHotelDetailsPage;
+ 
