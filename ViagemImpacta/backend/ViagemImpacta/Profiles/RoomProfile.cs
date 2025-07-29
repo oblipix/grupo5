@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using ViagemImpacta.DTO;
+using ViagemImpacta.DTO.RoomDTO;
 using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Profiles
