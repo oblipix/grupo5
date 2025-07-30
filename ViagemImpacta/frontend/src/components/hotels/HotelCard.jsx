@@ -15,20 +15,10 @@ function HotelCard({ hotel }) {
     const isSaved = savedHotels?.some(saved => saved.id === hotel.id);
 
     // Calcula o menor preço dos quartos disponíveis
-    const getMinPrice = () => {
-        console.log('HotelCard - Hotel data:', hotel);
-        console.log('HotelCard - Room options:', hotel.roomOptions);
-        
-        if (hotel.roomOptions && hotel.roomOptions.length > 0) {
-            const prices = hotel.roomOptions.map(room => room.price).filter(price => price > 0);
-            console.log('HotelCard - Prices found:', prices);
-            return prices.length > 0 ? Math.min(...prices) : hotel.price || 0;
-        }
-        console.log('HotelCard - Using fallback price:', hotel.price);
-        return hotel.price || 0;
-    };
+    
 
-    const minPrice = getMinPrice();
+    const minPrice = hotel.lowestRoomPrice; // Usa o preço mais baixo disponível
+    console.log('Hotel recebido:', hotel);
 
     const handleSaveClick = (e) => {
         e.preventDefault();  // Impede que o clique no botão ative o Link do card
