@@ -16,5 +16,7 @@ namespace ViagemImpacta.Repositories.Interfaces
         // Novos métodos para validação por tipo de quarto
         Task<int> GetOccupiedRoomCountByTypeAsync(int hotelId, RoomType roomType, DateTime checkIn, DateTime checkOut, int? excludeReservationId = null);
         Task<bool> IsRoomTypeAvailableAsync(int hotelId, RoomType roomType, DateTime checkIn, DateTime checkOut, int? excludeReservationId = null);
+
+        Task<IEnumerable<Reservation>> GetAllReservationsAsync();
     }
 }
