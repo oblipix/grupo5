@@ -9,6 +9,73 @@ const API_BASE_URL = 'https://localhost:7010/api';
 class ReservationService {
 
   /**
+   * Busca todas as reservas de um usuário
+   * @param {number} userId - ID do usuário
+   * @returns {Promise<Array>} Lista de reservas do usuário
+   */
+  async getUserReservations(userId) {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('Token de autenticação não encontrado');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/reservations/user/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          return []; // Usuário não tem reservas
+        }
+        throw new Error(`Erro ao buscar reservas: ${response.status}`);
+      }
+
+      const reservations = await response.json();
+      console.log('Reservas carregadas do backend:', reservations);
+      return Array.isArray(reservations) ? reservations : [];
+    } catch (error) {
+      console.error('Erro ao buscar reservas do usuário:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Busca uma reserva específica por ID
+   * @param {number} reservationId - ID da reserva
+   * @returns {Promise<Object>} Dados da reserva
+   */
+  async getReservationById(reservationId) {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('Token de autenticação não encontrado');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar reserva: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar reserva por ID:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Cria uma nova reserva
    * @param {Object} reservationData - Dados da reserva
    * @param {number} reservationData.userId - ID do usuário

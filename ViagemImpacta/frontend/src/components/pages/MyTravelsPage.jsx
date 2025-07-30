@@ -16,7 +16,8 @@ function MyTravelsPage() {
     reservationHistory, // Adiciona histórico de reservas
     logout,
     updateUser,
-    removeSavedHotel
+    removeSavedHotel,
+    debugReservations // Função de debug
   } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -420,7 +421,21 @@ function MyTravelsPage() {
 
       {/* Seção de Histórico de Reservas */}
       <section className="mb-12">
-        <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Histórico de Reservas</h2>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-blue-800 text-center flex-1">Histórico de Reservas</h2>
+          {/* Botão de debug temporário */}
+          <button 
+            onClick={debugReservations}
+            className="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600"
+            title="Debug - verificar reservas no console"
+          >
+            🐛 Debug
+          </button>
+        </div>
+        
+        {/* Debug temporário */}
+        {console.log('Debug MyTravelsPage - reservationHistory:', reservationHistory)}
+        {console.log('Debug MyTravelsPage - reservationHistory length:', reservationHistory?.length)}
         
         {reservationHistory?.length > 0 ? (
           <div className="space-y-6">
