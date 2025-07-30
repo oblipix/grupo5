@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Stripe;
 using System.Text.Json;
-using ViagemImpacta.Models;
+using ViagemImpacta.Setup;
 
 namespace ViagemImpacta.Services.Implementations
 {
