@@ -5,10 +5,8 @@ import React, { useEffect } from 'react';
 import { Outlet, useOutletContext, useLocation } from 'react-router-dom';
 import { useJsApiLoader } from '@react-google-maps/api';
 
-import { useModal } from './components/context/ModalContext.jsx';
 import Header from './components/layout/Header.jsx';
 import Footer from './components/layout/Footer.jsx';
-import EventReservationForm from './components/common/EventReservationForm.jsx';
 
 const MAPS_API_KEY = import.meta.env.VITE_Maps_API_KEY;
 
@@ -22,7 +20,8 @@ function App() {
     libraries: libraries, // Agora passamos a constante definida acima
   });
 
-  const { isEventModalOpen, closeEventModal } = useModal();
+  // FUNCIONALIDADE DE EVENTO MODAL COMENTADA
+  // const { isEventModalOpen, closeEventModal } = useModal();
   const location = useLocation();
 
   useEffect(() => {
@@ -45,8 +44,6 @@ function App() {
       </main>
 
       <Footer isLoaded={isLoaded} />
-
-      {isEventModalOpen && <EventReservationForm onClose={closeEventModal} />}
     </div>
   );
 }

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // src/components/modals/ReservationModal.jsx
 
 import React, { useState } from 'react';
@@ -156,8 +157,8 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 backdrop-blur-sm bg-white/30 dark:bg-gray-700/30 flex items-center justify-center z-50 p-4">
+      <div className="bg-white/95 dark:bg-gray-800/95 rounded-lg max-w-[80vh] w-full max-h-[90vh] overflow-y-auto shadow-xl border border-gray-200 dark:border-gray-700">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold text-gray-800">Fazer Reserva</h2>
@@ -330,10 +331,12 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
                     <span>{calculatedTotal.days} {calculatedTotal.days === 1 ? 'noite' : 'noites'} × R$ {calculatedTotal.dailyPrice.toFixed(2).replace('.', ',')}</span>
                     <span>R$ {calculatedTotal.subtotal.toFixed(2).replace('.', ',')}</span>
                   </div>
+                  {/* TAXAS REMOVIDAS - NÃO MOSTRAR MAIS
                   <div className="flex justify-between">
                     <span>Taxas e impostos</span>
                     <span>R$ {calculatedTotal.taxes.toFixed(2).replace('.', ',')}</span>
                   </div>
+                  */}
                   <div className="border-t pt-2 flex justify-between font-bold">
                     <span>Total</span>
                     <span>R$ {calculatedTotal.total.toFixed(2).replace('.', ',')}</span>

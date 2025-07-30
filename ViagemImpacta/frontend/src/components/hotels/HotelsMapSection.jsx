@@ -177,14 +177,24 @@ function HotelsMapSection({ isLoaded }) {
                               {selectedHotel.description.substring(0, 80)}...
                             </p>
                           )}
-                         
-                          {/* Botão para ver detalhes */}
-                          <button
-                            onClick={() => handleViewDetails(selectedHotel.id)}
-                            className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white text-xs py-2 px-3 rounded-md transition-colors duration-200 font-medium shadow-sm"
-                          >
-                            Ver Detalhes Completos
-                          </button>
+                          {/* Botões de ação */}
+                          <div className="flex gap-2 mt-3">
+                            <button
+                              onClick={() => {
+                                // Navega direto para a página de pagamento
+                                window.location.href = `/payment?hotelId=${selectedHotel.id}&type=hotel&price=${selectedHotel.price}`;
+                              }}
+                              className="flex-1 bg-green-600 hover:bg-green-700 text-white text-xs py-2 px-3 rounded-md transition-colors duration-200 font-medium shadow-sm"
+                            >
+                              Reservar
+                            </button>
+                            <button
+                              onClick={() => handleViewDetails(selectedHotel.id)}
+                              className="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-xs py-2 px-3 rounded-md transition-colors duration-200 font-medium shadow-sm"
+                            >
+                              Ver Detalhes
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>

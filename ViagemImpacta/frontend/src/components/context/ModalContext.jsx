@@ -1,18 +1,24 @@
 /* eslint-disable react-refresh/only-export-components */
 
 
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useContext } from 'react';
 
 const ModalContext = createContext();
 
 export const ModalProvider = ({ children }) => {
+    // FUNCIONALIDADE DE EVENTO MODAL COMENTADA
+    /*
     const [isEventModalOpen, setIsEventModalOpen] = useState(false);
 
     const openEventModal = () => setIsEventModalOpen(true);
     const closeEventModal = () => setIsEventModalOpen(false);
+    */
 
     return (
-        <ModalContext.Provider value={{ isEventModalOpen, openEventModal, closeEventModal }}>
+        <ModalContext.Provider value={{ 
+            // VALORES DE EVENTO COMENTADOS
+            // isEventModalOpen, openEventModal, closeEventModal 
+        }}>
             {children}
         </ModalContext.Provider>
     );

@@ -1,5 +1,6 @@
 
-
+// COMPONENTE DE EVENTOS DESABILITADO
+/*
 import React from 'react';
 import { eventData } from '../data/events';
 import { CalendarDaysIcon } from '@heroicons/react/24/solid'; // Importando o ícone de calendário
@@ -43,6 +44,29 @@ const EventBlogSection = () => {
                             </div>
                         </div>
                     ))}
+                </div>
+            </div>
+        </section>
+    );
+};
+*/
+
+import React from 'react';
+
+const EventBlogSection = () => {
+    return (
+        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
+            <div className="container mx-auto text-center">
+                <h2 className="text-4xl font-extrabold text-gray-900 mb-6">
+                    Eventos Indisponíveis
+                </h2>
+                <p className="text-xl text-gray-600 mb-8">
+                    A seção de eventos está temporariamente desabilitada.
+                </p>
+                <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
+                    <p className="text-gray-500">
+                        Em breve teremos novidades sobre nossos eventos especiais!
+                    </p>
                 </div>
             </div>
         </section>

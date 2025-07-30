@@ -26,7 +26,7 @@ function HeroSwiper() {
       }}
       pagination={{ clickable: true }}
       loop={true}
-      className="w-full h-[60vh] md:h-[80vh] lg:h-[90vh] text-white hero-swiper-pagination"
+      className="w-full h-[40vh] md:h-[50vh] lg:h-[60vh] text-white hero-swiper-pagination"
     >
       {/* 2. Mapear sobre os dados importados */}
       {heroSlidesData.map((slide) => (

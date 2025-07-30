@@ -20,21 +20,21 @@ const selectableAmenityOptions = [
     "Restaurante", "Jardim Amplo",
 ];
 
-// Removido roomTypeOptions - agora será carregado do backend
-
 // --- COMPONENTE PRINCIPAL ---
 function SearchHotelsBar() {
     const navigate = useNavigate();
 
     // Estado interno do formulário
     const [destination, setDestination] = useState('');
-    const [guestsInfo, setGuestsInfo] = useState(roomGuestOptions[1]);
-    const [priceRange, setPriceRange] = useState(5000);
-    const [selectedAmenities, setSelectedAmenities] = useState([]);
     const [roomTypeOptions, setRoomTypeOptions] = useState([]); // Estado para tipos de quarto do backend
     const [selectedRoomType, setSelectedRoomType] = useState('');
+    const [guestsInfo, setGuestsInfo] = useState(roomGuestOptions[1]); // Padrão: casal
+    const [priceRange, setPriceRange] = useState(5000);
+    const [selectedAmenities, setSelectedAmenities] = useState([]);
     const [isAmenitiesDropdownOpen, setIsAmenitiesDropdownOpen] = useState(false);
     const [isLoadingRoomTypes, setIsLoadingRoomTypes] = useState(true);
+
+    // Refs para detectar cliques fora dos dropdowns
     const amenitiesDropdownRef = useRef(null);
 
     // Função para buscar tipos de quarto do backend
@@ -45,18 +45,18 @@ function SearchHotelsBar() {
             // Usa o serviço para buscar tipos de quarto
             const roomTypes = await hotelService.getRoomTypes();
             setRoomTypeOptions(roomTypes);
-            
-            // Define o primeiro tipo como padrão se existir
+
+            // Define o primeiro tipo como padrão
             if (roomTypes.length > 0) {
                 setSelectedRoomType(roomTypes[0].name || roomTypes[0]);
             }
         } catch (error) {
             console.error('Erro ao carregar tipos de quarto:', error);
-            // Fallback para dados locais em caso de erro
+            // Fallback: define tipos padrão se a API falhar
             const fallbackTypes = [
-                { id: 1, name: 'Standard' },
-                { id: 2, name: 'Luxo' },
-                { id: 3, name: 'Suíte' }
+                { name: 'Standard' },
+                { name: 'Luxo' },
+                { name: 'Suíte' }
             ];
             setRoomTypeOptions(fallbackTypes);
             setSelectedRoomType(fallbackTypes[0].name);
@@ -70,32 +70,36 @@ function SearchHotelsBar() {
         fetchRoomTypes();
     }, []);
 
-    // Lógica para fechar o dropdown de comodidades ao clicar fora
+    // useEffect para lidar com cliques fora do dropdown de comodidades
     useEffect(() => {
-        function handleClickOutside(event) {
+        const handleClickOutside = (event) => {
             if (amenitiesDropdownRef.current && !amenitiesDropdownRef.current.contains(event.target)) {
                 setIsAmenitiesDropdownOpen(false);
             }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [amenitiesDropdownRef]);
+        };
 
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Função para gerenciar seleção de comodidades
     const handleAmenityChange = (amenity) => {
-        setSelectedAmenities((prev) =>
-            prev.includes(amenity)
-                ? prev.filter((a) => a !== amenity)
+        setSelectedAmenities(prev => 
+            prev.includes(amenity) 
+                ? prev.filter(item => item !== amenity)
                 : [...prev, amenity]
         );
     };
 
-    // Função que navega para a página de resultados com os filtros na URL
+    // Função para realizar a pesquisa
     const handleSearch = () => {
         const searchParams = new URLSearchParams();
-
+        
         if (destination) searchParams.append('destino', destination);
-        if (guestsInfo) searchParams.append('hospedes', guestsInfo.adults);
-        if (priceRange < 10000) searchParams.append('precoMax', priceRange);
+        if (guestsInfo.rooms) searchParams.append('quartos', guestsInfo.rooms);
+        if (guestsInfo.adults) searchParams.append('adultos', guestsInfo.adults);
+        if (guestsInfo.children) searchParams.append('criancas', guestsInfo.children);
+        if (priceRange < 10000) searchParams.append('precoMaximo', priceRange);
         if (selectedAmenities.length > 0) searchParams.append('comodidades', selectedAmenities.join(','));
         if (selectedRoomType) searchParams.append('tipoQuarto', selectedRoomType);
 

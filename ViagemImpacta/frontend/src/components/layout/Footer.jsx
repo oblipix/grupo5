@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { GoogleMap, Marker } from '@react-google-maps/api';
-import { hotelLocations } from '../data/mapLocations';
+import { useHotels } from '../hooks/useHotels';
 
 // Importe os ícones das redes sociais
 import {
@@ -19,6 +19,14 @@ const mapOptions = { disableDefaultUI: true, gestureHandling: 'none', zoomContro
 const createMarkerIcon = (color) => `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="${color}" stroke="white" stroke-width="1"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg>`)}`;
 
 function Footer({ isLoaded }) {
+    // Usar o hook useHotels para carregar hotéis do banco de dados
+    const { hotels, loading, loadAllHotels } = useHotels();
+
+    // Carregar hotéis quando o componente for montado
+    useEffect(() => {
+        loadAllHotels();
+    }, [loadAllHotels]);
+
     return (
         <footer className="relative footer-curve w-full bg-slate-900 text-gray-300 py-12 mt-12">
             <div className="container mx-auto px-6">
@@ -74,14 +82,14 @@ function Footer({ isLoaded }) {
                     <div>
                         <h4 className="font-semibold text-white tracking-wider mb-4">Nossa Localização</h4>
                         <div className="rounded-lg overflow-hidden">
-                            {isLoaded ? (
+                            {isLoaded && !loading && hotels.length > 0 ? (
                                 <GoogleMap mapContainerStyle={mapContainerStyle} center={defaultCenter} zoom={3.5} options={mapOptions}>
-                                    {hotelLocations.map(loc => (
+                                    {hotels.map(hotel => (
                                         <Marker
-                                            key={loc.id}
-                                            position={loc.position}
+                                            key={hotel.id}
+                                            position={{ lat: hotel.lat, lng: hotel.lng }}
                                             icon={{
-                                                url: createMarkerIcon(loc.color),
+                                                url: createMarkerIcon(hotel.markerColor || '#4285F4'),
                                                 scaledSize: new window.google.maps.Size(24, 24),
                                                 anchor: new window.google.maps.Point(12, 24),
                                             }}
@@ -115,3 +123,4 @@ function Footer({ isLoaded }) {
 }
 
 export default Footer;
+ 

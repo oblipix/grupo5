@@ -32,20 +32,33 @@ const RecommendedHotelCard = ({ hotel, onCardClick, onSaveTravel, isHotelSaved }
         <p className="text-sm text-gray-600 mb-2">{hotel.description.substring(0, 70)}...</p>
         <div className="flex items-center justify-between mt-4">
           <span className="text-xl font-bold text-blue-600">R$ {hotel.price.toFixed(2)}</span>
-          <div className="flex items-center">
+          <div className="flex items-center gap-2">
             {/* Botão de Salvar (opcional, se você quiser no card) */}
             <button
               onClick={handleSaveClick}
-              className={`p-2 rounded-full ${isSaved ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700'} hover:opacity-80 transition duration-300 mr-2`}
+              className={`p-2 rounded-full ${isSaved ? 'bg-red-500 text-white' : 'bg-gray-200 text-gray-700'} hover:opacity-80 transition duration-300`}
               title={isSaved ? 'Remover dos Salvos' : 'Salvar Hotel'}
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M5 4a2 2 0 012-2h6a2 2 0 012 2v14l-5-2.5L5 18V4z" />
               </svg>
             </button>
+            
+            {/* Botão de Reservar */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                // Navega direto para a página de pagamento com os dados do hotel
+                window.location.href = `/payment?hotelId=${hotel.id}&type=hotel&price=${hotel.price}`;
+              }}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition duration-300 text-sm font-semibold"
+            >
+              Reservar
+            </button>
+            
             <button
               onClick={() => onCardClick(hotel.id)}
-              className="main-action-buttonpx-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300 text-sm"
+              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300 text-sm"
             >
               Ver Detalhes
             </button>

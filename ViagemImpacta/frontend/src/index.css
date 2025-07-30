@@ -17,7 +17,12 @@ html, body, #root {
   width: 100%;
 }
 
+.menu1 {
+position: relative;
+left: 20%;
 
+
+}
 
 /* src/index.css */
 
@@ -97,10 +102,14 @@ html, body, #root {
 
 /* Esta classe deve ser aplicada nos botões no JSX, por exemplo: className="main-action-button" */
 .main-action-button,
+/* COMENTADO - CLASSE CSS DE PROMOÇÕES DESABILITADA
 .promotion-data-button,
+*/
 .next-purchase,
 .reservation-button,
+/* COMENTADO - CLASSE CSS DE EVENTOS DESABILITADA
 .event-submit,
+*/
 .search-button
  {
   background: linear-gradient(90deg, #111b32 0%, #60A5FA 100%) !important; 
@@ -110,10 +119,14 @@ html, body, #root {
 }
 
 .main-action-button:hover,
+/* COMENTADO - CLASSE CSS DE PROMOÇÕES DESABILITADA
 .promotion-data-button:hover,
+*/
 .next-purchase:hover,
 .reservation-button:hover,
+/* COMENTADO - CLASSE CSS DE EVENTOS DESABILITADA
 .event-submit:hover,
+*/
 .search-button:hover {
   background: linear-gradient(90deg, #60A5FA 0%,  #111b32 100%) !important; 
 }
@@ -191,6 +204,7 @@ html, body, #root {
 
 .logo {
 font-size: 35px;
+padding: 8px;
 font-weight: bold;
 background-image: linear-gradient(to right, #1e3a8a, #60a5fa); /* Azul escuro (#1e3a8a) para azul claro (#60a5fa) */
 -webkit-background-clip: text;
@@ -198,7 +212,7 @@ color: transparent;
  font-family: "Pacifico", cursive;
   font-weight: 400;
   font-style: normal;
-  z-index: 10001; 
+  z-index: 1; 
   height: 70px;
   
 }
@@ -330,16 +344,18 @@ a{
   color: #bcbcbc !important;
 }
 
+/* COMENTADO - ESTILOS DE EVENTOS DESABILITADOS
 /* Estilo para dias específicos do evento (destaque) */
-.react-calendar__tile--event-highlight {
-  background-color: #bfdbfe; /* Um azul bem clarinho (tailwind blue-200) */
+/* .react-calendar__tile--event-highlight {
+  background-color: #bfdbfe; 
   font-weight: bold;
 }
 
 /* Garante que o destaque de evento não seja sobrescrito facilmente */
-.react-calendar__tile--event-highlight:hover {
-    background-color: #93c5fd !important; /* Azul um pouco mais escuro no hover */
+/* .react-calendar__tile--event-highlight:hover {
+    background-color: #93c5fd !important; 
 }
+*/
 
 /* Prioriza as cores de status sobre o destaque do evento */
 .react-calendar__tile--booked {
@@ -416,21 +432,108 @@ a{
 
 
 
+/* Responsive Navigation Menu Styles */
+/* Small Mobile devices */
+@media screen and (max-width: 479px) {
+  .hamburger-menu {
+    display: flex;
+  }
 
+  .desktop-menu {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+}
+
+/* Large Mobile devices */
+@media screen and (min-width: 480px) and (max-width: 767px) {
+  .hamburger-menu {
+    display: flex;
+  }
+
+  .desktop-menu {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+}
+
+/* Tablet devices */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  .hamburger-menu {
+    display: flex; /* Show hamburger on tablets */
+  }
+
+  .desktop-menu {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+}
+
+/* Desktop devices */
+@media screen and (min-width: 1024px) {
+  .hamburger-menu {
+    display: none;
+  }
+
+  .desktop-menu {
+    display: flex;
+  }
+
+  .mobile-menu {
+    display: none !important;
+  }
+}
 
 a {
-  color: #686868;
+  color: #a3a3a3;
   transition: color 0.3s ease, background-color 0.3s ease; 
 }
 
 a:hover {
-  color: #1e3a8a; /* Azul escuro do Tailwind */
-  background-color: #d2e6ff6b; /* Azul claro do Tailwind */
+  color: #fcfcfc; /* Azul escuro do Tailwind */
+  background-color: none;
   text-decoration: none; /* Remove underline no hover */
 }
 
 
+.active-link {
+  color: white !important; /* Força o texto a ficar branco quando ativo */
+}
 
+/* O traço curvado mágico! */
+
+.active-link::after {
+  content: ''; /* Necessário para o pseudo-elemento aparecer */
+  position: absolute; /* Posição relativa ao botão */
+  bottom: 0; /* Alinha na parte de baixo do botão */
+  left: 0;
+  right: 0;
+  margin: 0 auto; /* Centraliza o traço horizontalmente */
+
+  width: 90%; /* O traço terá 90% da largura do texto */
+  height: 8px;  /* Altura da "curva" */
+
+  /* A mágica da curva acontece aqui: */
+  border-bottom: 4px solid #22d3ee; /* Cor (ciano) e espessura do traço */
+  border-radius: 0 0 10px 10px; /* Arredonda as bordas inferiores para criar o arco */
+}
+
+/* Estilos específicos para links de Hotéis e Promoções ativos */
+nav a[href="/hoteis"].active,
+nav a[href="/promocoes"].active {
+  color: #ffffff !important;
+  background-color: none; /* slate-800 */
+   /* Efeito de brilho suave */
+}
 
 /* Estilos de cor das bolinhas, para combinar com seu tema */
 .travel-pagination-bottom .swiper-pagination-bullet {

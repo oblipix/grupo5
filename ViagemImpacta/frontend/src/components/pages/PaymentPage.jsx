@@ -7,7 +7,8 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 // 2. Importar todas as fontes de dados necessárias
 import { useHotels } from '../hooks/useHotels.js';
-import { allPromotionalTravels } from '../data/promotions.js';
+// COMENTADO - FUNCIONALIDADE DE PROMOÇÕES DESABILITADA
+// import { allPromotionalTravels } from '../data/promotions.js';
 
 // Função auxiliar para formatar moeda
 const formatCurrency = (value) => {
@@ -47,6 +48,8 @@ const PaymentPage = () => {
     let purchaseDetails = null;
 
     // 4. Lógica para carregar os detalhes da compra com base no tipo
+    // COMENTADO - FUNCIONALIDADE DE PROMOÇÕES DESABILITADA
+    /*
     if (purchaseType === 'promotion' && itemId && subItemId) {
         const promotion = allPromotionalTravels.find(p => p.id === itemId);
         if (promotion && promotion.packagePrices[subItemId]) {
@@ -57,7 +60,7 @@ const PaymentPage = () => {
                 price: promotion.packagePrices[subItemId]
             };
         }
-    } else if (purchaseType === 'hotel' && itemId && subItemId && hotel) {
+    } else */ if (purchaseType === 'hotel' && itemId && subItemId && hotel) {
         const room = hotel?.roomOptions?.find(r => r.type === subItemId);
         if (hotel && room) {
             purchaseDetails = {
