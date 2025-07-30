@@ -14,6 +14,13 @@ function Header() {
         const baseClasses = "text-gray-300 hover:text-white font-medium focus:outline-none transition-colors duration-300";
         return isActive ? `${baseClasses} active-link` : baseClasses;
     };
+    
+    // Classe específica para os botões Hotéis e Promoções
+    const getSpecialNavLinkClasses = ({ isActive }) => {
+        return isActive 
+            ? "flex items-center px-4 py-2 rounded-lg text-white transition-colors duration-200 active-link" 
+            : "flex items-center px-4 py-2 rounded-lg text-gray-300 hover:text-white transition-colors duration-200";
+    };
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -78,7 +85,9 @@ function Header() {
     };
 
     return (
-        <header className="w-full bg-slate-900 shadow-lg py-4 sticky top-0 z-50">
+        <header className="w-full bg-slate-900 shadow-lg py-4 sticky top-0 z-50 relative">
+            {/* Elemento específico para a curva */}
+            <div className="header-curve absolute bottom-0 left-0 w-full h-5"></div>
             <div className="container mx-auto px-6 flex items-center justify-between">
 
                 {/* Logo e Botões Principais */}
@@ -89,36 +98,27 @@ function Header() {
 
                     {/* Botões Hotéis e Promoções */}
 
-                          <div className="menu1 items-center space-x-4 hidden lg:flex">
+                    <div className="menu1 hidden md:flex items-center space-x-4">
                         <NavLink 
                             to="/hoteis" 
-                            className={({ isActive }) => 
-                                isActive 
-                                ? "flex items-center space-x-2 px-4 py-2 rounded-lg text-white bg-slate-800 transition-colors duration-200" 
-                                : "flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-300 hover:bg-slate-800 hover:text-white transition-colors duration-200"
-                            }
+                            className={getSpecialNavLinkClasses}
                         >
                             <FaBuilding className="text-lg" />
-                            <span className="font-medium">Hotéis</span>
+                            <span className="font-medium ml-2">Hotéis</span>
                         </NavLink>
 
                         <NavLink 
                             to="/promocoes" 
-                            className={({ isActive }) => 
-                                isActive 
-                                ? "flex items-center space-x-2 px-4 py-2 rounded-lg text-white bg-slate-800 transition-colors duration-200" 
-                                : "flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-300 hover:bg-slate-800 hover:text-white transition-colors duration-200"
-                            }
+                            className={getSpecialNavLinkClasses}
                         >
                             <FaTag className="text-lg" />
-                            <span className="font-medium">Promoções</span>
+                            <span className="font-medium ml-2">Promoções</span>
                         </NavLink>
                     </div>
                 </div>
- 
 
                 {/* Container para o Menu de Navegação (Desktop) E Ícone de Usuário */}
-                <div className="desktop-menu hidden md:flex items-center space-x-8">
+                <div className="hidden md:flex items-center space-x-8">
                     <nav>
                         <ul className="flex items-center space-x-8">
                             <li><NavLink to="/" className={getNavLinkClasses} end>Início</NavLink></li>
@@ -131,8 +131,8 @@ function Header() {
                 </div>
 
 
-                {/* Botão do Hambúrguer e Ícone de Usuário para Telas Pequenas */}
-                <div className="hamburger-menu flex items-center space-x-4">
+                {/* Botão do Hambúrguer e Ícone de Usuário para Telas Pequenas (até 768px) */}
+                <div className="flex md:hidden items-center space-x-4">
                     <UserLoginLink />
                     <button
                         onClick={toggleMobileMenu}
@@ -150,15 +150,25 @@ function Header() {
 
             {/* Menu Mobile (Dropdown) */}
             {isMobileMenuOpen && (
-                <div className="mobile-menu bg-slate-800 pb-4 transition-all duration-300 ease-in-out">
+                <div className="md:hidden bg-slate-800 pb-4 transition-all duration-300 ease-in-out">
                     <ul className="flex flex-col items-center space-y-4 pt-4">
                         <li><NavLink to="/" className={getNavLinkClasses} end onClick={toggleMobileMenu}>Início</NavLink></li>
                         {/* <<<<<<< REMOVIDO: LINKS ESPECÍFICOS DO MENU MOBILE >>>>>>> */}
                         {/* Removidos: Hotéis, Promoções, Eventos, Blog */}
                         <li><NavLink to="/contato" className={getNavLinkClasses} onClick={toggleMobileMenu}>Contato</NavLink></li>
                         <li><NavLink to="/institucional" className={getNavLinkClasses} onClick={toggleMobileMenu}>Institucional</NavLink></li>
-                        <li><NavLink to="/hoteis" className={getNavLinkClasses} onClick={toggleMobileMenu}>Hotéis</NavLink></li>
-                        <li><NavLink to="/promocoes" className={getNavLinkClasses} onClick={toggleMobileMenu}>Promoções</NavLink></li>
+                        <li><NavLink to="/hoteis" className={getNavLinkClasses} onClick={toggleMobileMenu}>
+                            <div className="flex items-center space-x-2">
+                                <FaBuilding className="text-lg" />
+                                <span>Hotéis</span>
+                            </div>
+                        </NavLink></li>
+                        <li><NavLink to="/promocoes" className={getNavLinkClasses} onClick={toggleMobileMenu}>
+                            <div className="flex items-center space-x-2">
+                                <FaTag className="text-lg" />
+                                <span>Promoções</span>
+                            </div>
+                        </NavLink></li>
                     </ul>
                 </div>
             )}

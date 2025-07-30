@@ -37,7 +37,7 @@ const RecommendedHotelsSection = () => {
     }
  
     return (
-        <section id="recomendado-viajantes" className="py-12 bg-gray-50 px-6">
+        <section id="recomendado-viajantes" className="py-12 bg-white px-6">
             <div className="container mx-auto">
                 <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
                     Hotéis Recomendados pelos Nossos Viajantes <span className="text-yellow-500">★</span>

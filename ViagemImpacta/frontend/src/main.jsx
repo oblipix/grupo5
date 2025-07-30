@@ -10,6 +10,7 @@ import { AuthProvider } from './components/context/AuthContext.jsx';
 import { ModalProvider } from './components/context/ModalContext.jsx';
 
 
+
 // Estilos Globais
 import './index.css';
 
@@ -35,9 +36,10 @@ import MyHotelsPage from './components/pages/MyHotelsPage.jsx';
 import BlogPostDetailsPage from './components/pages/BlogPostDetailsPage.jsx'; // Detalhes de post de blog
 import RecommendedHotelDetailsPage from './components/pages/RecommendedHotelDetailsPage.jsx';
 import RecommendedPage from './components/pages/RecommendedPage.jsx'; // Nova página de recomendados
-import PromotionsPage from './components/PromotionsPage.jsx'; // Nova página de promoções
+import PromotionsPage from './components/pages/PromotionsPage.jsx'; // Nova página de promoções com ofertas especiais
 import PromotionDetailsPage from './components/pages/PromotionDetailsPage.jsx'; // Detalhes de promoção
 import ContactPage from './components/pages/ContactPage.jsx';
+import PaymentSuccessPage from './components/pages/PaymentSuccessPage.jsx';
 
 // Removida a importação de BlogPage, pois BlogSection estará na HomePage.
 // import BlogPage from './components/pages/BlogPage.jsx'; 
@@ -80,6 +82,7 @@ const router = createBrowserRouter([
             { path: '/blog/:id', element: <BlogPostDetailsPage /> }, // Rota para Detalhes de um Post de Blog
             { path: '/recommended-hotel/:hotelId', element: <RecommendedHotelDetailsPage /> },
             { path: '/contato', element: <ContactPage /> },
+            { path: '/payment-success', element: <PaymentSuccessPage /> }, // Rota para página de pagamento com sucesso
             // Removida a rota '/blog' que renderizava BlogPage/BlogSection, pois BlogSection já está na HomePage.
             // { path: '/blog', element: <BlogPage /> }, 
         ],

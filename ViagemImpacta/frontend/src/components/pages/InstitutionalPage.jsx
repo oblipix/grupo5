@@ -9,7 +9,7 @@ import { teamMembers } from '../data/team.js';
 function InstitutionalPage() {
   return (
     <section id="institutional-section" className="bg-white py-12 px-6 min-h-screen">
-      <div className="container mx-auto max-w-4xl">
+      <div className="container mx-auto max-w-5xl">
         <h1 className="text-4xl font-extrabold text-blue-800 text-center mb-10">
           Sobre a Tripz: Nossa Jornada
         </h1>
@@ -48,17 +48,17 @@ function InstitutionalPage() {
         </div>
 
         {/* Seção dos Criadores */}
-        <div className="mb-12 p-6 bg-blue-50 rounded-lg shadow-md">
-          <h2 className="text-3xl font-bold text-blue-800 text-center mb-6">Nossos Criadores</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-6">
+        <div className="mb-10 p-8 bg-blue-50 rounded-lg shadow-md">
+          <h2 className="text-3xl font-bold text-blue-800 text-center mb-12">Nossos Criadores</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10">
             {teamMembers.map((member, index) => (
-              <div key={index} className="relative overflow-hidden rounded-lg shadow-lg institutional-card">
+              <div key={index} className="relative overflow-hidden rounded-lg shadow-lg institutional-card mx-auto" style={{maxWidth: "220px", height: "260px"}}>
                 <img
                   src={member.photo}
                   alt={member.name}
                   className="w-full h-full object-cover grayscale transition-all duration-300 hover:grayscale-0 hover:scale-105"
                 />
-                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-40 text-white text-center py-2 px-4">
+                <div className="absolute bottom-0 left-0 right-0 bg-black bg-opacity-60 text-white text-center py-3 px-4">
                   <p className="member-name text-sm font-semibold">{member.name}</p>
                 </div>
               </div>

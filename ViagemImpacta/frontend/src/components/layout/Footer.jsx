@@ -28,7 +28,9 @@ function Footer({ isLoaded }) {
     }, [loadAllHotels]);
 
     return (
-        <footer className="relative footer-curve w-full bg-slate-900 text-gray-300 py-12 mt-12">
+        <footer className="relative w-full bg-slate-900 text-gray-300 py-12 mt-12">
+            {/* Elemento específico para a curva */}
+            <div className="footer-curve absolute top-0 left-0 w-full h-5"></div>
             <div className="container mx-auto px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
 
