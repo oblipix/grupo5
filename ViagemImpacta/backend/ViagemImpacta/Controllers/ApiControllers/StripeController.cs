@@ -4,8 +4,8 @@ using Microsoft.Extensions.Options;
 using Stripe;
 using Stripe.Checkout;
 using ViagemImpacta.DTO.ReservationDTO;
-using ViagemImpacta.Models;
 using ViagemImpacta.Repositories;
+using ViagemImpacta.Setup;
 
 namespace ViagemImpacta.Controllers.ApiControllers;
 
@@ -29,57 +29,17 @@ public class StripeController : ControllerBase
     {
         try
         {
-            Console.WriteLine($"=== STRIPE CHECKOUT DEBUG ===");
-            Console.WriteLine($"Received checkout request for reservation ID: {id}");
-
-            if (id <= 0)
-            {
-                Console.WriteLine("Invalid reservation ID received");
-                return BadRequest("ID da reserva é obrigatório e deve ser maior que zero");
-            }
-
-            Console.WriteLine("Searching for reservation in database...");
             var result = await _unitOfWork.Reservations.GetByIdAsync(id);
             
-            if (result == null) 
-            {
-                Console.WriteLine($"Reservation with ID {id} not found in database");
-                return BadRequest($"Reserva com ID {id} não encontrada");
-            }
+            if (result == null) return BadRequest($"Reserva com ID {id} não encontrada");
 
-            Console.WriteLine($"Reservation found: {result.ReservationId}");
-            Console.WriteLine("Mapping reservation to DTO...");
             var res = _mapper.Map<ReservationDto>(result);
-            
-            if (res == null)
-            {
-                Console.WriteLine("Failed to map reservation to DTO");
-                return BadRequest("Erro ao processar dados da reserva");
-            }
 
-            Console.WriteLine($"Mapped reservation - Total Price: {res.TotalPrice}, User: {res.UserName}");
-
-            Console.WriteLine("Configuring Stripe...");
             StripeConfiguration.ApiKey = _model.SecretKey;
 
             var amountInCents = (long)(res.TotalPrice * 100);
-            Console.WriteLine($"Amount in cents: {amountInCents}");
-            
-            Console.WriteLine("Creating Stripe customer...");
-            var customerOptions = new CustomerCreateOptions
-            {
-                Name = res.UserName,
-                Email = res.UserEmail,
-            };
-
-            var customerService = new CustomerService();
-            var customer = customerService.Create(customerOptions);
-            Console.WriteLine($"Stripe customer created: {customer.Id}");
-            
-            Console.WriteLine("Creating Stripe session options...");
             var options = new SessionCreateOptions
             {
-                Customer = customer.Id,
                 Currency = "BRL",
                 LineItems = new List<SessionLineItemOptions>
                 {
@@ -109,7 +69,6 @@ public class StripeController : ControllerBase
         }
         catch (Exception ex) 
         { 
-            Console.WriteLine($"Error in checkout: {ex.Message}");
             return BadRequest(ex.Message);
         }
     }
