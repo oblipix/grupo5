@@ -95,7 +95,7 @@ export const AuthProvider = ({ children }) => {
         }
  
         try {
-            const response = await fetch('http://localhost:5155/api/Auth/login', {
+            const response = await fetch('https://localhost:7010/api/Auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -282,7 +282,7 @@ export const AuthProvider = ({ children }) => {
             console.log('BirthDate type:', typeof dataToSend.BirthDate);
             console.log('BirthDate value:', dataToSend.BirthDate);
 
-            const response = await fetch(`http://localhost:5155/api/Users/${userId}`, {
+            const response = await fetch(`https://localhost:7010/api/Users/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -446,7 +446,7 @@ export const AuthProvider = ({ children }) => {
                 passwordLength: password.length
             });
 
-            const response = await fetch('http://localhost:5155/api/Users/createUser', {
+            const response = await fetch('https://localhost:7010/api/Users/createUser', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -494,7 +494,7 @@ export const AuthProvider = ({ children }) => {
  
             // Verifica se é um erro de rede (fetch falhou)
             if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                throw new Error('Não foi possível conectar com o servidor. Verifique se o backend está rodando em http://localhost:5155');
+                throw new Error('Não foi possível conectar com o servidor. Verifique se o backend está rodando em https://localhost:7010');
             }
  
             // Re-lança o erro para que o componente possa exibir a mensagem
