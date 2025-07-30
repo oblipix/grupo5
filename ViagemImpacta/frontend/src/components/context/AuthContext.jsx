@@ -243,13 +243,46 @@ export const AuthProvider = ({ children }) => {
                 FirstName: updatedData.firstName?.trim() || currentUser.FirstName,
                 LastName: updatedData.lastName?.trim() || currentUser.LastName,
                 Email: updatedData.email?.trim() || currentUser.Email,
-                Phone: updatedData.phone?.trim() || currentUser.Phone,
-                Cpf: currentUser.Cpf // Mantém o CPF existente
+                Phone: updatedData.phone?.trim() || currentUser.Phone || null,
+                Cpf: updatedData.cpf?.trim() || currentUser.Cpf || null,
+                BirthDate: updatedData.birthDate?.trim() || currentUser.BirthDate || null
             };
- 
-            console.log('Enviando dados para atualização:', dataToSend);
 
-            const response = await fetch(`http://localhost:5155/api/Auth/users/${userId}`, {
+            // Limpa telefone e CPF (remove formatação)
+            if (dataToSend.Phone) {
+                dataToSend.Phone = dataToSend.Phone.replace(/\D/g, ''); // Remove tudo que não é número
+            }
+            if (dataToSend.Cpf) {
+                dataToSend.Cpf = dataToSend.Cpf.replace(/\D/g, ''); // Remove tudo que não é número
+            }
+
+            // Valida formato da data de nascimento (deve ser YYYY-MM-DD para DateOnly)
+            if (dataToSend.BirthDate) {
+                // Verifica se é uma data válida no formato correto
+                if (!/^\d{4}-\d{2}-\d{2}$/.test(dataToSend.BirthDate)) {
+                    throw new Error('Data de nascimento deve estar no formato correto (YYYY-MM-DD)');
+                }
+                // Valida se é uma data real
+                const dateObj = new Date(dataToSend.BirthDate);
+                if (isNaN(dateObj.getTime())) {
+                    throw new Error('Data de nascimento inválida');
+                }
+            }
+
+            // Remove campos null para não enviar ao backend
+            Object.keys(dataToSend).forEach(key => {
+                if (dataToSend[key] === null && (key === 'Phone' || key === 'Cpf' || key === 'BirthDate')) {
+                    // Para campos opcionais, pode manter null ou remover
+                    // Vou remover para evitar problemas
+                    delete dataToSend[key];
+                }
+            });
+ 
+            console.log('Dados finais para envio:', dataToSend);
+            console.log('BirthDate type:', typeof dataToSend.BirthDate);
+            console.log('BirthDate value:', dataToSend.BirthDate);
+
+            const response = await fetch(`http://localhost:5155/api/Users/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
