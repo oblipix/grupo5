@@ -8,7 +8,8 @@ namespace ViagemImpacta.Profiles
     {
         public RoomProfile() 
         {
-            CreateMap<Room, RoomDto>();
+            CreateMap<Room, RoomDto>()
+                .ForMember(dest => dest.TypeName, opt => opt.MapFrom(src => src.TypeName.ToString()));
         }
     }
 }
