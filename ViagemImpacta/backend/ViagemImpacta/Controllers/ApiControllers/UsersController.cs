@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Services.Interfaces;
 
@@ -62,21 +63,54 @@ namespace ViagemImpacta.Controllers.ApiControllers
 
         [HttpPut("{id}")]
         [Authorize]
-        public async Task<ActionResult<UserDto>> UpdateUser(long id, [FromBody] UpdateUserDto dto)
+        public async Task<ActionResult<UserDto>> UpdateUser(int id, [FromBody] UpdateUserDto dto)
         {
-            if (dto == null || id != dto.UserId || !ModelState.IsValid)
-                return BadRequest("Requisição inválida.");
+            // Validações iniciais
+            if (dto == null)
+                return BadRequest("Dados do usuário são obrigatórios.");
+                
+            if (id != dto.UserId)
+                return BadRequest("ID do usuário na URL não confere com o ID no corpo da requisição.");
+
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState
+                    .SelectMany(x => x.Value.Errors)
+                    .Select(x => x.ErrorMessage)
+                    .ToList();
+                    
+                return BadRequest(new { 
+                    message = "Dados inválidos", 
+                    errors = errors 
+                });
+            }
 
             try
             {
+                Console.WriteLine($"Recebido UpdateUser para ID: {id}");
+                Console.WriteLine($"DTO: {System.Text.Json.JsonSerializer.Serialize(dto)}");
+                
                 var updatedUser = await _userService.UpdateUser(dto);
                 var userDto = _mapper.Map<UserDto>(updatedUser);
+                
+                Console.WriteLine($"Usuário atualizado com sucesso: {updatedUser.UserId}");
                 return Ok(userDto);
+            }
+            catch (ArgumentException ex)
+            {
+                Console.WriteLine($"ArgumentException: {ex.Message}");
+                return BadRequest(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                Console.WriteLine($"InvalidOperationException: {ex.Message}");
+                return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
-                // Trate todas as exceções igual, retornando BadRequest com a mensagem
-                return BadRequest($"Erro ao atualizar usuário: {ex.Message}");
+                Console.WriteLine($"Exception geral: {ex.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                return StatusCode(500, $"Erro interno do servidor: {ex.Message}");
             }
         }
 
