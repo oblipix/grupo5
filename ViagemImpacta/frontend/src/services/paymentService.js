@@ -95,6 +95,26 @@ class PaymentService {
         throw new Error('ID da reserva não foi retornado pelo servidor');
       }
 
+      // Salva os dados da reserva no sessionStorage para usar na página de sucesso
+      const reservationForHistory = {
+        reservationId: reservationId,
+        hotelId: reservationData.HotelId,
+        hotelName: reservationData.hotelName,
+        hotelImage: reservationData.hotelImage,
+        roomType: reservationData.roomType,
+        checkInDate: reservationData.CheckIn,
+        checkOutDate: reservationData.CheckOut,
+        totalPrice: reservationData.totalPrice,
+        numberOfGuests: reservationData.NumberOfGuests,
+        travellers: reservationData.Travellers,
+        location: reservationData.location,
+        reservationDate: new Date().toISOString(),
+        status: 'confirmed'
+      };
+      
+      console.log('Salvando dados da reserva para histórico:', reservationForHistory);
+      sessionStorage.setItem('pendingReservation', JSON.stringify(reservationForHistory));
+
       // Depois, criar a sessão de checkout do Stripe
       const checkoutData = await this.createCheckoutSession(reservationId);
       
@@ -116,10 +136,19 @@ class PaymentService {
    * @returns {Object} Dados formatados para o backend
    */
   formatReservationData(formData, room, hotel, userId) {
+    // Calcula o preço total
+    const checkIn = new Date(formData.checkIn);
+    const checkOut = new Date(formData.checkOut);
+    const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
+    const roomPrice = room.price || room.Price || 0;
+    const subtotal = nights * roomPrice;
+    const taxes = subtotal * 0.1; // 10% de taxas
+    const totalPrice = subtotal + taxes;
+
     return {
       UserId: userId,
-      RoomId: room.id || 1, // Fallback se o ID não estiver disponível
-      HotelId: hotel.id,
+      RoomId: room.id || room.roomId || room.RoomId || 1,
+      HotelId: hotel.id || hotel.hotelId || hotel.HotelId,
       CheckIn: formData.checkIn,
       CheckOut: formData.checkOut,
       NumberOfGuests: parseInt(formData.numberOfGuests),
@@ -128,7 +157,13 @@ class PaymentService {
         FirstName: traveller.firstName,
         LastName: traveller.lastName,
         Cpf: traveller.cpf.replace(/\D/g, '') // Remove caracteres não numéricos do CPF
-      }))
+      })),
+      // Dados adicionais para o histórico
+      hotelName: hotel.name || hotel.title || hotel.Name,
+      hotelImage: hotel.mainImageUrl || hotel.image || hotel.ImageUrl || hotel.images?.[0],
+      roomType: room.type || room.Type || room.name || room.Name || 'Quarto Padrão',
+      totalPrice: totalPrice,
+      location: hotel.location || hotel.Location || 'Localização não informada'
     };
   }
 }
