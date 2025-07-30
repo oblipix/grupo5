@@ -22,5 +22,7 @@
         public bool BreakfastIncludes { get; set; }
         public bool Wifi { get; set; }
         public bool Parking { get; set; }
+        public string? Description { get; set; }
+        public decimal? LowestRoomPrice { get; set; }
     }
 }

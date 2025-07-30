@@ -24,21 +24,20 @@ namespace ViagemImpacta.Profiles
                 .ForMember(dest => dest.Hotel, opt => opt.Ignore());
 
 
+            //TODO: Colocar apenas os quartos disponiveis para a data
+            
+            // Mapeia Hotel para HotelDto, incluindo:
+            // - RoomCount: soma dos quartos
+            // - LowestRoomPrice: menor preço entre todos os quartos vinculados
+            CreateMap<Hotel, HotelDto>()
+                .ForMember(dest => dest.RoomCount, 
+            opt => opt.MapFrom(src => src.Rooms.Sum(r => r.TotalRooms)))
+                .ForMember(dest => dest.LowestRoomPrice,
+            opt => opt.MapFrom(src => src.Rooms != null && src.Rooms.Any()
+                ? src.Rooms.Min(r => r.AverageDailyPrice)
+                : (decimal?)null));
 
-        //    // 📋 ENTITY → RESPONSE
-        //    CreateMap<Hotel, HotelResponse>()
-        //        .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.HotelId))
-        //        .ForMember(dest => dest.HasWifi, opt => opt.MapFrom(src => src.Wifi))
-        //        .ForMember(dest => dest.HasParking, opt => opt.MapFrom(src => src.Parking))
-        //        .ForMember(dest => dest.HasGym, opt => opt.MapFrom(src => src.Gym))
-        //        .ForMember(dest => dest.HasRestaurant, opt => opt.MapFrom(src => src.Restaurant));
-
-        //    // 📋 ENTITY → LIST RESPONSE
-        //    CreateMap<Hotel, HotelListResponse>()
-        //        .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.HotelId))
-        //        .ForMember(dest => dest.HasWifi, opt => opt.MapFrom(src => src.Wifi))
-        //        .ForMember(dest => dest.HasParking, opt => opt.MapFrom(src => src.Parking));
-        }
+      }
 
 
     }
