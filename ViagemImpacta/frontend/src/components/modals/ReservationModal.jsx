@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
 import { reservationService } from '../../services/reservationService.js';
 import { paymentService } from '../../services/paymentService.js';
+import { Icons } from '../layout/Icons.jsx';
 
 const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
   const { currentUser, isLoggedIn, addReservationToHistory } = useAuth();
@@ -175,8 +176,8 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-white/30 dark:bg-gray-700/30 flex items-center justify-center z-50 p-4">
-      <div className="bg-white/95 dark:bg-gray-800/95 rounded-lg max-w-[80vh] w-full max-h-[90vh] overflow-y-auto shadow-xl border border-gray-200 dark:border-gray-700">
+    <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50 p-4">
+      <div className="bg-white/95 rounded-lg max-w-[80vh] w-full max-h-[90vh] overflow-y-auto shadow-xl border border-gray-200">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-2xl font-bold text-gray-800">Fazer Reserva</h2>
@@ -191,13 +192,16 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
           </div>
 
           {/* Info do Hotel e Quarto */}
-          <div className="mb-6 p-4 bg-gray-50 rounded-lg">
+          <div className="mb-6 p-4 bg-gray-100 rounded-lg">
             <h3 className="font-semibold text-lg text-gray-800">{hotel.title}</h3>
-            <p className="text-gray-600 text-sm">{hotel.location}</p>
-            <div className="mt-2 pt-2 border-t border-gray-200">
+            <p className="text-gray-600 text-sm flex items-center">
+              <Icons.Location />
+              <span className="ml-1">{hotel.location}</span>
+            </p>
+            <div className="mt-4 pt-2 border-t border-gray-200">
               <p className="font-medium text-gray-800">{room.type}</p>
               <p className="text-sm text-gray-600">{room.description}</p>
-              <p className="text-xl font-bold text-blue-600 mt-1">
+              <p className="text-xl font-bold text-blue-800 mt-2">
                 R$ {room.price.toFixed(2).replace('.', ',')} / noite
               </p>
             </div>
@@ -368,14 +372,14 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
               <button
                 type="button"
                 onClick={handleClose}
-                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
+                className="bg-gray-200 flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
               >
                 Cancelar
               </button>
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition disabled:bg-blue-300"
+                className="main-action-button flex-1 px-4 py-2 text-white rounded-md transition disabled:bg-blue-300"
               >
                 {loading ? 'Processando...' : 'Reservar e Pagar'}
               </button>
