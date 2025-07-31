@@ -153,7 +153,7 @@ namespace ViagemImpacta.Services.Implementations
             return await _unitOfWork.Users.GetUserByEmail(email);
         }
 
-        public async Task SendEmailAsync(User user)
+        private async Task SendEmailAsync(User user)
         {
             var smtpClient = new SmtpClient(_smtpOptions.Host)
             {

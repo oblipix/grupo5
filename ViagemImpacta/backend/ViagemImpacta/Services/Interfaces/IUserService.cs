@@ -14,6 +14,5 @@ namespace ViagemImpacta.Services.Interfaces
         Task<bool> DeleteUser(int id);
         Task<User?> GetUserByEmail(string email);
         Task<User> CreateManagementAccess(CreateUserDto dto);
-        Task SendEmailAsync(User user);
     }
 }
