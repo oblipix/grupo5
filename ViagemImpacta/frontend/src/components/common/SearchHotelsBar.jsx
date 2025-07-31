@@ -24,7 +24,7 @@ const selectableAmenityOptions = [
 // Removido roomTypeOptions - agora será carregado do backend
 
 // --- COMPONENTE PRINCIPAL ---
-function SearchHotelsBar() {
+function SearchHotelsBar({ selectedAmenities, onAmenitiesChange, onSearch }) {
     const navigate = useNavigate();
 
     // Estado interno do formulário
@@ -32,12 +32,13 @@ function SearchHotelsBar() {
     const [guestsInfo, setGuestsInfo] = useState(roomGuestOptions[1]);
     const [minPrice, setMinPrice] = useState(0);
 const [maxPrice, setMaxPrice] = useState(10000);
-    const [selectedAmenities, setSelectedAmenities] = useState([]);
+    // Removido estado interno de selectedAmenities, agora vem por props
     const [roomTypeOptions, setRoomTypeOptions] = useState([]); // Estado para tipos de quarto do backend
     const [selectedRoomType, setSelectedRoomType] = useState('');
     const [isAmenitiesDropdownOpen, setIsAmenitiesDropdownOpen] = useState(false);
     const [isLoadingRoomTypes, setIsLoadingRoomTypes] = useState(true);
     const amenitiesDropdownRef = useRef(null);
+    
 
     // Função para buscar tipos de quarto do backend
     const fetchRoomTypes = async () => {
@@ -84,25 +85,38 @@ const [maxPrice, setMaxPrice] = useState(10000);
     }, [amenitiesDropdownRef]);
 
     const handleAmenityChange = (amenity) => {
-        setSelectedAmenities((prev) =>
-            prev.includes(amenity)
-                ? prev.filter((a) => a !== amenity)
-                : [...prev, amenity]
+        const amenitiesArr = Array.isArray(selectedAmenities) ? selectedAmenities : [];
+        onAmenitiesChange(
+            amenitiesArr.includes(amenity)
+                ? amenitiesArr.filter((a) => a !== amenity)
+                : [...amenitiesArr, amenity]
         );
     };
 
     // Função que navega para a página de resultados com os filtros na URL
-    const handleSearch = () => {
+    const handleSearch = (params = {}) => {
+        // Debug: mostra as comodidades selecionadas antes de buscar
+        console.log('[DEBUG][frontend] selectedAmenities:', selectedAmenities);
+        // Monta a URL final para debug
         const searchParams = new URLSearchParams();
-
         if (destination) searchParams.append('destino', destination);
         if (guestsInfo) searchParams.append('hospedes', guestsInfo.adults);
         if (minPrice > 0) searchParams.append('precoMin', minPrice);
         if (maxPrice < 10000) searchParams.append('precoMax', maxPrice);
         if (selectedAmenities.length > 0) searchParams.append('comodidades', selectedAmenities.join(','));
         if (selectedRoomType) searchParams.append('tipoQuarto', selectedRoomType);
-
-        navigate(`/hoteis?${searchParams.toString()}`);
+        if (params.estrelas) searchParams.append('estrelas', params.estrelas);
+        console.log('[DEBUG][frontend] URL final:', `/hoteis?${searchParams.toString()}`);
+        if (onSearch) {
+            onSearch({
+                destination,
+                precoMin: minPrice,
+                precoMax: maxPrice,
+                selectedAmenities,
+                selectedRoomType,
+                ...params
+            });
+        }
     };
 
     // Função para limpar os filtros do formulário
@@ -111,7 +125,7 @@ const [maxPrice, setMaxPrice] = useState(10000);
         setGuestsInfo(roomGuestOptions[1]);
         setMinPrice(0);
         setMaxPrice(10000);
-        setSelectedAmenities([]);
+        onAmenitiesChange([]);
         // Define o primeiro tipo de quarto como padrão ao limpar
         if (roomTypeOptions.length > 0) {
             setSelectedRoomType(roomTypeOptions[0].name || roomTypeOptions[0]);
@@ -120,9 +134,10 @@ const [maxPrice, setMaxPrice] = useState(10000);
     
 
     const getAmenitiesDisplayText = () => {
-        const totalSelected = selectedAmenities.length;
+        const amenitiesArr = Array.isArray(selectedAmenities) ? selectedAmenities : [];
+        const totalSelected = amenitiesArr.length;
         if (totalSelected === 0) return "Selecione comodidades...";
-        if (totalSelected === 1) return selectedAmenities[0];
+        if (totalSelected === 1) return amenitiesArr[0];
         return `${totalSelected} comodidades selecionadas`;
     };
 
@@ -195,12 +210,15 @@ const [maxPrice, setMaxPrice] = useState(10000);
                         {isAmenitiesDropdownOpen && (
                             <div className="amenities-dropdown-panel absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
                                 <div className="comodidades-grid p-3">
-                                    {selectableAmenityOptions.map((amenity) => (
-                                        <label key={amenity} className="comodidade-item cursor-pointer">
-                                            <input type="checkbox" value={amenity} checked={selectedAmenities.includes(amenity)} onChange={() => handleAmenityChange(amenity)} className="mr-2" />
-                                            {amenity}
-                                        </label>
-                                    ))}
+                                    {selectableAmenityOptions.map((amenity) => {
+                                        const amenitiesArr = Array.isArray(selectedAmenities) ? selectedAmenities : [];
+                                        return (
+                                            <label key={amenity} className="comodidade-item cursor-pointer">
+                                                <input type="checkbox" value={amenity} checked={amenitiesArr.includes(amenity)} onChange={() => handleAmenityChange(amenity)} className="mr-2" />
+                                                {amenity}
+                                            </label>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}

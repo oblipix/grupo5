@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿
+using Microsoft.AspNetCore.Mvc;
 using ViagemImpacta.Models;
 using ViagemImpacta.Repositories;
 using AutoMapper;
@@ -6,31 +7,31 @@ using ViagemImpacta.DTO.HotelDTO;
 
 namespace ViagemImpacta.Controllers.ApiControllers
 {
-   
+
     [ApiController]
     [Route("api/[controller]")]
     public class HotelsController : ControllerBase
     {
- 
-        private readonly IUnitOfWork _unitOfWork;
-         private readonly IMapper _mapper;
 
-      
+        private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
+
+
         public HotelsController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
 
-  
+
         [HttpGet]
-[ProducesResponseType(StatusCodes.Status200OK)]
-public async Task<ActionResult<IEnumerable<HotelDto>>> GetAllHotels()
-{
-    var hotels = await _unitOfWork.Hotels.GetAllHotelsWithRoomsAsync();
-    var hotelDtos = _mapper.Map<IEnumerable<HotelDto>>(hotels);
-    return Ok(hotelDtos);
-}
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<HotelDto>>> GetAllHotels()
+        {
+            var hotels = await _unitOfWork.Hotels.GetAllHotelsWithRoomsAsync();
+            var hotelDtos = _mapper.Map<IEnumerable<HotelDto>>(hotels);
+            return Ok(hotelDtos);
+        }
 
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -38,18 +39,18 @@ public async Task<ActionResult<IEnumerable<HotelDto>>> GetAllHotels()
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<HotelDto>> GetHotel(int id)
         {
-         
-            if (id <= 0) 
+
+            if (id <= 0)
                 return BadRequest("ID deve ser maior que zero");
 
 
             var hotel = await _unitOfWork.Hotels.GetHotelWithRoomsAsync(id);
             var hotelDto = _mapper.Map<HotelDto>(hotel);
-            
+
 
             if (hotel == null)
                 return NotFound($"Hotel com ID {id} não encontrado");
-                
+
 
             return Ok(hotelDto);
         }
@@ -61,7 +62,7 @@ public async Task<ActionResult<IEnumerable<HotelDto>>> GetAllHotels()
         public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotelsByStars(int stars)
         {
 
-            if (stars < 1 || stars > 5) 
+            if (stars < 1 || stars > 5)
                 return BadRequest("Estrelas devem ser entre 1 e 5");
 
             var hotels = await _unitOfWork.Hotels.GetHotelsByStarsAsync(stars);
@@ -75,9 +76,9 @@ public async Task<ActionResult<IEnumerable<HotelDto>>> GetAllHotels()
         [HttpGet("amenities")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<HotelDto>>> GetHotelsWithAmenities(
-            [FromQuery] bool wifi = false,     
-            [FromQuery] bool parking = false,   
-            [FromQuery] bool gym = false)       
+            [FromQuery] bool wifi = false,
+            [FromQuery] bool parking = false,
+            [FromQuery] bool gym = false)
         {
 
             var hotels = await _unitOfWork.Hotels.GetHotelsWithAmenitiesAsync(wifi, parking, gym);
@@ -86,6 +87,32 @@ public async Task<ActionResult<IEnumerable<HotelDto>>> GetAllHotels()
 
             return Ok(hotelDtos);
         }
-    }
 
+        [HttpGet("search")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<IEnumerable<HotelDto>>> SearchHotels(
+            [FromQuery] string? destination,
+            [FromQuery] decimal? minPrice,
+            [FromQuery] decimal? maxPrice,
+            [FromQuery] int? stars,
+            [FromQuery] string? roomType,
+            [FromQuery(Name = "amenities")] string? amenities,
+            [FromQuery(Name = "comodidades")] string? comodidades)
+        {
+            // Aceita tanto 'amenities' quanto 'comodidades' como parâmetro
+            var amenitiesParam = !string.IsNullOrEmpty(amenities) ? amenities : comodidades;
+
+            // DEBUG: loga apenas os parâmetros recebidos do frontend
+            Console.WriteLine("[DEBUG][backend][TEMP] Parâmetros recebidos do frontend:");
+            Console.WriteLine($"destination={destination}, minPrice={minPrice}, maxPrice={maxPrice}, stars={stars}, roomType={roomType}, amenities={amenities}, comodidades={comodidades}, usado={amenitiesParam}");
+
+            var hotels = await _unitOfWork.Hotels.SearchHotelsAsync(destination, minPrice, maxPrice, stars, roomType, amenitiesParam);
+            var hotelDtos = _mapper.Map<IEnumerable<HotelDto>>(hotels);
+
+
+            return Ok(hotelDtos);
+        }
+    }
 }
+
+

@@ -3,6 +3,8 @@
  
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import useFilteredHotels from '../hooks/useFilteredHotels';
+
  
 // 1. Importar os componentes que vamos adicionar
 import HeroSwiper from '../layout/HeroSwiper.jsx';
@@ -12,47 +14,64 @@ import SearchHotelsBar from '../common/SearchHotelsBar.jsx';
 import HotelCard from '../hotels/HotelCard.jsx';
 import useHotelFilter from '../hooks/useHotelFilter.js';
 import { useHotels } from '../hooks/useHotels.js';
+import hotelService from '../../services/hotelService';
  
 function HotelsPage() {
   const location = useLocation();
   const navigate = useNavigate();
  
   // Hook para gerenciar hotéis da API
-  const { hotels, loading, error, refresh } = useHotels();
  
+
+const [refreshFlag, setRefreshFlag] = useState(false);
+const [selectedAmenities, setSelectedAmenities] = useState([]);
+
   const queryParams = new URLSearchParams(location.search);
-  const initialFilters = {
+  const filters = {
     destination: queryParams.get('destino') || '',
     page: Number(queryParams.get('pagina')) || 1,
+    precoMin: queryParams.get('precoMin') ? Number(queryParams.get('precoMin')) : undefined,
+    precoMax: queryParams.get('precoMax') ? Number(queryParams.get('precoMax')) : undefined,
+    amenities: selectedAmenities.join(','), 
     // Adicione outros filtros da URL aqui se necessário
   };
- 
-  const { filterParams, setFilterParams, filteredHotels } = useHotelFilter(hotels, initialFilters);
- 
-  useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    setFilterParams({
-      destination: params.get('destino') || '',
-      page: Number(params.get('pagina')) || 1,
-    });
-  }, [location.search, setFilterParams]);
- 
+
+  // DEBUG TEMPORÁRIO: Veja o objeto filters antes de enviar para o hook
+  console.log('[DEBUG][HotelsPage][TEMP] Filtros montados:', filters);
+
+  const { hotels, loading, error } = useFilteredHotels(filters);
+
+
   const hotelsPerPage = 6;
-  const indexOfLastHotel = filterParams.page * hotelsPerPage;
+  const indexOfLastHotel = filters.page * hotelsPerPage;
   const indexOfFirstHotel = indexOfLastHotel - hotelsPerPage;
-  const currentHotelsPaginated = filteredHotels.slice(indexOfFirstHotel, indexOfLastHotel);
-  const totalPages = Math.ceil(filteredHotels.length / hotelsPerPage);
+ const currentHotelsPaginated = hotels.slice(indexOfFirstHotel, indexOfLastHotel);
+  const totalPages = Math.ceil(hotels.length / hotelsPerPage);
  
   const handleSearchSubmit = (params) => {
+    // Monta nova querystring priorizando todos os valores vindos do formulário (params)
     const newSearchParams = new URLSearchParams();
     if (params.destination) newSearchParams.append('destino', params.destination);
+    if (params.precoMin !== undefined) newSearchParams.append('precoMin', params.precoMin);
+    if (params.precoMax !== undefined) newSearchParams.append('precoMax', params.precoMax);
+    if (params.selectedAmenities && params.selectedAmenities.length > 0) {
+      newSearchParams.append('comodidades', params.selectedAmenities.join(','));
+    }
+    if (params.selectedRoomType) newSearchParams.append('tipoQuarto', params.selectedRoomType);
+    // Adicione outros filtros do formulário aqui se necessário
     newSearchParams.append('pagina', '1');
     navigate(`?${newSearchParams.toString()}`);
   };
  
   const paginate = (pageNumber) => {
-    const newSearchParams = new URLSearchParams(location.search);
-    newSearchParams.set('pagina', pageNumber);
+    // Monta nova querystring mantendo todos os filtros atuais
+    const newSearchParams = new URLSearchParams();
+    if (filters.destination) newSearchParams.append('destino', filters.destination);
+    if (filters.precoMin !== undefined) newSearchParams.append('precoMin', filters.precoMin);
+    if (filters.precoMax !== undefined) newSearchParams.append('precoMax', filters.precoMax);
+    if (filters.amenities) newSearchParams.append('comodidades', filters.amenities);
+    if (filters.page) newSearchParams.append('pagina', pageNumber);
+    // Adicione outros filtros se necessário
     navigate(`?${newSearchParams.toString()}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -64,7 +83,11 @@ function HotelsPage() {
         <HeroSwiper />
         <HomeMenu />
         <section id="hotels-section" className="bg-gray-50 min-h-screen">
-          <SearchHotelsBar onSearch={handleSearchSubmit} />
+            <SearchHotelsBar
+              selectedAmenities={selectedAmenities}
+              onAmenitiesChange={setSelectedAmenities}
+              onSearch={handleSearchSubmit}
+            />
           <div className="container mx-auto px-6 py-8">
             <div className="flex justify-center items-center min-h-[400px]">
               <div className="text-center">
@@ -85,7 +108,11 @@ function HotelsPage() {
         <HeroSwiper />
         <HomeMenu />
         <section id="hotels-section" className="bg-gray-50 min-h-screen">
-          <SearchHotelsBar onSearch={handleSearchSubmit} />
+           <SearchHotelsBar
+              selectedAmenities={selectedAmenities}
+              onAmenitiesChange={setSelectedAmenities}
+              onSearch={handleSearchSubmit}
+            />
           <div className="container mx-auto px-6 py-8">
             <div className="flex justify-center items-center min-h-[400px]">
               <div className="text-center">
@@ -104,7 +131,7 @@ function HotelsPage() {
           </div>
         </section>
       </>
-    );
+    ); 
   }
  
   return (
@@ -115,7 +142,11 @@ function HotelsPage() {
       <HomeMenu />
  
       <section id="hotels-section" className="bg-gray-50 min-h-screen">
-        <SearchHotelsBar onSearch={handleSearchSubmit} />
+         <SearchHotelsBar
+            selectedAmenities={selectedAmenities}
+            onAmenitiesChange={setSelectedAmenities}
+            onSearch={handleSearchSubmit}
+          />
  
         <div className="container mx-auto px-6 py-8">
           <p className="text-center text-lg text-gray-700 mb-8">
@@ -131,7 +162,7 @@ function HotelsPage() {
             </div>
           )}
  
-          {filteredHotels.length > 0 ? (
+          {hotels.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {currentHotelsPaginated.map(hotel => (
                 <HotelCard key={hotel.id} hotel={hotel} />
@@ -149,7 +180,7 @@ function HotelsPage() {
                 <button
                   key={number}
                   onClick={() => paginate(number)}
-                  className={`px-4 py-2 rounded-md transition-colors ${filterParams.page === number ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-blue-100'}`}
+                  className={`px-4 py-2 rounded-md transition-colors ${filters.page === number ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-700 hover:bg-blue-100'}`}
                 >
                   {number}
                 </button>

@@ -1,6 +1,7 @@
 // src/services/hotelService.js
  
-const API_BASE_URL = 'https://localhost:7010/api';
+const API_BASE_URL = 'http://localhost:5155/api';
+import axios from 'axios';
  
 /**
  * Serviço para gerenciar operações relacionadas a hotéis
@@ -26,6 +27,7 @@ class HotelService {
       }
  
       const hotels = await response.json();
+    
      
       // Transforma os dados do backend para o formato esperado pelo frontend
       return this.transformHotelsData(hotels);
@@ -200,6 +202,22 @@ class HotelService {
       roomOptions: this.generateRoomOptions(backendHotel),
       feedbacks: this.generateFeedbacks(backendHotel)
     };
+  }
+
+  async getHotelsWithFilters(filters) {
+    const params = {};
+    if (filters.destination) params.destination = filters.destination;
+    if (typeof filters.precoMin === 'number' && !isNaN(filters.precoMin)) params.minPrice = filters.precoMin;
+    if (typeof filters.precoMax === 'number' && !isNaN(filters.precoMax)) params.maxPrice = filters.precoMax;
+    if (filters.estrelas) params.stars = filters.estrelas;
+    if (filters.tipoQuarto) params.roomType = filters.tipoQuarto;
+    if (filters.amenities) params.comodidades = filters.amenities;
+    // Adicione outros filtros conforme necessário
+    //DEBUG TEMPORARIO MELHORADO
+    console.log('[DEBUG][hotelService][TEMP] Enviando para backend:', JSON.stringify(params));
+    const response = await axios.get(`${API_BASE_URL}/hotels/search`, { params });
+    console.log('[DEBUG][hotelService][TEMP] Dados brutos recebidos do backend:', response.data);
+    return this.transformHotelsData(response.data);
   }
  
   /**
@@ -448,70 +466,9 @@ class HotelService {
       }
     ];
   }
-
-  /**
-   * Busca tipos de quarto disponíveis da API
-   * @returns {Promise<Array>} Lista de tipos de quarto
-   */
-  async getRoomTypes() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/room-types`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erro HTTP: ${response.status}`);
-      }
-
-      const roomTypes = await response.json();
-      return roomTypes;
-
-    } catch (error) {
-      console.error('Erro ao buscar tipos de quarto:', error);
-      // Retorna dados de fallback em caso de erro
-      return [
-        { id: 1, name: 'Standard', description: 'Quarto padrão' },
-        { id: 2, name: 'Luxo', description: 'Quarto de luxo' },
-        { id: 3, name: 'Suíte', description: 'Suíte premium' }
-      ];
-    }
-  }
-
-  /**
-   * Busca comodidades disponíveis da API
-   * @returns {Promise<Array>} Lista de comodidades
-   */
-  async getAmenities() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/amenities`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Erro HTTP: ${response.status}`);
-      }
-
-      const amenities = await response.json();
-      return amenities;
-
-    } catch (error) {
-      console.error('Erro ao buscar comodidades:', error);
-      // Retorna dados de fallback em caso de erro
-      return [
-        "Bar", "Piscina", "Serviço de Quarto", "Academia", "Acessibilidade",
-        "Estacionamento", "Piscina Aquecida", "Aceita Animais", "Sala de Cinema",
-        "Restaurante", "Jardim Amplo"
-      ];
-    }
-  }
 }
  
 // Exporta uma instância única do serviço
 export const hotelService = new HotelService();
 export default hotelService;
+window.hotelService = hotelService; 
