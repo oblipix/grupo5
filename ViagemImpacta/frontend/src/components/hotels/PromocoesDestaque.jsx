@@ -80,9 +80,11 @@ const PromocoesDestaque = () => {
         return (
             <section id="promocoes-destaque" className="py-12 bg-white px-6">
                 <div className="container mx-auto">
-                    <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-                        Promoções em <span className="text-blue-600">Destaque</span>
-                    </h2>
+                    <div className="section-title">
+                        <h2 className="text-3xl font-bold">
+                            Promoções em <span className="text-blue-600">Destaque</span>
+                        </h2>
+                    </div>
                     <div className="text-center py-8">
                         <p className="text-gray-600">Nenhuma promoção disponível no momento.</p>
                     </div>
@@ -95,10 +97,12 @@ const PromocoesDestaque = () => {
         <section id="promocoes-destaque" className="py-12 bg-white px-6">
             <div className="container mx-auto">
                 <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-3xl font-bold text-gray-800">
-                        Promoções em <span className="text-blue-600">Destaque</span>
-                    </h2>
-                    <Link to="/promocoes" className="text-blue-600 hover:text-blue-800 font-semibold flex items-center">
+                    <div className="section-title flex-1 mr-4">
+                        <h2 className="text-3xl font-bold">
+                            Promoções em <span className="text-blue-600">Destaque</span>
+                        </h2>
+                    </div>
+                    <Link to="/promocoes" className="text-blue-600 hover:text-blue-800 font-semibold flex items-center shrink-0">
                         Ver todas
                         <svg className="w-5 h-5 ml-1" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -106,9 +110,9 @@ const PromocoesDestaque = () => {
                     </Link>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 cards-grid">
                     {promocoes.map(hotel => (
-                        <div key={hotel.id} className="relative">
+                        <div key={hotel.id} className="relative card-spacing">
                             {/* Badge de promoção - agora com z-index maior para aparecer sobre todos os elementos */}
                             <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full font-bold z-30 shadow-lg transform rotate-12">
                                 OFERTA

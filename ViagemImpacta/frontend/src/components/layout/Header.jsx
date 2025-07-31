@@ -88,7 +88,7 @@ function Header() {
 
     return (
         <header className="w-full bg-gradient-to-b from-slate-800 to-slate-900 shadow-lg py-4 sticky top-0 z-50 relative">
-            {/* Elemento específico para a curva */}
+            {/* Elemento específico para a linha inferior do header */}
             <div className="header-curve absolute bottom-0 left-0 w-full h-5"></div>
             <div className="container mx-auto px-6 flex items-center justify-between">
 

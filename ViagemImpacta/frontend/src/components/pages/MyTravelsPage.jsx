@@ -5,6 +5,9 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import HotelCard from '../hotels/HotelCard'; // Usando o card unificado
+import ScrollReveal from '../common/ScrollReveal.jsx';
+import AnimatedSection from '../common/AnimatedSection.jsx';
+import AnimatedHotelCard from '../common/AnimatedHotelCard.jsx';
 
 function MyTravelsPage() {
   const navigate = useNavigate();
@@ -1011,12 +1014,15 @@ function MyTravelsPage() {
       `}</style>
 
 
-      <h1 className="text-4xl font-extrabold text-blue-800 mb-8 text-center">Meu Perfil Tripz</h1>
+      <ScrollReveal animation="fadeUp" delay={200}>
+        <h1 className="text-4xl font-extrabold text-blue-800 mb-8 text-center">Meu Perfil Tripz</h1>
+      </ScrollReveal>
 
       {/* ==================================================================== */}
       {/* INÍCIO DO JSX DO PERFIL (agora usando o estado 'formData')          */}
       {/* ==================================================================== */}
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12">
+      <AnimatedSection animation="fadeUp" delay={300}>
+        <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12">
         {/* Coluna do Avatar e Edição de Perfil */}
         <div className="flex flex-col items-center md:w-1/3">
           <div className="relative mb-6 group">
@@ -1189,7 +1195,8 @@ function MyTravelsPage() {
           </div>
           <button className="bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold py-3 px-8 rounded-full shadow-lg">Ver Recompensas</button>
         </div>
-      </div>
+        </div>
+      </AnimatedSection>
       {/* ==================================================================== */}
       {/* FIM DO JSX DO PERFIL                                               */}
       {/* ==================================================================== */}
@@ -1197,7 +1204,8 @@ function MyTravelsPage() {
       <hr className="my-12" />
 
       {/* Seção de Histórico de Reservas */}
-      <section className="mb-12">
+      <AnimatedSection animation="fadeUp" delay={500}>
+        <section className="mb-12">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-blue-800 text-center flex-1">Histórico de Reservas</h2>
         </div>
@@ -1205,8 +1213,9 @@ function MyTravelsPage() {
               
         {reservationHistory?.length > 0 ? (
           <div className="space-y-6">
-            {reservationHistory.map(reservation => (
-              <div key={reservation.id || reservation.ReservationId || reservation.reservationId} className="bg-white rounded-lg shadow-md p-6 border border-gray-200 relative reservation-card">
+            {reservationHistory.map((reservation, index) => (
+              <ScrollReveal key={reservation.id || reservation.ReservationId || reservation.reservationId} animation="fadeUp" delay={index * 150}>
+                <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 relative reservation-card">
                 {/* Removemos qualquer tag de status que possa estar aparecendo no topo */}
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                   {/* Informações da reserva */}
@@ -1337,7 +1346,8 @@ function MyTravelsPage() {
                     </div>
                   </div>
                 )}
-              </div>
+                </div>
+              </ScrollReveal>
             ))}
           </div>
         ) : (
@@ -1352,17 +1362,23 @@ function MyTravelsPage() {
             </button>
           </div>
         )}
-      </section>
+        </section>
+      </AnimatedSection>
 
       <hr className="my-12" />
 
-      <section className="mb-12">
-        <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Hotéis que Você Já Visitou</h2>
-        {visitedHotels?.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {visitedHotels.map(hotel => <HotelCard key={hotel.id} hotel={hotel} />)}
-          </div>
-        ) : (
+      <AnimatedSection animation="fadeUp" delay={600}>
+        <section className="mb-12">
+          <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Hotéis que Você Já Visitou</h2>
+          {visitedHotels?.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {visitedHotels.map((hotel, index) => (
+                <AnimatedHotelCard key={hotel.id} index={index}>
+                  <HotelCard hotel={hotel} />
+                </AnimatedHotelCard>
+              ))}
+            </div>
+          ) : (
           <div className="text-center p-8">
             <div className="w-40 h-40 mx-auto mb-4 flex items-center justify-center">
               <svg viewBox="0 0 100 100" className="w-full h-full">
@@ -1405,24 +1421,28 @@ function MyTravelsPage() {
             <p className="text-center text-blue-500 text-sm mt-2">Tripz está esperando para acompanhar você em sua próxima aventura!</p>
           </div>
         )}
-      </section>
+        </section>
+      </AnimatedSection>
 
       <hr className="my-12" />
 
-      <section>
-        <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Sua Tripz de Desejos</h2>
-        {savedHotels?.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {savedHotels.map(hotel => (
-              <div key={hotel.id} className="relative group">
-                <HotelCard hotel={hotel} />
-                <button onClick={() => removeSavedHotel(hotel.id)} className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity" title="Remover da lista de desejos">
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-              </div>
-            ))}
-          </div>
-        ) : (
+      <AnimatedSection animation="fadeUp" delay={700}>
+        <section>
+          <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Sua Tripz de Desejos</h2>
+          {savedHotels?.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {savedHotels.map((hotel, index) => (
+                <div key={hotel.id} className="relative group">
+                  <AnimatedHotelCard index={index}>
+                    <HotelCard hotel={hotel} />
+                  </AnimatedHotelCard>
+                  <button onClick={() => removeSavedHotel(hotel.id)} className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity" title="Remover da lista de desejos">
+                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : (
           <div className="text-center p-8">
             <div className="w-40 h-40 mx-auto mb-4 flex items-center justify-center">
               <svg viewBox="0 0 100 100" className="w-full h-full">
@@ -1481,7 +1501,8 @@ function MyTravelsPage() {
             <p className="text-center text-blue-500 text-sm mt-2">Deixe o Tripz te ajudar a encontrar destinos dos seus sonhos!</p>
           </div>
         )}
-      </section>
+        </section>
+      </AnimatedSection>
     </div>
   );
 }

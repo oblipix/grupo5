@@ -3,6 +3,7 @@
 import React from 'react';
 import HotelCard from './HotelCard.jsx'; // Usar o HotelCard unificado
 import { useHotels } from '../hooks/useHotels.js';
+import AnimatedHotelCard from '../common/AnimatedHotelCard.jsx';
  
 const RecommendedHotelsSection = () => {
     const { hotels, loading, error } = useHotels();
@@ -39,12 +40,18 @@ const RecommendedHotelsSection = () => {
     return (
         <section id="recomendado-viajantes" className="py-12 bg-white px-6">
             <div className="container mx-auto">
-                <h2 className="text-3xl font-bold text-center text-gray-800 mb-8">
-                    Hotéis Recomendados pelos Nossos Viajantes <span className="text-yellow-500">★</span>
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {topRatedHotels.map(hotel => (
-                        <HotelCard key={hotel.id} hotel={hotel} />
+                <div className="section-title">
+                    <h2 className="text-3xl font-bold">
+                        Hotéis Recomendados pelos Nossos Viajantes <span className="text-yellow-500">★</span>
+                    </h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 cards-grid">
+                    {topRatedHotels.map((hotel, index) => (
+                        <AnimatedHotelCard key={hotel.id} index={index}>
+                            <div className="card-spacing">
+                                <HotelCard hotel={hotel} />
+                            </div>
+                        </AnimatedHotelCard>
                     ))}
                 </div>
             </div>

@@ -1,12 +1,15 @@
 /* eslint-disable react-refresh/only-export-components */
 // src/App.jsx
 
-import React, { useEffect } from 'react';
+import React, { useEffect, lazy, Suspense } from 'react';
 import { Outlet, useOutletContext, useLocation } from 'react-router-dom';
 import { useJsApiLoader } from '@react-google-maps/api';
 
 import Header from './components/layout/Header.jsx';
 import Footer from './components/layout/Footer.jsx';
+
+// Lazy loading do componente BackToTop otimizado
+const LazyBackToTop = lazy(() => import('./components/common/OptimizedBackToTop.jsx'));
 
 const MAPS_API_KEY = import.meta.env.VITE_Maps_API_KEY;
 
@@ -44,6 +47,11 @@ function App() {
       </main>
 
       <Footer isLoaded={isLoaded} />
+      
+      {/* Botão voltar ao topo com lazy loading */}
+      <Suspense fallback={null}>
+        <LazyBackToTop />
+      </Suspense>
     </div>
   );
 }

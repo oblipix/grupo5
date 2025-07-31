@@ -7,12 +7,14 @@ import BlogPostCard from '../blog/BlogPostCard.jsx';
 function BlogSection({ id, title }) { // Recebe o ID como prop
   return (
     // A tag <section> está corretamente recebendo o ID aqui
-    <section id={id} className="bg-gray-100 py-12 px-6">
+    <section id={id} className="bg-gray-100 py-20 px-6">
       <div className="container mx-auto">
-        <h2 className="text-3xl font-bold text-gray-800 mb-8 text-center">
-          {title}
-        </h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="section-title">
+          <h2 className="text-3xl font-bold">
+            {title}
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-8 pb-8">
           {blogPosts.map((post) => (
             <BlogPostCard
               key={post.id}
