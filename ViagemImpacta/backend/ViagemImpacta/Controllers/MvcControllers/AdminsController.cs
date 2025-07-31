@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication.Cookies;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ViagemImpacta.Models;
@@ -57,6 +58,21 @@ public class AdminsController : Controller
         {
             ModelState.AddModelError(string.Empty, $"Erro ao fazer login: {ex.Message}");
             return View(model);
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Logout()
+    {
+        try
+        {
+            await _authService.CloseAdminSession();
+            return RedirectToAction("Index", "Admins");
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, $"Erro ao fazer logout: {ex.Message}");
+            return RedirectToAction("Dashboard");
         }
     }
 }
