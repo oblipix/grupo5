@@ -17,7 +17,9 @@ function MyTravelsPage() {
     reservationHistory, // Adiciona histórico de reservas
     logout,
     updateUser,
-    removeSavedHotel
+    removeSavedHotel,
+    loadReservationHistory, // Adiciona função para carregar reservas
+    token
   } = useAuth();
 
   const [isEditing, setIsEditing] = useState(false);
@@ -25,6 +27,68 @@ function MyTravelsPage() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState('');
   const [updateError, setUpdateError] = useState('');
+
+  // Função para obter o número de hóspedes
+  const getNumberOfGuests = (reservation) => {
+    // Tenta diferentes campos possíveis
+    const numberOfGuests = reservation.numberOfGuests || 
+                          reservation.NumberOfGuests || 
+                          reservation.numberofguests || 
+                          reservation.guests || 
+                          reservation.Guests;
+    
+    // Se não encontrar o campo, conta os viajantes como fallback
+    if (numberOfGuests !== undefined && numberOfGuests !== null && numberOfGuests !== 0) {
+      return numberOfGuests;
+    }
+    
+    const travellers = reservation.travellers || reservation.Travellers;
+    if (travellers && Array.isArray(travellers) && travellers.length > 0) {
+      return travellers.length;
+    }
+    
+    return 'Não informado';
+  };
+
+  // Função para formatar o tipo de quarto
+  const formatRoomType = (roomType) => {
+    if (!roomType && roomType !== 0) return 'Não informado';
+    
+    console.log('🏠 Formatando roomType:', roomType, 'tipo:', typeof roomType);
+    
+    // Se for um número (enum), converte para string
+    if (typeof roomType === 'number') {
+      switch (roomType) {
+        case 0: return 'Standard';
+        case 1: return 'Luxo';
+        case 2: return 'Suíte';
+        default: return 'Não informado';
+      }
+    }
+    
+    // Se for string, verifica se é um enum como string
+    if (typeof roomType === 'string') {
+      const lowerRoomType = roomType.toLowerCase();
+      switch (lowerRoomType) {
+        case 'standard':
+        case '0':
+          return 'Standard';
+        case 'luxo':
+        case '1':
+          return 'Luxo';
+        case 'suite':
+        case 'suíte':
+        case '2':
+          return 'Suíte';
+        default:
+          // Se não encontrar correspondência, retorna a string formatada
+          return roomType.charAt(0).toUpperCase() + roomType.slice(1).toLowerCase();
+      }
+    }
+    
+    // Fallback: retorna como está
+    return roomType.toString();
+  };
 
   // Função para extrair primeiro e último nome do usuário
   const getUserDisplayName = () => {
@@ -108,6 +172,43 @@ function MyTravelsPage() {
       navigate('/login');
     }
   }, [isLoggedIn, navigate]);
+
+  // Debug e força carregamento de reservas
+  useEffect(() => {
+    console.log('🔍 Debug MyTravelsPage:');
+    console.log('- isLoggedIn:', isLoggedIn);
+    console.log('- currentUser:', currentUser);
+    console.log('- reservationHistory:', reservationHistory);
+    console.log('- token:', token ? 'Token presente' : 'Token ausente');
+    
+    // Log detalhado das reservas
+    if (reservationHistory && reservationHistory.length > 0) {
+      console.log('📋 Estrutura das reservas:');
+      reservationHistory.forEach((reservation, index) => {
+        console.log(`Reserva ${index + 1}:`, reservation);
+        console.log(`- ID: ${reservation.id || reservation.ReservationId || reservation.reservationId}`);
+        console.log(`- Hotel: ${reservation.hotelName || reservation.HotelName}`);
+        console.log(`- RoomType: ${reservation.roomType || reservation.RoomType} (tipo: ${typeof (reservation.roomType || reservation.RoomType)})`);
+        console.log(`- RoomType formatado: ${formatRoomType(reservation.roomType || reservation.RoomType)}`);
+        console.log(`- CheckIn: ${reservation.checkIn || reservation.CheckIn || reservation.checkInDate}`);
+        console.log(`- CheckOut: ${reservation.checkOut || reservation.CheckOut || reservation.checkOutDate}`);
+        console.log(`- NumberOfGuests: ${reservation.numberOfGuests || reservation.NumberOfGuests} (tipo: ${typeof (reservation.numberOfGuests || reservation.NumberOfGuests)})`);
+        console.log(`- Travellers: ${JSON.stringify(reservation.travellers || reservation.Travellers)}`);
+        console.log('- Todos os campos disponíveis:', Object.keys(reservation));
+      });
+    }
+    
+    // Se o usuário está logado mas não há reservas carregadas, tenta carregar
+    if (isLoggedIn && currentUser && token && loadReservationHistory) {
+      const userId = currentUser.UserId || currentUser.userId || currentUser.id;
+      if (userId && (!reservationHistory || reservationHistory.length === 0)) {
+        console.log('🔄 Tentando recarregar reservas para userId:', userId);
+        loadReservationHistory(userId, token).catch(error => {
+          console.error('❌ Erro ao recarregar reservas:', error);
+        });
+      }
+    }
+  }, [isLoggedIn, currentUser, token, reservationHistory, loadReservationHistory]);
 
   if (!currentUser) {
     return <div className="text-center p-10">Carregando perfil...</div>;
@@ -424,7 +525,7 @@ function MyTravelsPage() {
         {reservationHistory?.length > 0 ? (
           <div className="space-y-6">
             {reservationHistory.map(reservation => (
-              <div key={reservation.id} className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+              <div key={reservation.id || reservation.ReservationId || reservation.reservationId} className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
                 <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
                   {/* Informações da reserva */}
                   <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4 lg:mb-0">
@@ -443,18 +544,16 @@ function MyTravelsPage() {
                     {/* Detalhes da reserva */}
                     <div className="flex-1">
                       <h3 className="text-xl font-semibold text-gray-800 mb-1">
-                        {reservation.hotelName}
+                        {reservation.hotelName || reservation.HotelName}
                       </h3>
                       {reservation.location && (
                         <p className="text-gray-600 mb-2">📍 {reservation.location}</p>
                       )}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
-                        <p><strong>Quarto:</strong> {reservation.roomType}</p>
-                        <br></br>
-                        <p><strong>Hóspedes:</strong> {reservation.numberOfGuests}</p>
-                        <br></br>
-                        <p><strong>Check-in:</strong> {new Date(reservation.checkInDate).toLocaleDateString('pt-BR')}</p>
-                        <p><strong>Check-out:</strong> {new Date(reservation.checkOutDate).toLocaleDateString('pt-BR')}</p>
+                        <p><strong>Quarto:</strong> {formatRoomType(reservation.roomType || reservation.RoomType)}</p>
+                        <p><strong>Hóspedes:</strong> {getNumberOfGuests(reservation)}</p>
+                        <p><strong>Check-in:</strong> {new Date(reservation.checkIn || reservation.CheckIn || reservation.checkInDate).toLocaleDateString('pt-BR')}</p>
+                        <p><strong>Check-out:</strong> {new Date(reservation.checkOut || reservation.CheckOut || reservation.checkOutDate).toLocaleDateString('pt-BR')}</p>
                       </div>
                     </div>
                   </div>
@@ -463,34 +562,24 @@ function MyTravelsPage() {
                   <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                     <div className="text-center sm:text-right">
                       <p className="text-2xl font-bold text-green-600">
-                        R$ {reservation.totalPrice?.toFixed(2).replace('.', ',') || '0,00'}
+                        R$ {(reservation.totalPrice || reservation.TotalPrice || 0).toFixed(2).replace('.', ',')}
                       </p>
                       <p className="text-sm text-gray-500">
-                        Reservado em {new Date(reservation.reservationDate).toLocaleDateString('pt-BR')}
+                        Reservado em {new Date(reservation.reservationDate || reservation.ReservationDate).toLocaleDateString('pt-BR')}
                       </p>
                     </div>
                     <div className="flex flex-col items-center sm:items-end gap-2">
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                        reservation.status === 'confirmed' 
-                          ? 'bg-green-100 text-green-800' 
-                          : reservation.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}>
-                        {reservation.status === 'confirmed' ? '✅ Confirmado' : 
-                         reservation.status === 'pending' ? '⏳ Pendente' : 
-                         reservation.status || 'Desconhecido'}
-                      </span>
+                   
                       
                       {/* Botões de ação */}
                       <div className="flex gap-2">
                         <button 
-                          onClick={() => navigate(`/hoteis/${reservation.hotelId}`)}
+                          onClick={() => navigate(`/hoteis/${reservation.hotelId || reservation.HotelId}`)}
                           className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition"
                         >
                           Ver Hotel
                         </button>
-                        {reservation.status === 'confirmed' && (
+                        {(reservation.isConfirmed || reservation.IsConfirmed) && (
                           <button 
                             className="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition"
                             onClick={() => {
@@ -507,13 +596,13 @@ function MyTravelsPage() {
                 </div>
                 
                 {/* Informações dos viajantes */}
-                {reservation.travellers && reservation.travellers.length > 0 && (
+                {(reservation.travellers || reservation.Travellers) && (reservation.travellers || reservation.Travellers).length > 0 && (
                   <div className="mt-4 pt-4 border-t border-gray-200">
                     <p className="text-sm font-semibold text-gray-700 mb-2">Viajantes:</p>
                     <div className="flex flex-wrap gap-2">
-                      {reservation.travellers.map((traveller, index) => (
+                      {(reservation.travellers || reservation.Travellers).map((traveller, index) => (
                         <span key={index} className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-700">
-                          {traveller.firstName} {traveller.lastName}
+                          {traveller.firstName || traveller.FirstName} {traveller.lastName || traveller.LastName}
                         </span>
                       ))}
                     </div>

@@ -4,6 +4,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../../services/AuthService';
+import reservationService from '../../services/reservationService';
  
 const AuthContext = createContext(null);
  
@@ -196,12 +197,21 @@ export const AuthProvider = ({ children }) => {
                         if (userId) {
                             await fetchUserHotels(storedToken, userId);
                             
+                            // Busca o histórico de reservas do backend
+                            try {
+                                await loadReservationHistory(userId, storedToken);
+                            } catch (reservationError) {
+                                console.error('Erro ao carregar reservas na inicialização:', reservationError);
+                                setReservationHistory([]);
+                            }
+                            
                             // Verifica reservas e marca hotéis como visitados automaticamente
                             await checkReservationsAndMarkVisited(storedToken, userId);
                         } else {
                             console.error("ID do usuário não encontrado nos dados armazenados");
                             setSavedHotels([]);
                             setVisitedHotels([]);
+                            setReservationHistory([]);
                         }
                     } else {
                         // Se os dados do usuário são inválidos, limpa o localStorage
@@ -279,6 +289,38 @@ export const AuthProvider = ({ children }) => {
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn, token, currentUser]);
+
+    // Função para carregar o histórico de reservas do backend
+    const loadReservationHistory = async (userId, token) => {
+        if (!userId || !token) {
+            console.warn('userId ou token não fornecidos para carregar reservas');
+            return;
+        }
+
+        try {
+            console.log('Carregando histórico de reservas do backend para o usuário:', userId, 'tipo:', typeof userId);
+            
+            // Garante que userId seja um número
+            const numericUserId = parseInt(userId, 10);
+            if (isNaN(numericUserId)) {
+                throw new Error(`userId inválido: ${userId}`);
+            }
+            
+            const reservations = await reservationService.getUserReservations(numericUserId);
+            
+            if (Array.isArray(reservations)) {
+                setReservationHistory(reservations);
+                console.log('Histórico de reservas carregado do backend:', reservations.length, 'reservas');
+            } else {
+                console.warn('Resposta inválida do backend para reservas:', reservations);
+                setReservationHistory([]);
+            }
+        } catch (error) {
+            console.error('Erro ao carregar histórico de reservas do backend:', error);
+            // Em caso de erro, mantém o array vazio
+            setReservationHistory([]);
+        }
+    };
  
     // <<<<<<<<<<<< FUNÇÃO DE LOGIN COM CHAMADA AO BACKEND >>>>>>>>>>>>
     const login = async (email, password) => {
@@ -374,10 +416,20 @@ export const AuthProvider = ({ children }) => {
                     setSavedHotels([]);
                     setVisitedHotels([]);
                 }
+
+                // Buscar histórico de reservas do backend
+                try {
+                    await loadReservationHistory(userId, receivedToken);
+                } catch (reservationError) {
+                    console.error('Erro ao buscar reservas do usuário:', reservationError);
+                    // Continue o login mesmo se a busca de reservas falhar
+                    setReservationHistory([]);
+                }
             } else {
-                console.warn('ID do usuário ou token não encontrado, não é possível buscar hotéis');
+                console.warn('ID do usuário ou token não encontrado, não é possível buscar hotéis e reservas');
                 setSavedHotels([]);
                 setVisitedHotels([]);
+                setReservationHistory([]);
             }
  
             // Redireciona para a página principal após o login
@@ -413,7 +465,6 @@ export const AuthProvider = ({ children }) => {
         setReservationHistory([]); // Limpa histórico de reservas do estado local
         localStorage.removeItem('authToken');
         localStorage.removeItem('authUser');
-        // NÃO remove userReservations do localStorage para manter as reservas salvas
 
         // Navega para login de forma segura
         try {
@@ -701,26 +752,36 @@ export const AuthProvider = ({ children }) => {
 
             console.log('Nova reserva criada:', newReservation);
 
-            // Salva a reserva via API primeiro
+            // Salva a reserva via API do backend
             try {
-                // TODO: Implementar chamada para a API do backend para salvar a reserva
-                // const savedReservation = await reservationService.createReservation(newReservation);
-                
-                // Por enquanto, atualiza apenas o estado local
-                setReservationHistory(prevHistory => {
-                    const updatedHistory = [newReservation, ...prevHistory]; // Adiciona no início (mais recente primeiro)
-                    console.log('Reserva adicionada ao estado local:', updatedHistory);
-                    return updatedHistory;
+                // Criar a reserva usando o reservationService
+                const savedReservation = await reservationService.createReservation({
+                    userId: newReservation.userId,
+                    roomId: reservationData.roomId, // Precisa do roomId para a API
+                    hotelId: newReservation.hotelId,
+                    checkIn: newReservation.checkInDate,
+                    checkOut: newReservation.checkOutDate,
+                    numberOfGuests: newReservation.numberOfGuests,
+                    specialRequests: reservationData.specialRequests || '',
+                    travellers: newReservation.travellers
                 });
                 
-                console.log('Reserva salva com sucesso');
+                console.log('Reserva salva no backend:', savedReservation);
+                
+                // Recarrega o histórico de reservas do backend para ter os dados atualizados
+                await loadReservationHistory(userId, token);
+                
+                console.log('Reserva salva com sucesso e histórico atualizado');
             } catch (apiError) {
                 console.error('Erro ao salvar reserva via API:', apiError);
                 // Em caso de erro na API, ainda adiciona ao estado local como fallback
                 setReservationHistory(prevHistory => {
                     const updatedHistory = [newReservation, ...prevHistory];
+                    console.log('Reserva adicionada ao estado local (fallback):', updatedHistory);
                     return updatedHistory;
                 });
+                // Re-lança o erro para que o componente possa tratar
+                throw apiError;
             }
             
         } catch (error) {
@@ -945,7 +1006,8 @@ export const AuthProvider = ({ children }) => {
         checkReservationsAndMarkVisited, // Expondo o método para uso em outros componentes se necessário
         addReservationToHistory, // Adicionando a função que estava faltando
         reservationHistory, // Expondo o histórico de reservas também
-        updateReservationStatus // Expondo a função de atualizar status
+        updateReservationStatus, // Expondo a função de atualizar status
+        loadReservationHistory // Expondo a função para recarregar reservas
     };
  
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
