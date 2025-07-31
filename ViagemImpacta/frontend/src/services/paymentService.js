@@ -18,7 +18,7 @@ class PaymentService {
       console.log('Creating checkout session for reservation ID:', reservationId);
       const token = localStorage.getItem('authToken');
       console.log('Auth token exists:', !!token);
-      
+
       const response = await fetch(`https://localhost:7010/checkout?id=${reservationId}`, {
         method: 'POST',
         headers: {
@@ -28,24 +28,24 @@ class PaymentService {
       });
 
       console.log('Checkout response status:', response.status);
-      
+
       if (!response.ok) {
         const errorText = await response.text();
         console.log('Checkout error response:', errorText);
-        
+
         let errorData;
         try {
           errorData = JSON.parse(errorText);
         } catch {
           errorData = { message: errorText };
         }
-        
+
         throw new Error(errorData.message || `Erro ao criar sessão de pagamento: ${response.status} ${response.statusText}`);
       }
 
       const checkoutData = await response.json();
       return checkoutData;
-      
+
     } catch (error) {
       console.error('Erro no serviço de pagamento:', error);
       throw new Error(error.message || 'Não foi possível iniciar o pagamento. Tente novamente mais tarde.');
@@ -80,8 +80,14 @@ class PaymentService {
         },
         body: JSON.stringify(reservationData)
       });
-
+      console.log('Reserva response status:', reservationResponse.status);
       if (!reservationResponse.ok) {
+        if (reservationResponse.status === 400) {
+          throw new Error('Não foi possível criar sua reserva! Verifique seus dados ou ligue para nós para verificar a disponibilidade de quartos.');
+        }
+        if (reservationResponse.status === 401) {
+          throw new Error('Você precisa estar logado para fazer uma reserva. Por favor, faça login e tente novamente.');
+        }
         const errorData = await reservationResponse.json().catch(() => ({}));
         throw new Error(errorData.message || `Erro ao criar reserva: ${reservationResponse.status} ${reservationResponse.statusText}`);
       }
@@ -111,13 +117,13 @@ class PaymentService {
         reservationDate: new Date().toISOString(),
         status: 'confirmed'
       };
-      
+
       console.log('Salvando dados da reserva para histórico:', reservationForHistory);
       sessionStorage.setItem('pendingReservation', JSON.stringify(reservationForHistory));
 
       // Depois, criar a sessão de checkout do Stripe
       const checkoutData = await this.createCheckoutSession(reservationId);
-      
+
       // Redirecionar para o Stripe
       this.redirectToStripeCheckout(checkoutData.url);
 

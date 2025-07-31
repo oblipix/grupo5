@@ -31,6 +31,10 @@ class ReservationService {
       if (!response.ok) {
         if (response.status === 404) {
           return []; // Usuário não tem reservas
+        } else if (response.status === 401) {
+          if (await this.isTokenExpired(token)) {
+            throw new Error('Token de autenticação expirado');
+          }
         }
         throw new Error(`Erro ao buscar reservas: ${response.status}`);
       }
@@ -110,7 +114,7 @@ class ReservationService {
           }))
         })
       });
-
+      console.log('Response status:', response.status);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || `Erro ao criar reserva: ${response.status} ${response.statusText}`);
@@ -118,7 +122,7 @@ class ReservationService {
 
       const reservation = await response.json();
       return reservation;
-      
+
     } catch (error) {
       console.error('Erro no serviço de reservas:', error);
       throw new Error(error.message || 'Não foi possível criar a reserva. Tente novamente mais tarde.');
@@ -146,7 +150,7 @@ class ReservationService {
 
       const reservation = await response.json();
       return reservation;
-      
+
     } catch (error) {
       console.error('Erro ao buscar reserva:', error);
       throw error;
@@ -174,7 +178,7 @@ class ReservationService {
 
       const reservations = await response.json();
       return reservations;
-      
+
     } catch (error) {
       console.error('Erro ao buscar reservas:', error);
       throw error;
@@ -271,10 +275,10 @@ class ReservationService {
     try {
       const checkInDate = new Date(checkIn);
       const checkOutDate = new Date(checkOut);
-      
+
       const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
       const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-      
+
       const subtotal = dailyPrice * daysDiff;
       // TAXAS REMOVIDAS - MOSTRAR APENAS VALOR CRU
       // const taxes = subtotal * 0.1; // 10% de taxas
