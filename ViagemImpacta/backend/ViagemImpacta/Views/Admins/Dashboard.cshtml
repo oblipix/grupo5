@@ -23,7 +23,7 @@
         </div>
         <div class="faturamento-box">
             <strong>Faturamento:</strong>
-            <span class="fs-4">R$ @balance.ToString("N2")</span>
+            <span class="fs-4">@balance.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</span>
         </div>
     </div>
     <div class="dashboard-main">
