@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Icons } from '../layout/Icons'; // Importa o nosso arquivo central de ícones
 import '../styles/SearchForms.css'; // Importa o CSS específico do SearchHotelsBar
+import { Range } from 'react-range';
 
 // --- DADOS E OPÇÕES DO FORMULÁRIO ---
 const roomGuestOptions = [
@@ -30,7 +31,8 @@ function SearchHotelsBar() {
     // Estado interno do formulário
     const [destination, setDestination] = useState('');
     const [guestsInfo, setGuestsInfo] = useState(roomGuestOptions[1]);
-    const [priceRange, setPriceRange] = useState(5000);
+    const [minPrice, setMinPrice] = useState(0);
+const [maxPrice, setMaxPrice] = useState(10000);
     const [selectedAmenities, setSelectedAmenities] = useState([]);
     const [selectedRoomType, setSelectedRoomType] = useState(roomTypeOptions[0]);
     const [isAmenitiesDropdownOpen, setIsAmenitiesDropdownOpen] = useState(false);
@@ -61,7 +63,8 @@ function SearchHotelsBar() {
 
         if (destination) searchParams.append('destino', destination);
         if (guestsInfo) searchParams.append('hospedes', guestsInfo.adults);
-        if (priceRange < 10000) searchParams.append('precoMax', priceRange);
+        if (minPrice > 0) searchParams.append('precoMin', minPrice);
+        if (maxPrice < 10000) searchParams.append('precoMax', maxPrice);
         if (selectedAmenities.length > 0) searchParams.append('comodidades', selectedAmenities.join(','));
         if (selectedRoomType) searchParams.append('tipoQuarto', selectedRoomType);
 
@@ -72,10 +75,12 @@ function SearchHotelsBar() {
     const handleClearSearch = () => {
         setDestination('');
         setGuestsInfo(roomGuestOptions[1]);
-        setPriceRange(5000);
+        setMinPrice(0);
+        setMaxPrice(10000);
         setSelectedAmenities([]);
         setSelectedRoomType(roomTypeOptions[0]);
     };
+    
 
     const getAmenitiesDisplayText = () => {
         const totalSelected = selectedAmenities.length;
@@ -160,13 +165,49 @@ function SearchHotelsBar() {
 
                 <div className="flex flex-col md:flex-row items-center gap-4">
                     <div className="flex-1 w-full md:w-auto">
-                        <label className="labelForms mb-1 block">Preço Máximo: R$ {priceRange.toLocaleString('pt-BR')}</label>
+                          <label className="labelForms mb-1 block"> Preço: R$ {minPrice.toLocaleString('pt-BR')} - R$ {maxPrice.toLocaleString('pt-BR')}</label>
                         <div className="relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm">
                             <Icons.Money />
-                            <input
-                                type="range" min={0} max={10000} value={priceRange}
-                                onChange={(e) => setPriceRange(Number(e.target.value))}
-                                className="flex-grow ml-2 w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                         <Range
+                            step={1}
+                            min={0}
+                            max={10000}
+                            values={[minPrice, maxPrice]}
+                            onChange={([newMin, newMax]) => {
+                            setMinPrice(newMin);
+                            setMaxPrice(newMax);
+                            }}
+                            renderTrack={({ props, children }) => {
+                                // Calcula a posição dos thumbs em porcentagem
+                                const left = (minPrice / 10000) * 100;
+                                const right = (maxPrice / 10000) * 100;
+                                return (
+                                    <div
+                                    {...props}
+                                    className="h-1.5 w-full rounded bg-gray-200 relative mx-2"
+                                    >
+                                    {/* faixa preenchida entre os thumbs */}
+                                    <div
+                                        className="absolute h-full bg-blue-700 rounded pointer-events-none"
+                                        style={{
+                                            left: `${left}%`,
+                                             width: `${Math.max(right - left, 1)}%`,
+                                            position: 'absolute',
+                                            
+                                        }}
+                                    />
+                                    {children}
+                                    </div>
+                                );
+                            }}
+                           renderThumb={({ props }) => (
+                            <div
+                                {...props}
+                                className="h-5 w-5 bg-blue-800 rounded-full shadow-md border-2 border-white flex items-center justify-center"
+                                style={{ ...props.style }}
+                            />
+                            )}
+                         
                             />
                         </div>
                     </div>

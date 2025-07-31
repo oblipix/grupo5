@@ -18,7 +18,6 @@ function HotelCard({ hotel }) {
     
 
     const minPrice = hotel.lowestRoomPrice; // Usa o preço mais baixo disponível
-    console.log('Hotel recebido:', hotel);
 
     const handleSaveClick = (e) => {
         e.preventDefault();  // Impede que o clique no botão ative o Link do card
