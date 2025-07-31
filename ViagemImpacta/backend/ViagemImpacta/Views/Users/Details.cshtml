@@ -38,7 +38,7 @@
                 <dd class="col-sm-8">@Model.Role</dd>
             </dl>
             <div class="d-flex gap-2">
-                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+                <button onclick="history.back()" class="btn btn-secondary">Voltar</button>
                 <a asp-action="Edit" asp-route-id="@Model.UserId" class="btn btn-primary">Editar</a>
                 <a asp-action="Delete" asp-route-id="@Model.UserId" class="btn btn-danger">Deletar</a>
             </div>

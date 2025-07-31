@@ -8,7 +8,6 @@
     <div class="w-100" style="max-width: 400px;">
         <div class="text-center mb-2">
             <img src="/favicon.png" alt="Tripz Logo" style="height:80px;width:80px;vertical-align:middle;" />
-            @*<span class="fs-3 fw-bold align-middle logo">Tripz</span>*@
         </div>
         <h5 class="text-center mb-2">Área Administrativa</h5>
         <form asp-action="Index" method="post">
@@ -23,6 +22,10 @@
                 <input type="password" class="form-control" id="Password" name="Password" placeholder="Digite sua senha"/>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="alert alert-warning text-center">E-mail ou senha inválidos.</div>
+            }
             <button type="submit" class="btn btn-primary w-100">Entrar</button>
         </form>
     </div>

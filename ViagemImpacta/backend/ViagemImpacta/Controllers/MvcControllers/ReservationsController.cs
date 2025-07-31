@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Interfaces;
+using System.Linq; // Necessário para .Where
+using System;
 
 namespace ViagemImpacta.Controllers.MvcControllers
 {
@@ -14,12 +16,13 @@ namespace ViagemImpacta.Controllers.MvcControllers
             _reservationService = reservationService;
         }
 
-        public async Task<ActionResult> Index()
+        public async Task<ActionResult> Index(DateTime? checkin, DateTime? checkout, string search, string status)
         {
             try
             {
-                var reservationList = await _reservationService.GetAllReservations();
-                return View(reservationList);
+                var filteredList = await _reservationService.GetFilteredReservation(checkin, checkout, search, status);
+
+                return View(filteredList.ToList());
             }
             catch (Exception ex)
             {

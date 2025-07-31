@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using ViagemImpacta.Data;
 using ViagemImpacta.Models;
 using ViagemImpacta.Models.Enums;
