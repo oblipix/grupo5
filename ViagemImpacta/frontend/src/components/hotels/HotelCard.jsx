@@ -236,7 +236,7 @@ function HotelCard({ hotel }) {
                                 R$ {minPrice.toFixed(2).replace('.', ',')}
                             </div>
                         </div>
-                        <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm pulse-price transform hover:scale-105 transition-all duration-200">
+                        <div className="main-action-button text-white px-4 py-2 rounded-lg font-bold text-sm pulse-price transform hover:scale-105 transition-all duration-200">
                             Ver detalhes
                         </div>
                     </div>

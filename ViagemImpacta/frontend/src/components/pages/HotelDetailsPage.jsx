@@ -94,19 +94,16 @@ const leisureIconMap = {
     // Serviços
     'Wi-Fi Grátis': Icons.Wifi,
     'Wi-Fi': Icons.Wifi,
-    'WiFi': Icons.Wifi,
     'Internet': Icons.Wifi,
     'Estacionamento': Icons.TotalRooms, // Usando TotalRooms como ícone para estacionamento (parece com vagas de estacionamento)
     'Estacionamento Grátis': Icons.TotalRooms,
     'Serviço de Quarto': BroomIcon, 
-    'Serviços de Quarto': BroomIcon,
     'Acessibilidade': Icons.User,
     'Pet Friendly': PetIcon,
     'Aceita Animais': PetIcon,
     'Aceita Pets': PetIcon,
     'Café da Manhã Incluso': CoffeeIcon, // Usando ícone de xícara para café da manhã
     'Café da Manhã': CoffeeIcon,
-    'Café-da-manhã': CoffeeIcon,
     'Recepção 24h': Icons.User,
     'Recepção': Icons.User,
     'Serviço de Limpeza': Icons.RoomType,
@@ -114,7 +111,6 @@ const leisureIconMap = {
     'Elevador': Icons.Elevator,
     'Elevadores': Icons.Elevator,
     'Ar-Condicionado': Icons.Wifi,
-    'Ar Condicionado': Icons.Wifi,
     'Frigobar': Icons.Bar,
     'Cofre': Icons.RoomType,
     'Vista para o Mar': Icons.Location,

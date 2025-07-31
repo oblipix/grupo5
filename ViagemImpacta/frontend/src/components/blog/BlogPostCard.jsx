@@ -29,7 +29,7 @@ function BlogPostCard({ post }) {
                     <div>
                         {/* <<<<< AQUI ESTÁ A MUDANÇA NA TAG DE CATEGORIA >>>>> */}
                         <p className="inline-flex items-center text-xs font-semibold
-                                      bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full uppercase mb-1">
+                                      bg-gray-200 text-yellow-800 px-2 py-1 rounded-full uppercase mb-1">
                             <TagIcon className="h-3 w-3 mr-1" /> {/* Ícone de tag */}
                             {post.category}
                         </p>
