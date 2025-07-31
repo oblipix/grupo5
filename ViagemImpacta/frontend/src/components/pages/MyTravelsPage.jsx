@@ -90,6 +90,23 @@ function MyTravelsPage() {
     return roomType.toString();
   };
 
+  // Função para determinar o status da reserva
+  const getReservationStatus = (reservation) => {
+    const isConfirmed = reservation.isConfirmed || reservation.IsConfirmed;
+    
+    if (isConfirmed) {
+      return {
+        text: 'Confirmada',
+        className: 'bg-green-100 text-green-800 border-green-200'
+      };
+    } else {
+      return {
+        text: 'Pendente',
+        className: 'bg-yellow-100 text-yellow-800 border-yellow-200'
+      };
+    }
+  };
+
   // Função para extrair primeiro e último nome do usuário
   const getUserDisplayName = () => {
     if (!currentUser) return 'Usuário';
@@ -569,7 +586,10 @@ function MyTravelsPage() {
                       </p>
                     </div>
                     <div className="flex flex-col items-center sm:items-end gap-2">
-                   
+                      {/* Badge de Status da Reserva */}
+                      <span className={`px-2 py-1 rounded text-xs font-semibold border ${getReservationStatus(reservation).className}`}>
+                        {getReservationStatus(reservation).text}
+                      </span>
                       
                       {/* Botões de ação */}
                       <div className="flex gap-2">
@@ -579,7 +599,7 @@ function MyTravelsPage() {
                         >
                           Ver Hotel
                         </button>
-                        {(reservation.isConfirmed || reservation.IsConfirmed) && (
+                        {(reservation.isConfirmed || reservation.IsConfirmed) ? (
                           <button 
                             className="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition"
                             onClick={() => {
@@ -589,9 +609,34 @@ function MyTravelsPage() {
                           >
                             Comprovante
                           </button>
+                        ) : (
+                          <button 
+                            disabled
+                            className="px-3 py-1 bg-gray-400 text-white rounded text-xs cursor-not-allowed"
+                            title="Comprovante disponível após confirmação"
+                          >
+                            Aguardando Confirmação
+                          </button>
                         )}
                       </div>
                     </div>
+                  </div>
+                </div>
+                
+                {/* Informações de Status da Reserva */}
+                <div className="mt-4 pt-4 border-t border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-semibold text-gray-700">Status da Reserva:</p>
+                      <p className="text-xs text-gray-500">
+                        {(reservation.isConfirmed || reservation.IsConfirmed) 
+                          ? 'Sua reserva foi confirmada e está garantida.' 
+                          : 'Sua reserva está pendente de confirmação. Você receberá um e-mail quando for confirmada.'}
+                      </p>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${getReservationStatus(reservation).className}`}>
+                      {getReservationStatus(reservation).text}
+                    </span>
                   </div>
                 </div>
                 
