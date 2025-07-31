@@ -1,12 +1,44 @@
 ﻿@model IEnumerable<ViagemImpacta.Models.Reservation>
 @{
     ViewData["Title"] = "Reservas";
+    var checkin = Context.Request.Query["checkin"].ToString();
+    var checkout = Context.Request.Query["checkout"].ToString();
+    var search = Context.Request.Query["search"].ToString();
+    var status = Context.Request.Query["status"].ToString();
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1>Lista de Reservas</h1>
     <a class="btn btn-secondary" asp-controller="Admins" asp-action="Dashboard">Voltar ao Dashboard</a>
 </div>
+
+<form asp-action="Index" method="get" class="mb-4">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label for="checkin" class="form-label">Check-in</label>
+            <input type="date" class="form-control" id="checkin" name="checkin" value="@checkin" />
+        </div>
+        <div class="col-md-3">
+            <label for="checkout" class="form-label">Check-out</label>
+            <input type="date" class="form-control" id="checkout" name="checkout" value="@checkout" />
+        </div>
+        <div class="col-md-3">
+            <label for="search" class="form-label">Usuário ou Hotel</label>
+            <input type="text" class="form-control" id="search" name="search" placeholder="Nome do usuário ou hotel" value="@search" />
+        </div>
+        <div class="col-md-2">
+            <label for="status" class="form-label">Status</label>
+            <select class="form-select" id="status" name="status">
+                <option value="" selected="@(string.IsNullOrEmpty(status) ? "selected" : null)">Todos</option>
+                <option value="confirmadas" selected="@(status == "confirmadas" ? "selected" : null)">Apenas confirmadas</option>
+                <option value="nao-confirmadas" selected="@(status == "nao-confirmadas" ? "selected" : null)">Apenas não confirmadas</option>
+            </select>
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+        </div>
+    </div>
+</form>
 
 <table class="table table-striped">
     <thead>

@@ -1,4 +1,5 @@
-﻿using ViagemImpacta.Models;
+﻿using System.Linq.Expressions;
+using ViagemImpacta.Models;
 using ViagemImpacta.Models.Enums;
 
 namespace ViagemImpacta.Repositories.Interfaces
