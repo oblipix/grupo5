@@ -27,5 +27,7 @@ namespace ViagemImpacta.DTO.HotelDTO
         public string? Description { get; set; }
         public decimal? LowestRoomPrice { get; set; }
         public List<RoomDto> Rooms { get; set; } = new();
+        public decimal? MaxRoomPrice { get; set; }
+        public decimal? FilteredLowestRoomPrice { get; set; }
     }
 }

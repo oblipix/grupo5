@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ViagemImpacta.Models
 {
@@ -45,6 +46,11 @@ namespace ViagemImpacta.Models
 
         [StringLength(500, ErrorMessage = "Descrição deve ter no máximo 500 caracteres")]
         public string? Description { get; set; }
+        
+        //prop auxiliar para mapear o menor preço absoluto de todos os quartos
+        //não deve ser mapeado para o banco de dados
+         [NotMapped]
+        public decimal? AbsoluteLowestRoomPrice { get; set; }
     }
 }
 

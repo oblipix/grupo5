@@ -168,13 +168,28 @@ namespace ViagemImpacta.Services.Interfaces
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<IEnumerable<HotelDto>> GetHotelsWithFiltersAsync(string? hotelAddress, int? minStars, int? maxPrice, int? guestCount)
+        public async Task<IEnumerable<HotelDto>> GetHotelsWithFiltersAsync(string? hotelAddress, int? minStars,int? minPrice, int? maxPrice, int? guestCount)
         {
             var hotels = await _unitOfWork.Hotels.GetAllAsync(include: q => q.Include(h => h.Rooms));
             if (!string.IsNullOrEmpty(hotelAddress))
                 hotels = hotels.Where(h => h.HotelAddress != null && h.HotelAddress.Contains(hotelAddress, StringComparison.OrdinalIgnoreCase));
             if (minStars.HasValue)
                 hotels = hotels.Where(h => h.Stars >= minStars.Value);
+
+            if (minPrice.HasValue || maxPrice.HasValue)
+            {
+                foreach (var hotel in hotels)
+                {
+                    // Calcular o menor preço absoluto de todos os quartos
+                     hotel.AbsoluteLowestRoomPrice = hotel.Rooms.Any() ? hotel.Rooms.Min(r => r.AverageDailyPrice) : (decimal?)null;
+                    // Filtrar quartos com base no preço mínimo e máximo
+                    hotel.Rooms = hotel.Rooms
+                        .Where(r =>
+                            (!minPrice.HasValue || r.AverageDailyPrice >= minPrice.Value) &&
+                            (!maxPrice.HasValue || r.AverageDailyPrice <= maxPrice.Value)
+                        ).ToList();
+                }
+            }
 
             return _mapper.Map<IEnumerable<HotelDto>>(hotels);
         }

@@ -11,6 +11,6 @@ namespace ViagemImpacta.Services.Interfaces
         Task<Hotel> CreateHotelAsync(Hotel hotel);
         Task UpdateHotelAsync(Hotel hotel);
         Task DeleteHotelAsync(int hotelId);
-        Task<IEnumerable<HotelDto>> GetHotelsWithFiltersAsync(string? hotelAddress, int? minStars, int? maxPrice, int? guestCount);
+        Task<IEnumerable<HotelDto>> GetHotelsWithFiltersAsync(string? hotelAddress, int? minStars, int? minPrice, int? maxPrice, int? guestCount);
     }
 }
