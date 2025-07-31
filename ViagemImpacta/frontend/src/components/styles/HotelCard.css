@@ -105,22 +105,23 @@
 
 .confetti {
     position: absolute;
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     opacity: 0;
-    border-radius: 50% 50% 0 0;
+    background-color: #FF5252;
     transform: rotate(-45deg);
 }
 
 .confetti::before,
 .confetti::after {
     content: '';
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 10px;
     position: absolute;
-    left: 4px;
+    left: 5px;
     top: 0;
-    border-radius: 50%;
+    background-color: inherit;
+    border-radius: 5px 5px 0 0;
     transform: rotate(-45deg);
     transform-origin: 0 100%;
 }
