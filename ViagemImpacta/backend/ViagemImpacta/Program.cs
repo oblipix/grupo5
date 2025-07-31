@@ -29,7 +29,7 @@ builder.Services.AddControllers()
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Viagem Impacta API",
         Version = "v1",
@@ -85,7 +85,7 @@ builder.Services.AddAuthentication(options =>
 {
     options.LoginPath = "/Admins/Index";
     options.AccessDeniedPath = "/Admins/AccessDenied";
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+    options.ExpireTimeSpan = TimeSpan.FromHours(2);
     options.SlidingExpiration = true;
     options.Cookie.IsEssential = true;
 });
@@ -121,21 +121,19 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
-// ✅ SWAGGER: Configurar middleware do Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Viagem Impacta API v1");
-        c.RoutePrefix = "swagger"; // Acesso via: https://localhost:xxxx/swagger
+        c.RoutePrefix = "swagger"; 
     });
 }
 
