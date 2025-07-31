@@ -31,6 +31,7 @@ import PurchasePage from './components/pages/PurchasePage.jsx';
 import PaymentPage from './components/pages/PaymentPage.jsx';
 import MyTravelsPage from './components/pages/MyTravelsPage.jsx';
 import MyHotelsPage from './components/pages/MyHotelsPage.jsx';
+import ErrorPage from './components/pages/ErrorPage.jsx'; // Importando a página de erro 404
 // IMPORT DE EVENTOS COMENTADO
 // import EventBlogSection from './components/blog/EventBlogSection.jsx'; // Sua página de Eventos
 import BlogPostDetailsPage from './components/pages/BlogPostDetailsPage.jsx'; // Detalhes de post de blog
@@ -85,6 +86,9 @@ const router = createBrowserRouter([
             { path: '/payment-success', element: <PaymentSuccessPage /> }, // Rota para página de pagamento com sucesso
             // Removida a rota '/blog' que renderizava BlogPage/BlogSection, pois BlogSection já está na HomePage.
             // { path: '/blog', element: <BlogPage /> }, 
+            
+            // Rota de fallback para lidar com 404 - Deve ser a última rota
+            { path: '*', element: <ErrorPage /> }
         ],
     },
 ]);
