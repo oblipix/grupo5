@@ -153,10 +153,11 @@ class HotelService {
       // Mapeia os campos do backend para o frontend
       id: backendHotel.hotelId || backendHotel.HotelId,
       title: backendHotel.name || backendHotel.Name,
-      description: this.generateDescription(backendHotel),
+      description: backendHotel.description || backendHotel.Description,
       location: `${backendHotel.city || backendHotel.City}, Brasil`,
       price: this.generatePrice(backendHotel),
       rating: this.generateRating(backendHotel),
+      lowestRoomPrice: backendHotel.lowestRoomPrice || backendHotel.LowestRoomPrice,
      
       // Campos específicos do backend
       address: backendHotel.hotelAddress || backendHotel.HotelAddress,

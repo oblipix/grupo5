@@ -1,4 +1,6 @@
-﻿namespace ViagemImpacta.DTO.HotelDTO
+﻿using ViagemImpacta.DTO.RoomDTO;
+
+namespace ViagemImpacta.DTO.HotelDTO
 {
     public class HotelDto
     {
@@ -22,5 +24,8 @@
         public bool BreakfastIncludes { get; set; }
         public bool Wifi { get; set; }
         public bool Parking { get; set; }
+        public string? Description { get; set; }
+        public decimal? LowestRoomPrice { get; set; }
+        public List<RoomDto> Rooms { get; set; } = new();
     }
 }

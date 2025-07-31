@@ -1,12 +1,37 @@
-# React + Vite
+# Viagem Impacta - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicação React para reserva de viagens, hotéis e pacotes, com blog e área do usuário.
 
-Currently, two official plugins are available:
+## Estrutura de Pastas
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- `src/components`: Componentes reutilizáveis (Footer, LoginPage, Blog, etc.)
+- `src/pages`: Páginas principais do sistema
+- `src/services`: Serviços de API (hotel, pagamento, reserva)
+- `src/hooks`: Hooks customizados
+- `src/assets`: Imagens e recursos estáticos
 
-## Expanding the ESLint configuration
+## Como rodar o projeto
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. Instale as dependências:
+   ```bash
+   npm install
+   ```
+2. Rode o projeto em modo desenvolvimento:
+   ```bash
+   npm run dev
+   ```
+
+## Scripts úteis
+
+- `npm run dev` — inicia o servidor de desenvolvimento
+- `npm run build` — gera build de produção
+- `npm run lint` — executa o linter
+
+## Principais dependências
+
+- React
+- Vite
+- Tailwind CSS
+- React Router
+- Axios
+- FontAwesome

@@ -45,6 +45,10 @@ function HotelCard({ hotel }) {
     };
 
     // Calcula o menor preço dos quartos disponíveis
+    
+
+    const minPrice = hotel.lowestRoomPrice; // Usa o preço mais baixo disponível
+/*
     const getMinPrice = () => {
         if (hotel.roomOptions && hotel.roomOptions.length > 0) {
             const prices = hotel.roomOptions.map(room => room.price).filter(price => price > 0);
@@ -54,6 +58,7 @@ function HotelCard({ hotel }) {
     };
 
     const minPrice = getMinPrice();
+    */
     const starRating = getStarRating();
 
     // Função para criar e animar confetes
