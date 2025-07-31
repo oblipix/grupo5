@@ -1,9 +1,13 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Options;
+using System.Net;
+using System.Net.Mail;
 using ViagemImpacta.DTO.UserDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Models.Enums;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Services.Interfaces;
+using ViagemImpacta.Setup;
 
 namespace ViagemImpacta.Services.Implementations
 {
@@ -12,11 +16,13 @@ namespace ViagemImpacta.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly TimeZoneInfo BrazilTimeZone = TimeZoneInfo.FindSystemTimeZoneById("E. South America Standard Time");
+        private readonly SmtpOptions _smtpOptions;
 
-        public UserService(IUnitOfWork unitOfWork, IMapper mapper)
+        public UserService(IUnitOfWork unitOfWork, IMapper mapper, IOptions<SmtpOptions> smtpOptions)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _smtpOptions = smtpOptions.Value;
         }
 
         public async Task<IEnumerable<User>> SearchClientUsers(string search, int skip, int take)
@@ -51,6 +57,8 @@ namespace ViagemImpacta.Services.Implementations
             await _unitOfWork.Users.AddAsync(user);
             await _unitOfWork.CommitAsync();
             
+            await SendEmailAsync(user);
+
             return user;
         }
 
@@ -143,6 +151,36 @@ namespace ViagemImpacta.Services.Implementations
                 return null;
 
             return await _unitOfWork.Users.GetUserByEmail(email);
-        }     
+        }
+
+        public async Task SendEmailAsync(User user)
+        {
+            var smtpClient = new SmtpClient(_smtpOptions.Host)
+            {
+                Port = _smtpOptions.Port,
+                Credentials = new NetworkCredential(_smtpOptions.User, _smtpOptions.Pass),
+                EnableSsl = true
+
+            };
+
+            var emailBody = $@"
+                <h1>Bem-vindo(a) {user.FirstName}!</h1>
+                <p>Seu cadastro foi realizado com sucesso!</p>
+                <p>Agora você pode acessar nossa plataforma e aproveitar todos os benefícios.</p>
+                <p>Você pode acessar sua conta usando o email: {user.Email}</p>
+                <p>Atenciosamente,<br>Equipe Tripz</p>";
+
+            var mensagem = new MailMessage
+            {
+                From = new MailAddress(_smtpOptions.From),
+                Subject = "Confirmação de Cadastro",
+                Body = emailBody,
+                IsBodyHtml = true
+            };
+
+            mensagem.To.Add(user.Email);
+
+            await smtpClient.SendMailAsync(mensagem);
+        }
     }
 }

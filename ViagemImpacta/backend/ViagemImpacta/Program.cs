@@ -1,16 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using ViagemImpacta.Data;
-using ViagemImpacta.Models;
 using ViagemImpacta.Profiles;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Repositories.Implementations;
 using ViagemImpacta.Repositories.Interfaces;
 using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
+using ViagemImpacta.Setup;
 using Settings = ViagemImpacta.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,6 +34,33 @@ builder.Services.AddSwaggerGen(c =>
         Title = "Viagem Impacta API",
         Version = "v1",
         Description = "API para gerenciamento de pacotes de viagem"
+    });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = $@"Autorização JWT usando o Bearer.
+        </br>Coloque 'Bearer'[espaço] e então o seu token em seguida.
+        </br>Exemplo: \'Bearer 12345abcdef\'</br>",
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string [] {}
+        }
     });
 });
 
@@ -67,6 +96,7 @@ builder.Services.AddDbContext<AgenciaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ViagemImpactConnection")));
 
 builder.Services.Configure<StripeModel>(builder.Configuration.GetSection("StripeSettings"));
+builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IHotelService, HotelService>();

@@ -15,12 +15,17 @@ namespace ViagemImpacta.Repositories.Implementations
             _context = context;
         }
 
+        public IQueryable<Reservation> GetReservationWithUserRoomAndHotel()
+        {
+            return _context.Reservations
+                    .Include(r => r.User)
+                    .Include(r => r.Room)
+                    .Include(r => r.Hotel);
+        }
+
         public async Task<IEnumerable<Reservation>> GetReservationsByUserIdAsync(int userId)
         {
-            return await _context.Reservations
-                .Include(r => r.User)
-                .Include(r => r.Room)
-                .Include(r => r.Hotel)
+            return await GetReservationWithUserRoomAndHotel()
                 .Include(r => r.Travellers)
                 .Where(r => r.UserId == userId)
                 .OrderByDescending(r => r.CreatedAt)
@@ -29,10 +34,7 @@ namespace ViagemImpacta.Repositories.Implementations
 
         public async Task<IEnumerable<Reservation>> GetReservationsByHotelIdAsync(int hotelId)
         {
-            return await _context.Reservations
-                .Include(r => r.User)
-                .Include(r => r.Room)
-                .Include(r => r.Hotel)
+            return await GetReservationWithUserRoomAndHotel()
                 .Include(r => r.Travellers)
                 .Where(r => r.HotelId == hotelId)
                 .OrderByDescending(r => r.CheckIn)
@@ -41,10 +43,7 @@ namespace ViagemImpacta.Repositories.Implementations
 
         public async Task<IEnumerable<Reservation>> GetReservationsByRoomIdAsync(int roomId)
         {
-            return await _context.Reservations
-                .Include(r => r.User)
-                .Include(r => r.Room)
-                .Include(r => r.Hotel)
+            return await GetReservationWithUserRoomAndHotel()
                 .Include(r => r.Travellers)
                 .Where(r => r.RoomId == roomId)
                 .OrderByDescending(r => r.CheckIn)
@@ -65,10 +64,7 @@ namespace ViagemImpacta.Repositories.Implementations
 
         public async Task<IEnumerable<Reservation>> GetConflictingReservationsAsync(int roomId, DateTime checkIn, DateTime checkOut)
         {
-            return await _context.Reservations
-                .Include(r => r.User)
-                .Include(r => r.Room)
-                .Include(r => r.Hotel)
+            return await GetReservationWithUserRoomAndHotel()
                 .Where(r => r.RoomId == roomId && 
                            r.IsConfirmed &&
                            ((r.CheckIn < checkOut && r.CheckOut > checkIn)))
@@ -77,20 +73,14 @@ namespace ViagemImpacta.Repositories.Implementations
 
         public async Task<Reservation?> GetReservationWithDetailsAsync(int reservationId)
         {
-            return await _context.Reservations
-                .Include(r => r.User)
-                .Include(r => r.Room)
-                .Include(r => r.Hotel)
+            return await GetReservationWithUserRoomAndHotel()
                 .Include(r => r.Travellers)
                 .FirstOrDefaultAsync(r => r.ReservationId == reservationId);
         }
 
         public async Task<IEnumerable<Reservation>> GetReservationsByDateRangeAsync(DateTime startDate, DateTime endDate)
         {
-            return await _context.Reservations
-                .Include(r => r.User)
-                .Include(r => r.Room)
-                .Include(r => r.Hotel)
+            return await GetReservationWithUserRoomAndHotel()
                 .Include(r => r.Travellers)
                 .Where(r => r.CheckIn >= startDate && r.CheckOut <= endDate)
                 .OrderBy(r => r.CheckIn)
@@ -125,6 +115,11 @@ namespace ViagemImpacta.Repositories.Implementations
     
             // Verificar se há pelo menos um quarto disponível
             return occupiedRooms < totalRoomsOfType;
+        }
+
+        public async Task<IEnumerable<Reservation>> GetAllReservationsAsync()
+        {
+            return await GetReservationWithUserRoomAndHotel().ToListAsync();
         }
     }
 }

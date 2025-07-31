@@ -1,0 +1,59 @@
+﻿@model IEnumerable<ViagemImpacta.Models.Reservation>
+@{
+    ViewData["Title"] = "Reservas";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Lista de Reservas</h1>
+    <a class="btn btn-secondary" asp-controller="Admins" asp-action="Dashboard">Voltar ao Dashboard</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Usuário</th>
+            <th>Hotel</th>
+            <th>Quarto</th>
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>Preço Total</th>
+            <th>Confirmada?</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var reserva in Model)
+            {
+                <tr>
+                    <td>@reserva.ReservationId</td>
+                    <td>@(reserva.User?.FirstName) @(reserva.User?.LastName)</td>
+                    <td>@reserva.Hotel?.Name</td>
+                    <td>@reserva.Room?.TypeName</td>
+                    <td>@reserva.CheckIn.ToString("dd/MM/yyyy")</td>
+                    <td>@reserva.CheckOut.ToString("dd/MM/yyyy")</td>
+                    <td>@reserva.TotalPrice.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
+                    <td>
+                        @if (reserva.IsConfirmed)
+                        {
+                            <span class="badge bg-success">Sim</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Não</span>
+                        }
+                    </td>
+                    <td>
+                        <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@reserva.ReservationId">Detalhar</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr><td colspan="9">Nenhuma reserva encontrada.</td></tr>
+        }
+    </tbody>
+</table>

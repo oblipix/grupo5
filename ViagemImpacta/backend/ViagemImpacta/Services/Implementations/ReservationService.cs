@@ -94,8 +94,6 @@ namespace ViagemImpacta.Services.Implementations
             return createdReservation;
         }
 
-
-        
         public async Task<Reservation?> GetReservationByIdAsync(int reservationId)
         {
             var reservation = await _unitOfWork.Reservations.GetReservationWithDetailsAsync(reservationId);
@@ -173,6 +171,11 @@ namespace ViagemImpacta.Services.Implementations
             var hotelExists = await _unitOfWork.Hotels.GetByIdAsync(dto.HotelId) != null;
             if (!hotelExists)
                 throw new ArgumentException("Hotel não encontrado");
+        }
+
+        public async Task<IEnumerable<Reservation>> GetAllReservations()
+        {
+            return await _unitOfWork.Reservations.GetAllReservationsAsync();
         }
     }
 }

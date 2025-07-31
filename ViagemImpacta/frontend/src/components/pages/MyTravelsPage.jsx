@@ -14,6 +14,7 @@ function MyTravelsPage() {
     isLoggedIn,
     savedHotels,
     visitedHotels,
+    reservationHistory, // Adiciona histórico de reservas
     logout,
     updateUser,
     removeSavedHotel
@@ -81,10 +82,6 @@ function MyTravelsPage() {
 
   useEffect(() => {
     if (currentUser) {
-      // Debug temporário - remover após confirmar funcionamento
-      console.log('Dados do currentUser:', currentUser);
-      console.log('Nome extraído:', getUserDisplayName());
-
       // Extrai primeiro e último nome do nome completo
       const fullName = getUserFullName();
       const nameParts = fullName.trim().split(' ').filter(part => part.length > 0);
@@ -98,6 +95,8 @@ function MyTravelsPage() {
         lastName: currentUser.LastName || lastName,
         email: currentUser.Email || currentUser.email || '', // Campo Email do backend
         phone: currentUser.Phone || currentUser.phone || '', // Campo Phone do backend
+        cpf: currentUser.Cpf || currentUser.cpf || '', // Campo CPF do backend
+        birthDate: currentUser.BirthDate || currentUser.birthDate || '', // Campo BirthDate do backend
         points: currentUser.points || 0,
         avatar: currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(getUserDisplayName())}&background=3B82F6&color=ffffff&size=200`
       });
@@ -116,7 +115,26 @@ function MyTravelsPage() {
 
   const handleFormChange = (e) => {
     const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
+    
+    // Formatação para telefone
+    if (id === 'phone') {
+      // Remove tudo que não é número
+      const numbers = value.replace(/\D/g, '');
+      // Aplica a máscara (XX) XXXXX-XXXX
+      const formatted = numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+      setFormData(prev => ({ ...prev, [id]: formatted }));
+    }
+    // Formatação para CPF
+    else if (id === 'cpf') {
+      // Remove tudo que não é número
+      const numbers = value.replace(/\D/g, '');
+      // Aplica a máscara XXX.XXX.XXX-XX
+      const formatted = numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+      setFormData(prev => ({ ...prev, [id]: formatted }));
+    }
+    else {
+      setFormData(prev => ({ ...prev, [id]: value }));
+    }
   };
 
   const handleAvatarChange = (event) => {
@@ -137,6 +155,8 @@ function MyTravelsPage() {
     setIsUpdating(true);
 
     try {
+      console.log('FormData antes de validar:', formData);
+
       // Validações básicas no frontend
       if (!formData.firstName?.trim() || !formData.lastName?.trim()) {
         throw new Error('Primeiro nome e último nome são obrigatórios');
@@ -152,13 +172,33 @@ function MyTravelsPage() {
         throw new Error('Por favor, insira um email válido');
       }
 
+      // Validação de telefone (se preenchido, deve ter 11 dígitos)
+      if (formData.phone?.trim()) {
+        const phoneNumbers = formData.phone.replace(/\D/g, '');
+        if (phoneNumbers.length !== 11) {
+          throw new Error('Telefone deve ter 11 dígitos (com DDD)');
+        }
+      }
+
+      // Validação de CPF (se preenchido, deve ter 11 dígitos)
+      if (formData.cpf?.trim()) {
+        const cpfNumbers = formData.cpf.replace(/\D/g, '');
+        if (cpfNumbers.length !== 11) {
+          throw new Error('CPF deve ter 11 dígitos');
+        }
+      }
+
       // Prepara os dados no formato correto para o backend
       const updateData = {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim(),
-        phone: formData.phone?.trim() || ''
+        phone: formData.phone?.trim() || '',
+        cpf: formData.cpf?.trim() || '',
+        birthDate: formData.birthDate?.trim() || ''
       };
+
+      console.log('UpdateData preparado:', updateData);
 
       // Chama a função de atualização do contexto
       const result = await updateUser(updateData);
@@ -283,7 +323,36 @@ function MyTravelsPage() {
                     value={formData.phone || ''}
                     onChange={handleFormChange}
                     className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Telefone (opcional)"
+                    placeholder="(11) 99999-9999"
+                    maxLength="15"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label htmlFor="cpf" className="block text-gray-700 text-sm font-bold mb-2 text-left">
+                    CPF (opcional)
+                  </label>
+                  <input
+                    id="cpf"
+                    type="text"
+                    value={formData.cpf || ''}
+                    onChange={handleFormChange}
+                    className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="000.000.000-00"
+                    maxLength="14"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label htmlFor="birthDate" className="block text-gray-700 text-sm font-bold mb-2 text-left">
+                    Data de Nascimento (opcional)
+                  </label>
+                  <input
+                    id="birthDate"
+                    type="date"
+                    value={formData.birthDate || ''}
+                    onChange={handleFormChange}
+                    className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
 
@@ -343,6 +412,129 @@ function MyTravelsPage() {
       {/* ==================================================================== */}
       {/* FIM DO JSX DO PERFIL                                               */}
       {/* ==================================================================== */}
+
+      <hr className="my-12" />
+
+      {/* Seção de Histórico de Reservas */}
+      <section className="mb-12">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-blue-800 text-center flex-1">Histórico de Reservas</h2>
+        </div>
+        
+        {reservationHistory?.length > 0 ? (
+          <div className="space-y-6">
+            {reservationHistory.map(reservation => (
+              <div key={reservation.id} className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                  {/* Informações da reserva */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4 lg:mb-0">
+                    {/* Imagem do hotel */}
+                    {reservation.hotelImage && (
+                      <img 
+                        src={reservation.hotelImage} 
+                        alt={reservation.hotelName}
+                        className="w-full sm:w-24 h-24 object-cover rounded-lg"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/96x96?text=Hotel';
+                        }}
+                      />
+                    )}
+                    
+                    {/* Detalhes da reserva */}
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-1">
+                        {reservation.hotelName}
+                      </h3>
+                      {reservation.location && (
+                        <p className="text-gray-600 mb-2">📍 {reservation.location}</p>
+                      )}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
+                        <p><strong>Quarto:</strong> {reservation.roomType}</p>
+                        <br></br>
+                        <p><strong>Hóspedes:</strong> {reservation.numberOfGuests}</p>
+                        <br></br>
+                        <p><strong>Check-in:</strong> {new Date(reservation.checkInDate).toLocaleDateString('pt-BR')}</p>
+                        <p><strong>Check-out:</strong> {new Date(reservation.checkOutDate).toLocaleDateString('pt-BR')}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Status e valor */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <div className="text-center sm:text-right">
+                      <p className="text-2xl font-bold text-green-600">
+                        R$ {reservation.totalPrice?.toFixed(2).replace('.', ',') || '0,00'}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Reservado em {new Date(reservation.reservationDate).toLocaleDateString('pt-BR')}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center sm:items-end gap-2">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        reservation.status === 'confirmed' 
+                          ? 'bg-green-100 text-green-800' 
+                          : reservation.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {reservation.status === 'confirmed' ? '✅ Confirmado' : 
+                         reservation.status === 'pending' ? '⏳ Pendente' : 
+                         reservation.status || 'Desconhecido'}
+                      </span>
+                      
+                      {/* Botões de ação */}
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => navigate(`/hoteis/${reservation.hotelId}`)}
+                          className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition"
+                        >
+                          Ver Hotel
+                        </button>
+                        {reservation.status === 'confirmed' && (
+                          <button 
+                            className="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition"
+                            onClick={() => {
+                              // Aqui você pode implementar funcionalidade para baixar comprovante
+                              alert('Funcionalidade de comprovante em desenvolvimento');
+                            }}
+                          >
+                            Comprovante
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Informações dos viajantes */}
+                {reservation.travellers && reservation.travellers.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Viajantes:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {reservation.travellers.map((traveller, index) => (
+                        <span key={index} className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-700">
+                          {traveller.firstName} {traveller.lastName}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🏨</div>
+            <p className="text-gray-600 text-lg mb-4">Você ainda não fez nenhuma reserva.</p>
+            <button 
+              onClick={() => navigate('/hoteis')}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+            >
+              Explorar Hotéis
+            </button>
+          </div>
+        )}
+      </section>
 
       <hr className="my-12" />
 

@@ -7,7 +7,7 @@ import { reservationService } from '../../services/reservationService.js';
 import { paymentService } from '../../services/paymentService.js';
 
 const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
-  const { currentUser, isLoggedIn } = useAuth();
+  const { currentUser, isLoggedIn, addReservationToHistory } = useAuth();
   
   const [formData, setFormData] = useState({
     checkIn: '',
@@ -121,6 +121,24 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
       }
 
       // Processa a reserva e redireciona para o pagamento
+      // Salva imediatamente no histórico (como "pendente" até o pagamento ser confirmado)
+      const reservationForHistory = {
+        reservationId: Date.now(), // Temporário até receber o ID real
+        hotelId: hotel.id || hotel.hotelId,
+        hotelName: hotel.name || hotel.title,
+        hotelImage: hotel.mainImageUrl || hotel.image,
+        roomType: room.type || room.name || 'Quarto Padrão',
+        checkInDate: formData.checkIn,
+        checkOutDate: formData.checkOut,
+        totalPrice: calculatedTotal?.total || 0,
+        numberOfGuests: parseInt(formData.numberOfGuests),
+        travellers: formData.travellers,
+        location: hotel.location,
+        status: 'pending' // Marcamos como pendente até confirmação do pagamento
+      };
+      
+      addReservationToHistory(reservationForHistory);
+      
       await paymentService.processReservationAndPayment(reservationData);
       
       // Se chegou até aqui, o processo foi iniciado com sucesso

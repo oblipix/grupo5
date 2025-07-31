@@ -12,5 +12,6 @@ namespace ViagemImpacta.Services.Interfaces
         Task<bool> CancelReservationAsync(int reservationId, int userId);
         Task<bool> ConfirmReservationAsync(int reservationId);
         Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkIn, DateTime checkOut);
+        Task<IEnumerable<Reservation>> GetAllReservations();
     }
 }
