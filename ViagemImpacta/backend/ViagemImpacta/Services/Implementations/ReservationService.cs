@@ -1,10 +1,14 @@
 using AutoMapper;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Collections;
+using System.Net;
+using System.Net.Mail;
 using ViagemImpacta.DTO.ReservationDTO;
 using ViagemImpacta.Models;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Services.Interfaces;
+using ViagemImpacta.Setup;
 
 namespace ViagemImpacta.Services.Implementations
 {
@@ -12,11 +16,13 @@ namespace ViagemImpacta.Services.Implementations
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly SmtpOptions _smtpOptions;
 
-        public ReservationService(IUnitOfWork unitOfWork, IMapper mapper)
+        public ReservationService(IUnitOfWork unitOfWork, IMapper mapper, IOptions<SmtpOptions> smtpOptions)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _smtpOptions = smtpOptions.Value;
         }
 
         public async Task<Reservation> CreateReservationAsync(CreateReservationDto createReservationDto)
@@ -137,7 +143,11 @@ namespace ViagemImpacta.Services.Implementations
             reservation.UpdatedAt = DateTime.Now;
             
             _unitOfWork.Reservations.Update(reservation);
-            return await _unitOfWork.CommitAsync();
+            await _unitOfWork.CommitAsync();
+            var user = await _unitOfWork.Users.GetByIdAsync(reservation.UserId);
+            await SendEmailAsync(user);
+            return true;
+
         }
 
         public async Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkIn, DateTime checkOut)
@@ -207,6 +217,36 @@ namespace ViagemImpacta.Services.Implementations
             }
 
             return reservations;
+        }
+
+        private async Task SendEmailAsync(User user)
+        {
+            var smtpClient = new SmtpClient(_smtpOptions.Host)
+            {
+                Port = _smtpOptions.Port,
+                Credentials = new NetworkCredential(_smtpOptions.User, _smtpOptions.Pass),
+                EnableSsl = true
+
+            };
+
+            var emailBody = $@"
+                <h1>Parabéns, {user.FirstName}!</h1>
+                <p>Sua reserva foi confirmada com sucesso!</p>
+                <p>Agora você pode acessar nossa plataforma e aproveitar todos os benefícios.</p>
+                <p>Você pode acessar sua conta usando o email: {user.Email}</p>
+                <p>Atenciosamente,<br>Equipe Tripz</p>";
+
+            var mensagem = new MailMessage
+            {
+                From = new MailAddress(_smtpOptions.From),
+                Subject = "Confirmação de Cadastro",
+                Body = emailBody,
+                IsBodyHtml = true
+            };
+
+            mensagem.To.Add(user.Email);
+
+            await smtpClient.SendMailAsync(mensagem);
         }
 
     }

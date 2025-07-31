@@ -5,6 +5,7 @@ using Stripe;
 using Stripe.Checkout;
 using ViagemImpacta.DTO.ReservationDTO;
 using ViagemImpacta.Repositories;
+using ViagemImpacta.Services.Interfaces;
 using ViagemImpacta.Setup;
 
 namespace ViagemImpacta.Controllers.ApiControllers;
@@ -16,12 +17,14 @@ public class StripeController : ControllerBase
     private readonly StripeModel _model;
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IReservationService _reservationService;
 
-    public StripeController(IOptions<StripeModel> model, IUnitOfWork unitOfWork, IMapper mapper)
+    public StripeController(IOptions<StripeModel> model, IUnitOfWork unitOfWork, IMapper mapper, IReservationService reservationService)
     {
         _model = model.Value;
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _reservationService = reservationService;
     }
 
     [HttpPost("/checkout")]
@@ -30,7 +33,7 @@ public class StripeController : ControllerBase
         try
         {
             var result = await _unitOfWork.Reservations.GetByIdAsync(id);
-            
+
             if (result == null) return BadRequest($"Reserva com ID {id} não encontrada");
 
             var res = _mapper.Map<ReservationDto>(result);
@@ -57,9 +60,13 @@ public class StripeController : ControllerBase
                         Quantity = 1,
                     }
                 },
+                Metadata = new Dictionary<string, string>
+                {
+                    { "reservationId", res.ReservationId.ToString() },
+                },
                 Mode = "payment",
                 PaymentMethodTypes = ["card", "boleto"],
-                SuccessUrl = "http://localhost:5173/payment-success?session_id={CHECKOUT_SESSION_ID}",
+                SuccessUrl = "http://localhost:5173/confirm-reservation?session_id={CHECKOUT_SESSION_ID}",
                 CancelUrl = "http://localhost:5173/hoteis",
                 ExpiresAt = DateTime.UtcNow + TimeSpan.FromMinutes(45),
             };
@@ -67,8 +74,35 @@ public class StripeController : ControllerBase
             var session = service.Create(options);
             return Ok(new { url = session.Url });
         }
-        catch (Exception ex) 
-        { 
+        catch (Exception ex)
+        {
+            return BadRequest(ex.Message);
+        }
+
+
+    }
+
+    [HttpGet("/confirm-reservation")]
+    public async Task<IActionResult> ConfirmReservation(string sessionId)
+    {
+        try
+        {
+            StripeConfiguration.ApiKey = _model.SecretKey;
+            var service = new SessionService();
+            var session = await service.GetAsync(sessionId);
+            var reservationId = session.Metadata["reservationId"];
+            if (!int.TryParse(reservationId, out int Id))
+            {
+                return BadRequest();
+            }
+
+            await _reservationService.ConfirmReservationAsync(Id);
+            return Ok("Reserva confirmada com sucesso!");
+
+
+        }
+        catch (Exception ex)
+        {
             return BadRequest(ex.Message);
         }
     }
