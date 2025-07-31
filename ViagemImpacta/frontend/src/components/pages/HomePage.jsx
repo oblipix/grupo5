@@ -7,11 +7,12 @@ import { useOutletContext } from 'react-router-dom';
 import HeroSwiper from '../layout/HeroSwiper.jsx';
 import HomeMenu from '../layout/HomeMenu.jsx';
 import SearchHotelsBar from '../common/SearchHotelsBar.jsx';
-import TravelSection from '../pages/TravelSection.jsx';
-import RecommendedHotelsSection from '../hotels/RecommendedHotelsSection.jsx';
-import BlogSection from '../blog/BlogSection.jsx'; // <<<<< MANTER AQUI >>>>>
+import BlogSection from '../blog/BlogSection.jsx';
 import HotelsMapSection from '../hotels/HotelsMapSection.jsx';
 import NewsletterSection from '../pages/NewsletterSection.jsx';
+import PromocoesDestaque from '../hotels/PromocoesDestaque.jsx';
+import RecommendedHotelsSection from '../hotels/RecommendedHotelsSection.jsx';
+
 
 function HomePage() {
   const { isLoaded } = useOutletContext();
@@ -21,18 +22,18 @@ function HomePage() {
       <HeroSwiper />
       <HomeMenu />
       <SearchHotelsBar />
-      
-      {/* Seção de Promoções (com o ID 'viagens-promocao') */}
-      <TravelSection 
-        id="viagens-promocao" 
-        title="Nossas Promoções" 
-      />
 
-      <RecommendedHotelsSection />
+      {/* Seção de Promoções em Destaque acima do Blog */}
+      <PromocoesDestaque />
 
-      {/* <<<<<<<<<<<< BLOG SECTION - ADICIONADO NOVAMENTE COM O ID >>>>>>>>>>>> */}
+      {/* Seção de Hotéis Recomendados */}
+      <div className="container mx-auto py-12">
+       
+        <RecommendedHotelsSection />
+      </div>
+
       <BlogSection 
-        id="dicas-de-viagem" // Este é o ID que o link no Footer vai usar para rolar
+        id="dicas-de-viagem"
         title="Dicas de Viagem: Prepare sua Aventura!" 
       />
 

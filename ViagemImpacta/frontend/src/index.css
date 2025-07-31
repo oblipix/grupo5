@@ -10,86 +10,58 @@
 
 html, body, #root {
   height: 100%;
-  margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
+/* Header curve - curva na parte inferior do header */
+.header-curve {
+  overflow: visible;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20px;
+  z-index: 1;
+}
 
+/* Estilos de cor das bolinhas, para combinar com seu tema */
+.travel-pagination-bottom .swiper-pagination-bullet {
+  background: #60a5fa; /* Cor azul suave do Tailwind para as bolinhas inativas */
+}
 
-/* src/index.css */
+/* Estilos modernos para os cards de hotel */
+.hotel-card-modern {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backface-visibility: hidden;
+}
 
-/*
-  Base style for all buttons/links EXCLUDING Hotéis,
-  when they are NOT active.
-*/
-.btn-common-style {
-  padding: 8px 16px; /* py-2 px-4 */
-  border-radius: 9999px; /* rounded-full */
-  white-space: nowrap; /* whitespace-nowrap */
-  font-weight: 500; /* font-medium */
-  transition: all 0.2s ease-in-out; /* transition-colors duration-200 */
+.hotel-card-modern:hover {
+  transform: translateY(-5px);
+}
+
+.header-curve::after {
+  content: '';
+  position: absolute;
+  bottom: 0; /* Posiciona a curva abaixo do header */
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 20px; /* A "profundidade" da curva */
+  display: block; /* Garante que o elemento seja exibido */
   
-  /* Cores padrão para não-selecionado */
-  background-color: #ffffff; /* Fundo branco */
-  color: #4a5568; /* Texto cinza-700 */
-  border: 1px solid transparent; /* Borda transparente */
-  outline: none; /* Remove outline de foco padrão */
-  appearance: none; /* Reset nativo para alguns estilos de UI */
-  -webkit-appearance: none; /* Safari */
-  -moz-appearance: none; /* Firefox */
+  /* A mágica da curva - neste caso, invertida em relação ao footer */
+  border-bottom: 5px solid #22d3ee; /* Cor (ciano) e espessura do traço */
+  border-radius: 0 0 15px 15px; /* Arredonda as bordas inferiores para criar o arco */
+  box-shadow: 0 4px 10px rgba(34, 211, 238, 0.3); /* Sombra sutil para destacar */
 }
 
-/* Hover effect for common buttons */
-.btn-common-style:hover {
-  background-color: #e2e8f0; /* Fundo gray-100 no hover */
-  color: #2b6cb0;
-}
+.menu1 {
+position: relative;
+left: 20%;
 
-/* Style for the ACTIVE state of common buttons */
-.btn-active-style {
-  background-color: #2b6cb0 !important; /* Fundo azul-600 FORÇADO */
-  color: #ffffff !important; /* Texto branco FORÇADO */
-  border-color: #2b6cb0 !important; /* Borda da mesma cor do fundo ativo FORÇADA */
-  outline: none !important; /* Remove outline de foco no estado ativo */
-}
-
-
-/* --- CLASSES ESPECÍFICAS PARA O BOTÃO "HOTÉIS" --- */
-
-.btn-hotels {
-  /* Reset mais agressivo para o elemento <button> */
-  all: unset; /* Zera a maioria dos estilos padrão do navegador */
-  display: inline-block; /* Re-aplica display, importante para layout */
-  cursor: pointer; /* Re-aplica cursor */
-  box-sizing: border-box; /* Re-aplica box-sizing padrão */
-  -webkit-appearance: none; /* Para safari/webkit browsers */
-  -moz-appearance: none; /* For firefox */
-  appearance: none; /* Standard */
-  outline: none !important; /* Remove outline */
-
-  /* Estilos base para o botão de Hotéis (quando NÃO ativo) */
-  padding: 8px 16px; /* py-2 px-4 */
-  border-radius: 9999px; /* rounded-full */
-  white-space: nowrap; /* whitespace-nowrap */
-  font-weight: 500; /* font-medium */
-  transition: all 0.2s ease-in-out; /* transição suave */
-
-  background-color: #ffffff !important; /* Fundo branco FORÇADO */
-  color: #4a5568 !important; /* Texto cinza-700 FORÇADO */
-  border: 1px solid transparent !important; /* Borda transparente FORÇADA */
-}
-
-.btn-hotels:hover {
-  background-color: #e2e8f0 !important; /* Fundo gray-100 no hover FORÇADO */
-}
-
-.btn-hotels.active { /* Classe para o estado ativo do botão Hotéis */
-  background-color: #2b6cb0 !important; /* Fundo azul-600 FORÇADO */
-  color: #ffffff !important; /* Texto branco FORÇADO */
-  border-color: #2b6cb0 !important; /* Borda da mesma cor do fundo ativo FORÇADA */
 }
 
 
@@ -97,10 +69,8 @@ html, body, #root {
 
 /* Esta classe deve ser aplicada nos botões no JSX, por exemplo: className="main-action-button" */
 .main-action-button,
-.promotion-data-button,
 .next-purchase,
 .reservation-button,
-.event-submit,
 .search-button
  {
   background: linear-gradient(90deg, #111b32 0%, #60A5FA 100%) !important; 
@@ -110,10 +80,8 @@ html, body, #root {
 }
 
 .main-action-button:hover,
-.promotion-data-button:hover,
 .next-purchase:hover,
 .reservation-button:hover,
-.event-submit:hover,
 .search-button:hover {
   background: linear-gradient(90deg, #60A5FA 0%,  #111b32 100%) !important; 
 }
@@ -191,73 +159,36 @@ html, body, #root {
 
 .logo {
 font-size: 35px;
+padding: 8px;
 font-weight: bold;
 background-image: linear-gradient(to right, #1e3a8a, #60a5fa); /* Azul escuro (#1e3a8a) para azul claro (#60a5fa) */
 -webkit-background-clip: text;
+background-clip: text;
 color: transparent;
  font-family: "Pacifico", cursive;
   font-weight: 400;
   font-style: normal;
-  z-index: 10001; 
+  z-index: 1; 
   height: 70px;
   
 }
 
-.buttonHeader{
-  background-color: transparent; /* Azul escuro */
-  color: white; /* Texto branco */
-  padding: 10px 20px; /* Espaçamento interno */
-  border-radius: 9999px; /* Borda arredondada completa */
-  text-decoration: none; /* Remove sublinhado */
-  font-weight:normal; /* Texto em negrito */
-  transition: background-color 0.3s ease; /* Transição suave para hover */
-   cursor: pointer;
-}
-
-.buttonHeader:hover {
-  background-color: #1e3a8a; /* Azul escuro no hover */
-  color: white; /* Texto branco no hover */
-}
-
-
-/* Nova classe para o link ATIVO */
-.active-link {
-  color: white !important; /* Força o texto a ficar branco quando ativo */
-}
-
-/* O traço curvado mágico! */
-.active-link::after {
-  content: ''; /* Necessário para o pseudo-elemento aparecer */
-  position: absolute; /* Posição relativa ao botão */
-  bottom: 0; /* Alinha na parte de baixo do botão */
-  left: 0;
-  right: 0;
-  margin: 0 auto; /* Centraliza o traço horizontalmente */
-  
-  width: 90%; /* O traço terá 90% da largura do texto */
-  height: 8px;  /* Altura da "curva" */
-  
-  /* A mágica da curva acontece aqui: */
-  border-bottom: 4px solid #22d3ee; /* Cor (ciano) e espessura do traço */
-  border-radius: 0 0 10px 10px; /* Arredonda as bordas inferiores para criar o arco */
-}
-
-
-
-
 .footer-curve::before {
   content: '';
   position: absolute;
-  top: 0; /* Posiciona a curva no topo do footer */
+  top: 0px; /* Move a curva um pouco acima do footer para melhor visibilidade */
   left: 0;
   right: 0;
   width: 100%;
   height: 15px; /* A "profundidade" da curva */
-
+  display: block; /* Garante que o elemento seja exibido */
+  z-index: 5; /* Garante que esteja visível */
   /* A mágica da curva invertida: */
   border-top: 5px solid #22d3ee; /* Cor (ciano) e espessura do traço */
   border-radius: 15px 15px 0 0; /* Arredonda as bordas superiores para criar o arco */
 }
+
+
 
 
 .pHotelDetails{
@@ -330,16 +261,7 @@ a{
   color: #bcbcbc !important;
 }
 
-/* Estilo para dias específicos do evento (destaque) */
-.react-calendar__tile--event-highlight {
-  background-color: #bfdbfe; /* Um azul bem clarinho (tailwind blue-200) */
-  font-weight: bold;
-}
 
-/* Garante que o destaque de evento não seja sobrescrito facilmente */
-.react-calendar__tile--event-highlight:hover {
-    background-color: #93c5fd !important; /* Azul um pouco mais escuro no hover */
-}
 
 /* Prioriza as cores de status sobre o destaque do evento */
 .react-calendar__tile--booked {
@@ -416,26 +338,116 @@ a{
 
 
 
+/* Responsive Navigation Menu Styles */
+/* Small Mobile devices */
+@media screen and (max-width: 479px) {
+  .hamburger-menu {
+    display: flex;
+  }
 
+  .desktop-menu {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+}
+
+/* Large Mobile devices */
+@media screen and (min-width: 480px) and (max-width: 767px) {
+  .hamburger-menu {
+    display: flex;
+  }
+
+  .desktop-menu {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+}
+
+/* Tablet devices */
+@media screen and (min-width: 768px) and (max-width: 1023px) {
+  .hamburger-menu {
+    display: flex; /* Show hamburger on tablets */
+  }
+
+  .desktop-menu {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+}
+
+/* Desktop devices */
+@media screen and (min-width: 1024px) {
+  .hamburger-menu {
+    display: none;
+  }
+
+  .desktop-menu {
+    display: flex;
+  }
+
+  .mobile-menu {
+    display: none !important;
+  }
+}
 
 a {
-  color: #686868;
+  color: #a3a3a3;
   transition: color 0.3s ease, background-color 0.3s ease; 
 }
 
 a:hover {
-  color: #1e3a8a; /* Azul escuro do Tailwind */
-  background-color: #d2e6ff6b; /* Azul claro do Tailwind */
+  color: #fcfcfc; /* Azul escuro do Tailwind */
+  background-color: none;
   text-decoration: none; /* Remove underline no hover */
 }
 
 
+.active-link {
+  color: #FFFFFF !important; /* Força o texto a ficar branco quando ativo */
+  position: relative;
+}
 
+.active-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #FFFFFF;
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* Estilos específicos para links de Hotéis e Promoções ativos */
+.menu1 .active-link {
+  color: #ffffff !important;
+
+}
 
 /* Estilos de cor das bolinhas, para combinar com seu tema */
 .travel-pagination-bottom .swiper-pagination-bullet {
   background: #60a5fa; /* Cor azul suave do Tailwind para as bolinhas inativas */
   opacity: 0.6;
+}
+
+/* Estilos modernos para os cards de hotel */
+.hotel-card-modern {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backface-visibility: hidden;
+}
+
+.hotel-card-modern:hover {
+  transform: translateY(-5px);
 }
 
 .travel-pagination-bottom .swiper-pagination-bullet-active {
@@ -466,21 +478,37 @@ a:hover {
   opacity: 1;
 }
 
-
-
-
-
-
-
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+/* Estilos para garantir que o botão de favorito apareça corretamente */
+.favorite-button {
+  position: absolute !important;
+  top: 12px !important;
+  right: 12px !important;
+  z-index: 20 !important;
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border-radius: 50% !important;
+  padding: 8px !important;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2) !important;
+  transition: all 0.3s ease !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 }
+
+.favorite-button:hover {
+  transform: scale(1.1);
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.favorite-button svg {
+  width: 22px;
+  height: 22px;
+}
+
+.favorite-button.favorited svg {
+  color: #EF4444 !important; /* Vermelho quando favorito */
+  fill: #EF4444 !important;
+}
+
+
+
+

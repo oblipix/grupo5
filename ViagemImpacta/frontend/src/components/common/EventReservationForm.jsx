@@ -1,3 +1,5 @@
+// COMPONENTE DE EVENTOS DESABILITADO
+/*
 // src/components/EventReservationForm.jsx
 
 import React, { useState, useCallback } from 'react';
@@ -52,7 +54,6 @@ const EventReservationForm = ({ onClose }) => {
     // O uso de `position: fixed` e um overlay é a forma correta de criar um modal.
     <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4 animate-fade-in">
       <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg relative max-h-[90vh] overflow-y-auto">
-        {/* O botão de fechar chama a prop `onClose`, delegando a responsabilidade de fechar para o componente pai. Perfeito. */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-3xl font-bold"
@@ -63,7 +64,6 @@ const EventReservationForm = ({ onClose }) => {
           Formulário de Interesse em Evento
         </h2>
         
-        {/* As mensagens de sucesso e erro melhoram a experiência do usuário. */}
         {submitSuccess && (
           <div className="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-4" role="alert">
             <p className="font-bold">Sucesso!</p>
@@ -77,9 +77,7 @@ const EventReservationForm = ({ onClose }) => {
           </div>
         )}
 
-        {/* O formulário está bem estruturado e acessível. */}
         <form onSubmit={handleSubmit} className="space-y-4">
-            {/* ...seus inputs aqui ... */}
             <button
                 type="submit"
                 disabled={isSubmitting}
@@ -88,6 +86,36 @@ const EventReservationForm = ({ onClose }) => {
                 {isSubmitting ? 'Enviando...' : 'Enviar Solicitação'}
             </button>
         </form>
+      </div>
+    </div>
+  );
+};
+*/
+
+import React from 'react';
+
+const EventReservationForm = ({ onClose }) => {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-lg shadow-xl p-8 w-full max-w-lg relative">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-600 hover:text-gray-900 text-3xl font-bold"
+        >
+          &times;
+        </button>
+        <div className="text-center">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">Eventos Indisponíveis</h2>
+          <p className="text-gray-600 mb-6">
+            A funcionalidade de eventos está temporariamente desabilitada.
+          </p>
+          <button
+            onClick={onClose}
+            className="px-6 py-2 bg-purple-600 text-white rounded hover:bg-purple-700"
+          >
+            Fechar
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -12,11 +12,18 @@
 <link rel="stylesheet" href="~/css/dashboard.css"/>
 
 <div class="dashboard-container">
-    <div class="dashboard-topbar">
-        <h4 class="mb-0">Olá, @adminName</h4>
+    <div class="dashboard-topbar d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center gap-2">
+            <h4 class="mb-0">Olá, @adminName</h4>
+            <form asp-controller="Admins" asp-action="Logout" method="post" class="ms-2">
+                <button type="submit" class="btn btn-outline-danger p-0 d-flex align-items-center justify-content-center" title="Sair" style="width: 30px; height: 30px;">
+                    <span class="material-icons" style="font-size: 1.3rem; color: #dc3545;">logout</span>
+                </button>
+            </form>
+        </div>
         <div class="faturamento-box">
             <strong>Faturamento:</strong>
-            <span class="fs-4">R$ @balance.ToString("N2")</span>
+            <span class="fs-4">@balance.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</span>
         </div>
     </div>
     <div class="dashboard-main">
@@ -25,7 +32,6 @@
             <div class="list-group mb-4">
                 <a href="/users/index" class="list-group-item list-group-item-action"><span class="material-icons">group</span> Usuários</a>
                 <a href="/employees/index" class="list-group-item list-group-item-action"><span class="material-icons">badge</span> Funcionários</a>
-                @*<a href="/reservationbooks/index" class="list-group-item list-group-item-action"><span class="material-icons">card_travel</span> Livro de Reservas</a>*@
                 <a href="/hotels/index" class="list-group-item list-group-item-action"><span class="material-icons">hotel</span> Hotéis</a>
                 <a href="/reservations/index" class="list-group-item list-group-item-action"><span class="material-icons">event</span> Reservas</a>
                 <a href="/Admin/Comentarios" class="list-group-item list-group-item-action"><span class="material-icons">rate_review</span> Avaliações</a>

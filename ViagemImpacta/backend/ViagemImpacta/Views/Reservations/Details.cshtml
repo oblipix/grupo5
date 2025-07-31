@@ -1,0 +1,66 @@
+﻿@model ViagemImpacta.Models.Reservation
+@{
+    ViewData["Title"] = "Detalhes da Reserva";
+    var days = (Model.CheckOut - Model.CheckIn).Days;
+}
+
+<div class="d-flex align-items-center mb-4">
+    @if (!string.IsNullOrWhiteSpace(Model.User?.Photo))
+    {
+        <img src="@Model.User.Photo" alt="Foto do usuário" class="rounded-circle me-3" style="width:56px; height:56px; object-fit:cover; border:2px solid #dee2e6;" />
+    }
+    <h1 class="m-0">Detalhes da Reserva #@Model.ReservationId</h1>
+</div>
+
+@if (Model != null)
+{
+    <div class="card" style="max-width: 600px;">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">ID</dt>
+                <dd class="col-sm-8">@Model.ReservationId</dd>
+                <dt class="col-sm-4">Usuário</dt>
+                <dd class="col-sm-8">
+                    <a asp-controller="Users" asp-action="Details" asp-route-id="@Model.User.UserId" class="btn btn-link p-0 align-baseline" title="Ver detalhes do usuário">
+                        <i class="bi bi-person-lines-fill"></i>
+                        @((Model.User?.FirstName ?? "") + (string.IsNullOrWhiteSpace(Model.User?.LastName) ? "" : $" {Model.User.LastName}"))
+                    </a>
+                </dd>
+                <dt class="col-sm-4">Hotel</dt>
+                <dd class="col-sm-8">
+                    <a asp-controller="Hotels" asp-action="Details" asp-route-id="@Model.Hotel.HotelId" class="btn btn-link p-0 align-baseline" title="Ver detalhes do hotel">
+                        <i class="bi bi-person-lines-fill"></i>
+                        @Model.Hotel?.Name
+                    </a>
+                </dd>
+                <dt class="col-sm-4">Quarto</dt>
+                <dd class="col-sm-8">@Model.Room?.TypeName</dd>
+                <dt class="col-sm-4">Check-In</dt>
+                <dd class="col-sm-8">@Model.CheckIn.ToString("dd/MM/yyyy")</dd>
+                <dt class="col-sm-4">Check-Out</dt>
+                <dd class="col-sm-8">@Model.CheckOut.ToString("dd/MM/yyyy")</dd>
+                <dt class="col-sm-4">Nº de Dias</dt>
+                <dd class="col-sm-8">@days dia(s)</dd>
+                <dt class="col-sm-4">Preço Total</dt>
+                <dd class="col-sm-8">@Model.TotalPrice.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</dd>
+                <dt class="col-sm-4">Confirmada</dt>
+                <dd class="col-sm-8">@(Model.IsConfirmed ? "Sim" : "Não")</dd>
+                <dt class="col-sm-4">Descrição</dt>
+                <dd class="col-sm-8">@Model.Description</dd>
+                <dt class="col-sm-4">Criada em</dt>
+                <dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+                <dt class="col-sm-4">Atualizada em</dt>
+                <dd class="col-sm-8">@Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+            </dl>
+            <div class="d-flex gap-2">
+                <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+                <a asp-action="Edit" asp-route-id="@Model.ReservationId" class="btn btn-primary">Editar</a>
+                <a asp-action="Delete" asp-route-id="@Model.ReservationId" class="btn btn-danger">Deletar</a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">Reserva não encontrada.</div>
+}

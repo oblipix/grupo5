@@ -1,16 +1,18 @@
 ﻿using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using ViagemImpacta.Data;
-using ViagemImpacta.Models;
 using ViagemImpacta.Profiles;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Repositories.Implementations;
 using ViagemImpacta.Repositories.Interfaces;
 using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
+using ViagemImpacta.Setup;
 using Settings = ViagemImpacta.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,11 +29,38 @@ builder.Services.AddControllers()
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    c.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Viagem Impacta API",
         Version = "v1",
         Description = "API para gerenciamento de pacotes de viagem"
+    });
+
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = $@"Autorização JWT usando o Bearer.
+        </br>Coloque 'Bearer'[espaço] e então o seu token em seguida.
+        </br>Exemplo: \'Bearer 12345abcdef\'</br>",
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string [] {}
+        }
     });
 });
 
@@ -56,7 +85,7 @@ builder.Services.AddAuthentication(options =>
 {
     options.LoginPath = "/Admins/Index";
     options.AccessDeniedPath = "/Admins/AccessDenied";
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+    options.ExpireTimeSpan = TimeSpan.FromHours(2);
     options.SlidingExpiration = true;
     options.Cookie.IsEssential = true;
 });
@@ -67,6 +96,7 @@ builder.Services.AddDbContext<AgenciaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ViagemImpactConnection")));
 
 builder.Services.Configure<StripeModel>(builder.Configuration.GetSection("StripeSettings"));
+builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection("Smtp"));
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IHotelService, HotelService>();
@@ -91,21 +121,19 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
 
-// ✅ SWAGGER: Configurar middleware do Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Viagem Impacta API v1");
-        c.RoutePrefix = "swagger"; // Acesso via: https://localhost:xxxx/swagger
+        c.RoutePrefix = "swagger"; 
     });
 }
 

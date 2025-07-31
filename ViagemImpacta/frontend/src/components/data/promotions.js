@@ -1,5 +1,4 @@
 
-
 // Importa as imagens necessárias, ajustando o caminho para sair da pasta 'data'
 import ImageNatalRS from '../assets/images/natal1RS.png';
 import ImageAnoNovoRJ from '../assets/images/anonovoRJ.png';
@@ -54,5 +53,7 @@ export const allPromotionalTravels = [
             { rating: 5, comment: 'Natal mais lindo que já tive! A decoração estava deslumbrante.', guestName: 'Aline V.' },
             { rating: 5, comment: 'O clima natalino no hotel é super acolhedor. Me senti em um filme.', guestName: 'Bruno F.' },
         ]
-    },
+    }
 ];
+
+export default allPromotionalTravels;

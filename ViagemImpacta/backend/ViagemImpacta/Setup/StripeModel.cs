@@ -1,4 +1,4 @@
-﻿namespace ViagemImpacta.Models
+﻿namespace ViagemImpacta.Setup
 {
     public class StripeModel
     {

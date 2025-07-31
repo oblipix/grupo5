@@ -3,22 +3,20 @@
  
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import AuthService from '../../services/AuthService';
  
 const AuthContext = createContext(null);
  
-// --- DADOS DE EXEMPLO (usados apenas para saved/visited se não vierem do backend no login) ---
-// Em um cenário real, mockVisitedHotels e mockSavedHotels seriam carregados do backend após o login
-// ou gerenciados via outras chamadas de API.
-const mockVisitedHotels = [
-    { id: 1, mainImageUrl: 'https://picsum.photos/id/1000/800/600', title: 'Hotel Grandioso', location: 'Paris, França', price: 1200, rating: 4.8, description: 'Estadia de luxo inesquecível.', feedbacks: [] },
-    { id: 2, mainImageUrl: 'https://picsum.photos/id/1002/800/600', title: 'Pousada da Mata', location: 'Bonito, Brasil', price: 800, rating: 4.9, description: 'Natureza exuberante e tranquilidade.', feedbacks: [] },
-];
- 
-const mockSavedHotels = [
-    { id: 3, mainImageUrl: 'https://picsum.photos/id/1004/800/600', title: 'Resort Ilha Bela', location: 'Maldivas', price: 3500, rating: 4.9, description: 'Praias privativas e mergulho.', feedbacks: [] },
-    { id: 4, mainImageUrl: 'https://picsum.photos/id/1006/800/600', title: 'Hotel Urbano', location: 'Nova York, EUA', price: 2200, rating: 4.7, description: 'Moderno e central, para explorar a cidade.', feedbacks: [] },
-];
-// --- FIM DOS DADOS DE EXEMPLO ---
+// APIs de hotéis para uso no contexto de autenticação
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const HOTELS_API = {
+    SAVED: `${API_BASE_URL}/Hotels/saved`,
+    VISITED: `${API_BASE_URL}/Hotels/visited`,
+    SAVE: `${API_BASE_URL}/Hotels/save`,
+    REMOVE: `${API_BASE_URL}/Hotels/remove`,
+    RESERVATIONS: `${API_BASE_URL}/Reservations`,
+    MARK_VISITED: `${API_BASE_URL}/Hotels/markVisited`
+};
  
  
 export const AuthProvider = ({ children }) => {
@@ -28,44 +26,259 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = useState(null); // Adicionado para armazenar o token JWT
     const [savedHotels, setSavedHotels] = useState([]);
     const [visitedHotels, setVisitedHotels] = useState([]);
+    const [reservationHistory, setReservationHistory] = useState([]); // Histórico de reservas
     const [isLoadingAuth, setIsLoadingAuth] = useState(true); // Para indicar que a checagem inicial está acontecendo
  
     // Usar navigate de forma segura - hooks devem ser chamados sempre na mesma ordem
     const navigate = useNavigate();
  
+    // Função auxiliar para buscar dados do usuário autenticado
+    const fetchUserHotels = async (token, userId) => {
+        try {
+            // Primeiro, carrega do localStorage para garantir algum dado
+            loadSavedHotelsFromLocalStorage();
+            
+            // Tenta buscar do backend e atualizar
+            try {
+                // Busca hotéis salvos
+                const savedResponse = await fetch(`${HOTELS_API.SAVED}/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                // Busca hotéis visitados
+                const visitedResponse = await fetch(`${HOTELS_API.VISITED}/${userId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (savedResponse.ok) {
+                    const savedData = await savedResponse.json();
+                    // Mescla dados do backend com localStorage, priorizando o backend
+                    const localSavedHotels = JSON.parse(localStorage.getItem('savedHotels') || '[]');
+                    
+                    // Combina os dois arrays evitando duplicatas por id
+                    const combinedHotels = [...savedData];
+                    localSavedHotels.forEach(localHotel => {
+                        if (!combinedHotels.some(h => h.id === localHotel.id)) {
+                            combinedHotels.push(localHotel);
+                        }
+                    });
+                    
+                    setSavedHotels(combinedHotels);
+                    // Atualiza localStorage com dados combinados
+                    localStorage.setItem('savedHotels', JSON.stringify(combinedHotels));
+                } else {
+                    console.warn('Erro ao buscar hotéis salvos do backend:', savedResponse.status);
+                    // Mantém os dados do localStorage já carregados
+                }
+                
+                if (visitedResponse.ok) {
+                    const visitedData = await visitedResponse.json();
+                    setVisitedHotels(visitedData);
+                } else {
+                    console.warn('Erro ao buscar hotéis visitados do backend:', visitedResponse.status);
+                    // Mantém os dados anteriores
+                }
+            } catch (backendError) {
+                console.warn('Erro ao buscar dados do backend, usando localStorage:', backendError);
+                // Já carregamos do localStorage, então continuamos com esses dados
+            }
+        } catch (error) {
+            console.error('Erro ao buscar dados de hotéis do usuário:', error);
+            // Tenta carregar do localStorage como último recurso
+            loadSavedHotelsFromLocalStorage();
+        }
+    };
+
+    // Função para verificar reservas e marcar hotéis como visitados após o check-in
+    const checkReservationsAndMarkVisited = async (token, userId) => {
+        if (!token || !userId) return;
+        
+        try {
+            // Buscar reservas do usuário
+            const reservationsResponse = await fetch(`${HOTELS_API.RESERVATIONS}/user/${userId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            
+            if (!reservationsResponse.ok) {
+                console.error('Erro ao buscar reservas:', reservationsResponse.status);
+                return;
+            }
+            
+            const reservations = await reservationsResponse.json();
+            const today = new Date();
+            
+            // Verifica cada reserva
+            for (const reservation of reservations) {
+                // Verifica se a data de check-in foi há pelo menos um dia
+                const checkInDate = new Date(reservation.checkInDate);
+                const oneDayAfterCheckIn = new Date(checkInDate);
+                oneDayAfterCheckIn.setDate(oneDayAfterCheckIn.getDate() + 1);
+                
+                // Se hoje é pelo menos um dia após o check-in, marca como visitado
+                if (today >= oneDayAfterCheckIn && !reservation.markedAsVisited) {
+                    try {
+                        // Marca o hotel como visitado
+                        const markResponse = await fetch(`${HOTELS_API.MARK_VISITED}/${userId}/${reservation.hotelId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                reservationId: reservation.id,
+                                markedAsVisited: true
+                            })
+                        });
+                        
+                        if (markResponse.ok) {
+                            console.log(`Hotel ${reservation.hotelId} marcado como visitado automaticamente.`);
+                            // Não recarrega imediatamente para evitar muitas chamadas de API - será recarregado na próxima atualização
+                        } else {
+                            console.error('Erro ao marcar hotel como visitado:', markResponse.status);
+                        }
+                    } catch (markError) {
+                        console.error('Erro ao marcar hotel como visitado:', markError);
+                    }
+                }
+            }
+            
+            // Recarrega a lista de hotéis visitados após as verificações
+            fetchUserHotels(token, userId);
+            
+        } catch (error) {
+            console.error('Erro ao verificar reservas:', error);
+        }
+    };
+
+    // Função para carregar hotéis salvos do localStorage
+    const loadSavedHotelsFromLocalStorage = () => {
+        try {
+            const localSavedHotels = localStorage.getItem('savedHotels');
+            if (localSavedHotels) {
+                const parsedHotels = JSON.parse(localSavedHotels);
+                if (Array.isArray(parsedHotels)) {
+                    setSavedHotels(parsedHotels);
+                    console.log('Hotéis carregados do localStorage:', parsedHotels.length);
+                }
+            }
+        } catch (error) {
+            console.error('Erro ao carregar hotéis do localStorage:', error);
+        }
+    };
+    
     // Efeito para verificar autenticação no localStorage ao carregar a aplicação
     useEffect(() => {
-        const storedToken = localStorage.getItem('authToken');
-        const storedUser = localStorage.getItem('authUser');
- 
-        if (storedToken && storedUser) {
-            try {
-                const user = JSON.parse(storedUser);
-                if (user && typeof user === 'object' && user.email) {
-                    setCurrentUser(user);
-                    setToken(storedToken);
-                    setIsLoggedIn(true);
-                    // Em um cenário real, você carregaria saved/visited hotels do backend aqui após a autenticação
-                    // Por enquanto, continuam mockados ou persistidos de alguma forma se houver
-                    setSavedHotels(mockSavedHotels); // Mantém mockado por enquanto
-                    setVisitedHotels(mockVisitedHotels); // Mantém mockado por enquanto
-                } else {
-                    // Se os dados do usuário são inválidos, limpa o localStorage
+        const initAuth = async () => {
+            const storedToken = localStorage.getItem('authToken');
+            const storedUser = localStorage.getItem('authUser');
+     
+            // Sempre tenta carregar hotéis do localStorage primeiro
+            loadSavedHotelsFromLocalStorage();
+     
+            if (storedToken && storedUser) {
+                try {
+                    const user = JSON.parse(storedUser);
+                    if (user && typeof user === 'object' && user.email) {
+                        setCurrentUser(user);
+                        setToken(storedToken);
+                        setIsLoggedIn(true);
+                        
+                        console.log('✅ Usuário autenticado carregado do localStorage:', user.email);
+                        
+                        // Busca os dados de hotéis do usuário do backend
+                        const userId = user.UserId || user.userId || user.id;
+                        if (userId) {
+                            await fetchUserHotels(storedToken, userId);
+                            
+                            // Verifica reservas e marca hotéis como visitados automaticamente
+                            await checkReservationsAndMarkVisited(storedToken, userId);
+                        } else {
+                            console.error("ID do usuário não encontrado nos dados armazenados");
+                            setSavedHotels([]);
+                            setVisitedHotels([]);
+                        }
+                    } else {
+                        // Se os dados do usuário são inválidos, limpa o localStorage
+                        localStorage.removeItem('authToken');
+                        localStorage.removeItem('authUser');
+                        console.log('❌ Dados do usuário inválidos - removendo do localStorage');
+                    }
+                } catch (e) {
+                    console.error("Falha ao analisar dados de usuário armazenados:", e);
+                    // Se houver erro, assume que os dados estão corrompidos e desloga
                     localStorage.removeItem('authToken');
                     localStorage.removeItem('authUser');
+                    setCurrentUser(null);
+                    setIsLoggedIn(false);
+                    setToken(null);
+                    console.log('❌ Dados corrompidos - removendo autenticação');
                 }
-            } catch (e) {
-                console.error("Falha ao analisar dados de usuário armazenados:", e);
-                // Se houver erro, assume que os dados estão corrompidos e desloga
-                localStorage.removeItem('authToken');
-                localStorage.removeItem('authUser');
-                setCurrentUser(null);
-                setIsLoggedIn(false);
-                setToken(null);
+            } else {
+                console.log('ℹ️ Nenhum token/usuário encontrado no localStorage');
             }
-        }
-        setIsLoadingAuth(false); // A checagem inicial terminou
+            setIsLoadingAuth(false); // A checagem inicial terminou
+        };
+        
+        initAuth();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Array de dependências vazio para rodar apenas uma vez no mount
+    
+    // Efeito para verificar diariamente se há reservas que devem ser marcadas como visitadas
+    useEffect(() => {
+        let checkInterval;
+        
+        // Se o usuário estiver logado, configura uma verificação diária
+        if (isLoggedIn && token && currentUser) {
+            // Executa verificação inicial
+            const userId = currentUser.UserId || currentUser.userId || currentUser.id;
+            if (userId) {
+                const checkVisited = async () => {
+                    await checkReservationsAndMarkVisited(token, userId);
+                };
+                checkVisited();
+            }
+            
+            // Configura verificação diária às 00:01
+            const scheduleNextCheck = () => {
+                const now = new Date();
+                const tomorrow = new Date(now);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                tomorrow.setHours(0, 1, 0, 0); // 00:01:00 do dia seguinte
+                
+                const timeToNextCheck = tomorrow - now;
+                return setTimeout(() => {
+                    if (isLoggedIn && token && currentUser) {
+                        const userId = currentUser.UserId || currentUser.userId || currentUser.id;
+                        if (userId) {
+                            const checkVisited = async () => {
+                                await checkReservationsAndMarkVisited(token, userId);
+                            };
+                            checkVisited();
+                        }
+                    }
+                    // Agenda próxima verificação
+                    checkInterval = scheduleNextCheck();
+                }, timeToNextCheck);
+            };
+            
+            // Inicia o agendamento
+            checkInterval = scheduleNextCheck();
+        }
+        
+        // Limpar o intervalo quando o componente for desmontado ou o usuário deslogar
+        return () => {
+            if (checkInterval) {
+                clearTimeout(checkInterval);
+            }
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isLoggedIn, token, currentUser]);
  
     // <<<<<<<<<<<< FUNÇÃO DE LOGIN COM CHAMADA AO BACKEND >>>>>>>>>>>>
     const login = async (email, password) => {
@@ -79,7 +292,7 @@ export const AuthProvider = ({ children }) => {
         }
  
         try {
-            const response = await fetch('http://localhost:5155/api/Auth/login', {
+            const response = await fetch('https://localhost:7010/api/Auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -130,10 +343,6 @@ export const AuthProvider = ({ children }) => {
             // Tenta extrair informações do usuário de diferentes possíveis propriedades
             const userInfo = data.user || data.profile || data.userData || data;
  
-            // Debug: mostra o que foi extraído
-            console.log('userInfo extraído:', userInfo);
-            console.log('Token extraído:', receivedToken);
- 
             // Validação mais rigorosa dos dados recebidos
             if (!userInfo || typeof userInfo !== 'object') {
                 throw new Error("Informações do usuário não encontradas na resposta");
@@ -154,11 +363,22 @@ export const AuthProvider = ({ children }) => {
             }
             localStorage.setItem('authUser', JSON.stringify(userInfo));
  
-            // Em um cenário real, aqui você faria chamadas para carregar
-            // os hotéis salvos e visitados do usuário real, usando o token.
-            // Por enquanto, continuam mockados
-            setSavedHotels(mockSavedHotels);
-            setVisitedHotels(mockVisitedHotels);
+            // Buscar hotéis salvos e visitados do backend
+            const userId = userInfo.UserId || userInfo.userId || userInfo.id;
+            if (userId && receivedToken) {
+                try {
+                    await fetchUserHotels(receivedToken, userId);
+                } catch (fetchError) {
+                    console.error('Erro ao buscar hotéis do usuário:', fetchError);
+                    // Continue o login mesmo se a busca de hotéis falhar
+                    setSavedHotels([]);
+                    setVisitedHotels([]);
+                }
+            } else {
+                console.warn('ID do usuário ou token não encontrado, não é possível buscar hotéis');
+                setSavedHotels([]);
+                setVisitedHotels([]);
+            }
  
             // Redireciona para a página principal após o login
             try {
@@ -190,9 +410,11 @@ export const AuthProvider = ({ children }) => {
         setToken(null);
         setSavedHotels([]); // Limpa hotéis salvos/visitados ao deslogar
         setVisitedHotels([]);
+        setReservationHistory([]); // Limpa histórico de reservas do estado local
         localStorage.removeItem('authToken');
         localStorage.removeItem('authUser');
- 
+        // NÃO remove userReservations do localStorage para manter as reservas salvas
+
         // Navega para login de forma segura
         try {
             navigate('/login');
@@ -201,9 +423,7 @@ export const AuthProvider = ({ children }) => {
             // Fallback: recarregar a página para ir para a rota padrão
             window.location.href = '/login';
         }
-    };
- 
-    const updateUser = async (updatedData) => {
+    };    const updateUser = async (updatedData) => {
         // Validações básicas
         if (!updatedData || typeof updatedData !== 'object') {
             throw new Error("Dados de atualização inválidos");
@@ -227,13 +447,47 @@ export const AuthProvider = ({ children }) => {
                 FirstName: updatedData.firstName?.trim() || currentUser.FirstName,
                 LastName: updatedData.lastName?.trim() || currentUser.LastName,
                 Email: updatedData.email?.trim() || currentUser.Email,
-                Phone: updatedData.phone?.trim() || currentUser.Phone,
-                Cpf: currentUser.Cpf // Mantém o CPF existente
+                Phone: updatedData.phone?.trim() || currentUser.Phone || null,
+                Cpf: updatedData.cpf?.trim() || currentUser.Cpf || null,
+                BirthDate: updatedData.birthDate?.trim() || currentUser.BirthDate || null
             };
- 
-            console.log('Enviando dados para atualização:', dataToSend);
 
-            const response = await fetch(`http://localhost:5155/api/Auth/users/${userId}`, {
+            // Limpa telefone e CPF (remove formatação)
+            if (dataToSend.Phone) {
+                dataToSend.Phone = dataToSend.Phone.replace(/\D/g, ''); // Remove tudo que não é número
+            }
+            if (dataToSend.Cpf) {
+                dataToSend.Cpf = dataToSend.Cpf.replace(/\D/g, ''); // Remove tudo que não é número
+            }
+
+            // Formatar data de nascimento para ISO se fornecida
+            if (dataToSend.BirthDate && dataToSend.BirthDate !== '') {
+                try {
+                    // Se a data já está no formato dd/mm/yyyy ou yyyy-mm-dd
+                    const dateStr = dataToSend.BirthDate;
+                    let date;
+                    
+                    if (dateStr.includes('/')) {
+                        // Formato dd/mm/yyyy
+                        const parts = dateStr.split('/');
+                        if (parts.length === 3) {
+                            date = new Date(parts[2], parts[1] - 1, parts[0]); // year, month-1, day
+                        }
+                    } else if (dateStr.includes('-')) {
+                        // Formato yyyy-mm-dd
+                        date = new Date(dateStr);
+                    }
+                    
+                    if (date && !isNaN(date.getTime())) {
+                        dataToSend.BirthDate = date.toISOString().split('T')[0]; // Formato yyyy-mm-dd
+                    }
+                } catch (error) {
+                    console.warn('Erro ao formatar data de nascimento:', error);
+                    // Mantém a data original se houver erro
+                }
+            }
+
+            const response = await fetch(`https://localhost:7010/api/Users/${userId}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
@@ -278,17 +532,223 @@ export const AuthProvider = ({ children }) => {
         }
     };
  
-    const removeSavedHotel = (hotelId) => {
-        // Em um cenário real, você faria uma chamada de API para remover o hotel do backend.
-        setSavedHotels(prevHotels => prevHotels.filter(hotel => hotel.id !== hotelId));
-        alert("Hotel removido da sua lista de desejos!"); // Considere usar uma toast notification aqui.
+    const removeSavedHotel = async (hotelId) => {
+        // Verificar login apenas se necessário - não deveria acontecer já que o botão só aparece logado
+        if (!isLoggedIn || !currentUser) {
+            console.warn("Tentativa de remover hotel sem estar logado");
+            window.location.href = '/login';
+            return;
+        }
+        
+        // Se chegou aqui, o usuário está logado
+        try {
+            // Encontra o hotel para passar informações para o modal
+            const hotelToRemove = savedHotels.find(hotel => hotel.id === hotelId);
+            if (!hotelToRemove) {
+                throw new Error("Hotel não encontrado na lista de favoritos.");
+            }
+            
+            // Mostramos o modal de confirmação de remoção IMEDIATAMENTE
+            const modalEvent = new CustomEvent('showRemoveWishlistModal', { 
+                detail: { 
+                    hotel: hotelToRemove,
+                    onConfirm: () => {
+                        // Podemos navegar para a página de desejos se necessário
+                        // ou deixar o usuário na página atual
+                        // window.location.href = '/minhas-viagens';
+                    }
+                } 
+            });
+            window.dispatchEvent(modalEvent);
+            
+            const userId = currentUser.UserId || currentUser.userId || currentUser.id;
+            
+            // Atualiza o UI em segundo plano
+            const updatedHotels = savedHotels.filter(hotel => hotel.id !== hotelId);
+            setSavedHotels(updatedHotels);
+            localStorage.setItem('savedHotels', JSON.stringify(updatedHotels));
+            
+            // Tenta enviar requisição para o backend em segundo plano
+            try {
+                fetch(`${HOTELS_API.REMOVE}/${userId}/${hotelId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (!response.ok) {
+                        console.warn('Backend não pôde remover o hotel, usando apenas localStorage:', response.status);
+                    }
+                }).catch(apiError => {
+                    console.warn('Erro ao comunicar com a API, usando localStorage:', apiError);
+                });
+            } catch (apiError) {
+                console.warn('Erro ao iniciar requisição para a API:', apiError);
+            }
+            
+        } catch (error) {
+            console.error('Erro ao remover hotel:', error);
+            alert(error.message || "Erro ao remover hotel. Tente novamente.");
+        }
     };
  
-    const addSavedHotel = (hotel) => {
-        // Em um cenário real, você faria uma chamada de API para adicionar o hotel no backend.
-        setSavedHotels(prevHotels => [...prevHotels, hotel]);
-        alert("Hotel adicionado à sua lista de desejos!"); // Considere usar uma toast notification aqui.
+    const addSavedHotel = async (hotel) => {
+        // Verificar login apenas se necessário - não deveria acontecer já que o botão só aparece logado
+        if (!isLoggedIn || !currentUser) {
+            console.warn("Tentativa de salvar hotel sem estar logado");
+            window.location.href = '/login';
+            return;
+        }
+        
+        // Se chegou aqui, o usuário está logado
+        try {
+            const userId = currentUser.UserId || currentUser.userId || currentUser.id;
+            
+            if (!userId) {
+                throw new Error("ID do usuário não encontrado. Por favor, faça login novamente.");
+            }
+            
+            // Verifica se o hotel já existe na lista de favoritos antes de continuar
+            const hotelExists = savedHotels.some(h => h.id === hotel.id);
+            if (hotelExists) {
+                alert("Este hotel já está na sua lista de desejos!");
+                return;
+            }
+            
+            // Mostramos o modal IMEDIATAMENTE para feedback instantâneo
+            // Criamos um evento personalizado com a função de callback para navegação
+            const modalEvent = new CustomEvent('showWishlistModal', { 
+                detail: { 
+                    hotel: hotel,
+                    onConfirm: () => {
+                        // Navega para a página de desejos depois que o usuário clicar no botão de ação
+                        // O X vai apenas fechar o modal sem executar este callback
+                        console.log("Redirecionando para Minhas Viagens");
+                        // Usando navigate se disponível, senão usa window.location
+                        if (typeof navigate === 'function') {
+                            navigate('/minhas-viagens');
+                        } else {
+                            window.location.href = '/minhas-viagens';
+                        }
+                    }
+                } 
+            });
+            window.dispatchEvent(modalEvent);
+            
+            // Atualiza o UI e salva no localStorage em segundo plano
+            const updatedSavedHotels = [...savedHotels, hotel];
+            setSavedHotels(updatedSavedHotels);
+            localStorage.setItem('savedHotels', JSON.stringify(updatedSavedHotels));
+            
+            // Tenta enviar requisição para o backend em segundo plano
+            try {
+                fetch(`${HOTELS_API.SAVE}/${userId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        hotelId: hotel.id
+                    })
+                }).then(response => {
+                    if (!response.ok) {
+                        console.warn('Backend não pôde salvar o hotel, usando apenas localStorage:', response.status);
+                    }
+                }).catch(apiError => {
+                    console.warn('Erro ao comunicar com a API, usando localStorage:', apiError);
+                });
+            } catch (apiError) {
+                console.warn('Erro ao iniciar requisição para a API:', apiError);
+            }
+            
+        } catch (error) {
+            console.error('Erro ao adicionar hotel:', error);
+            alert(error.message || "Erro ao adicionar hotel. Tente novamente.");
+        }
     }
+
+    // <<<<<<<<<<<< FUNÇÃO PARA ADICIONAR RESERVA AO HISTÓRICO >>>>>>>>>>>>
+    const addReservationToHistory = async (reservationData) => {
+        try {
+            console.log('Adicionando reserva ao histórico:', reservationData);
+            console.log('Usuário atual:', currentUser?.UserId || currentUser?.userId);
+            
+            const userId = currentUser?.UserId || currentUser?.userId;
+            if (!userId) {
+                console.error('Usuário não encontrado para adicionar reserva');
+                return;
+            }
+
+            // Cria objeto da reserva com dados completos
+            const newReservation = {
+                id: reservationData.reservationId || Date.now(), // ID da reserva ou timestamp como fallback
+                userId: userId, // Associa a reserva ao usuário atual
+                hotelId: reservationData.hotelId,
+                hotelName: reservationData.hotelName,
+                hotelImage: reservationData.hotelImage || reservationData.mainImageUrl,
+                roomType: reservationData.roomType,
+                checkInDate: reservationData.checkInDate,
+                checkOutDate: reservationData.checkOutDate,
+                totalPrice: reservationData.totalPrice,
+                numberOfGuests: reservationData.numberOfGuests,
+                travellers: reservationData.travellers || [],
+                reservationDate: new Date().toISOString(), // Data da reserva
+                status: reservationData.status || 'confirmed', // Status da reserva
+                location: reservationData.location
+            };
+
+            console.log('Nova reserva criada:', newReservation);
+
+            // Salva a reserva via API primeiro
+            try {
+                // TODO: Implementar chamada para a API do backend para salvar a reserva
+                // const savedReservation = await reservationService.createReservation(newReservation);
+                
+                // Por enquanto, atualiza apenas o estado local
+                setReservationHistory(prevHistory => {
+                    const updatedHistory = [newReservation, ...prevHistory]; // Adiciona no início (mais recente primeiro)
+                    console.log('Reserva adicionada ao estado local:', updatedHistory);
+                    return updatedHistory;
+                });
+                
+                console.log('Reserva salva com sucesso');
+            } catch (apiError) {
+                console.error('Erro ao salvar reserva via API:', apiError);
+                // Em caso de erro na API, ainda adiciona ao estado local como fallback
+                setReservationHistory(prevHistory => {
+                    const updatedHistory = [newReservation, ...prevHistory];
+                    return updatedHistory;
+                });
+            }
+            
+        } catch (error) {
+            console.error('Erro ao adicionar reserva ao histórico:', error);
+        }
+    };
+
+    // Função para atualizar status de uma reserva (de pending para confirmed)
+    const updateReservationStatus = (reservationId, newStatus = 'confirmed') => {
+        try {
+            setReservationHistory(prevHistory => {
+                const updatedHistory = prevHistory.map(reservation => {
+                    if (reservation.id === reservationId || reservation.reservationId === reservationId) {
+                        return { ...reservation, status: newStatus };
+                    }
+                    return reservation;
+                });
+                
+                // TODO: Implementar chamada para a API do backend para atualizar o status
+                // reservationService.updateReservationStatus(reservationId, newStatus);
+                
+                return updatedHistory;
+            });
+            
+        } catch (error) {
+            console.error('Erro ao atualizar status da reserva:', error);
+        }
+    };
  
     // <<<<<<<<<<<< FUNÇÃO DE REGISTRO/CADASTRO >>>>>>>>>>>>
     const register = async (firstName, lastName, email, password) => {
@@ -323,10 +783,17 @@ export const AuthProvider = ({ children }) => {
                 throw new Error("Último nome não pode conter números ou caracteres especiais");
             }
  
+            // Função para capitalizar a primeira letra de cada palavra
+            const capitalizeWords = (str) => {
+                return str
+                    .toLowerCase()
+                    .replace(/(?:^|\s)\S/g, (a) => a.toUpperCase());
+            };
+
             const dataToSend = {
-                FirstName: firstName.trim(),
-                LastName: lastName.trim(),
-                Email: email.trim(),
+                FirstName: capitalizeWords(firstName.trim()),
+                LastName: capitalizeWords(lastName.trim()),
+                Email: email.trim().toLowerCase(),
                 Password: password,
                 roles: 0 // 0 = User (conforme enum Roles)
             };
@@ -340,13 +807,14 @@ export const AuthProvider = ({ children }) => {
                 passwordLength: password.length
             });
 
-            const response = await fetch('http://localhost:5155/api/Users/createUser', {
+            const response = await fetch('https://localhost:7010/api/Users/createUser', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(dataToSend)
-            });            if (!response.ok) {
+            });            
+            if (!response.ok) {
                 // Tenta extrair mensagem de erro da resposta
                 let errorMessage = 'Erro no cadastro';
  
@@ -388,7 +856,7 @@ export const AuthProvider = ({ children }) => {
  
             // Verifica se é um erro de rede (fetch falhou)
             if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                throw new Error('Não foi possível conectar com o servidor. Verifique se o backend está rodando em http://localhost:5155');
+                throw new Error('Não foi possível conectar com o servidor. Verifique se o backend está rodando em https://localhost:7010');
             }
  
             // Re-lança o erro para que o componente possa exibir a mensagem
@@ -396,19 +864,88 @@ export const AuthProvider = ({ children }) => {
         }
     };
  
+    // Função para adicionar um hotel à lista de visitados (após uma reserva)
+    const addVisitedHotel = async (hotel) => {
+        if (!token || !isLoggedIn || !currentUser) {
+            console.warn("Usuário não autenticado ao tentar marcar hotel como visitado");
+            return;
+        }
+        
+        try {
+            const userId = currentUser.UserId || currentUser.userId || currentUser.id;
+            
+            // Atualiza o UI imediatamente
+            setVisitedHotels(prevVisitedHotels => {
+                // Verifica se já existe para não duplicar
+                if (prevVisitedHotels.some(h => h.id === hotel.id)) {
+                    return prevVisitedHotels;
+                }
+                return [...prevVisitedHotels, hotel];
+            });
+            
+            // Envia para o backend
+            const response = await fetch(`${API_BASE_URL}/Hotels/visited/${userId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    hotelId: hotel.id
+                })
+            });
+            
+            if (!response.ok) {
+                console.error('Erro ao adicionar hotel visitado:', response.status);
+                // Recarregar os dados atualizados em caso de falha
+                fetchUserHotels(token, userId);
+            }
+            
+        } catch (error) {
+            console.error('Erro ao salvar hotel visitado:', error);
+        }
+    };
+    
+    // Função para recarregar manualmente os dados de hotéis do usuário
+    const refreshUserHotels = async () => {
+        // Sempre tenta carregar do localStorage primeiro para garantir dados imediatos
+        loadSavedHotelsFromLocalStorage();
+        
+        // Depois tenta atualizar com dados do backend se possível
+        if (token && isLoggedIn && currentUser) {
+            const userId = currentUser.UserId || currentUser.userId || currentUser.id;
+            if (userId) {
+                try {
+                    await fetchUserHotels(token, userId);
+                    return true;
+                } catch (error) {
+                    console.warn('Não foi possível atualizar do backend, usando localStorage:', error);
+                    return true; // Retorna true porque pelo menos temos os dados do localStorage
+                }
+            }
+        }
+        return false;
+    };
+
     const value = {
         currentUser,
         isLoggedIn,
-        token, // Expor o token se outros componentes precisarem dele para APIs
+        token,
         savedHotels,
         visitedHotels,
-        isLoadingAuth, // Expor para que a aplicação possa mostrar um loader enquanto checa a sessão
+        isLoadingAuth,
         login,
         logout,
-        register, // Adiciona a função de registro
+        register,
         updateUser,
         addSavedHotel,
-        removeSavedHotel
+        removeSavedHotel,
+        addVisitedHotel,
+        refreshUserHotels,
+        checkReservationsAndMarkVisited, // Expondo o método para uso em outros componentes se necessário
+        addReservationToHistory, // Adicionando a função que estava faltando
+        reservationHistory, // Expondo o histórico de reservas também
+        updateReservationStatus // Expondo a função de atualizar status
     };
  
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

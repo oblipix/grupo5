@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { Icons } from '../layout/Icons'; // Importa o nosso arquivo central de ícones
 import '../styles/SearchForms.css'; // Importa o CSS específico do SearchHotelsBar
 import { hotelService } from '../../services/hotelService'; // Importa o serviço de hotéis
-import { Range } from 'react-range';
 
 // --- DADOS E OPÇÕES DO FORMULÁRIO ---
 const roomGuestOptions = [
@@ -21,22 +20,21 @@ const selectableAmenityOptions = [
     "Restaurante", "Jardim Amplo",
 ];
 
-// Removido roomTypeOptions - agora será carregado do backend
-
 // --- COMPONENTE PRINCIPAL ---
 function SearchHotelsBar() {
     const navigate = useNavigate();
 
     // Estado interno do formulário
     const [destination, setDestination] = useState('');
-    const [guestsInfo, setGuestsInfo] = useState(roomGuestOptions[1]);
-    const [minPrice, setMinPrice] = useState(0);
-const [maxPrice, setMaxPrice] = useState(10000);
-    const [selectedAmenities, setSelectedAmenities] = useState([]);
     const [roomTypeOptions, setRoomTypeOptions] = useState([]); // Estado para tipos de quarto do backend
     const [selectedRoomType, setSelectedRoomType] = useState('');
+    const [guestsInfo, setGuestsInfo] = useState(roomGuestOptions[1]); // Padrão: casal
+    const [priceRange, setPriceRange] = useState(5000);
+    const [selectedAmenities, setSelectedAmenities] = useState([]);
     const [isAmenitiesDropdownOpen, setIsAmenitiesDropdownOpen] = useState(false);
     const [isLoadingRoomTypes, setIsLoadingRoomTypes] = useState(true);
+
+    // Refs para detectar cliques fora dos dropdowns
     const amenitiesDropdownRef = useRef(null);
 
     // Função para buscar tipos de quarto do backend
@@ -47,18 +45,18 @@ const [maxPrice, setMaxPrice] = useState(10000);
             // Usa o serviço para buscar tipos de quarto
             const roomTypes = await hotelService.getRoomTypes();
             setRoomTypeOptions(roomTypes);
-            
-            // Define o primeiro tipo como padrão se existir
+
+            // Define o primeiro tipo como padrão
             if (roomTypes.length > 0) {
                 setSelectedRoomType(roomTypes[0].name || roomTypes[0]);
             }
         } catch (error) {
             console.error('Erro ao carregar tipos de quarto:', error);
-            // Fallback para dados locais em caso de erro
+            // Fallback: define tipos padrão se a API falhar
             const fallbackTypes = [
-                { id: 1, name: 'Standard' },
-                { id: 2, name: 'Luxo' },
-                { id: 3, name: 'Suíte' }
+                { name: 'Standard' },
+                { name: 'Luxo' },
+                { name: 'Suíte' }
             ];
             setRoomTypeOptions(fallbackTypes);
             setSelectedRoomType(fallbackTypes[0].name);
@@ -72,33 +70,36 @@ const [maxPrice, setMaxPrice] = useState(10000);
         fetchRoomTypes();
     }, []);
 
-    // Lógica para fechar o dropdown de comodidades ao clicar fora
+    // useEffect para lidar com cliques fora do dropdown de comodidades
     useEffect(() => {
-        function handleClickOutside(event) {
+        const handleClickOutside = (event) => {
             if (amenitiesDropdownRef.current && !amenitiesDropdownRef.current.contains(event.target)) {
                 setIsAmenitiesDropdownOpen(false);
             }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, [amenitiesDropdownRef]);
+        };
 
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    // Função para gerenciar seleção de comodidades
     const handleAmenityChange = (amenity) => {
-        setSelectedAmenities((prev) =>
-            prev.includes(amenity)
-                ? prev.filter((a) => a !== amenity)
+        setSelectedAmenities(prev => 
+            prev.includes(amenity) 
+                ? prev.filter(item => item !== amenity)
                 : [...prev, amenity]
         );
     };
 
-    // Função que navega para a página de resultados com os filtros na URL
+    // Função para realizar a pesquisa
     const handleSearch = () => {
         const searchParams = new URLSearchParams();
-
+        
         if (destination) searchParams.append('destino', destination);
-        if (guestsInfo) searchParams.append('hospedes', guestsInfo.adults);
-        if (minPrice > 0) searchParams.append('precoMin', minPrice);
-        if (maxPrice < 10000) searchParams.append('precoMax', maxPrice);
+        if (guestsInfo.rooms) searchParams.append('quartos', guestsInfo.rooms);
+        if (guestsInfo.adults) searchParams.append('adultos', guestsInfo.adults);
+        if (guestsInfo.children) searchParams.append('criancas', guestsInfo.children);
+        if (priceRange < 10000) searchParams.append('precoMaximo', priceRange);
         if (selectedAmenities.length > 0) searchParams.append('comodidades', selectedAmenities.join(','));
         if (selectedRoomType) searchParams.append('tipoQuarto', selectedRoomType);
 
@@ -109,15 +110,13 @@ const [maxPrice, setMaxPrice] = useState(10000);
     const handleClearSearch = () => {
         setDestination('');
         setGuestsInfo(roomGuestOptions[1]);
-        setMinPrice(0);
-        setMaxPrice(10000);
+        setPriceRange(5000);
         setSelectedAmenities([]);
         // Define o primeiro tipo de quarto como padrão ao limpar
         if (roomTypeOptions.length > 0) {
             setSelectedRoomType(roomTypeOptions[0].name || roomTypeOptions[0]);
         }
     };
-    
 
     const getAmenitiesDisplayText = () => {
         const totalSelected = selectedAmenities.length;
@@ -209,49 +208,13 @@ const [maxPrice, setMaxPrice] = useState(10000);
 
                 <div className="flex flex-col md:flex-row items-center gap-4">
                     <div className="flex-1 w-full md:w-auto">
-                          <label className="labelForms mb-1 block"> Preço: R$ {minPrice.toLocaleString('pt-BR')} - R$ {maxPrice.toLocaleString('pt-BR')}</label>
+                        <label className="labelForms mb-1 block">Preço Máximo: R$ {priceRange.toLocaleString('pt-BR')}</label>
                         <div className="relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm">
                             <Icons.Money />
-                         <Range
-                            step={1}
-                            min={0}
-                            max={10000}
-                            values={[minPrice, maxPrice]}
-                            onChange={([newMin, newMax]) => {
-                            setMinPrice(newMin);
-                            setMaxPrice(newMax);
-                            }}
-                            renderTrack={({ props, children }) => {
-                                // Calcula a posição dos thumbs em porcentagem
-                                const left = (minPrice / 10000) * 100;
-                                const right = (maxPrice / 10000) * 100;
-                                return (
-                                    <div
-                                    {...props}
-                                    className="h-1.5 w-full rounded bg-gray-200 relative mx-2"
-                                    >
-                                    {/* faixa preenchida entre os thumbs */}
-                                    <div
-                                        className="absolute h-full bg-blue-700 rounded pointer-events-none"
-                                        style={{
-                                            left: `${left}%`,
-                                             width: `${Math.max(right - left, 1)}%`,
-                                            position: 'absolute',
-                                            
-                                        }}
-                                    />
-                                    {children}
-                                    </div>
-                                );
-                            }}
-                           renderThumb={({ props }) => (
-                            <div
-                                {...props}
-                                className="h-5 w-5 bg-blue-800 rounded-full shadow-md border-2 border-white flex items-center justify-center"
-                                style={{ ...props.style }}
-                            />
-                            )}
-                         
+                            <input
+                                type="range" min={0} max={10000} value={priceRange}
+                                onChange={(e) => setPriceRange(Number(e.target.value))}
+                                className="flex-grow ml-2 w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                             />
                         </div>
                     </div>

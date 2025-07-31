@@ -1,3 +1,5 @@
+// COMENTADO - FUNCIONALIDADE DE EVENTOS DESABILITADA
+/*
 import ImagePascoaBH from '../assets/images/pascoaBH.png';
 import ImageNatalRS from '../assets/images/natal1RS.png';
 import ImageAnoNovoRJ from '../assets/images/anonovoRJ.png';
@@ -41,3 +43,7 @@ export const eventData = [
     date: '10/06/2026 - 13/06/2026', // Data ajustada para um ano futuro
   },
 ];
+*/
+
+// Export vazio para manter compatibilidade
+export const eventData = [];

@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Bars3Icon, UserCircleIcon, XMarkIcon, ArrowRightEndOnRectangleIcon } from '@heroicons/react/24/outline';
+import { FaBuilding, FaTag } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 
 function Header() {
@@ -13,6 +14,13 @@ function Header() {
         const baseClasses = "text-gray-300 hover:text-white font-medium focus:outline-none transition-colors duration-300";
         return isActive ? `${baseClasses} active-link` : baseClasses;
     };
+    
+    // Classe específica para os botões Hotéis e Promoções
+    const getSpecialNavLinkClasses = ({ isActive }) => {
+        return isActive 
+            ? "flex items-center px-4 py-2 rounded-lg text-white transition-colors duration-200 active-link" 
+            : "flex items-center px-4 py-2 rounded-lg text-gray-300 hover:text-white transition-colors duration-200";
+    };
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -22,11 +30,11 @@ function Header() {
         if (isLoggedIn) {
             // Debug temporário - remover após corrigir
             console.log('Debug currentUser no Header:', currentUser);
-            
+
             // Função para obter o primeiro nome do usuário de forma segura
             const getFirstName = () => {
                 if (!currentUser) return 'Usuário';
-                
+
                 // Tenta diferentes propriedades que podem conter o nome
                 const possibleNames = [
                     currentUser.name,
@@ -35,7 +43,7 @@ function Header() {
                     currentUser.username,
                     currentUser.email
                 ];
-                
+
                 for (const nameField of possibleNames) {
                     if (nameField && typeof nameField === 'string' && nameField.trim()) {
                         // Se for email, pega a parte antes do @
@@ -46,7 +54,7 @@ function Header() {
                         return nameField.split(' ')[0];
                     }
                 }
-                
+
                 return 'Usuário'; // Fallback
             };
 
@@ -54,7 +62,7 @@ function Header() {
                 <div className="flex items-center space-x-2">
                     <NavLink to="/minhas-viagens" className="text-gray-300 hover:text-white transition-colors flex items-center">
                         <UserCircleIcon className="h-8 w-8 md:h-7 md:w-7" />
-                        <span className="ml-2 hidden lg:inline-block">Olá, {getFirstName()}!</span>
+                        <span className="ml-2 hidden md:inline-block">Olá, {getFirstName()}!</span>
                     </NavLink>
                     <button
                         onClick={logout}
@@ -62,7 +70,7 @@ function Header() {
                         title="Sair"
                     >
                          <ArrowRightEndOnRectangleIcon className="h-6 w-6" />
-                         <span className="ml-1 hidden lg:inline-block text-sm">Sair</span>
+                         <span className="ml-1 hidden md:inline-block text-sm">Sair</span>
                     </button>
                 </div>
             );
@@ -70,27 +78,51 @@ function Header() {
             return (
                 <Link to="/login" className="text-gray-300 hover:text-white transition-colors flex items-center">
                     <UserCircleIcon className="h-8 w-8 md:h-7 md:w-7" />
-                    <span className="ml-2 hidden lg:inline-block">Login</span>
+                    <span className="ml-2 hidden md:inline-block">Login</span>
                 </Link>
             );
         }
     };
 
     return (
-        <header className="w-full bg-slate-900 shadow-lg py-4 sticky top-0 z-50">
+        <header className="w-full bg-slate-900 shadow-lg py-4 sticky top-0 z-50 relative">
+            {/* Elemento específico para a curva */}
+            <div className="header-curve absolute bottom-0 left-0 w-full h-5"></div>
             <div className="container mx-auto px-6 flex items-center justify-between">
 
-                {/* Logo */}
-                <Link to="/" className="flex items-center cursor-pointer">
-                    <span className="logo text-white text-3xl font-bold">Tripz</span>
-                </Link>
+                {/* Logo e Botões Principais */}
+                <div className="flex items-center space-x-6">
+                    <Link to="/" className="flex items-center cursor-pointer">
+                        <span className="logo text-white text-3xl font-bold">Tripz</span>
+                    </Link>
+
+                    {/* Botões Hotéis e Promoções */}
+
+                    <div className="menu1 hidden md:flex items-center space-x-4">
+                        <NavLink 
+                            to="/hoteis" 
+                            className={getSpecialNavLinkClasses}
+                        >
+                            <FaBuilding className="text-lg" />
+                            <span className="font-medium ml-2">Hotéis</span>
+                        </NavLink>
+
+                        <NavLink 
+                            to="/promocoes" 
+                            className={getSpecialNavLinkClasses}
+                        >
+                            <FaTag className="text-lg" />
+                            <span className="font-medium ml-2">Promoções</span>
+                        </NavLink>
+                    </div>
+                </div>
 
                 {/* Container para o Menu de Navegação (Desktop) E Ícone de Usuário */}
                 <div className="hidden md:flex items-center space-x-8">
                     <nav>
                         <ul className="flex items-center space-x-8">
                             <li><NavLink to="/" className={getNavLinkClasses} end>Início</NavLink></li>
-                           
+
                             <li><NavLink to="/contato" className={getNavLinkClasses}>Contato</NavLink></li>
                             <li><NavLink to="/institucional" className={getNavLinkClasses}>Institucional</NavLink></li>
                         </ul>
@@ -99,13 +131,12 @@ function Header() {
                 </div>
 
 
-                {/* Botão do Hambúrguer e Ícone de Usuário para Telas Pequenas (md:hidden) */}
+                {/* Botão do Hambúrguer e Ícone de Usuário para Telas Pequenas (até 768px) */}
                 <div className="flex md:hidden items-center space-x-4">
                     <UserLoginLink />
                     <button
                         onClick={toggleMobileMenu}
-                        // Mantendo a cor azul temporária para verificação do ícone
-                        className="text-blue-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md p-2"
+                        className="text-gray-300 hover:text-white focus:outline-none focus:ring-2 focus:ring-gray-500 rounded-md p-2"
                         aria-label="Abrir menu de navegação"
                     >
                         {isMobileMenuOpen ? (
@@ -126,6 +157,18 @@ function Header() {
                         {/* Removidos: Hotéis, Promoções, Eventos, Blog */}
                         <li><NavLink to="/contato" className={getNavLinkClasses} onClick={toggleMobileMenu}>Contato</NavLink></li>
                         <li><NavLink to="/institucional" className={getNavLinkClasses} onClick={toggleMobileMenu}>Institucional</NavLink></li>
+                        <li><NavLink to="/hoteis" className={getNavLinkClasses} onClick={toggleMobileMenu}>
+                            <div className="flex items-center space-x-2">
+                                <FaBuilding className="text-lg" />
+                                <span>Hotéis</span>
+                            </div>
+                        </NavLink></li>
+                        <li><NavLink to="/promocoes" className={getNavLinkClasses} onClick={toggleMobileMenu}>
+                            <div className="flex items-center space-x-2">
+                                <FaTag className="text-lg" />
+                                <span>Promoções</span>
+                            </div>
+                        </NavLink></li>
                     </ul>
                 </div>
             )}

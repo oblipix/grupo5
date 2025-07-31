@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.IdentityModel.Tokens;
 using System.Collections;
 using ViagemImpacta.DTO.ReservationDTO;
 using ViagemImpacta.Models;
@@ -94,8 +95,6 @@ namespace ViagemImpacta.Services.Implementations
             return createdReservation;
         }
 
-
-        
         public async Task<Reservation?> GetReservationByIdAsync(int reservationId)
         {
             var reservation = await _unitOfWork.Reservations.GetReservationWithDetailsAsync(reservationId);
@@ -174,5 +173,41 @@ namespace ViagemImpacta.Services.Implementations
             if (!hotelExists)
                 throw new ArgumentException("Hotel não encontrado");
         }
+
+        public async Task<IEnumerable<Reservation>> GetFilteredReservation(DateTime? checkin, DateTime? checkout, string search, string status)
+        {
+            if (!checkin.HasValue && !checkout.HasValue && string.IsNullOrWhiteSpace(search) && string.IsNullOrWhiteSpace(status))
+            {
+                return await _unitOfWork.Reservations.GetAllReservationsAsync();
+            }
+
+            var reservations = await _unitOfWork.Reservations.GetAllReservationsAsync();
+
+            if (checkin.HasValue)
+                reservations = reservations.Where(r => r.CheckIn.Date >= checkin.Value.Date);
+
+            if (checkout.HasValue)
+                reservations = reservations.Where(r => r.CheckOut.Date <= checkout.Value.Date);
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchLower = search.ToLower();
+                reservations = reservations.Where(r =>
+                    (r.User != null && ((r.User.FirstName + " " + r.User.LastName).ToLower().Contains(searchLower))) ||
+                    (r.Hotel != null && r.Hotel.Name != null && r.Hotel.Name.ToLower().Contains(searchLower))
+                );
+            }
+
+            if (!string.IsNullOrWhiteSpace(status))
+            {
+                if (status == "confirmadas")
+                    reservations = reservations.Where(r => r.IsConfirmed);
+                else if (status == "nao-confirmadas")
+                    reservations = reservations.Where(r => !r.IsConfirmed);
+            }
+
+            return reservations;
+        }
+
     }
 }

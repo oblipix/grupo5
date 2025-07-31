@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 
 
 import React, { useState, useEffect } from 'react';
@@ -13,6 +14,7 @@ function MyTravelsPage() {
     isLoggedIn,
     savedHotels,
     visitedHotels,
+    reservationHistory, // Adiciona histórico de reservas
     logout,
     updateUser,
     removeSavedHotel
@@ -80,10 +82,6 @@ function MyTravelsPage() {
 
   useEffect(() => {
     if (currentUser) {
-      // Debug temporário - remover após confirmar funcionamento
-      console.log('Dados do currentUser:', currentUser);
-      console.log('Nome extraído:', getUserDisplayName());
-
       // Extrai primeiro e último nome do nome completo
       const fullName = getUserFullName();
       const nameParts = fullName.trim().split(' ').filter(part => part.length > 0);
@@ -97,6 +95,8 @@ function MyTravelsPage() {
         lastName: currentUser.LastName || lastName,
         email: currentUser.Email || currentUser.email || '', // Campo Email do backend
         phone: currentUser.Phone || currentUser.phone || '', // Campo Phone do backend
+        cpf: currentUser.Cpf || currentUser.cpf || '', // Campo CPF do backend
+        birthDate: currentUser.BirthDate || currentUser.birthDate || '', // Campo BirthDate do backend
         points: currentUser.points || 0,
         avatar: currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(getUserDisplayName())}&background=3B82F6&color=ffffff&size=200`
       });
@@ -115,7 +115,26 @@ function MyTravelsPage() {
 
   const handleFormChange = (e) => {
     const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
+    
+    // Formatação para telefone
+    if (id === 'phone') {
+      // Remove tudo que não é número
+      const numbers = value.replace(/\D/g, '');
+      // Aplica a máscara (XX) XXXXX-XXXX
+      const formatted = numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+      setFormData(prev => ({ ...prev, [id]: formatted }));
+    }
+    // Formatação para CPF
+    else if (id === 'cpf') {
+      // Remove tudo que não é número
+      const numbers = value.replace(/\D/g, '');
+      // Aplica a máscara XXX.XXX.XXX-XX
+      const formatted = numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+      setFormData(prev => ({ ...prev, [id]: formatted }));
+    }
+    else {
+      setFormData(prev => ({ ...prev, [id]: value }));
+    }
   };
 
   const handleAvatarChange = (event) => {
@@ -136,6 +155,8 @@ function MyTravelsPage() {
     setIsUpdating(true);
 
     try {
+      console.log('FormData antes de validar:', formData);
+
       // Validações básicas no frontend
       if (!formData.firstName?.trim() || !formData.lastName?.trim()) {
         throw new Error('Primeiro nome e último nome são obrigatórios');
@@ -151,13 +172,33 @@ function MyTravelsPage() {
         throw new Error('Por favor, insira um email válido');
       }
 
+      // Validação de telefone (se preenchido, deve ter 11 dígitos)
+      if (formData.phone?.trim()) {
+        const phoneNumbers = formData.phone.replace(/\D/g, '');
+        if (phoneNumbers.length !== 11) {
+          throw new Error('Telefone deve ter 11 dígitos (com DDD)');
+        }
+      }
+
+      // Validação de CPF (se preenchido, deve ter 11 dígitos)
+      if (formData.cpf?.trim()) {
+        const cpfNumbers = formData.cpf.replace(/\D/g, '');
+        if (cpfNumbers.length !== 11) {
+          throw new Error('CPF deve ter 11 dígitos');
+        }
+      }
+
       // Prepara os dados no formato correto para o backend
       const updateData = {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email.trim(),
-        phone: formData.phone?.trim() || ''
+        phone: formData.phone?.trim() || '',
+        cpf: formData.cpf?.trim() || '',
+        birthDate: formData.birthDate?.trim() || ''
       };
+
+      console.log('UpdateData preparado:', updateData);
 
       // Chama a função de atualização do contexto
       const result = await updateUser(updateData);
@@ -282,7 +323,36 @@ function MyTravelsPage() {
                     value={formData.phone || ''}
                     onChange={handleFormChange}
                     className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Telefone (opcional)"
+                    placeholder="(11) 99999-9999"
+                    maxLength="15"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label htmlFor="cpf" className="block text-gray-700 text-sm font-bold mb-2 text-left">
+                    CPF (opcional)
+                  </label>
+                  <input
+                    id="cpf"
+                    type="text"
+                    value={formData.cpf || ''}
+                    onChange={handleFormChange}
+                    className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="000.000.000-00"
+                    maxLength="14"
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label htmlFor="birthDate" className="block text-gray-700 text-sm font-bold mb-2 text-left">
+                    Data de Nascimento (opcional)
+                  </label>
+                  <input
+                    id="birthDate"
+                    type="date"
+                    value={formData.birthDate || ''}
+                    onChange={handleFormChange}
+                    className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
 
@@ -345,6 +415,129 @@ function MyTravelsPage() {
 
       <hr className="my-12" />
 
+      {/* Seção de Histórico de Reservas */}
+      <section className="mb-12">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-3xl font-bold text-blue-800 text-center flex-1">Histórico de Reservas</h2>
+        </div>
+        
+        {reservationHistory?.length > 0 ? (
+          <div className="space-y-6">
+            {reservationHistory.map(reservation => (
+              <div key={reservation.id} className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                  {/* Informações da reserva */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4 lg:mb-0">
+                    {/* Imagem do hotel */}
+                    {reservation.hotelImage && (
+                      <img 
+                        src={reservation.hotelImage} 
+                        alt={reservation.hotelName}
+                        className="w-full sm:w-24 h-24 object-cover rounded-lg"
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/96x96?text=Hotel';
+                        }}
+                      />
+                    )}
+                    
+                    {/* Detalhes da reserva */}
+                    <div className="flex-1">
+                      <h3 className="text-xl font-semibold text-gray-800 mb-1">
+                        {reservation.hotelName}
+                      </h3>
+                      {reservation.location && (
+                        <p className="text-gray-600 mb-2">📍 {reservation.location}</p>
+                      )}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
+                        <p><strong>Quarto:</strong> {reservation.roomType}</p>
+                        <br></br>
+                        <p><strong>Hóspedes:</strong> {reservation.numberOfGuests}</p>
+                        <br></br>
+                        <p><strong>Check-in:</strong> {new Date(reservation.checkInDate).toLocaleDateString('pt-BR')}</p>
+                        <p><strong>Check-out:</strong> {new Date(reservation.checkOutDate).toLocaleDateString('pt-BR')}</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Status e valor */}
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                    <div className="text-center sm:text-right">
+                      <p className="text-2xl font-bold text-green-600">
+                        R$ {reservation.totalPrice?.toFixed(2).replace('.', ',') || '0,00'}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        Reservado em {new Date(reservation.reservationDate).toLocaleDateString('pt-BR')}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center sm:items-end gap-2">
+                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                        reservation.status === 'confirmed' 
+                          ? 'bg-green-100 text-green-800' 
+                          : reservation.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {reservation.status === 'confirmed' ? '✅ Confirmado' : 
+                         reservation.status === 'pending' ? '⏳ Pendente' : 
+                         reservation.status || 'Desconhecido'}
+                      </span>
+                      
+                      {/* Botões de ação */}
+                      <div className="flex gap-2">
+                        <button 
+                          onClick={() => navigate(`/hoteis/${reservation.hotelId}`)}
+                          className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition"
+                        >
+                          Ver Hotel
+                        </button>
+                        {reservation.status === 'confirmed' && (
+                          <button 
+                            className="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition"
+                            onClick={() => {
+                              // Aqui você pode implementar funcionalidade para baixar comprovante
+                              alert('Funcionalidade de comprovante em desenvolvimento');
+                            }}
+                          >
+                            Comprovante
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Informações dos viajantes */}
+                {reservation.travellers && reservation.travellers.length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <p className="text-sm font-semibold text-gray-700 mb-2">Viajantes:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {reservation.travellers.map((traveller, index) => (
+                        <span key={index} className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-700">
+                          {traveller.firstName} {traveller.lastName}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🏨</div>
+            <p className="text-gray-600 text-lg mb-4">Você ainda não fez nenhuma reserva.</p>
+            <button 
+              onClick={() => navigate('/hoteis')}
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
+            >
+              Explorar Hotéis
+            </button>
+          </div>
+        )}
+      </section>
+
+      <hr className="my-12" />
+
       <section className="mb-12">
         <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Hotéis que Você Já Visitou</h2>
         {visitedHotels?.length > 0 ? (
@@ -352,14 +545,54 @@ function MyTravelsPage() {
             {visitedHotels.map(hotel => <HotelCard key={hotel.id} hotel={hotel} />)}
           </div>
         ) : (
-          <p className="text-center text-gray-600">Você ainda não tem hotéis visitados.</p>
+          <div className="text-center p-8">
+            <div className="w-40 h-40 mx-auto mb-4 flex items-center justify-center">
+              <svg viewBox="0 0 100 100" className="w-full h-full">
+                {/* Corpo do mascote (mala de viagem) */}
+                <rect x="20" y="35" width="60" height="50" rx="5" ry="5" fill="#3b82f6" stroke="#1e40af" strokeWidth="2" />
+                
+                {/* Detalhes da mala */}
+                <rect x="30" y="45" width="40" height="30" rx="2" ry="2" fill="#60a5fa" stroke="#1e40af" strokeWidth="1" />
+                
+                {/* Alça da mala */}
+                <path d="M40 35 Q50 15 60 35" fill="none" stroke="#1e40af" strokeWidth="3" />
+                
+                {/* Rosto animado */}
+                <circle cx="40" cy="60" r="5" fill="white" /> {/* Olho esquerdo */}
+                <circle cx="60" cy="60" r="5" fill="white" /> {/* Olho direito */}
+                <circle cx="40" cy="60" r="2" fill="#1e40af" /> {/* Pupila esquerda */}
+                <circle cx="60" cy="60" r="2" fill="#1e40af" /> {/* Pupila direita */}
+                
+                {/* Lágrimas */}
+                <path d="M37 65 C37 69, 36 73, 34 77" stroke="#60a5fa" strokeWidth="2" fill="none" /> {/* Lágrima esquerda */}
+                <path d="M63 65 C63 69, 64 73, 66 77" stroke="#60a5fa" strokeWidth="2" fill="none" /> {/* Lágrima direita */}
+                <circle cx="34" cy="77" r="1.5" fill="#60a5fa" /> {/* Gota esquerda */}
+                <circle cx="66" cy="77" r="1.5" fill="#60a5fa" /> {/* Gota direita */}
+                
+                {/* Boca triste */}
+                <path d="M35 75 Q50 70 65 75" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
+                
+                {/* Chapéu de viagem */}
+                <path d="M30 40 L50 30 L70 40" fill="#fcd34d" stroke="#1e40af" strokeWidth="1" />
+                
+                {/* Adesivos de viagem na mala */}
+                <circle cx="25" cy="45" r="3" fill="#f87171" />
+                <circle cx="75" cy="50" r="3" fill="#34d399" />
+                <circle cx="30" cy="80" r="3" fill="#a78bfa" />
+                
+               
+              </svg>
+            </div>
+            <p className="text-center text-gray-600 text-lg font-semibold">Você ainda não tem hotéis visitados</p>
+            <p className="text-center text-blue-500 text-sm mt-2">Tripz está esperando para acompanhar você em sua próxima aventura!</p>
+          </div>
         )}
       </section>
 
       <hr className="my-12" />
 
       <section>
-        <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Sua Lista de Desejos</h2>
+        <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Sua Tripz de Desejos</h2>
         {savedHotels?.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {savedHotels.map(hotel => (
@@ -372,7 +605,63 @@ function MyTravelsPage() {
             ))}
           </div>
         ) : (
-          <p className="text-center text-gray-600">Sua lista de desejos está vazia.</p>
+          <div className="text-center p-8">
+            <div className="w-40 h-40 mx-auto mb-4 flex items-center justify-center">
+              <svg viewBox="0 0 100 100" className="w-full h-full">
+                {/* Corpo principal do avião (fuselagem) */}
+                <path d="M25 50 L80 50 C85 50, 90 45, 90 40 C90 35, 85 30, 80 30 L25 30 C20 30, 15 35, 15 40 C15 45, 20 50, 25 50 Z" fill="#3b82f6" stroke="#1e40af" strokeWidth="1.5" />
+                
+                {/* Nariz arredondado do avião */}
+                <circle cx="15" cy="40" r="10" fill="#3b82f6" stroke="#1e40af" strokeWidth="1.5" />
+                
+                {/* Cauda do avião */}
+                <path d="M80 30 L90 15 L95 15 L90 40 L80 50 L80 30" fill="#3b82f6" stroke="#1e40af" strokeWidth="1.5" />
+                <path d="M85 25 L90 22" stroke="#1e40af" strokeWidth="0.8" />
+                
+                {/* Asa superior - redesenhada */}
+                <path d="M45 30 L58 18 L70 12 L75 16 L65 28 L50 30 Z" fill="#60a5fa" stroke="#1e40af" strokeWidth="1" />
+                <path d="M58 18 L62 22" stroke="#1e40af" strokeWidth="0.8" fill="none" />
+                
+                {/* Asa inferior - redesenhada */}
+                <path d="M45 50 L58 62 L70 68 L75 64 L65 52 L50 50 Z" fill="#60a5fa" stroke="#1e40af" strokeWidth="1" />
+                <path d="M58 62 L62 58" stroke="#1e40af" strokeWidth="0.8" fill="none" />
+                
+                {/* Janelas do avião */}
+                <circle cx="30" cy="40" r="3" fill="white" stroke="#1e40af" strokeWidth="0.7" />
+                <circle cx="45" cy="40" r="3" fill="white" stroke="#1e40af" strokeWidth="0.7" />
+                <circle cx="60" cy="40" r="3" fill="white" stroke="#1e40af" strokeWidth="0.7" />
+                <circle cx="75" cy="40" r="3" fill="white" stroke="#1e40af" strokeWidth="0.7" />
+                
+                {/* Cabine do piloto (vidro) */}
+                <path d="M15 35 C20 30, 25 30, 25 35 L25 45 C25 50, 20 50, 15 45 Z" fill="#a5f3fc" stroke="#1e40af" strokeWidth="1" />
+                
+                {/* Detalhes na cabine */}
+                <path d="M20 35 L20 45" stroke="#1e40af" strokeWidth="0.5" fill="none" />
+                <path d="M15 40 L25 40" stroke="#1e40af" strokeWidth="0.5" fill="none" opacity="0.7" />
+                
+                {/* Brilho da cabine */}
+                <circle cx="18" cy="37" r="1.5" fill="white" opacity="0.7" />
+                
+                {/* Detalhes decorativos */}
+                <path d="M80 40 L85 40" stroke="#1e40af" strokeWidth="1" />
+                <path d="M15 55 Q50 60 85 55" fill="none" stroke="#1e40af" strokeWidth="0.8" />
+                
+                {/* Marca "Tripz" na lateral do avião */}
+                <path d="M33 43 L55 43" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" />
+                <circle cx="60" cy="43" r="2" fill="#fcd34d" />
+                
+                {/* Faixa decorativa */}
+                <path d="M25 36 L75 36" stroke="#fcd34d" strokeWidth="1" opacity="0.8" strokeDasharray="2,1" />
+                
+                {/* Estrelas (representando desejos) */}
+                <path d="M80 20 L82 23 L86 23 L83 26 L84 30 L80 28 L76 30 L77 26 L74 23 L78 23 Z" fill="#fcd34d" />
+                <path d="M30 15 L32 18 L36 18 L33 21 L34 25 L30 23 L26 25 L27 21 L24 18 L28 18 Z" fill="#fcd34d" />
+                <path d="M60 65 L62 68 L66 68 L63 71 L64 75 L60 73 L56 75 L57 71 L54 68 L58 68 Z" fill="#fcd34d" />
+              </svg>
+            </div>
+            <p className="text-center text-gray-600 text-lg font-semibold">Sua lista de desejos está vazia</p>
+            <p className="text-center text-blue-500 text-sm mt-2">Deixe o Tripz te ajudar a encontrar destinos dos seus sonhos!</p>
+          </div>
         )}
       </section>
     </div>

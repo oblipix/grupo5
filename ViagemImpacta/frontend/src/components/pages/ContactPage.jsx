@@ -1,10 +1,8 @@
 /* eslint-disable no-unused-vars */
 // src/components/pages/ContactPage.jsx
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GoogleMap, Marker } from "@react-google-maps/api";
-// O caminho para hotelLocations DEVE ser './../data/mapLocations.js' ou '../../data/mapLocations.js'
-// Depende de onde seu ContactPage.jsx está. Se está em src/components/pages/, então é "../../data/mapLocations.js"
-import { hotelLocations } from "../data/mapLocations"; // Certifique-se de que o caminho está correto
+import { useHotels } from "../hooks/useHotels";
 
 // Importe usePageContext
 import { usePageContext } from "../../App.jsx"; // Caminho correto para App.jsx
@@ -37,6 +35,13 @@ const contactPageMapContainerStyle = { width: '100%', height: '450px', borderRad
 function ContactPage() {
     // Obtenha isLoaded do contexto do Outlet
     const { isLoaded } = usePageContext();
+    // Usar o hook useHotels para carregar hotéis do banco de dados
+    const { hotels, loading, loadAllHotels } = useHotels();
+
+    // Carregar hotéis quando o componente for montado
+    useEffect(() => {
+        loadAllHotels();
+    }, [loadAllHotels]);
 
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
     const [isSubmitted, setIsSubmitted] = useState(false);
@@ -88,8 +93,10 @@ function ContactPage() {
                                 <div className="flex items-start text-gray-700 text-lg">
                                     <MapPinIcon className="h-7 w-7 text-red-500 mr-4 flex-shrink-0" />
                                     <span>
-                                        Rua Exemplo, 123 - Centro<br />
-                                        Cidade, Estado - CEP 12345-678<br />
+                                        Rua Exemplo, 123 - Centro
+
+                                        Cidade, Estado - CEP 12345-678
+
                                         Brasil
                                     </span>
                                 </div>
@@ -137,7 +144,7 @@ function ContactPage() {
                                         placeholder="Seu nome completo"
                                     />
                                 </div>
-                                <div>
+                                            <div>
                                     <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">E-mail</label>
                                     <input
                                         type="email"
@@ -186,13 +193,13 @@ function ContactPage() {
                                 zoom={3.5} // Zoom para ver o Brasil inteiro
                                 options={mapOptions} // Opções sem UI e com gestos
                             >
-                                {/* Renderizando TODOS os marcadores dos hotéis */}
-                                {hotelLocations.map(loc => (
+                                {/* Renderizando TODOS os marcadores dos hotéis da API */}
+                                {hotels.map(hotel => (
                                     <Marker
-                                        key={loc.id}
-                                        position={loc.position}
+                                        key={hotel.id}
+                                        position={{ lat: hotel.lat, lng: hotel.lng }}
                                         icon={{
-                                            url: createMarkerIcon(loc.color),
+                                            url: createMarkerIcon(hotel.markerColor || '#4285F4'),
                                             scaledSize: new window.google.maps.Size(24, 24),
                                             anchor: new window.google.maps.Point(12, 24),
                                         }}

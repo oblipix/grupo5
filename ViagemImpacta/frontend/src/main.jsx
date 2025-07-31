@@ -10,6 +10,7 @@ import { AuthProvider } from './components/context/AuthContext.jsx';
 import { ModalProvider } from './components/context/ModalContext.jsx';
 
 
+
 // Estilos Globais
 import './index.css';
 
@@ -30,10 +31,15 @@ import PurchasePage from './components/pages/PurchasePage.jsx';
 import PaymentPage from './components/pages/PaymentPage.jsx';
 import MyTravelsPage from './components/pages/MyTravelsPage.jsx';
 import MyHotelsPage from './components/pages/MyHotelsPage.jsx';
-import EventBlogSection from './components/blog/EventBlogSection.jsx'; // Sua página de Eventos
+// IMPORT DE EVENTOS COMENTADO
+// import EventBlogSection from './components/blog/EventBlogSection.jsx'; // Sua página de Eventos
 import BlogPostDetailsPage from './components/pages/BlogPostDetailsPage.jsx'; // Detalhes de post de blog
 import RecommendedHotelDetailsPage from './components/pages/RecommendedHotelDetailsPage.jsx';
+import RecommendedPage from './components/pages/RecommendedPage.jsx'; // Nova página de recomendados
+import PromotionsPage from './components/pages/PromotionsPage.jsx'; // Nova página de promoções com ofertas especiais
+import PromotionDetailsPage from './components/pages/PromotionDetailsPage.jsx'; // Detalhes de promoção
 import ContactPage from './components/pages/ContactPage.jsx';
+import PaymentSuccessPage from './components/pages/PaymentSuccessPage.jsx';
 
 // Removida a importação de BlogPage, pois BlogSection estará na HomePage.
 // import BlogPage from './components/pages/BlogPage.jsx'; 
@@ -60,18 +66,23 @@ const router = createBrowserRouter([
             { path: '/register', element: <RegisterPage /> },
             { path: '/forgot-password', element: <ForgotPasswordPage /> },
             { path: '/institucional', element: <InstitutionalPage /> },
+            { path: '/recomendados', element: <RecommendedPage /> }, // Nova rota para página de recomendados
             { path: '/hoteis', element: <HotelsPage /> },
             { path: '/hoteis/:hotelId', element: <HotelDetailsPage /> },
+            { path: '/promocoes', element: <PromotionsPage /> }, // Nova rota para promoções
+            { path: '/promocao/:id', element: <PromotionDetailsPage /> }, // Detalhes de promoção
             { path: '/packages', element: <PackagesPage /> },
             { path: '/packages/:packageId', element: <PackageDetails /> },
             { path: '/purchase/:packageId', element: <PurchasePage /> },
             { path: '/payment', element: <PaymentPage /> },
             { path: '/minhas-viagens', element: <MyTravelsPage /> },
             { path: '/meus-hoteis', element: <MyHotelsPage /> },
-            { path: '/evento', element: <EventBlogSection /> }, // Rota para Eventos
+            // ROTA DE EVENTOS COMENTADA
+            // { path: '/evento', element: <EventBlogSection /> }, // Rota para Eventos
             { path: '/blog/:id', element: <BlogPostDetailsPage /> }, // Rota para Detalhes de um Post de Blog
             { path: '/recommended-hotel/:hotelId', element: <RecommendedHotelDetailsPage /> },
             { path: '/contato', element: <ContactPage /> },
+            { path: '/payment-success', element: <PaymentSuccessPage /> }, // Rota para página de pagamento com sucesso
             // Removida a rota '/blog' que renderizava BlogPage/BlogSection, pois BlogSection já está na HomePage.
             // { path: '/blog', element: <BlogPage /> }, 
         ],

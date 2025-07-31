@@ -26,8 +26,11 @@ namespace ViagemImpacta.DTO.UserDTO
         [StringLength(11, MinimumLength = 11, ErrorMessage = "O número de celular deve conter 11 digitos")]
         [RegularExpression(@"^\d+$", ErrorMessage = "O telefone deve conter apenas números (DDD + número) sem espaço ou caracteres especiais ex: 81999998888")]
         public string? Phone { get; set; }
-        public DateTime? BirthDate { get; set; }
+        
+        public DateOnly? BirthDate { get; set; }
+        
         public string? Photo { get; set; }
+        
         [RegularExpression(@"^\d{11}$", ErrorMessage = "O CPF deve conter exatamente 11 dígitos, sem pontos ou traços.")]
         public string? Cpf { get; set; }
     }

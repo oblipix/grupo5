@@ -140,7 +140,24 @@ function RecommendedHotelDetailsPage() {
                     <div className="text-center mb-8 border-t pt-8">
                         <span className="recomendadoFrase bg-yellow-400 text-yellow-900 text-sm font-bold mr-3 px-3 py-2 rounded-full uppercase">★ Recomendado pelos Viajantes ★</span>
                         <h1 className="text-4xl font-extrabold text-blue-800 mt-4">{hotel.title}</h1>
-                        <p className="text-gray-500 text-lg">{hotel.location}</p>
+                        <p className="text-gray-500 text-lg mb-4">{hotel.location}</p>
+                        
+                        {/* Botão de Reservar Agora */}
+                        <div className="flex justify-center gap-4 mt-6">
+                            <button
+                                onClick={() => navigate(`/payment?hotelId=${hotel.id}&type=hotel&price=${hotel.price || 0}`)}
+                                className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition duration-300 shadow-lg transform hover:scale-105"
+                            >
+                                🏨 Reservar Agora - R$ {hotel.price ? hotel.price.toFixed(2) : '0.00'}
+                            </button>
+                            
+                            <button
+                                onClick={() => navigate('/hoteis')}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-300"
+                            >
+                                Ver Mais Hotéis
+                            </button>
+                        </div>
                     </div>
  
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

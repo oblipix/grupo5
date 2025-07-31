@@ -1,6 +1,6 @@
 // src/services/hotelService.js
  
-const API_BASE_URL = 'http://localhost:5155/api';
+const API_BASE_URL = 'https://localhost:7010/api';
  
 /**
  * Serviço para gerenciar operações relacionadas a hotéis
@@ -447,6 +447,68 @@ class HotelService {
         guestName: 'Maria C.'
       }
     ];
+  }
+
+  /**
+   * Busca tipos de quarto disponíveis da API
+   * @returns {Promise<Array>} Lista de tipos de quarto
+   */
+  async getRoomTypes() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/room-types`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
+      }
+
+      const roomTypes = await response.json();
+      return roomTypes;
+
+    } catch (error) {
+      console.error('Erro ao buscar tipos de quarto:', error);
+      // Retorna dados de fallback em caso de erro
+      return [
+        { id: 1, name: 'Standard', description: 'Quarto padrão' },
+        { id: 2, name: 'Luxo', description: 'Quarto de luxo' },
+        { id: 3, name: 'Suíte', description: 'Suíte premium' }
+      ];
+    }
+  }
+
+  /**
+   * Busca comodidades disponíveis da API
+   * @returns {Promise<Array>} Lista de comodidades
+   */
+  async getAmenities() {
+    try {
+      const response = await fetch(`${API_BASE_URL}/amenities`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro HTTP: ${response.status}`);
+      }
+
+      const amenities = await response.json();
+      return amenities;
+
+    } catch (error) {
+      console.error('Erro ao buscar comodidades:', error);
+      // Retorna dados de fallback em caso de erro
+      return [
+        "Bar", "Piscina", "Serviço de Quarto", "Academia", "Acessibilidade",
+        "Estacionamento", "Piscina Aquecida", "Aceita Animais", "Sala de Cinema",
+        "Restaurante", "Jardim Amplo"
+      ];
+    }
   }
 }
  
