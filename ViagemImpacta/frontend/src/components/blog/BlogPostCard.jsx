@@ -29,12 +29,12 @@ function BlogPostCard({ post }) {
                     <div>
                         {/* <<<<< AQUI ESTÁ A MUDANÇA NA TAG DE CATEGORIA >>>>> */}
                         <p className="inline-flex items-center text-xs font-semibold
-                                      bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full uppercase mb-1">
+                                      bg-gray-200 text-yellow-800 px-2 py-1 rounded-full uppercase mb-1">
                             <TagIcon className="h-3 w-3 mr-1" /> {/* Ícone de tag */}
                             {post.category}
                         </p>
-                        <h3 className="font-bold text-lg mb-2 text-gray-800
-                                       group-hover:text-blue-700 transition-colors line-clamp-2">
+                        <h3 className="text-blue-800 font-bold text-lg mb-2 text-gray-800
+                                       group-hover:text-blue-900 transition-colors line-clamp-2">
                             {post.title}
                         </h3>
                         <p className="text-gray-600 text-sm mb-4 line-clamp-3">

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 // src/components/HotelCard.jsx
 
 import React, { useState, useRef, useEffect } from 'react';
@@ -169,9 +170,9 @@ function HotelCard({ hotel }) {
                     <div className="flex items-center mb-3 justify-between">
                         <div className="flex items-center gap-3">
                             <span className="text-gray-600 text-sm">
-                                {hotel.rating && (
+                                {hotel.rating && !isNaN(parseFloat(hotel.rating)) && (
                                     <>
-                                        <span className="font-medium text-blue-600">{hotel.rating.toFixed(1)}</span>
+                                        <span className="font-medium text-blue-600">{parseFloat(hotel.rating).toFixed(1)}</span>
                                         <span className="mx-1">•</span>
                                     </>
                                 )}
@@ -233,10 +234,10 @@ function HotelCard({ hotel }) {
                                 Diárias a partir de
                             </span>
                             <div className="price-tag inline-block mt-1">
-                                R$ {minPrice.toFixed(2).replace('.', ',')}
+                                R$ {(minPrice !== undefined && minPrice !== null && !isNaN(minPrice)) ? Number(minPrice).toFixed(2).replace('.', ',') : '0,00'}
                             </div>
                         </div>
-                        <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm pulse-price transform hover:scale-105 transition-all duration-200">
+                        <div className="main-action-button text-white px-4 py-2 rounded-lg font-bold text-sm pulse-price transform hover:scale-105 transition-all duration-200">
                             Ver detalhes
                         </div>
                     </div>

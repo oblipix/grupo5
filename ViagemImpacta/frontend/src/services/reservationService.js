@@ -20,6 +20,9 @@ class ReservationService {
         throw new Error('Token de autenticação não encontrado');
       }
 
+      console.log('🔍 getUserReservations - userId:', userId, 'tipo:', typeof userId);
+      console.log('🔍 URL da requisição:', `${API_BASE_URL}/reservations/user/${userId}`);
+
       const response = await fetch(`${API_BASE_URL}/reservations/user/${userId}`, {
         method: 'GET',
         headers: {
@@ -28,22 +31,28 @@ class ReservationService {
         }
       });
 
+      console.log('🔍 Response status:', response.status);
+      console.log('🔍 Response headers:', [...response.headers.entries()]);
+
       if (!response.ok) {
         if (response.status === 404) {
+          console.log('📭 Usuário não tem reservas (404)');
           return []; // Usuário não tem reservas
         } else if (response.status === 401) {
           if (await this.isTokenExpired(token)) {
             throw new Error('Token de autenticação expirado');
           }
         }
-        throw new Error(`Erro ao buscar reservas: ${response.status}`);
+        const errorText = await response.text();
+        console.error('❌ Erro na resposta:', errorText);
+        throw new Error(`Erro ao buscar reservas: ${response.status} - ${errorText}`);
       }
 
       const reservations = await response.json();
-      console.log('Reservas carregadas do backend:', reservations);
+      console.log('✅ Reservas carregadas do backend:', reservations);
       return Array.isArray(reservations) ? reservations : [];
     } catch (error) {
-      console.error('Erro ao buscar reservas do usuário:', error);
+      console.error('❌ Erro ao buscar reservas do usuário:', error);
       throw error;
     }
   }

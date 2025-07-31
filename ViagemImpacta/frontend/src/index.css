@@ -9,22 +9,35 @@
 
 
 html, body, #root {
-  height: 100%;
+  min-height: 100%;
   padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  overflow-y: auto;
 }
 
 /* Header curve - curva na parte inferior do header */
 .header-curve {
   overflow: visible;
   position: absolute;
-  bottom: 0;
+  bottom: 0; /* Ajustado para mostrar a curva abaixo do header */
   left: 0;
   right: 0;
-  height: 20px;
+  height: 25px; /* Aumentado para dar mais espaço para a curva */
   z-index: 1;
+}
+
+/* Ajustes específicos para o header */
+header {
+  position: relative;
+  z-index: 10;
+  margin-bottom: 0; /* Removido o margin-bottom para não criar espaço */
+  overflow: visible; /* Permitir que a curva seja visível fora do header */
 }
 
 /* Estilos de cor das bolinhas, para combinar com seu tema */
@@ -45,17 +58,18 @@ html, body, #root {
 .header-curve::after {
   content: '';
   position: absolute;
-  bottom: 0; /* Posiciona a curva abaixo do header */
+  bottom: 0; /* Ajustado para posicionar corretamente na parte inferior do .header-curve */
   left: 0;
   right: 0;
   width: 100%;
-  height: 20px; /* A "profundidade" da curva */
+  height: 25px; /* Aumentado para garantir visibilidade */
   display: block; /* Garante que o elemento seja exibido */
   
   /* A mágica da curva - neste caso, invertida em relação ao footer */
-  border-bottom: 5px solid #22d3ee; /* Cor (ciano) e espessura do traço */
-  border-radius: 0 0 15px 15px; /* Arredonda as bordas inferiores para criar o arco */
-  box-shadow: 0 4px 10px rgba(34, 211, 238, 0.3); /* Sombra sutil para destacar */
+  border-bottom: 5px solid #60A5FA; /* Cor azul para combinar com o footer */
+  border-radius: 0 0 0 0; /* Removidas as bordas arredondadas para combinar com o header sem arredondamento */
+  box-shadow: 0 4px 10px rgba(96, 165, 250, 0.3); /* Sombra sutil para destacar - mesma cor do footer */
+  z-index: 20; /* Aumentado para garantir que esteja visível acima de outros elementos */
 }
 
 .menu1 {
@@ -173,21 +187,33 @@ color: transparent;
   
 }
 
+/* Garanta que o conteúdo principal permita rolagem */
+main.flex-grow {
+  overflow-y: auto;
+}
+
+/* Ajustes específicos para o footer */
+footer {
+  margin-bottom: 0;
+  position: relative;
+  z-index: 10;
+}
+
 .footer-curve::before {
   content: '';
   position: absolute;
-  top: 0px; /* Move a curva um pouco acima do footer para melhor visibilidade */
+  top: -2px; /* Ajustado para cobrir perfeitamente a borda do footer */
   left: 0;
   right: 0;
   width: 100%;
-  height: 15px; /* A "profundidade" da curva */
+  height: 22px; /* Aumentado para garantir cobertura completa */
   display: block; /* Garante que o elemento seja exibido */
   z-index: 5; /* Garante que esteja visível */
   /* A mágica da curva invertida: */
-  border-top: 5px solid #22d3ee; /* Cor (ciano) e espessura do traço */
-  border-radius: 15px 15px 0 0; /* Arredonda as bordas superiores para criar o arco */
+  border-top: 5px solid #60A5FA; /* Cor (azul) e espessura do traço */
+  border-radius: 0 0 0 0; /* Removido o arredondamento */
+  box-shadow: 0 -4px 10px rgba(96, 165, 250, 0.3); /* Sombra sutil para destacar */
 }
-
 
 
 
@@ -423,7 +449,7 @@ a:hover {
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: #FFFFFF;
+  background-color: #60A5FA; /* Cor azul para combinar com o tema */
   transform: scaleX(1);
   transform-origin: bottom left;
 }
@@ -457,14 +483,26 @@ a:hover {
 
 
 /*NOVO AJUSTE: SUBIR A PAGINAÇÃO DO HERO SWIPER === */
+/* Estilo para conectar o hero swiper com o header sem espaço em branco */
+.hero-swiper-pagination {
+  margin-top: -5px !important;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
 /* Aumente o valor do 'bottom' para fazer as bolinhas subirem mais */
 .hero-swiper-pagination .swiper-pagination-bullets {
-  bottom: 90px !important; /* Ajuste este valor! Ex: 20px, 30px, 40px */
   /* Quanto maior o valor, mais as bolinhas sobem */
   left: 50% !important;
   transform: translateX(-50%) !important;
-  top: auto !important;
+  bottom: 35px !important;
   z-index: 20; /* Certifique-se de que esteja acima da próxima seção arredondada */
+}
+
+/* Estilos adicionais para garantir que não haja espaços brancos */
+.swiper-slide {
+  overflow: hidden !important;
 }
 
 /* Opcional: Estilo para as bolinhas do Hero, se quiserem ser diferentes */

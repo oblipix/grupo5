@@ -39,7 +39,7 @@ function App() {
     <div className="flex flex-col min-h-screen">
       <Header />
 
-      <main className="flex-grow">
+      <main id="top" className="flex-grow">
         <Outlet context={{ isLoaded }} />
       </main>
 

@@ -3,7 +3,12 @@
   font-weight: 400;
   font-style: normal;
    text-transform: uppercase;
-   font-size: 80px;
+   font-size: 50px;
+   margin-left: 20px;
+}
+
+p{
+   margin-left: 30px;
 }
 
 /* Media query para telas maiores, a partir de um breakpoint (ex: 768px, que é o 'md' do Tailwind) */

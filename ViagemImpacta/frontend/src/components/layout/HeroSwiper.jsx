@@ -26,20 +26,28 @@ function HeroSwiper() {
       }}
       pagination={{ clickable: true }}
       loop={true}
-      className="w-full h-[40vh] md:h-[50vh] lg:h-[60vh] text-white hero-swiper-pagination"
+      className="w-full h-[65vh] md:h-[75vh] lg:h-[85vh] text-white hero-swiper-pagination mt-[-10px]"
     >
       {/* 2. Mapear sobre os dados importados */}
       {heroSlidesData.map((slide) => (
         <SwiperSlide key={slide.id}>
           <div
-            className="relative w-full h-full bg-cover bg-center flex items-center justify-start p-8 text-left" 
-            style={{ backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.4)), url(${slide.imageUrl})` }}
+            className="relative w-full h-full bg-cover bg-center flex items-center justify-start p-8 text-left overflow-hidden" 
+            style={{ 
+              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.4)), url(${slide.imageUrl})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center center',
+              backgroundRepeat: 'no-repeat',
+              marginTop: '0px',
+              marginBottom: '0px',
+              transform: 'scale(1.05)' // Slightly increase scale to ensure no white edges
+            }}
           >
-            <div className="z-10 max-w-3xl animate-fade-in-up"> 
+            <div className="z-10 max-w-6xl animate-fade-in-up"> 
             <h1 className="title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-4 drop-shadow-lg max-w-4xl">
                 {slide.title}
               </h1>
-              <p className="text-base md:text-lg lg:text-xl drop-shadow-sm">
+              <p className="text-base md:text-md lg:text-x drop-shadow-sm">
                 {slide.subtitle}
               </p>
             </div>

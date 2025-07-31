@@ -1,4 +1,4 @@
-// src/components/SearchHotelsBar.jsx
+
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -26,6 +26,8 @@ function SearchHotelsBar() {
 
     // Estado interno do formulário
     const [destination, setDestination] = useState('');
+    const [checkInDate, setCheckInDate] = useState('');
+    const [checkOutDate, setCheckOutDate] = useState('');
     const [roomTypeOptions, setRoomTypeOptions] = useState([]); // Estado para tipos de quarto do backend
     const [selectedRoomType, setSelectedRoomType] = useState('');
     const [guestsInfo, setGuestsInfo] = useState(roomGuestOptions[1]); // Padrão: casal
@@ -96,6 +98,8 @@ function SearchHotelsBar() {
         const searchParams = new URLSearchParams();
         
         if (destination) searchParams.append('destino', destination);
+        if (checkInDate) searchParams.append('checkIn', checkInDate);
+        if (checkOutDate) searchParams.append('checkOut', checkOutDate);
         if (guestsInfo.rooms) searchParams.append('quartos', guestsInfo.rooms);
         if (guestsInfo.adults) searchParams.append('adultos', guestsInfo.adults);
         if (guestsInfo.children) searchParams.append('criancas', guestsInfo.children);
@@ -109,6 +113,8 @@ function SearchHotelsBar() {
     // Função para limpar os filtros do formulário
     const handleClearSearch = () => {
         setDestination('');
+        setCheckInDate('');
+        setCheckOutDate('');
         setGuestsInfo(roomGuestOptions[1]);
         setPriceRange(5000);
         setSelectedAmenities([]);
@@ -142,6 +148,39 @@ function SearchHotelsBar() {
                             />
                         </div>
                     </div>
+
+                    <div className="flex flex-col">
+                        <label className="labelForms mb-1">Check-in</label>
+                        <div className="relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm">
+                            <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <input
+                                type="date"
+                                className="flex-grow pl-2 bg-transparent focus:outline-none text-gray-800"
+                                value={checkInDate}
+                                onChange={(e) => setCheckInDate(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex flex-col">
+                        <label className="labelForms mb-1">Check-out</label>
+                        <div className="relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm">
+                            <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <input
+                                type="date"
+                                className="flex-grow pl-2 bg-transparent focus:outline-none text-gray-800"
+                                value={checkOutDate}
+                                onChange={(e) => setCheckOutDate(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div className="flex flex-col">
                         <label className="labelForms mb-1">Passageiros</label>
                         <div className="relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm">
@@ -177,6 +216,17 @@ function SearchHotelsBar() {
                                     ))
                                 )}
                             </select>
+                        </div>
+                    </div>
+                    <div className="flex flex-col">
+                        <label className="labelForms mb-1">Preço Máximo: R$ {priceRange.toLocaleString('pt-BR')}</label>
+                        <div className="relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm">
+                            <Icons.Money />
+                            <input
+                                type="range" min={0} max={10000} value={priceRange}
+                                onChange={(e) => setPriceRange(Number(e.target.value))}
+                                className="flex-grow ml-2 w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                            />
                         </div>
                     </div>
                 </div>
