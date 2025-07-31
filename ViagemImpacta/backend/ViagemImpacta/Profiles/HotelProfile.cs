@@ -26,7 +26,6 @@ namespace ViagemImpacta.Profiles
     .ForMember(dest => dest.Rooms,
     opt => opt.MapFrom(src => src.Rooms
         .OrderBy(r => r.AverageDailyPrice)
-        .Take(1)
         .ToList()));
 
       }
