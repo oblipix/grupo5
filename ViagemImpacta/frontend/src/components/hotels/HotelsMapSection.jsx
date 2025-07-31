@@ -89,7 +89,7 @@ function HotelsMapSection({ isLoaded }) {
                   <button
                     key={hotel.id}
                     onClick={() => handleUnitClick(hotel)}
-                    className="w-full text-left flex items-center p-3 bg-gray-50 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                    className="w-full text-left flex items-center p-3 bg-gray-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
                   >
                     <span
                       className="w-3 h-3 rounded-full mr-3 flex-shrink-0"
