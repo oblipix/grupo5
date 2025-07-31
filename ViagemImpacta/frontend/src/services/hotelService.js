@@ -260,12 +260,20 @@ class HotelService {
  
   /**
    * Gera galeria de imagens
+   * Limitado a 10 fotos no máximo para a galeria
    */
   generateGalleryImages(hotel) {
     const id = hotel.hotelId || hotel.HotelId || 1;
     const images = [];
+    
+    // Determina quantas imagens gerar (no máximo 10)
+    const maxImages = 10;
+    // Se o hotel já tem imagens reais, use-as (até o limite)
+    const imagesToGenerate = hotel.images && Array.isArray(hotel.images) 
+      ? Math.min(hotel.images.length, maxImages) 
+      : Math.min(8, maxImages); // Padrão de 8 imagens se não houver reais
    
-    for (let i = 1; i <= 8; i++) {
+    for (let i = 1; i <= imagesToGenerate; i++) {
       images.push({
         id: `h${id}g${i}`,
         url: `https://picsum.photos/id/${((id * 100) + i) % 1000}/800/600`,

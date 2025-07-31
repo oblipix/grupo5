@@ -62,7 +62,7 @@ function Header() {
 
             return (
                 <div className="flex items-center space-x-3">
-                    <NavLink to="/minhas-viagens" className="text-gray-300 hover:text-blue-400 transition-all flex items-center py-1 px-3 rounded-lg hover:bg-blue-900/20">
+                    <NavLink to="/minhas-viagens" className="text-gray-300 hover:text-blue-400 transition-all flex items-center py-1 px-3 rounded-lg ">
                         <UserCircleIcon className="h-8 w-8 md:h-6 md:w-6 text-blue-400" />
                         <span className="ml-2 hidden md:inline-block font-medium">Olá, {getFirstName()}!</span>
                     </NavLink>
@@ -198,8 +198,8 @@ function Header() {
                         <li className="w-4/5">
                             <NavLink to="/hoteis" className={({ isActive }) => 
                                 isActive 
-                                    ? "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-white transition-all" 
-                                    : "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-gray-300 hover:text-blue-400 transition-all"
+                                    ? "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-white bg-blue-900/40 transition-all" 
+                                    : "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-blue-900/20 transition-all"
                             } onClick={toggleMobileMenu}>
                                 <FaBuilding className="text-lg" />
                                 <span>Hotéis</span>
@@ -208,8 +208,8 @@ function Header() {
                         <li className="w-4/5">
                             <NavLink to="/promocoes" className={({ isActive }) => 
                                 isActive 
-                                    ? "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-white transition-all" 
-                                    : "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-gray-300 hover:text-blue-400  transition-all"
+                                    ? "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-white bg-blue-900/40 transition-all" 
+                                    : "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-blue-900/20 transition-all"
                             } onClick={toggleMobileMenu}>
                                 <FaTag className="text-lg" />
                                 <span>Promoções</span>
