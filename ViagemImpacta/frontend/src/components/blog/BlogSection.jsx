@@ -7,7 +7,7 @@ import BlogPostCard from '../blog/BlogPostCard.jsx';
 function BlogSection({ id, title }) { // Recebe o ID como prop
   return (
     // A tag <section> está corretamente recebendo o ID aqui
-    <section id={id} className="bg-gray-100 py-12 px-6">
+    <section id={id} className="bg-gray-100 py-20 px-6">
       <div className="container mx-auto">
         <div className="section-title">
           <h2 className="text-3xl font-bold">

@@ -1,5 +1,6 @@
 ﻿using ViagemImpacta.DTO.RoomDTO;
 using System.Linq;
+using System.Linq;
 
 namespace ViagemImpacta.DTO.HotelDTO
 {
@@ -35,7 +36,7 @@ namespace ViagemImpacta.DTO.HotelDTO
 
         // Image URLs - A primeira será a imagem principal do card
         public List<string> ImageUrls { get; set; } = new();
-        
+
         // Propriedade computada para facilitar o acesso à imagem principal
         public string? MainImageUrl => ImageUrls?.FirstOrDefault();
 

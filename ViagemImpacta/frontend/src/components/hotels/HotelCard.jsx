@@ -29,89 +29,89 @@ function HotelCard({ hotel }) {
     if (!hotel) return null;
 
     const isSaved = savedHotels?.some(saved => saved.id === hotel.id);
-    
+
     // Determina a classificação do hotel (em estrelas)
     const getStarRating = () => {
         // Se o hotel tem uma propriedade starRating, usamos ela
         if (hotel.starRating) return hotel.starRating;
-        
+
         // Caso contrário, derivamos das avaliações dos usuários
         if (hotel.rating) {
             // Arredondamos para cima para ter um número inteiro de estrelas
             return Math.round(hotel.rating);
         }
-        
+
         // Valor padrão se não houver dados
         return 5; // Como solicitado, o exemplo é de 5 estrelas
     };
 
     // Calcula o menor preço dos quartos disponíveis
-    
+
 
     const minPrice = hotel.lowestRoomPrice; // Usa o preço mais baixo disponível
-/*
-    const getMinPrice = () => {
-        if (hotel.roomOptions && hotel.roomOptions.length > 0) {
-            const prices = hotel.roomOptions.map(room => room.price).filter(price => price > 0);
-            return prices.length > 0 ? Math.min(...prices) : hotel.price || 0;
-        }
-        return hotel.price || 0;
-    };
-
-    const minPrice = getMinPrice();
-    */
+    /*
+        const getMinPrice = () => {
+            if (hotel.roomOptions && hotel.roomOptions.length > 0) {
+                const prices = hotel.roomOptions.map(room => room.price).filter(price => price > 0);
+                return prices.length > 0 ? Math.min(...prices) : hotel.price || 0;
+            }
+            return hotel.price || 0;
+        };
+    
+        const minPrice = getMinPrice();
+        */
     const starRating = getStarRating();
 
     // Função para criar e animar confetes
     const createConfetti = () => {
         if (!confettiRef.current) return;
-        
+
         // Limpa confetes existentes
         while (confettiRef.current.firstChild) {
             confettiRef.current.removeChild(confettiRef.current.firstChild);
         }
-        
+
         // Cria novos confetes
         const colors = ['c1', 'c2', 'c3', 'c4', 'c5', 'c6'];
         for (let i = 0; i < 30; i++) {
             const confetti = document.createElement('div');
             confetti.className = `confetti ${colors[Math.floor(Math.random() * colors.length)]}`;
-            
+
             // Posição aleatória ao redor do coração
             const randomX = -20 + Math.random() * 40;
             const randomY = -20 + Math.random() * 40;
-            
+
             confetti.style.left = `${randomX}px`;
             confetti.style.top = `${randomY}px`;
-            
+
             confettiRef.current.appendChild(confetti);
-            
+
             // Inicia animação com pequeno atraso para efeito cascata
             setTimeout(() => {
                 confetti.classList.add('active');
             }, i * 20);
         }
-        
+
         // Remove os confetes após a animação
         setTimeout(() => {
             setShowConfetti(false);
         }, 1000);
     };
-    
+
     // Função para lidar com a ação de salvar/remover dos favoritos
     const handleSaveClick = (e) => {
         e.preventDefault();  // Impede que o clique no botão ative o Link do card
         e.stopPropagation(); // Para a propagação do evento
-        
+
         try {
             if (!isSaved) {
                 // Só exibe confetti quando adiciona aos favoritos
                 setShowConfetti(true);
-                
+
                 // Aciona animação de confete e depois mostra o modal
                 if (buttonRef.current) {
                     createConfetti();
-                    
+
                     // Adiciona aos favoritos após a animação de confete terminar
                     setTimeout(() => {
                         addSavedHotel(hotel);
@@ -126,7 +126,7 @@ function HotelCard({ hotel }) {
             alert("Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.");
         }
     };
-    
+
 
 
     return (
@@ -136,25 +136,25 @@ function HotelCard({ hotel }) {
             <div className="relative w-full h-80 overflow-hidden"> {/* Aumentei a altura para cobrir mais espaço */}
                 {/* Overlay gradient over image - mais escuro para melhor contraste */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 z-10"></div>
-                
+
                 <img
                     src={hotel.mainImageUrl}
                     alt={hotel.title}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                 />
-                
+
                 {/* Estrelas do hotel - posicionadas no topo esquerdo */}
                 <div className="absolute top-4 left-4 z-20 flex items-center bg-white/30 shadow-lg backdrop-blur-sm px-2 py-1 rounded-lg">
                     {[...Array(starRating)].map((_, index) => (
                         <StarIcon key={index} className="h-4 w-4 text-yellow-400 star-icon" />
                     ))}
                 </div>
-                
+
                 {/* Title moved to overlay on image for more modern look */}
                 <h3 className="Tittle absolute bottom-4 left-4 z-20 text-white font-bold text-2xl drop-shadow-lg mb-3 mt-2">
                     {hotel.title}
                 </h3>
-                
+
                 {/* Location indicator on image */}
                 <p className="absolute bottom-14 left-4 z-20 text-white/90 text-sm flex items-center drop-shadow-lg">
                     <svg className="w-4 h-4 mr-1.5 text-white/90" fill="currentColor" viewBox="0 0 20 20">
@@ -178,7 +178,7 @@ function HotelCard({ hotel }) {
                                 )}
                                 {hotel.reviews || hotel.feedbacks?.length || 0} avaliações
                             </span>
-                            
+
                             {/* Botão de "Salvar" - posicionado ao lado das avaliações */}
                             <div className="relative">
                                 <button
@@ -199,7 +199,7 @@ function HotelCard({ hotel }) {
                                 <div ref={confettiRef} className="confetti-container"></div>
                             </div>
                         </div>
-                        
+
                         {/* Amenities icons */}
                         <div className="flex space-x-1.5">
                             <span className="text-gray-400 hover:text-blue-500" title="Wi-Fi gratuito">
@@ -219,11 +219,15 @@ function HotelCard({ hotel }) {
                             </span>
                         </div>
                     </div>
-                    
+
                     {/* Description with improved styling */}
-                    <p className="text-gray-700 text-sm leading-relaxed line-clamp-2 mb-4">
-                        {hotel.description}
-                    </p>
+                    {hotel.description ? (
+                        <p className="text-gray-700 text-sm leading-relaxed line-clamp-2 truncate">
+                            {hotel.description}
+                        </p>
+                    ) : (
+                        <p className="text-gray-400 text-sm italic mb-4">Sem descrição disponível.</p>
+                    )}
                 </div>
 
                 {/* Price section with modern styling */}
@@ -237,13 +241,13 @@ function HotelCard({ hotel }) {
                                 R$ {(minPrice !== undefined && minPrice !== null && !isNaN(minPrice)) ? Number(minPrice).toFixed(2).replace('.', ',') : '0,00'}
                             </div>
                         </div>
-                        <div className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm pulse-price transform hover:scale-105 transition-all duration-200">
+                        <div className="main-action-button text-white px-4 py-2 rounded-lg font-bold text-sm pulse-price transform hover:scale-105 transition-all duration-200">
                             Ver detalhes
                         </div>
                     </div>
                 </div>
             </div>
-        </Link>
+        </Link >
     );
 }
 

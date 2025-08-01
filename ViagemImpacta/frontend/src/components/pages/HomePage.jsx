@@ -18,6 +18,10 @@ import RecommendedHotelsSection from '../hotels/RecommendedHotelsSection.jsx';
 import ScrollReveal from '../common/ScrollReveal.jsx';
 import AnimatedSection from '../common/AnimatedSection.jsx';
 
+// Imports dos componentes de animação
+import ScrollReveal from '../common/ScrollReveal.jsx';
+import AnimatedSection from '../common/AnimatedSection.jsx';
+
 
 function HomePage() {
   const { isLoaded } = useOutletContext();
@@ -64,6 +68,13 @@ function HomePage() {
 
       {/* Seção de Hotéis Recomendados - efeito especial */}
       <AnimatedSection animation="fadeUp" className="container mx-auto py-12">
+      {/* Seção de Promoções em Destaque - surge da esquerda */}
+      <ScrollReveal animation="slideLeft" delay={300}>
+        <PromocoesDestaque />
+      </ScrollReveal>
+
+      {/* Seção de Hotéis Recomendados - efeito especial */}
+      <AnimatedSection animation="fadeUp" className="container mx-auto py-12">
         <RecommendedHotelsSection />
       </AnimatedSection>
 
@@ -75,6 +86,15 @@ function HomePage() {
         />
       </ScrollReveal>
 
+      {/* Mapa surge da direita */}
+      <ScrollReveal animation="slideRight" delay={300}>
+        <HotelsMapSection isLoaded={isLoaded} />
+      </ScrollReveal>
+      
+      {/* Newsletter surge de baixo */}
+      <ScrollReveal animation="fadeUp" delay={400}>
+        <NewsletterSection />
+      </ScrollReveal>
       {/* Mapa surge da direita */}
       <ScrollReveal animation="slideRight" delay={300}>
         <HotelsMapSection isLoaded={isLoaded} />

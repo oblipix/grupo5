@@ -85,7 +85,7 @@ namespace ViagemImpacta.Services.Implementations
             return user;
         }
 
-        public async Task<User?> GetUserById(int id)
+        public async Task<User?> GetUserByIdAsync(int id)
         {
             if (id <= 0) return null;
             var user = await _unitOfWork.Users.GetByIdAsync(id);

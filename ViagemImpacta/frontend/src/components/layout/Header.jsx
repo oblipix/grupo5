@@ -11,15 +11,17 @@ function Header() {
     const { isLoggedIn, currentUser, logout } = useAuth();
 
     const getNavLinkClasses = ({ isActive }) => {
-        const baseClasses = "text-gray-300 hover:text-white font-medium focus:outline-none transition-colors duration-300";
-        return isActive ? `${baseClasses} active-link` : baseClasses;
+        const baseClasses = "group text-gray-300 hover:text-blue-400 font-medium focus:outline-none transition-all duration-300 flex items-center";
+        return isActive 
+            ? `${baseClasses} active-link text-white` 
+            : baseClasses;
     };
     
     // Classe específica para os botões Hotéis e Promoções
     const getSpecialNavLinkClasses = ({ isActive }) => {
         return isActive 
-            ? "flex items-center px-4 py-2 rounded-lg text-white transition-colors duration-200 active-link" 
-            : "flex items-center px-4 py-2 rounded-lg text-gray-300 hover:text-white transition-colors duration-200";
+            ? "flex items-center px-4 py-2 rounded-lg text-white transition-all duration-200 active-link" 
+            : "flex items-center px-4 py-2 rounded-lg text-gray-300 hover:text-blue-400  transition-all duration-200";
     };
 
     const toggleMobileMenu = () => {
@@ -66,19 +68,19 @@ function Header() {
                     </NavLink>
                     <button
                         onClick={logout}
-                        className="main-action-button text-gray-300 hover:text-red-400 transition-colors flex items-center"
+                        className="text-gray-300 hover:text-white transition-all flex items-center bg-gradient-to-r from-blue-900/40 to-blue-700/40 hover:from-red-900/40 hover:to-red-700/40 px-3 py-1 rounded-lg"
                         title="Sair"
                     >
-                         <ArrowRightEndOnRectangleIcon className="h-6 w-6" />
-                         <span className="ml-1 hidden md:inline-block text-sm">Sair</span>
+                         <ArrowRightEndOnRectangleIcon className="h-6 w-6 md:h-5 md:w-5" />
+                         <span className="ml-1 hidden md:inline-block text-sm font-medium">Sair</span>
                     </button>
                 </div>
             );
         } else {
             return (
-                <Link to="/login" className="text-gray-300 hover:text-white transition-colors flex items-center">
-                    <UserCircleIcon className="h-8 w-8 md:h-7 md:w-7" />
-                    <span className="ml-2 hidden md:inline-block">Login</span>
+                <Link to="/login" className="text-gray-300 hover:text-white transition-all flex items-center bg-gradient-to-r from-blue-900/40 to-blue-700/40 hover:from-blue-700/60 hover:to-blue-500/60 px-4 py-1.5 rounded-lg">
+                    <UserCircleIcon className="h-7 w-7 md:h-6 md:w-6" />
+                    <span className="ml-2 hidden md:inline-block font-medium">Login</span>
                 </Link>
             );
         }
@@ -121,10 +123,24 @@ function Header() {
                 <div className="hidden md:flex items-center space-x-8">
                     <nav>
                         <ul className="flex items-center space-x-8">
-                            <li><NavLink to="/" className={getNavLinkClasses} end>Início</NavLink></li>
-
-                            <li><NavLink to="/contato" className={getNavLinkClasses}>Contato</NavLink></li>
-                            <li><NavLink to="/institucional" className={getNavLinkClasses}>Institucional</NavLink></li>
+                            <li>
+                                <NavLink to="/" className={getNavLinkClasses} end>
+                                    <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 group-hover:w-2 transition-all"></span>
+                                    Início
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/contato" className={getNavLinkClasses}>
+                                    <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 group-hover:w-2 transition-all"></span>
+                                    Contato
+                                </NavLink>
+                            </li>
+                            <li>
+                                <NavLink to="/institucional" className={getNavLinkClasses}>
+                                    <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 group-hover:w-2 transition-all"></span>
+                                    Institucional
+                                </NavLink>
+                            </li>
                         </ul>
                     </nav>
                     <UserLoginLink />
@@ -182,8 +198,8 @@ function Header() {
                         <li className="w-4/5">
                             <NavLink to="/hoteis" className={({ isActive }) => 
                                 isActive 
-                                    ? "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-white transition-all" 
-                                    : "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-gray-300 hover:text-blue-400 transition-all"
+                                    ? "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-white bg-blue-900/40 transition-all" 
+                                    : "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-blue-900/20 transition-all"
                             } onClick={toggleMobileMenu}>
                                 <FaBuilding className="text-lg" />
                                 <span>Hotéis</span>
@@ -192,13 +208,13 @@ function Header() {
                         <li className="w-4/5">
                             <NavLink to="/promocoes" className={({ isActive }) => 
                                 isActive 
-                                    ? "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-white transition-all" 
-                                    : "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-gray-300 hover:text-blue-400  transition-all"
+                                    ? "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-white bg-blue-900/40 transition-all" 
+                                    : "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-blue-900/20 transition-all"
                             } onClick={toggleMobileMenu}>
                                 <FaTag className="text-lg" />
                                 <span>Promoções</span>
-                            
-                        </NavLink></li>
+                            </NavLink>
+                        </li>
                     </ul>
                 </div>
             )}

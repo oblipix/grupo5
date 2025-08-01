@@ -81,7 +81,7 @@ const RecommendedHotelCard = ({ hotel, onCardClick, onSaveTravel, isHotelSaved }
             
             <button
               onClick={() => onCardClick(hotel.id)}
-              className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300 text-sm"
+              className="main-action-button px-4 py-2 text-white rounded-md hover:bg-blue-600 transition duration-300 text-sm"
             >
               Ver Detalhes
             </button>

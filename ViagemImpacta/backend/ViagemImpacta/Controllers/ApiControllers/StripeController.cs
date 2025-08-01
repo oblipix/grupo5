@@ -27,7 +27,7 @@ public class StripeController : ControllerBase
         _reservationService = reservationService;
     }
 
-    [HttpPost("/checkout")]
+    [HttpPost("checkout")]
     public async Task<IActionResult> Checkout(int id)
     {
         try
@@ -82,7 +82,8 @@ public class StripeController : ControllerBase
 
     }
 
-    [HttpGet("/confirm-reservation")]
+    [HttpGet("confirm-reservation")]
+    [ApiExplorerSettings(IgnoreApi = true)]
     public async Task<IActionResult> ConfirmReservation(string sessionId)
     {
         try

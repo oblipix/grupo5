@@ -1,0 +1,87 @@
+﻿@model ViagemImpacta.ViewModels.UpdateReservationViewModel
+@{
+    ViewData["Title"] = "Editar Reserva";
+    var minCheckIn = DateTime.Today.ToString("yyyy-MM-dd");
+}
+
+<h1>Editar Reserva</h1>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="ReservationId" />
+    <input type="hidden" asp-for="UserId" />
+
+    <div class="row mb-3">
+        <div class="mb-3">
+            <label asp-for="UserId" class="form-label">Cliente</label>
+            <input class="form-control" value="@Model.User.FirstName @Model.User.LastName" readonly />
+        </div>
+        <div class="col-md-6">
+            <label asp-for="HotelId" class="form-label">Hotel</label>
+            <select asp-for="HotelId" class="form-select" asp-items="ViewBag.Hotels" id="hotelSelect"></select>
+        </div>
+        <div class="col-md-6">
+            <label asp-for="RoomId" class="form-label">Tipo de Quarto</label>
+            <select asp-for="RoomId" class="form-select" asp-items="ViewBag.Rooms" id="roomSelect"></select>
+        </div>
+    </div>
+
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label asp-for="CheckIn" class="form-label">Check-In</label>
+            <input asp-for="CheckIn" class="form-control" type="date" min="@minCheckIn" id="checkinInput" />
+        </div>
+        <div class="col-md-6">
+            <label asp-for="CheckOut" class="form-label">Check-Out</label>
+            <input asp-for="CheckOut" class="form-control" type="date" min="@minCheckIn" id="checkoutInput" />
+        </div>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Description" class="form-label">Descrição</label>
+        <textarea asp-for="Description" class="form-control" rows="2" placeholder="Adicione ou remova uma descrição..."></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Preço Total</label>
+        <input asp-for="TotalPrice" class="form-control" id="totalPriceInput" readonly />
+    </div>
+
+    <hr />
+    <h4>Hóspedes</h4>
+    <div id="travellersList">
+        @if (Model.Travellers != null && Model.Travellers.Count > 0)
+        {
+            int idx = 0;
+            foreach (var traveller in Model.Travellers)
+            {
+                <div class="traveller-item mb-2" data-index="@idx">
+                    <input type="hidden" name="Travellers[@idx].TravellersId" value="@traveller.TravellersId" />
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <input class="form-control" name="Travellers[@idx].FirstName" value="@traveller.FirstName" placeholder="Nome" required />
+                        </div>
+                        <div class="col-md-4">
+                            <input class="form-control" name="Travellers[@idx].LastName" value="@traveller.LastName" placeholder="Sobrenome" required />
+                        </div>
+                        <div class="col-md-3">
+                            <input class="form-control" name="Travellers[@idx].Cpf" value="@traveller.Cpf" placeholder="CPF" required />
+                        </div>
+                        <div class="col-md-1 d-flex align-items-center">
+                            <button type="button" class="btn btn-danger btn-sm remove-traveller" title="Remover" @(Model.Travellers.Count == 1 ? "disabled" : "")><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+                idx++;
+            }
+        }
+    </div>
+    <button type="button" class="btn btn-outline-primary mb-3" id="addTravellerBtn"><i class="bi bi-person-plus"></i> Adicionar Hóspede</button>
+    <div class="text-danger" id="travellerValidation" style="display:none;">É obrigatório ao menos um viajante.</div>
+
+    <hr />
+    <div class="d-flex gap-2">
+        <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+        <a asp-action="Details" asp-route-id="@Model.ReservationId" class="btn btn-danger">Cancelar Reserva</a>
+    </div>
+</form>

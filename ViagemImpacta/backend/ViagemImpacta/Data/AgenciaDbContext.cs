@@ -18,8 +18,15 @@ namespace ViagemImpacta.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Configuração para armazenar lista de URLs de imagem como string delimitada
+            modelBuilder.Entity<Hotel>()
+                .Property(h => h.ImageUrls)
+                .HasConversion(
+                    v => v != null && v.Any() ? string.Join('|', v.Where(url => !string.IsNullOrWhiteSpace(url))) : "", // Converter lista para string separada por |
+                    v => string.IsNullOrWhiteSpace(v) ? new List<string>() : v.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList() // Converter string de volta para lista
+                );
 
-
+            base.OnModelCreating(modelBuilder);
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Hotel>().HasData(

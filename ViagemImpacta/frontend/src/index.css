@@ -674,9 +674,16 @@ a:hover {
 
 
 /*NOVO AJUSTE: SUBIR A PAGINAÇÃO DO HERO SWIPER === */
+/* Estilo para conectar o hero swiper com o header sem espaço em branco */
+.hero-swiper-pagination {
+  margin-top: -5px !important;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+}
+
 /* Aumente o valor do 'bottom' para fazer as bolinhas subirem mais */
 .hero-swiper-pagination .swiper-pagination-bullets {
-  bottom: 90px !important; /* Ajuste este valor! Ex: 20px, 30px, 40px */
   /* Quanto maior o valor, mais as bolinhas sobem */
   left: 50% !important;
   transform: translateX(-50%) !important;

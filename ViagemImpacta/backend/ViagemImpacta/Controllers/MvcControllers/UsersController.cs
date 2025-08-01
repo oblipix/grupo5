@@ -51,7 +51,7 @@ public class UsersController : Controller
     {
         try
         {
-            var user = await _userService.GetUserById(id);
+            var user = await _userService.GetUserByIdAsync(id);
             if (user == null) return NotFound();
             return View(user);
         }
@@ -66,7 +66,7 @@ public class UsersController : Controller
     {
         try
         {
-            var user = await _userService.GetUserById(id);
+            var user = await _userService.GetUserByIdAsync(id);
             if (user == null) return NotFound();
 
             var userViewModel = _mapper.Map<UpdateUserViewModel>(user);
@@ -75,7 +75,7 @@ public class UsersController : Controller
         catch (Exception ex)
         {
             ModelState.AddModelError(string.Empty, $"Erro ao carregar funcionário: {ex.Message}");
-            return View(nameof(Edit)); // Verificar essa lógica
+            return View(nameof(Edit)); 
         }
     }
 
@@ -101,7 +101,7 @@ public class UsersController : Controller
 
     public async Task<IActionResult> Delete(int id)
     {
-        var user = await _userService.GetUserById(id);
+        var user = await _userService.GetUserByIdAsync(id);
         if (user == null) return NotFound();
 
         return View(user);
@@ -113,7 +113,7 @@ public class UsersController : Controller
     {
         try
         {
-            var user = await _userService.GetUserById(id);
+            var user = await _userService.GetUserByIdAsync(id);
             if (user == null) return NotFound();
 
             var result = await _userService.DeleteUser(id);

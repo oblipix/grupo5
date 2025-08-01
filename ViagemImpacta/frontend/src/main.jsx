@@ -31,7 +31,7 @@ import PurchasePage from './components/pages/PurchasePage.jsx';
 import PaymentPage from './components/pages/PaymentPage.jsx';
 import MyTravelsPage from './components/pages/MyTravelsPage.jsx';
 import MyHotelsPage from './components/pages/MyHotelsPage.jsx';
-import ErrorPage from './components/pages/ErrorPage.jsx';
+import ErrorPage from './components/pages/ErrorPage.jsx'; // Importando a página de erro 404
 // IMPORT DE EVENTOS COMENTADO
 // import EventBlogSection from './components/blog/EventBlogSection.jsx'; // Sua página de Eventos
 import BlogPostDetailsPage from './components/pages/BlogPostDetailsPage.jsx'; // Detalhes de post de blog

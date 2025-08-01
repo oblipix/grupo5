@@ -26,6 +26,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
         /// <param name="createReservationDto">Dados da reserva</param>
         /// <returns>Reserva criada</returns>
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<ReservationDto>> CreateReservation([FromBody] CreateReservationDto createReservationDto)
         {
             try
@@ -193,30 +194,30 @@ namespace ViagemImpacta.Controllers.ApiControllers
         /// <returns>Status de disponibilidade</returns>
         /// 
 
-        //[HttpGet("availability")]
-        //[ProducesResponseType(StatusCodes.Status200OK)]
-        //public async Task<ActionResult> CheckRoomAvailability([FromQuery] int roomId, [FromQuery] DateTime checkIn, [FromQuery] DateTime checkOut)
-        //{
-        //    try
-        //    {
-        //        if (checkOut <= checkIn)
-        //        {
-        //            return BadRequest(new { message = "Data de check-out deve ser posterior ao check-in" });
-        //        }
+        [HttpGet("availability")]
+      [ProducesResponseType(StatusCodes.Status200OK)]
+       public async Task<ActionResult> CheckRoomAvailability([FromQuery] int roomId, [FromQuery] DateTime checkIn, [FromQuery] DateTime checkOut)
+        {
+            try
+            {
+                if (checkOut <= checkIn)
+               {
+                    return BadRequest(new { message = "Data de check-out deve ser posterior ao check-in" });
+                }
 
-        //        var isAvailable = await _reservationService.IsRoomAvailableAsync(roomId, checkIn, checkOut);
-        //        return Ok(new { 
-        //            roomId = roomId,
-        //            checkIn = checkIn,
-        //            checkOut = checkOut,
-        //            available = isAvailable,
-        //            message = isAvailable ? "Quarto disponível" : "Quarto não disponível para o período"
-        //        });
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, new { message = "Erro interno do servidor", details = ex.Message });
-        //    }
-        //}
+                var isAvailable = await _reservationService.IsRoomAvailableAsync(roomId, checkIn, checkOut);
+                return Ok(new {
+                    roomId = roomId,
+                    checkIn = checkIn,
+                    checkOut = checkOut,
+                    available = isAvailable,
+                    message = isAvailable ? "Quarto disponível" : "Quarto não disponível para o período"
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Erro interno do servidor", details = ex.Message });
+            }
+        }
     }
 }

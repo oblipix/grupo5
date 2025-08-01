@@ -9,6 +9,86 @@ const API_BASE_URL = 'http://localhost:5155/api';
 class ReservationService {
 
   /**
+   * Busca todas as reservas de um usuário
+   * @param {number} userId - ID do usuário
+   * @returns {Promise<Array>} Lista de reservas do usuário
+   */
+  async getUserReservations(userId) {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('Token de autenticação não encontrado');
+      }
+
+      console.log('🔍 getUserReservations - userId:', userId, 'tipo:', typeof userId);
+      console.log('🔍 URL da requisição:', `${API_BASE_URL}/reservations/user/${userId}`);
+
+      const response = await fetch(`${API_BASE_URL}/reservations/user/${userId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      console.log('🔍 Response status:', response.status);
+      console.log('🔍 Response headers:', [...response.headers.entries()]);
+
+      if (!response.ok) {
+        if (response.status === 404) {
+          console.log('📭 Usuário não tem reservas (404)');
+          return []; // Usuário não tem reservas
+        } else if (response.status === 401) {
+          if (await this.isTokenExpired(token)) {
+            throw new Error('Token de autenticação expirado');
+          }
+        }
+        const errorText = await response.text();
+        console.error('❌ Erro na resposta:', errorText);
+        throw new Error(`Erro ao buscar reservas: ${response.status} - ${errorText}`);
+      }
+
+      const reservations = await response.json();
+      console.log('✅ Reservas carregadas do backend:', reservations);
+      return Array.isArray(reservations) ? reservations : [];
+    } catch (error) {
+      console.error('❌ Erro ao buscar reservas do usuário:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Busca uma reserva específica por ID
+   * @param {number} reservationId - ID da reserva
+   * @returns {Promise<Object>} Dados da reserva
+   */
+  async getReservationById(reservationId) {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        throw new Error('Token de autenticação não encontrado');
+      }
+
+      const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error(`Erro ao buscar reserva: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Erro ao buscar reserva por ID:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Cria uma nova reserva
    * @param {Object} reservationData - Dados da reserva
    * @param {number} reservationData.userId - ID do usuário
@@ -43,7 +123,7 @@ class ReservationService {
           }))
         })
       });
-
+      console.log('Response status:', response.status);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || `Erro ao criar reserva: ${response.status} ${response.statusText}`);
@@ -51,7 +131,7 @@ class ReservationService {
 
       const reservation = await response.json();
       return reservation;
-      
+
     } catch (error) {
       console.error('Erro no serviço de reservas:', error);
       throw new Error(error.message || 'Não foi possível criar a reserva. Tente novamente mais tarde.');
@@ -79,7 +159,7 @@ class ReservationService {
 
       const reservation = await response.json();
       return reservation;
-      
+
     } catch (error) {
       console.error('Erro ao buscar reserva:', error);
       throw error;
@@ -107,7 +187,7 @@ class ReservationService {
 
       const reservations = await response.json();
       return reservations;
-      
+
     } catch (error) {
       console.error('Erro ao buscar reservas:', error);
       throw error;
@@ -204,10 +284,10 @@ class ReservationService {
     try {
       const checkInDate = new Date(checkIn);
       const checkOutDate = new Date(checkOut);
-      
+
       const timeDiff = checkOutDate.getTime() - checkInDate.getTime();
       const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-      
+
       const subtotal = dailyPrice * daysDiff;
       const taxes = subtotal * 0.1; // 10% de taxas
       const total = subtotal + taxes;

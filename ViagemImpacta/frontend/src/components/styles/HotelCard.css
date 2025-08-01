@@ -148,12 +148,53 @@
     animation: confetti-fade 0.8s ease-out forwards;
 }
 
-.confetti.c1 { background-color: #FF5252; }
-.confetti.c2 { background-color: #4CAF50; }
-.confetti.c3 { background-color: #2196F3; }
-.confetti.c4 { background-color: #FFEB3B; }
-.confetti.c5 { background-color: #9C27B0; }
-.confetti.c6 { background-color: #FF9800; }
+.confetti.c1 { 
+    background-color: #FF5252; 
+}
+.confetti.c1::before,
+.confetti.c1::after {
+    background-color: #FF5252;
+}
+
+.confetti.c2 { 
+    background-color: #4CAF50; 
+}
+.confetti.c2::before,
+.confetti.c2::after {
+    background-color: #4CAF50;
+}
+
+.confetti.c3 { 
+    background-color: #2196F3; 
+}
+.confetti.c3::before,
+.confetti.c3::after {
+    background-color: #2196F3;
+}
+
+.confetti.c4 { 
+    background-color: #FFEB3B; 
+}
+.confetti.c4::before,
+.confetti.c4::after {
+    background-color: #FFEB3B;
+}
+
+.confetti.c5 { 
+    background-color: #9C27B0; 
+}
+.confetti.c5::before,
+.confetti.c5::after {
+    background-color: #9C27B0;
+}
+
+.confetti.c6 { 
+    background-color: #FF9800; 
+}
+.confetti.c6::before,
+.confetti.c6::after {
+    background-color: #FF9800;
+}
 
 /* Make price section stand out with light blue background */
 .price-tag {

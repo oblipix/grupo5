@@ -53,10 +53,10 @@ namespace ViagemImpacta.Models
         /// Cada URL deve ter no máximo 500 caracteres.
         /// </summary>
         public List<string> ImageUrls { get; set; } = new List<string>();
-        
+
         //prop auxiliar para mapear o menor preço absoluto de todos os quartos
         //não deve ser mapeado para o banco de dados
-         [NotMapped]
+        [NotMapped]
         public decimal? AbsoluteLowestRoomPrice { get; set; }
     }
 }
