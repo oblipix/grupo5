@@ -19,7 +19,7 @@ class PaymentService {
       const token = localStorage.getItem('authToken');
       console.log('Auth token exists:', !!token);
 
-      const response = await fetch(`https://localhost:7010/checkout?id=${reservationId}`, {
+      const response = await fetch(`https://localhost:7010/api/stripe/checkout?id=${reservationId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
