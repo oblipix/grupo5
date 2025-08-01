@@ -9,22 +9,28 @@
 
 
 html, body, #root {
-  height: 100%;
+  min-height: 100vh;
   padding: 0;
-  display: flex;
-  flex-direction: column;
+  margin: 0;
   width: 100%;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
-/* Header curve - curva na parte inferior do header */
+body {
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden !important; /* Força que não haja scroll horizontal */
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Regras específicas para prevenir overflow apenas onde necessário */
+.container, 
+.footer-curve, 
 .header-curve {
-  overflow: visible;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 20px;
-  z-index: 1;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Estilos de cor das bolinhas, para combinar com seu tema */
@@ -36,26 +42,11 @@ html, body, #root {
 .hotel-card-modern {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backface-visibility: hidden;
+  margin-bottom: 24px; /* Adiciona espaçamento inferior aos cards */
 }
 
 .hotel-card-modern:hover {
   transform: translateY(-5px);
-}
-
-.header-curve::after {
-  content: '';
-  position: absolute;
-  bottom: 0; /* Posiciona a curva abaixo do header */
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 20px; /* A "profundidade" da curva */
-  display: block; /* Garante que o elemento seja exibido */
-  
-  /* A mágica da curva - neste caso, invertida em relação ao footer */
-  border-bottom: 5px solid #22d3ee; /* Cor (ciano) e espessura do traço */
-  border-radius: 0 0 15px 15px; /* Arredonda as bordas inferiores para criar o arco */
-  box-shadow: 0 4px 10px rgba(34, 211, 238, 0.3); /* Sombra sutil para destacar */
 }
 
 .menu1 {
@@ -64,8 +55,19 @@ left: 20%;
 
 }
 
-
-
+.header-curve::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 2px;
+  display: block;
+  z-index: 5;
+  background: linear-gradient(to right, transparent 10%, #60A5FA 50%, transparent 90%);
+  pointer-events: none;
+}
 
 /* Esta classe deve ser aplicada nos botões no JSX, por exemplo: className="main-action-button" */
 .main-action-button,
@@ -173,19 +175,36 @@ color: transparent;
   
 }
 
+/* Garanta que o conteúdo principal permita rolagem */
+main.flex-grow {
+  overflow-y: auto;
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Ajustes específicos para o footer */
+footer {
+  margin-bottom: 0;
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 .footer-curve::before {
   content: '';
   position: absolute;
-  top: 0px; /* Move a curva um pouco acima do footer para melhor visibilidade */
+  top: 0;
   left: 0;
   right: 0;
   width: 100%;
-  height: 15px; /* A "profundidade" da curva */
-  display: block; /* Garante que o elemento seja exibido */
-  z-index: 5; /* Garante que esteja visível */
-  /* A mágica da curva invertida: */
-  border-top: 5px solid #22d3ee; /* Cor (ciano) e espessura do traço */
-  border-radius: 15px 15px 0 0; /* Arredonda as bordas superiores para criar o arco */
+  height: 2px;
+  display: block;
+  z-index: 5;
+  background: linear-gradient(to right, transparent 10%, #60A5FA 50%, transparent 90%);
+  pointer-events: none;
 }
 
 
@@ -507,6 +526,548 @@ a:hover {
 .favorite-button.favorited svg {
   color: #EF4444 !important; /* Vermelho quando favorito */
   fill: #EF4444 !important;
+}
+
+/* === LAZY LOADING ANIMATIONS FOR SCROLL TO TOP === */
+
+/* Animação de fade in suave para o botão voltar ao topo */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Animação mais lenta e suave para efeito esmaecente */
+@keyframes fadeInSlow {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.7) rotate(-5deg);
+    filter: blur(3px);
+  }
+  30% {
+    opacity: 0.3;
+    transform: translateY(20px) scale(0.8) rotate(-2deg);
+    filter: blur(2px);
+  }
+  70% {
+    opacity: 0.7;
+    transform: translateY(10px) scale(0.9) rotate(0deg);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+/* Animação de fade out quando some */
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+    filter: blur(0);
+  }
+  30% {
+    opacity: 0.7;
+    transform: translateY(10px) scale(0.9) rotate(2deg);
+    filter: blur(1px);
+  }
+  70% {
+    opacity: 0.3;
+    transform: translateY(20px) scale(0.8) rotate(5deg);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.7) rotate(8deg);
+    filter: blur(3px);
+  }
+}
+
+/* Animação sutil de "respiração" */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  }
+}
+
+/* Animação rápida para lazy loading de componentes */
+@keyframes lazyFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) rotate(-15deg);
+    filter: blur(2px);
+  }
+  30% {
+    opacity: 0.3;
+    transform: scale(0.8) rotate(-5deg);
+    filter: blur(1px);
+  }
+  70% {
+    opacity: 0.8;
+    transform: scale(1.1) rotate(2deg);
+    filter: blur(0.5px);
+  }
+  85% {
+    opacity: 0.95;
+    transform: scale(0.98) rotate(0deg);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+/* Animação de "pop" quando o ícone carrega */
+@keyframes iconPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  80% {
+    transform: scale(0.9);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animação para spinner de loading */
+@keyframes spinFade {
+  0% {
+    opacity: 0.4;
+    transform: rotate(0deg) scale(0.8);
+  }
+  50% {
+    opacity: 0.8;
+    transform: rotate(180deg) scale(1);
+  }
+  100% {
+    opacity: 0.4;
+    transform: rotate(360deg) scale(0.8);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-fadeInSlow {
+  animation: fadeInSlow 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-fadeOut {
+  animation: fadeOut 0.8s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.animate-lazyFadeIn {
+  animation: lazyFadeIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-iconPop {
+  animation: iconPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.animate-spinFade {
+  animation: spinFade 1.5s ease-in-out infinite;
+}
+
+/* Optimização para lazy loading */
+.lazy-loading {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.lazy-loaded {
+  opacity: 1;
+}
+
+/* Hover effect melhorado para o botão scroll to top */
+.scroll-to-top-button {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Performance otimizada para animações */
+.smooth-transition {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === SCROLL REVEAL ANIMATIONS === */
+
+/* Base para todos os elementos de scroll reveal */
+.scroll-reveal {
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.scroll-reveal-visible {
+  opacity: 1;
+}
+
+/* Animação Fade Up - elementos sobem enquanto aparecem */
+.scroll-reveal-fadeUp {
+  transform: translateY(60px);
+}
+
+.scroll-reveal-fadeUp.scroll-reveal-visible {
+  transform: translateY(0);
+}
+
+/* Animação Fade In - aparecem no lugar */
+.scroll-reveal-fadeIn {
+  transform: scale(0.9);
+}
+
+.scroll-reveal-fadeIn.scroll-reveal-visible {
+  transform: scale(1);
+}
+
+/* Animação Slide Left - vem da direita */
+.scroll-reveal-slideLeft {
+  transform: translateX(80px);
+}
+
+.scroll-reveal-slideLeft.scroll-reveal-visible {
+  transform: translateX(0);
+}
+
+/* Animação Slide Right - vem da esquerda */
+.scroll-reveal-slideRight {
+  transform: translateX(-80px);
+}
+
+.scroll-reveal-slideRight.scroll-reveal-visible {
+  transform: translateX(0);
+}
+
+/* Animação Zoom In - cresce do centro */
+.scroll-reveal-zoomIn {
+  transform: scale(0.6);
+}
+
+.scroll-reveal-zoomIn.scroll-reveal-visible {
+  transform: scale(1);
+}
+
+/* Animação Flip - roda enquanto aparece */
+.scroll-reveal-flip {
+  transform: perspective(1000px) rotateY(90deg);
+}
+
+.scroll-reveal-flip.scroll-reveal-visible {
+  transform: perspective(1000px) rotateY(0deg);
+}
+
+/* Animação especial para cards */
+.scroll-reveal-cardPop {
+  transform: translateY(40px) scale(0.8) rotateX(45deg);
+  filter: blur(1px);
+}
+
+.scroll-reveal-cardPop.scroll-reveal-visible {
+  transform: translateY(0) scale(1) rotateX(0deg);
+  filter: blur(0);
+}
+
+/* Animação para títulos/headers */
+.scroll-reveal-titleSlide {
+  transform: translateY(-30px);
+  opacity: 0;
+  filter: blur(2px);
+}
+
+.scroll-reveal-titleSlide.scroll-reveal-visible {
+  transform: translateY(0);
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* Container para elementos em sequência */
+.scroll-reveal-container {
+  position: relative;
+}
+
+/* Animações especiais para diferentes tipos de conteúdo */
+
+/* Para hero sections */
+.scroll-reveal-hero {
+  transform: translateY(100px) scale(0.9);
+  opacity: 0;
+}
+
+.scroll-reveal-hero.scroll-reveal-visible {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Para grid de cards */
+.scroll-reveal-gridItem {
+  transform: translateY(50px) scale(0.85);
+  opacity: 0;
+}
+
+.scroll-reveal-gridItem.scroll-reveal-visible {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* Para seções de texto */
+.scroll-reveal-textBlock {
+  transform: translateY(30px);
+  opacity: 0;
+}
+
+.scroll-reveal-textBlock.scroll-reveal-visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Para imagens */
+.scroll-reveal-image {
+  transform: scale(1.1);
+  opacity: 0;
+  filter: blur(5px);
+}
+
+.scroll-reveal-image.scroll-reveal-visible {
+  transform: scale(1);
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* Melhorias de performance para scroll reveals */
+.scroll-reveal {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  contain: layout style paint;
+}
+
+/* Classes de performance para diferentes dispositivos */
+.scroll-reveal-performance-low {
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.scroll-reveal-performance-medium {
+  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.scroll-reveal-performance-high {
+  transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Otimizações para mobile */
+@media (max-width: 768px) {
+  .scroll-reveal {
+    will-change: auto; /* Remove will-change em mobile para economizar memória */
+  }
+  
+  .scroll-reveal-fadeUp {
+    transform: translateY(30px); /* Movimento menor em mobile */
+  }
+  
+  .scroll-reveal-slideLeft,
+  .scroll-reveal-slideRight {
+    transform: translateX(30px); /* Movimento menor em mobile */
+  }
+  
+  .scroll-reveal-cardPop {
+    transform: translateY(20px) scale(0.9); /* Animação mais sutil */
+    filter: none; /* Remove blur em mobile */
+  }
+}
+
+/* Otimizações para dispositivos de baixa performance */
+.reduced-animations .scroll-reveal {
+  transition: opacity 0.2s ease !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* Classe para elementos críticos que devem aparecer imediatamente */
+.scroll-reveal-critical {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Animação especial para primeira fold (acima da dobra) */
+.scroll-reveal-above-fold {
+  animation: quickFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes quickFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Media queries para dispositivos móveis */
+@media (max-width: 768px) {
+  .scroll-reveal-fadeUp {
+    transform: translateY(40px);
+  }
+  
+  .scroll-reveal-slideLeft,
+  .scroll-reveal-slideRight {
+    transform: translateX(40px);
+  }
+}
+
+/* Reduz animações para usuários que preferem menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    transition: opacity 0.3s ease;
+    transform: none !important;
+  }
+}
+
+/* === ESTILOS ESPECIAIS PARA TÍTULOS DE SEÇÃO === */
+.section-title {
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.9) 100%);
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  backdrop-filter: blur(8px);
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #60A5FA 0%, #3B82F6 50%, #1D4ED8 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.section-title h2,
+.section-title h3,
+.section-title h4 {
+  margin: 0;
+  color: #1e293b;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.section-title p {
+  margin: 8px 0 0 0;
+  color: #64748b;
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+/* Variação mais sutil para títulos menores */
+.section-title-subtle {
+  background: linear-gradient(135deg, rgba(252, 252, 253, 0.8) 0%, rgba(248, 250, 252, 0.7) 100%);
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(226, 232, 240, 0.4);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.section-title-subtle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #60A5FA 30%, #3B82F6 70%);
+  border-radius: 8px 8px 0 0;
+}
+
+/* === ESPAÇAMENTO PARA CARDS E GRIDS === */
+.cards-grid {
+  gap: 24px; /* Espaçamento entre cards no grid */
+  margin-bottom: 32px; /* Espaçamento inferior do grid */
+}
+
+/* Espaçamento adicional para cards individuais */
+.card-spacing {
+  margin-bottom: 24px;
+}
+
+/* Para seções com cards */
+.cards-section {
+  padding-bottom: 32px;
+}
+
+/* === BOTÃO LER MAIS DELICADO === */
+.read-more-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #60A5FA;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.05) 0%, rgba(59, 130, 246, 0.1) 100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(2px);
+}
+
+.read-more-button:hover {
+  color: #3B82F6;
+  border-color: rgba(59, 130, 246, 0.5);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.1) 0%, rgba(59, 130, 246, 0.15) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+}
+
+.read-more-button svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.read-more-button:hover svg {
+  transform: translateX(3px);
 }
 
 

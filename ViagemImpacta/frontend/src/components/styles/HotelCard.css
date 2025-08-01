@@ -105,9 +105,33 @@
 
 .confetti {
     position: absolute;
-    width: 8px;
-    height: 8px;
+    width: 12px;
+    height: 10px;
     opacity: 0;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    transform: rotate(-45deg);
+}
+
+.confetti::before {
+    content: '';
+    position: absolute;
+    width: 7px;
+    height: 12px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-45deg);
+    border-radius: 50px 50px 0 0;
+    background-color: inherit;
+}
+
+.confetti::after {
+    content: '';
+    position: absolute;
+    width: 7px;
+    height: 12px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    border-radius: 50px 50px 0 0;
+    background-color: inherit;
 }
 
 .confetti.active {
