@@ -5,6 +5,14 @@
     var checkout = Context.Request.Query["checkout"].ToString();
     var search = Context.Request.Query["search"].ToString();
     var status = Context.Request.Query["status"].ToString();
+
+    int pageSize = 10;
+    int skip = 0;
+    if (!string.IsNullOrEmpty(Context.Request.Query["take"]))
+        int.TryParse(Context.Request.Query["take"], out pageSize);
+    if (!string.IsNullOrEmpty(Context.Request.Query["skip"]))
+        int.TryParse(Context.Request.Query["skip"], out skip);
+    int page = (skip / pageSize) + 1;
 }
 
 <div class="d-flex justify-content-between align-items-center mb-3">
@@ -23,7 +31,7 @@
             <input type="date" class="form-control" id="checkout" name="checkout" value="@checkout" />
         </div>
         <div class="col-md-3">
-            <label for="search" class="form-label">Usuário ou Hotel</label>
+            <label for="search" class="form-label">Cliente ou Hotel</label>
             <input type="text" class="form-control" id="search" name="search" placeholder="Nome do usuário ou hotel" value="@search" />
         </div>
         <div class="col-md-2">
@@ -38,13 +46,15 @@
             <button type="submit" class="btn btn-primary w-100">Filtrar</button>
         </div>
     </div>
+    <input type="hidden" name="skip" value="@skip" />
+    <input type="hidden" name="take" value="@pageSize" />
 </form>
 
 <table class="table table-striped">
     <thead>
         <tr>
             <th>Id</th>
-            <th>Usuário</th>
+            <th>Cliente</th>
             <th>Hotel</th>
             <th>Quarto</th>
             <th>Check-in</th>
@@ -57,7 +67,7 @@
     <tbody>
         @if (Model != null && Model.Any())
         {
-            foreach (var reserva in Model)
+            foreach (var reserva in Model.Skip(skip).Take(pageSize))
             {
                 <tr>
                     <td>@reserva.ReservationId</td>
@@ -79,6 +89,7 @@
                     </td>
                     <td>
                         <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@reserva.ReservationId">Detalhar</a>
+                        <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@reserva.ReservationId">Editar</a>
                     </td>
                 </tr>
             }
@@ -89,3 +100,17 @@
         }
     </tbody>
 </table>
+
+<nav>
+    <ul class="pagination">
+        <li class="page-item @(page == 1 ? "disabled" : "")">
+            <a class="page-link" href="?skip=@(skip - pageSize)&take=@pageSize&checkin=@checkin&checkout=@checkout&search=@search&status=@status">Anterior</a>
+        </li>
+        <li class="page-item">
+            <span class="page-link">Página @(page.ToString())</span>
+        </li>
+        <li class="page-item @(Model == null || Model.Skip(skip + pageSize).Any() == false ? "disabled" : "")">
+            <a class="page-link" href="?skip=@(skip + pageSize)&take=@pageSize&checkin=@checkin&checkout=@checkout&search=@search&status=@status">Próxima</a>
+        </li>
+    </ul>
+</nav>
