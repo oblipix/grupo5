@@ -1267,12 +1267,12 @@ function MyTravelsPage() {
                     </div>
                     <div className="flex flex-col items-center sm:items-end gap-2">
                       {/* Badge de Status da Reserva */}
-                      <span 
-                        className={`px-2 py-1 rounded text-xs font-semibold border ${getReservationStatus(reservation).className}`}
+                      {/* <span 
+                        // className={`px-2 py-1 rounded text-xs font-semibold border ${getReservationStatus(reservation).className}`}
                         onClick={() => console.log('Reservation status:', reservation.id, 'is confirmed:', !!(reservation.isConfirmed || reservation.IsConfirmed))}
                       >
                         {getReservationStatus(reservation).text}
-                      </span>
+                      </span> */}
                       
                       {/* Botões de ação */}
                       <div className="flex gap-2">
