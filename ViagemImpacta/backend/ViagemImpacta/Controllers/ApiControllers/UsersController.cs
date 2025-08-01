@@ -20,13 +20,29 @@ namespace ViagemImpacta.Controllers.ApiControllers
             _mapper = mapper; 
         }
 
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers([FromQuery] int skip = 0, [FromQuery] int take = 10)
+        {
+            try
+            {
+                var users = await _userService.ListAllClients(skip, take);
+                var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
+                return Ok(userDtos);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Erro interno: {ex.Message}");
+            }
+        }
+
         [HttpGet("{id}")]
         [Authorize]
         public async Task<ActionResult<UserDto>> GetUser(int id)
         {
             try
             {
-                var user = await _userService.GetUserById(id);
+                var user = await _userService.GetUserByIdAsync(id);
                 if (user == null)
                     return NotFound($"Usuário com ID {id} não encontrado.");
 
@@ -125,22 +141,6 @@ namespace ViagemImpacta.Controllers.ApiControllers
                     return NotFound($"Usuário com ID {id} não encontrado.");
 
                 return NoContent(); 
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Erro interno: {ex.Message}");
-            }
-        }
-
-        [HttpGet]
-        [Authorize]
-        public async Task<ActionResult<IEnumerable<UserDto>>> GetAllUsers([FromQuery] int skip = 0, [FromQuery] int take = 10)
-        {
-            try
-            {
-                var users = await _userService.ListAllClients(skip, take);
-                var userDtos = _mapper.Map<IEnumerable<UserDto>>(users);
-                return Ok(userDtos);
             }
             catch (Exception ex)
             {
