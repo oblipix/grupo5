@@ -1,8 +1,40 @@
 
-/* Modern card styling */
+/* Modern card styling - Responsive improvements */
 @media (max-width: 900px) { 
     .Tittle {
         font-size: 18px;        
+    }
+}
+
+/* Mobile-specific improvements */
+@media (max-width: 640px) {
+    .hotel-card-modern {
+        margin: 0 auto 16px auto;
+        max-width: 320px; /* Largura máxima no mobile */
+        width: 100%;
+    }
+    
+    .Tittle {
+        font-size: 16px !important;
+        line-height: 1.2;
+    }
+    
+    /* Melhor espaçamento no mobile */
+    .hotel-card-modern .p-3 {
+        padding: 12px;
+    }
+    
+    /* Botão de ação menor no mobile */
+    .main-action-button {
+        font-size: 11px;
+        padding: 6px 12px;
+        white-space: nowrap;
+    }
+    
+    /* Price tag responsivo */
+    .price-tag {
+        font-size: 14px !important;
+        font-weight: 700;
     }
 }
 
