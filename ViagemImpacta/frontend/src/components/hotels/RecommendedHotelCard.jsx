@@ -28,7 +28,7 @@ const RecommendedHotelCard = ({ hotel, onCardClick, onSaveTravel, isHotelSaved }
 
   return (
     <div
-      className="hotel-card-modern bg-white rounded-xl shadow-xl overflow-hidden cursor-pointer transform transition duration-300 hover:scale-105"
+      className="hotel-card-modern bg-white rounded-xl shadow-md overflow-hidden cursor-pointer transform transition-all duration-300 hover:scale-102 hover:shadow-xl"
       onClick={() => onCardClick(hotel.id)}
     >
       <div className="relative">

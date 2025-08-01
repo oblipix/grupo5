@@ -272,36 +272,68 @@ class HotelService {
   }
  
   /**
-   * Gera URL de imagem baseada no ID do hotel
+   * Gera URL de imagem baseada nas URLs do backend ou fallback
    */
   generateImageUrl(hotel) {
-    const id = hotel.hotelId || hotel.HotelId || 1;
-    return `https://picsum.photos/id/${(id * 100) % 1000}/800/600`;
+    console.log('generateImageUrl - hotel data:', hotel);
+    console.log('generateImageUrl - mainImageUrl:', hotel.mainImageUrl);
+    console.log('generateImageUrl - imageUrls:', hotel.imageUrls);
+    console.log('generateImageUrl - ImageUrls:', hotel.ImageUrls);
+    
+    // Primeiro, tenta usar a mainImageUrl do backend
+    if (hotel.mainImageUrl) {
+      console.log('Using mainImageUrl:', hotel.mainImageUrl);
+      return hotel.mainImageUrl;
+    }
+    
+    // Se não tiver mainImageUrl, tenta usar a primeira imagem da lista ImageUrls
+    if (hotel.imageUrls && Array.isArray(hotel.imageUrls) && hotel.imageUrls.length > 0) {
+      console.log('Using first imageUrls:', hotel.imageUrls[0]);
+      return hotel.imageUrls[0];
+    }
+    
+    // Fallback para propriedades com case diferentes (Pascal case)
+    if (hotel.ImageUrls && Array.isArray(hotel.ImageUrls) && hotel.ImageUrls.length > 0) {
+      console.log('Using first ImageUrls:', hotel.ImageUrls[0]);
+      return hotel.ImageUrls[0];
+    }
+    
+    // Fallback: se não houver imagens do backend, usa placeholder
+    console.log('No images found, using placeholder');
+    return 'https://via.placeholder.com/800x600/f0f0f0/999999?text=Sem+Imagem';
   }
  
   /**
-   * Gera galeria de imagens
-   * Limitado a 10 fotos no máximo para a galeria
+   * Gera galeria de imagens baseada nas URLs do backend
    */
   generateGalleryImages(hotel) {
-    const id = hotel.hotelId || hotel.HotelId || 1;
     const images = [];
     
-    // Determina quantas imagens gerar (no máximo 10)
-    const maxImages = 10;
-    // Se o hotel já tem imagens reais, use-as (até o limite)
-    const imagesToGenerate = hotel.images && Array.isArray(hotel.images) 
-      ? Math.min(hotel.images.length, maxImages) 
-      : Math.min(8, maxImages); // Padrão de 8 imagens se não houver reais
-   
-    for (let i = 1; i <= imagesToGenerate; i++) {
-      images.push({
-        id: `h${id}g${i}`,
-        url: `https://picsum.photos/id/${((id * 100) + i) % 1000}/800/600`,
-        alt: `${hotel.name || hotel.Name} - Imagem ${i}`
+    // Primeiro, tenta usar as URLs reais do backend
+    let imageUrls = [];
+    
+    if (hotel.imageUrls && Array.isArray(hotel.imageUrls)) {
+      imageUrls = hotel.imageUrls;
+    } else if (hotel.ImageUrls && Array.isArray(hotel.ImageUrls)) {
+      imageUrls = hotel.ImageUrls;
+    }
+    
+    // Se há URLs reais, usa elas
+    if (imageUrls.length > 0) {
+      imageUrls.forEach((url, index) => {
+        if (url && url.trim() !== '') {
+          images.push({
+            id: `hotel-${hotel.hotelId || hotel.HotelId}-img-${index}`,
+            url: url,
+            alt: `${hotel.name || hotel.Name} - Imagem ${index + 1}`
+          });
+        }
       });
     }
-   
+    
+    // Se não há imagens ou há poucas, não adiciona placeholders
+    // O usuário deve adicionar URLs reais via admin
+    
     return images;
   }
  

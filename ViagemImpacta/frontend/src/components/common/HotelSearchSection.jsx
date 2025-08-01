@@ -48,11 +48,11 @@ const HotelSearchSection = () => {
       )}
 
       {filteredHotels.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 px-8 py-4">
           {filteredHotels.map(hotel => (
             // 4. Cada resultado agora é um Link para a página de detalhes
             <Link to={`/hoteis/${hotel.id}`} key={hotel.id} className="block group">
-              <div className="bg-white rounded-xl shadow-md overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl h-full">
+              <div className="bg-white rounded-xl shadow-md overflow-hidden transform transition-all duration-300 hover:scale-102 hover:shadow-xl h-full">
                 <img
                   src={hotel.mainImageUrl}
                   alt={`Imagem de ${hotel.title}`}

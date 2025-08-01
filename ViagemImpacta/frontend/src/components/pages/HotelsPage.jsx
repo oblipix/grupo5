@@ -170,17 +170,21 @@ const [selectedAmenities, setSelectedAmenities] = useState([]);
  
           {loading && (
             <div className="text-center mb-4">
-              <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-lg">
+              <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-l ">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
                 Atualizando hotéis...
               </div>
             </div>
           )}
- 
+
           {hotels.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {currentHotelsPaginated.map(hotel => (
-                <HotelCard key={hotel.id} hotel={hotel} />
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 px-8 py-4">
+              {currentHotelsPaginated.map((hotel, index) => (
+                <AnimatedHotelCard key={hotel.id} index={index}>
+                  <div className="card-spacing">
+                    <HotelCard hotel={hotel} />
+                  </div>
+                </AnimatedHotelCard>
               ))}
             </div>
           ) : (

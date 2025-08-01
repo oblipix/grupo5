@@ -336,11 +336,11 @@ function HotelDetailsPage() {
                                 </svg>
                                 O que os hóspedes dizem
                             </h2>
-                            <div className="bg-gray-50 rounded-2xl overflow-hidden p-4">
+                            <div className="bg-gray-50 rounded-2xl overflow-visible p-8">
                                 <Slider {...sliderSettings}>
                                     {hotel.feedbacks.map(feedback => (
-                                        <div key={feedback.id} className="p-2">
-                                            <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm h-full flex flex-col justify-between hover:shadow-md transition-all duration-300">
+                                        <div key={feedback.id} className="p-4">
+                                            <div className="feedback-bubble">
                                                 <div>
                                                     <div className="flex items-center justify-between mb-4">
                                                         <RatingDisplay rating={feedback.rating} />

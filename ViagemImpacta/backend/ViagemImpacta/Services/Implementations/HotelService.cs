@@ -55,7 +55,9 @@ namespace ViagemImpacta.Services.Interfaces
                 Garden = hotel.Garden,
                 PetFriendly = hotel.PetFriendly,
                 Pool = hotel.Pool,
-                BreakfastIncludes = hotel.BreakfastIncludes
+                BreakfastIncludes = hotel.BreakfastIncludes,
+                Description = hotel.Description,
+                ImageUrls = hotel.ImageUrls ?? new List<string>()
             };
 
             await _unitOfWork.Hotels.AddAsync(hotelToCreate);
@@ -119,6 +121,8 @@ namespace ViagemImpacta.Services.Interfaces
             existingHotel.PetFriendly = hotel.PetFriendly;
             existingHotel.Pool = hotel.Pool;
             existingHotel.BreakfastIncludes = hotel.BreakfastIncludes;
+            existingHotel.Description = hotel.Description;
+            existingHotel.ImageUrls = hotel.ImageUrls ?? new List<string>();
 
             // Processar quartos com nova lógica
             foreach (var roomConfig in hotel.Rooms)

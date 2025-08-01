@@ -131,8 +131,8 @@ function HotelCard({ hotel }) {
 
     return (
         <Link to={`/hoteis/${hotel.id}`}
-              className="block group hotel-card-modern bg-white rounded-xl shadow-xl border-0 overflow-hidden
-                         h-full flex flex-col transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl">
+            className="block group hotel-card-modern bg-white rounded-xl shadow-md border-0 overflow-hidden
+                         h-full flex flex-col transform transition-all duration-300 hover:scale-102 hover:shadow-xl">
             <div className="relative w-full h-80 overflow-hidden"> {/* Aumentei a altura para cobrir mais espaço */}
                 {/* Overlay gradient over image - mais escuro para melhor contraste */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 z-10"></div>
@@ -144,7 +144,7 @@ function HotelCard({ hotel }) {
                 />
                 
                 {/* Estrelas do hotel - posicionadas no topo esquerdo */}
-                <div className="absolute top-4 left-4 z-20 flex items-center bg-white/30 backdrop-blur-sm px-2 py-1 rounded-lg">
+                <div className="absolute top-4 left-4 z-20 flex items-center bg-white/30 shadow-lg backdrop-blur-sm px-2 py-1 rounded-lg">
                     {[...Array(starRating)].map((_, index) => (
                         <StarIcon key={index} className="h-4 w-4 text-yellow-400 star-icon" />
                     ))}

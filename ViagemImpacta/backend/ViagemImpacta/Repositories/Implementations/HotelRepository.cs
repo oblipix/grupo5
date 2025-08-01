@@ -57,12 +57,15 @@ namespace ViagemImpacta.Repositories.Implementations
     decimal? maxPrice,
     int? stars,
     string? roomType,
-    string? amenities
+    string? amenities,
+    int? guests,
+    string? checkIn,
+    string? checkOut
 )
         {
             // DEBUG TEMPORÁRIO: mostra todos os parâmetros recebidos
             Console.WriteLine("[DEBUG][backend][HotelRepository][TEMP] Parâmetros recebidos:");
-            Console.WriteLine($"destination={destination}, minPrice={minPrice}, maxPrice={maxPrice}, stars={stars}, roomType={roomType}, amenities={amenities}");
+            Console.WriteLine($"destination={destination}, minPrice={minPrice}, maxPrice={maxPrice}, stars={stars}, roomType={roomType}, amenities={amenities}, guests={guests}, checkIn={checkIn}, checkOut={checkOut}");
             var query = _context.Hotels.Include(h => h.Rooms).AsQueryable();
 
             if (!string.IsNullOrEmpty(destination))
@@ -113,6 +116,19 @@ namespace ViagemImpacta.Repositories.Implementations
                     }
                 }
             }
+
+            // Filtro por número de hóspedes (capacidade dos quartos)
+            if (guests.HasValue && guests.Value > 0)
+            {
+                query = query.Where(h => h.Rooms.Any(r => r.Capacity >= guests.Value));
+            }
+
+            // TODO: Implementar filtros de check-in e check-out quando sistema de reservas estiver pronto
+            // if (!string.IsNullOrEmpty(checkIn) && !string.IsNullOrEmpty(checkOut))
+            // {
+            //     // Filtrar hotéis com quartos disponíveis nas datas especificadas
+            //     // Requer implementação de sistema de reservas/disponibilidade
+            // }
 
             return await query.ToListAsync();
         }

@@ -8,37 +8,26 @@ namespace ViagemImpacta.Profiles
     {
         public HotelProfile()
         {
-
-
-
-            //TODO: Colocar apenas os quartos disponiveis para a data
-
-            // Mapeia Hotel para HotelDto, incluindo:
-            // - RoomCount: soma dos quartos
-            // - LowestRoomPrice: menor preço entre todos os quartos vinculados
+            // Mapeamento simples e direto Hotel para HotelDto
             CreateMap<Hotel, HotelDto>()
-        .ForMember(dest => dest.RoomCount,
-            opt => opt.MapFrom(src => src.Rooms.Sum(r => r.TotalRooms)))
-        .ForMember(dest => dest.LowestRoomPrice,
-            opt => opt.MapFrom(src => src.Rooms != null && src.Rooms.Any()
-                ? src.Rooms.Min(r => r.AverageDailyPrice)
-                : (decimal?)null))
-        .ForMember(dest => dest.Rooms,
-        opt => opt.MapFrom(src => src.Rooms
-            .OrderBy(r => r.AverageDailyPrice)
-            .Take(1)
-            .ToList()))
-        .ForMember(dest => dest.MaxRoomPrice,
-        opt => opt.MapFrom(src => src.Rooms != null && src.Rooms.Any()
-            ? src.Rooms.Max(r => r.AverageDailyPrice)
-            : (decimal?)null))
-        .ForMember(dest => dest.FilteredLowestRoomPrice,
-    opt => opt.MapFrom(src => src.Rooms != null && src.Rooms.Any()
-        ? src.Rooms.Min(r => r.AverageDailyPrice)
-        : (decimal?)null));
-
-      } 
-
-
+                .ForMember(dest => dest.RoomCount,
+                    opt => opt.MapFrom(src => src.Rooms != null ? src.Rooms.Sum(r => r.TotalRooms) : 0))
+                .ForMember(dest => dest.LowestRoomPrice,
+                    opt => opt.MapFrom(src => src.Rooms != null && src.Rooms.Any()
+                        ? src.Rooms.Min(r => r.AverageDailyPrice)
+                        : (decimal?)null))
+                .ForMember(dest => dest.Rooms,
+                    opt => opt.MapFrom(src => src.Rooms != null
+                        ? src.Rooms.OrderBy(r => r.AverageDailyPrice).ToList()
+                        : new List<Room>()))
+                .ForMember(dest => dest.MaxRoomPrice,
+                    opt => opt.MapFrom(src => src.Rooms != null && src.Rooms.Any()
+                        ? src.Rooms.Max(r => r.AverageDailyPrice)
+                        : (decimal?)null))
+                .ForMember(dest => dest.FilteredLowestRoomPrice,
+                    opt => opt.MapFrom(src => src.Rooms != null && src.Rooms.Any()
+                        ? src.Rooms.Min(r => r.AverageDailyPrice)
+                        : (decimal?)null));
+        }
     }
 }

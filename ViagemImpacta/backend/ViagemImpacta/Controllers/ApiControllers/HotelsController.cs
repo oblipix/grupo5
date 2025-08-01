@@ -4,6 +4,7 @@ using ViagemImpacta.Models;
 using ViagemImpacta.Repositories;
 using AutoMapper;
 using ViagemImpacta.DTO.HotelDTO;
+using ViagemImpacta.Services.Interfaces;
 
 namespace ViagemImpacta.Controllers.ApiControllers
 {
@@ -15,12 +16,14 @@ namespace ViagemImpacta.Controllers.ApiControllers
 
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly IHotelMappingService _hotelMappingService;
 
 
-        public HotelsController(IUnitOfWork unitOfWork, IMapper mapper)
+        public HotelsController(IUnitOfWork unitOfWork, IMapper mapper, IHotelMappingService hotelMappingService)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            _hotelMappingService = hotelMappingService;
         }
 
 
@@ -91,24 +94,51 @@ namespace ViagemImpacta.Controllers.ApiControllers
         [HttpGet("search")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<IEnumerable<HotelDto>>> SearchHotels(
-            [FromQuery] string? destination,
-            [FromQuery] decimal? minPrice,
-            [FromQuery] decimal? maxPrice,
+            [FromQuery(Name = "destino")] string? destination,
+            [FromQuery(Name = "hospedes")] int? guests,
+            [FromQuery(Name = "precoMin")] decimal? minPrice,
+            [FromQuery(Name = "precoMax")] decimal? maxPrice,
             [FromQuery] int? stars,
-            [FromQuery] string? roomType,
+            [FromQuery(Name = "tipoQuarto")] string? roomType,
             [FromQuery(Name = "amenities")] string? amenities,
-            [FromQuery(Name = "comodidades")] string? comodidades)
+            [FromQuery(Name = "comodidades")] string? comodidades,
+            [FromQuery] string? checkIn,
+            [FromQuery] string? checkOut)
         {
             // Aceita tanto 'amenities' quanto 'comodidades' como parâmetro
             var amenitiesParam = !string.IsNullOrEmpty(amenities) ? amenities : comodidades;
 
-            // DEBUG: loga apenas os parâmetros recebidos do frontend
-            Console.WriteLine("[DEBUG][backend][TEMP] Parâmetros recebidos do frontend:");
-            Console.WriteLine($"destination={destination}, minPrice={minPrice}, maxPrice={maxPrice}, stars={stars}, roomType={roomType}, amenities={amenities}, comodidades={comodidades}, usado={amenitiesParam}");
+            // DEBUG: loga TODOS os parâmetros recebidos do frontend
+            Console.WriteLine("[DEBUG][backend] ===== PARÂMETROS RECEBIDOS =====");
+            Console.WriteLine($"[DEBUG][backend] destino: '{destination}'");
+            Console.WriteLine($"[DEBUG][backend] hospedes: {guests}");
+            Console.WriteLine($"[DEBUG][backend] precoMin: {minPrice}");
+            Console.WriteLine($"[DEBUG][backend] precoMax: {maxPrice}");
+            Console.WriteLine($"[DEBUG][backend] stars: {stars}");
+            Console.WriteLine($"[DEBUG][backend] tipoQuarto: '{roomType}'");
+            Console.WriteLine($"[DEBUG][backend] amenities: '{amenities}'");
+            Console.WriteLine($"[DEBUG][backend] comodidades: '{comodidades}'");
+            Console.WriteLine($"[DEBUG][backend] checkIn: '{checkIn}'");
+            Console.WriteLine($"[DEBUG][backend] checkOut: '{checkOut}'");
+            Console.WriteLine($"[DEBUG][backend] amenitiesParam usado: '{amenitiesParam}'");
+            Console.WriteLine("[DEBUG][backend] ================================");
 
-            var hotels = await _unitOfWork.Hotels.SearchHotelsAsync(destination, minPrice, maxPrice, stars, roomType, amenitiesParam);
-            var hotelDtos = _mapper.Map<IEnumerable<HotelDto>>(hotels);
+            var hotels = await _unitOfWork.Hotels.SearchHotelsAsync(
+                destination,
+                minPrice,
+                maxPrice,
+                stars,
+                roomType,
+                amenitiesParam,
+                guests,
+                checkIn,
+                checkOut
+            );
 
+            // Usa o HotelMappingService para aplicar lógica de negócio e mapeamento
+            var hotelDtos = _hotelMappingService.MapHotelsToDto(hotels, guests);
+
+            Console.WriteLine($"[DEBUG][backend] HotelMappingService processou {hotelDtos.Count()} hotéis com filtro guests: {guests}");
 
             return Ok(hotelDtos);
         }

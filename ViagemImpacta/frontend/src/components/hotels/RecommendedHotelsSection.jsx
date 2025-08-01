@@ -38,14 +38,14 @@ const RecommendedHotelsSection = () => {
     }
  
     return (
-        <section id="recomendado-viajantes" className="py-12 bg-white px-6">
-            <div className="container mx-auto">
+        <section id="recomendado-viajantes" className="py-20 bg-white px-12 overflow-visible">
+            <div className="container mx-auto overflow-visible">
                 <div className="section-title">
                     <h2 className="text-3xl font-bold">
                         Hotéis Recomendados pelos Nossos Viajantes <span className="text-yellow-500">★</span>
                     </h2>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 cards-grid">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-16 cards-grid px-12 py-8">
                     {topRatedHotels.map((hotel, index) => (
                         <AnimatedHotelCard key={hotel.id} index={index}>
                             <div className="card-spacing">

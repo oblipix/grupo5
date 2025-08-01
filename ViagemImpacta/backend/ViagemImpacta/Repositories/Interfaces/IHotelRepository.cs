@@ -22,7 +22,10 @@ namespace ViagemImpacta.Repositories.Interfaces
             decimal? maxPrice,
             int? stars,
             string? roomType,
-            string? amenities
+            string? amenities,
+            int? guests,
+            string? checkIn,
+            string? checkOut
         );
     }
 }

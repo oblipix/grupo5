@@ -10,6 +10,7 @@ using ViagemImpacta.Profiles;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Repositories.Implementations;
 using ViagemImpacta.Repositories.Interfaces;
+using ViagemImpacta.Services;
 using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
 using ViagemImpacta.Setup;
@@ -102,9 +103,10 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<IHotelMappingService, HotelMappingService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<StripeService>();
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>) );
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddAutoMapper(typeof(HotelProfile).Assembly, typeof(UserProfile).Assembly, typeof(ReservationProfile).Assembly);
 
 builder.Services.AddHttpContextAccessor();
@@ -133,7 +135,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Viagem Impacta API v1");
-        c.RoutePrefix = "swagger"; 
+        c.RoutePrefix = "swagger";
     });
 }
 
