@@ -10,11 +10,21 @@
 .hotel-card-modern {
     transition: all 0.3s ease-in-out;
     position: relative;
+    margin: 0 auto 24px auto; /* Mais espaço na parte inferior */
+    /* Shadow base mais visível */
+    box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.08);
 }
 
 .hotel-card-modern:hover {
-    transform: translateY(-5px) scale(1.01);
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    transform: scale(1.02);
+    /* Shadow mais forte no hover */
+    box-shadow: 0 20px 40px -8px rgba(0, 0, 0, 0.2), 0 8px 16px -4px rgba(0, 0, 0, 0.1);
+    border-radius: 0.75rem !important; /* Mantém bordas arredondadas no hover */
+}
+
+/* Classe personalizada para hover scale mais sutil */
+.hover\:scale-102:hover {
+    transform: scale(1.02) !important;
 }
 
 /* Custom animation for price tag */

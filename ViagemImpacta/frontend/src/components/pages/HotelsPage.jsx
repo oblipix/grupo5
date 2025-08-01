@@ -65,7 +65,7 @@ function HotelsPage() {
       <>
         <HeroSwiper />
         <HomeMenu />
-        <section id="hotels-section" className="bg-gray-50 min-h-screen">
+        <section id="hotels-section" className="bg-white min-h-screen">
           <SearchHotelsBar onSearch={handleSearchSubmit} />
           <div className="container mx-auto px-6 py-8">
             <div className="flex justify-center items-center min-h-[400px]">
@@ -86,7 +86,7 @@ function HotelsPage() {
       <>
         <HeroSwiper />
         <HomeMenu />
-        <section id="hotels-section" className="bg-gray-50 min-h-screen">
+        <section id="hotels-section" className="bg-white min-h-screen">
           <SearchHotelsBar onSearch={handleSearchSubmit} />
           <div className="container mx-auto px-6 py-8">
             <div className="flex justify-center items-center min-h-[400px]">
@@ -116,12 +116,12 @@ function HotelsPage() {
       <HeroSwiper />
       <HomeMenu />
 
-      <section id="hotels-section" className="bg-gray-50 min-h-screen">
+      <section id="hotels-section" className="bg-white min-h-screen overflow-visible">
         <ScrollReveal animation="fadeUp" delay={300}>
           <SearchHotelsBar onSearch={handleSearchSubmit} />
         </ScrollReveal>
 
-        <div className="container mx-auto px-6 py-8">
+        <div className="container mx-auto px-8 py-12">
           <ScrollReveal animation="fadeUp" delay={200}>
             <p className="text-center text-lg text-gray-700 mb-8">
               Explore uma seleção de hotéis incríveis e encontre a hospedagem perfeita!
@@ -130,7 +130,7 @@ function HotelsPage() {
 
           {loading && (
             <div className="text-center mb-4">
-              <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-lg">
+              <div className="inline-flex items-center px-4 py-2 bg-blue-100 text-blue-800 rounded-l ">
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600 mr-2"></div>
                 Atualizando hotéis...
               </div>
@@ -138,10 +138,12 @@ function HotelsPage() {
           )}
 
           {filteredHotels.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 px-8 py-4">
               {currentHotelsPaginated.map((hotel, index) => (
                 <AnimatedHotelCard key={hotel.id} index={index}>
-                  <HotelCard hotel={hotel} />
+                  <div className="card-spacing">
+                    <HotelCard hotel={hotel} />
+                  </div>
                 </AnimatedHotelCard>
               ))}
             </div>

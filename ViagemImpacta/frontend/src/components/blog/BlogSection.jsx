@@ -14,7 +14,7 @@ function BlogSection({ id, title }) { // Recebe o ID como prop
             {title}
           </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-8 cards-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 pb-8 px-4 cards-grid">
           {blogPosts.map((post) => (
             <BlogPostCard
               key={post.id}

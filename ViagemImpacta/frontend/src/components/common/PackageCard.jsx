@@ -28,7 +28,7 @@ const PackageCard = ({
     : 0;
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden transform transition-all duration-300 hover:scale-102 hover:shadow-xl">
       <div className="relative">
         <img
           src={imageUrl}

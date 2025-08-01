@@ -8,9 +8,7 @@
 @tailwind utilities;
 
 
-html,
-body,
-#root {
+html, body, #root {
   min-height: 100vh;
   padding: 0;
   margin: 0;
@@ -22,22 +20,14 @@ body,
 body {
   display: flex;
   flex-direction: column;
-  overflow-x: hidden !important;
-  /* Força que não haja scroll horizontal */
+  overflow-x: hidden !important; /* Força que não haja scroll horizontal */
   overflow-y: auto;
   position: relative;
 }
 
-p {
-  margin: 0 0 1.2rem 0 !important;
-  padding: 0 !important;
-  text-indent: 0 !important;
-
-}
-
 /* Regras específicas para prevenir overflow apenas onde necessário */
-.container,
-.footer-curve,
+.container, 
+.footer-curve, 
 .header-curve {
   max-width: 100%;
   overflow-x: hidden;
@@ -45,25 +35,29 @@ p {
 
 /* Estilos de cor das bolinhas, para combinar com seu tema */
 .travel-pagination-bottom .swiper-pagination-bullet {
-  background: #60a5fa;
-  /* Cor azul suave do Tailwind para as bolinhas inativas */
+  background: #60a5fa; /* Cor azul suave do Tailwind para as bolinhas inativas */
 }
 
 /* Estilos modernos para os cards de hotel */
 .hotel-card-modern {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backface-visibility: hidden;
-  margin-bottom: 24px;
-  /* Adiciona espaçamento inferior aos cards */
+  margin-bottom: 24px; /* Adiciona espaçamento inferior aos cards */
 }
 
 .hotel-card-modern:hover {
-  transform: translateY(-5px);
+  transform: scale(1.02);
+  border-radius: 12px !important; /* Mantém bordas arredondadas */
+}
+
+/* Hover scale mais sutil para todos os cards */
+.hover\:scale-102:hover {
+  transform: scale(1.02) !important;
 }
 
 .menu1 {
-  position: relative;
-  left: 20%;
+position: relative;
+left: 20%;
 
 }
 
@@ -85,18 +79,19 @@ p {
 .main-action-button,
 .next-purchase,
 .reservation-button,
-.search-button {
-  background: linear-gradient(90deg, #111b32 0%, #60A5FA 100%) !important;
-  color: #FFFFFF !important;
+.search-button
+ {
+  background: linear-gradient(90deg, #111b32 0%, #60A5FA 100%) !important; 
+  color: #FFFFFF !important; 
   cursor: pointer;
-
+         
 }
 
 .main-action-button:hover,
 .next-purchase:hover,
 .reservation-button:hover,
 .search-button:hover {
-  background: linear-gradient(90deg, #60A5FA 0%, #111b32 100%) !important;
+  background: linear-gradient(90deg, #60A5FA 0%,  #111b32 100%) !important; 
 }
 
 
@@ -105,46 +100,34 @@ p {
 .searchHotelsBar,
 .HotelsSeachForm,
 .NewsLetterSection {
-  min-height: 200px;
-  /* Altura mínima ao invés de fixa */
-  height: auto;
-  /* Permite crescer automaticamente */
+  min-height: 200px; /* Altura mínima ao invés de fixa */
+  height: auto; /* Permite crescer automaticamente */
   align-items: center;
   text-align: center;
-  background-image: linear-gradient(to right, #c9f0fdb4, #f9f3f3cf);
-  /* Azul claro para Branco */
-  transition: all 0.3s ease;
-  /* Transição suave para mudanças */
+  background-image: linear-gradient(to right, #c9f0fdb4, #f9f3f3cf); /* Azul claro para Branco */
+  transition: all 0.3s ease; /* Transição suave para mudanças */
 }
 
 /* Quando o dropdown de comodidades estiver aberto, expande o container */
 .searchHotelsBar.dropdown-open {
-  min-height: 600px;
-  /* Altura expandida ainda maior */
-  padding-bottom: 150px;
-  /* Muito mais espaço para o dropdown */
-  margin-bottom: 100px;
-  /* Margem inferior grande */
+  min-height: 600px; /* Altura expandida ainda maior */
+  padding-bottom: 150px; /* Muito mais espaço para o dropdown */
+  margin-bottom: 100px; /* Margem inferior grande */
 }
 
 /* Estilos para o dropdown de comodidades */
 .amenities-dropdown-panel {
   position: absolute !important;
-  z-index: 9999 !important;
-  /* Z-index muito alto */
+  z-index: 9999 !important; /* Z-index muito alto */
   width: 100% !important;
-  max-height: 350px !important;
-  /* Altura maior */
+  max-height: 350px !important; /* Altura maior */
   overflow-y: auto !important;
   background: white !important;
   border: 2px solid #e5e7eb !important;
   border-radius: 12px !important;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
-  /* Sombra mais forte */
-  margin-top: 12px !important;
-  /* Mais espaço do trigger */
-  margin-bottom: 50px !important;
-  /* Margem inferior */
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important; /* Sombra mais forte */
+  margin-top: 12px !important; /* Mais espaço do trigger */
+  margin-bottom: 50px !important; /* Margem inferior */
   animation: dropdownSlideDown 0.3s ease-out !important;
 }
 
@@ -154,7 +137,6 @@ p {
     opacity: 0;
     transform: translateY(-10px) scale(0.95);
   }
-
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -163,27 +145,22 @@ p {
 
 /* Grid interno do dropdown */
 .comodidades-grid {
-  padding: 24px !important;
-  /* Padding maior */
+  padding: 24px !important; /* Padding maior */
   display: grid !important;
-  gap: 16px !important;
-  /* Gap maior entre items */
-  min-height: 250px !important;
-  /* Altura mínima garantida */
+  gap: 16px !important; /* Gap maior entre items */
+  min-height: 250px !important; /* Altura mínima garantida */
 }
 
 /* Items do dropdown */
 .comodidade-item {
   display: flex !important;
   align-items: center !important;
-  padding: 16px 20px !important;
-  /* Padding ainda maior */
+  padding: 16px 20px !important; /* Padding ainda maior */
   border-radius: 8px !important;
   transition: all 0.2s ease !important;
   cursor: pointer !important;
   border: 1px solid transparent !important;
-  min-height: 50px !important;
-  /* Altura mínima dos items */
+  min-height: 50px !important; /* Altura mínima dos items */
 }
 
 .comodidade-item:hover {
@@ -322,11 +299,11 @@ p {
 }
 
 
-.HotelsSeachForm input {
+.HotelsSeachForm input{
   text-align: center;
 }
 
-.HotelsSeachForm {
+.HotelsSeachForm{
   position: relative;
   margin-bottom: 65px;
   top: 55px;
@@ -336,9 +313,9 @@ p {
 
 
 
-.TitleSection {
-
-  font-family: 'Lexend Deca';
+.TitleSection{
+  
+ font-family: 'Lexend Deca';
   font-style: normal;
   font-weight: 200;
   color: #1e3a8a;
@@ -351,11 +328,11 @@ p {
 }
 
 
-.psearchhotelsbar {
+.psearchhotelsbar{
   position: absolute;
-  color: #686868;
+  color:#686868;
   font-size: 8px;
-  right: 10px;
+ right: 10px;
 }
 
 
@@ -364,45 +341,37 @@ p {
 /* Garante que o container Swiper tenha altura e espaço para a paginação abaixo */
 /* Adicione padding-bottom no Swiper para empurrar o conteúdo e dar espaço para a paginação */
 .travel-pagination-bottom {
-  padding-bottom: 40px;
-  /* Aumenta o padding interno do Swiper. Ajuste este valor! */
+  padding-bottom: 40px; /* Aumenta o padding interno do Swiper. Ajuste este valor! */
   /* Aumentei para 40px para ter certeza que há espaço */
 }
 
 /* Posiciona as bolinhas da paginação absolutamente no fundo da área do Swiper */
 /* O bottom negativo as empurra para fora da área dos slides, mas ainda dentro do padding-bottom do Swiper */
 .travel-pagination-bottom .swiper-pagination-bullets {
-  position: relative !important;
-  /* Garante que é absoluto */
-  margin-top: 50px;
-  /* Fixa no fundo do Swiper (onde está o padding-bottom) */
-  left: 50% !important;
-  /* Centraliza horizontalmente */
-  transform: translateX(-50%) !important;
-  /* Ajusta o centralização perfeita */
-  top: auto !important;
-  /* Reseta qualquer 'top' padrão do Swiper */
-  z-index: 10;
-  /* Garante que esteja acima de outros elementos se houver sobreposição inesperada */
+  position: relative !important; /* Garante que é absoluto */
+  margin-top: 50px;       /* Fixa no fundo do Swiper (onde está o padding-bottom) */
+  left: 50% !important;         /* Centraliza horizontalmente */
+  transform: translateX(-50%) !important; /* Ajusta o centralização perfeita */
+  top: auto !important;         /* Reseta qualquer 'top' padrão do Swiper */
+  z-index: 10;                  /* Garante que esteja acima de outros elementos se houver sobreposição inesperada */
 }
 
 
 
 .logo {
-  font-size: 35px;
-  padding: 8px;
-  font-weight: bold;
-  background-image: linear-gradient(to right, #1e3a8a, #60a5fa);
-  /* Azul escuro (#1e3a8a) para azul claro (#60a5fa) */
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  font-family: "Pacifico", cursive;
+font-size: 35px;
+padding: 8px;
+font-weight: bold;
+background-image: linear-gradient(to right, #1e3a8a, #60a5fa); /* Azul escuro (#1e3a8a) para azul claro (#60a5fa) */
+-webkit-background-clip: text;
+background-clip: text;
+color: transparent;
+ font-family: "Pacifico", cursive;
   font-weight: 400;
   font-style: normal;
-  z-index: 1;
+  z-index: 1; 
   height: 70px;
-
+  
 }
 
 /* Garanta que o conteúdo principal permita rolagem */
@@ -439,43 +408,43 @@ footer {
 
 
 
-.pHotelDetails {
-  color: #1e3a8a;
+.pHotelDetails{
+color: #1e3a8a;
 }
 
-a {
+a{
   text-decoration: none;
 }
 
 
-.bgHotelDetails1 {
+.bgHotelDetails1{
   background-color: #e3f2fb;
 }
 
-.bgHotelDetails2 {
+.bgHotelDetails2{
   background-color: #fbf9e3;
 }
 
 
-.explore {
+.explore{
   font-size: 12px;
-  background-image: linear-gradient(to right, #ADD8E6, #FFFFFF);
-  padding: 10px;
-  margin-bottom: 50px;
-  align-content: center;
-  align-items: center;
-  text-align: center;
+   background-image: linear-gradient(to right, #ADD8E6, #FFFFFF); 
+   padding: 10px;
+   margin-bottom: 50px;
+   align-content: center;
+   align-items: center;
+   text-align: center;
   color: #48497f;
   border-color: #1e3a8a;
-  border-radius: 9999px;
+  border-radius: 9999px; 
 }
 
 /* preço do hotel em hotels  */
 
-.priceHotelsDetails {
+.priceHotelsDetails{
   width: 250px;
   background-image: linear-gradient(to right, #ADD8E6, #FFFFFF);
-  color: #145217;
+  color: #145217;  
   font-size: 15px;
   border-radius: 20px;
   padding: 10px;
@@ -484,34 +453,28 @@ a {
 
 /* Estilos para o react-calendar */
 .react-calendar__tile--booked {
-  background-color: #9cb7e5cd;
-  /* Um tom de vermelho claro */
-  color: #0f1559;
-  /* Texto mais escuro */
+  background-color: #9cb7e5cd; /* Um tom de vermelho claro */
+  color: #0f1559; /* Texto mais escuro */
   font-weight: bold;
 }
 
 .react-calendar__tile--available {
-  background-color: #2f47b4;
-  /* Um tom de verde claro */
-  color: #065f46;
-  /* Texto mais escuro */
+  background-color: #2f47b4; /* Um tom de verde claro */
+  color: #065f46; /* Texto mais escuro */
   font-weight: bold;
 }
 
 /* Opcional: para tornar os dias clicáveis mais óbvios */
 .react-calendar__tile:enabled:hover {
-  background-color: #e0e0e0;
+    background-color: #e0e0e0;
 }
-
 .react-calendar__tile--active {
-  background-color: #3b82f6 !important;
-  /* Cor azul para a data selecionada */
-  color: white !important;
+    background-color: #3b82f6 !important; /* Cor azul para a data selecionada */
+    color: white !important;
 }
 
 
-.react-calendar__month-view__days__day--weekend {
+.react-calendar__month-view__days__day--weekend{
   color: #bcbcbc !important;
 }
 
@@ -519,31 +482,21 @@ a {
 
 /* Prioriza as cores de status sobre o destaque do evento */
 .react-calendar__tile--booked {
-  background-color: #f1ff55 !important;
-  /* Um tom de vermelho claro */
-  color: #115e30 !important;
-  /* Texto mais escuro */
+  background-color: #f1ff55 !important; /* Um tom de vermelho claro */
+  color: #115e30 !important; /* Texto mais escuro */
 }
-
 .react-calendar__tile--available {
-  background-color: #a7e1f3 !important;
-  /* Um tom de verde claro */
-  color: #065f46 !important;
-  /* Texto mais escuro */
+  background-color: #a7e1f3 !important; /* Um tom de verde claro */
+  color: #065f46 !important; /* Texto mais escuro */
 }
 
 /* Estilo para dias desabilitados no react-calendar */
 .react-calendar__tile:disabled {
-  background-color: #f0f0f0 !important;
-  /* Um cinza bem claro */
-  color: #a0a0a0 !important;
-  /* Cor do texto cinza */
-  cursor: not-allowed !important;
-  /* Cursor de "proibido" */
-  opacity: 0.8;
-  /* Um pouco de transparência */
+  background-color: #f0f0f0 !important; /* Um cinza bem claro */
+  color: #a0a0a0 !important; /* Cor do texto cinza */
+  cursor: not-allowed !important; /* Cursor de "proibido" */
+  opacity: 0.8; /* Um pouco de transparência */
 }
-
 .react-calendar__tile:disabled:hover {
   background-color: #f0f0f0 !important;
 }
@@ -553,64 +506,51 @@ a {
 
 
 .react-datepicker__input-container input {
-  width: 100% !important;
-  /* Força a largura para 100% */
-  display: block !important;
-  /* Garante que se comporte como bloco */
-  box-sizing: border-box !important;
-  /* Inclui padding na largura */
+    width: 100% !important; /* Força a largura para 100% */
+    display: block !important; /* Garante que se comporte como bloco */
+    box-sizing: border-box !important; /* Inclui padding na largura */
 }
 
 /* Garante que o container do DatePicker também se estenda */
 .react-datepicker-wrapper {
-  width: 100% !important;
-  /* Força a largura total do wrapper */
+    width: 100% !important; /* Força a largura total do wrapper */
 }
 
 /* Opcional: Ajustar o cursor e aparência do calendário */
 .react-datepicker__input-container {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 /* Estilos para a borda vermelha de erro, caso já não esteja funcionando */
 .react-datepicker__input-container input.border-red-500 {
-  border-color: #EF4444 !important;
-  /* Tailwind red-500 */
+    border-color: #EF4444 !important; /* Tailwind red-500 */
 }
-
 .react-datepicker__input-container input.border-green-500 {
-  border-color: #22C55E !important;
-  /* Tailwind green-500 */
+    border-color: #22C55E !important; /* Tailwind green-500 */
 }
 
 /* Estilos gerais para os inputs, se não estiverem em outro lugar */
 .shadow.appearance-none.border.rounded.w-full.py-2.px-3.text-gray-700.leading-tight.focus\:outline-none.focus\:shadow-outline {
-  /* Estas classes já vêm do Tailwind, mas se você precisar garantir a aplicação, pode repetir aqui */
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  border-width: 1px;
-  border-style: solid;
-  border-color: #E2E8F0;
-  /* gray-300 */
-  border-radius: 0.25rem;
-  /* rounded */
-  width: 100%;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  padding-left: 0.75rem;
-  padding-right: 0.75rem;
-  color: #4A5568;
-  /* gray-700 */
-  line-height: 1.25;
-  outline: none;
-  /* focus:outline-none */
+    /* Estas classes já vêm do Tailwind, mas se você precisar garantir a aplicação, pode repetir aqui */
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #E2E8F0; /* gray-300 */
+    border-radius: 0.25rem; /* rounded */
+    width: 100%;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    padding-left: 0.75rem;
+    padding-right: 0.75rem;
+    color: #4A5568; /* gray-700 */
+    line-height: 1.25;
+    outline: none; /* focus:outline-none */
 }
-
 .shadow.appearance-none.border.rounded.w-full.py-2.px-3.text-gray-700.leading-tight.focus\:outline-none.focus\:shadow-outline:focus {
-  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
-  /* focus:shadow-outline, blue-500 semi-transparent */
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* focus:shadow-outline, blue-500 semi-transparent */
 }
 
 
@@ -649,8 +589,7 @@ a {
 /* Tablet devices */
 @media screen and (min-width: 768px) and (max-width: 1023px) {
   .hamburger-menu {
-    display: flex;
-    /* Show hamburger on tablets */
+    display: flex; /* Show hamburger on tablets */
   }
 
   .desktop-menu {
@@ -679,21 +618,18 @@ a {
 
 a {
   color: #a3a3a3;
-  transition: color 0.3s ease, background-color 0.3s ease;
+  transition: color 0.3s ease, background-color 0.3s ease; 
 }
 
 a:hover {
-  color: #fcfcfc;
-  /* Azul escuro do Tailwind */
+  color: #fcfcfc; /* Azul escuro do Tailwind */
   background-color: none;
-  text-decoration: none;
-  /* Remove underline no hover */
+  text-decoration: none; /* Remove underline no hover */
 }
 
 
 .active-link {
-  color: #FFFFFF !important;
-  /* Força o texto a ficar branco quando ativo */
+  color: #FFFFFF !important; /* Força o texto a ficar branco quando ativo */
   position: relative;
 }
 
@@ -704,8 +640,7 @@ a:hover {
   left: 0;
   width: 100%;
   height: 2px;
-  background-color: #60A5FA;
-  /* Cor azul para combinar com o tema */
+  background-color: #60A5FA; /* Cor azul para combinar com o tema */
   transform: scaleX(1);
   transform-origin: bottom left;
 }
@@ -718,8 +653,7 @@ a:hover {
 
 /* Estilos de cor das bolinhas, para combinar com seu tema */
 .travel-pagination-bottom .swiper-pagination-bullet {
-  background: #60a5fa;
-  /* Cor azul suave do Tailwind para as bolinhas inativas */
+  background: #60a5fa; /* Cor azul suave do Tailwind para as bolinhas inativas */
   opacity: 0.6;
 }
 
@@ -734,8 +668,7 @@ a:hover {
 }
 
 .travel-pagination-bottom .swiper-pagination-bullet-active {
-  background: #2563eb;
-  /* Cor azul mais forte do Tailwind para a bolinha ativa */
+  background: #2563eb; /* Cor azul mais forte do Tailwind para a bolinha ativa */
   opacity: 1;
 }
 
@@ -755,8 +688,7 @@ a:hover {
   left: 50% !important;
   transform: translateX(-50%) !important;
   bottom: 35px !important;
-  z-index: 20;
-  /* Certifique-se de que esteja acima da próxima seção arredondada */
+  z-index: 20; /* Certifique-se de que esteja acima da próxima seção arredondada */
 }
 
 /* Estilos adicionais para garantir que não haja espaços brancos */
@@ -766,14 +698,12 @@ a:hover {
 
 /* Opcional: Estilo para as bolinhas do Hero, se quiserem ser diferentes */
 .hero-swiper-pagination .swiper-pagination-bullet {
-  background: white;
-  /* Bolinhas brancas para contraste no hero */
+  background: white; /* Bolinhas brancas para contraste no hero */
   opacity: 0.7;
 }
 
 .hero-swiper-pagination .swiper-pagination-bullet-active {
-  background: white;
-  /* Bolinha ativa branca */
+  background: white; /* Bolinha ativa branca */
   opacity: 1;
 }
 
@@ -804,8 +734,7 @@ a:hover {
 }
 
 .favorite-button.favorited svg {
-  color: #EF4444 !important;
-  /* Vermelho quando favorito */
+  color: #EF4444 !important; /* Vermelho quando favorito */
   fill: #EF4444 !important;
 }
 
@@ -817,7 +746,6 @@ a:hover {
     opacity: 0;
     transform: translateY(20px) scale(0.8);
   }
-
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -831,19 +759,16 @@ a:hover {
     transform: translateY(30px) scale(0.7) rotate(-5deg);
     filter: blur(3px);
   }
-
   30% {
     opacity: 0.3;
     transform: translateY(20px) scale(0.8) rotate(-2deg);
     filter: blur(2px);
   }
-
   70% {
     opacity: 0.7;
     transform: translateY(10px) scale(0.9) rotate(0deg);
     filter: blur(1px);
   }
-
   100% {
     opacity: 1;
     transform: translateY(0) scale(1) rotate(0deg);
@@ -858,19 +783,16 @@ a:hover {
     transform: translateY(0) scale(1) rotate(0deg);
     filter: blur(0);
   }
-
   30% {
     opacity: 0.7;
     transform: translateY(10px) scale(0.9) rotate(2deg);
     filter: blur(1px);
   }
-
   70% {
     opacity: 0.3;
     transform: translateY(20px) scale(0.8) rotate(5deg);
     filter: blur(2px);
   }
-
   100% {
     opacity: 0;
     transform: translateY(30px) scale(0.7) rotate(8deg);
@@ -880,13 +802,10 @@ a:hover {
 
 /* Animação sutil de "respiração" */
 @keyframes breathe {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: scale(1);
     box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
   }
-
   50% {
     transform: scale(1.05);
     box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
@@ -900,25 +819,21 @@ a:hover {
     transform: scale(0.6) rotate(-15deg);
     filter: blur(2px);
   }
-
   30% {
     opacity: 0.3;
     transform: scale(0.8) rotate(-5deg);
     filter: blur(1px);
   }
-
   70% {
     opacity: 0.8;
     transform: scale(1.1) rotate(2deg);
     filter: blur(0.5px);
   }
-
   85% {
     opacity: 0.95;
     transform: scale(0.98) rotate(0deg);
     filter: blur(0);
   }
-
   100% {
     opacity: 1;
     transform: scale(1) rotate(0deg);
@@ -932,17 +847,14 @@ a:hover {
     transform: scale(0);
     opacity: 0;
   }
-
   50% {
     transform: scale(1.2);
     opacity: 0.8;
   }
-
   80% {
     transform: scale(0.9);
     opacity: 1;
   }
-
   100% {
     transform: scale(1);
     opacity: 1;
@@ -955,12 +867,10 @@ a:hover {
     opacity: 0.4;
     transform: rotate(0deg) scale(0.8);
   }
-
   50% {
     opacity: 0.8;
     transform: rotate(180deg) scale(1);
   }
-
   100% {
     opacity: 0.4;
     transform: rotate(360deg) scale(0.8);
@@ -1015,8 +925,8 @@ a:hover {
 /* Performance otimizada para animações */
 .smooth-transition {
   transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
-    box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+              opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* === SCROLL REVEAL ANIMATIONS === */
@@ -1177,8 +1087,8 @@ a:hover {
 }
 
 .scroll-reveal-performance-medium {
-  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-    transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+              transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 .scroll-reveal-performance-high {
@@ -1188,26 +1098,21 @@ a:hover {
 /* Otimizações para mobile */
 @media (max-width: 768px) {
   .scroll-reveal {
-    will-change: auto;
-    /* Remove will-change em mobile para economizar memória */
+    will-change: auto; /* Remove will-change em mobile para economizar memória */
   }
-
+  
   .scroll-reveal-fadeUp {
-    transform: translateY(30px);
-    /* Movimento menor em mobile */
+    transform: translateY(30px); /* Movimento menor em mobile */
   }
-
+  
   .scroll-reveal-slideLeft,
   .scroll-reveal-slideRight {
-    transform: translateX(30px);
-    /* Movimento menor em mobile */
+    transform: translateX(30px); /* Movimento menor em mobile */
   }
-
+  
   .scroll-reveal-cardPop {
-    transform: translateY(20px) scale(0.9);
-    /* Animação mais sutil */
-    filter: none;
-    /* Remove blur em mobile */
+    transform: translateY(20px) scale(0.9); /* Animação mais sutil */
+    filter: none; /* Remove blur em mobile */
   }
 }
 
@@ -1235,7 +1140,6 @@ a:hover {
     opacity: 0;
     transform: translateY(20px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1247,7 +1151,7 @@ a:hover {
   .scroll-reveal-fadeUp {
     transform: translateY(40px);
   }
-
+  
   .scroll-reveal-slideLeft,
   .scroll-reveal-slideRight {
     transform: translateX(40px);
@@ -1327,15 +1231,43 @@ a:hover {
 
 /* === ESPAÇAMENTO PARA CARDS E GRIDS === */
 .cards-grid {
-  gap: 24px;
-  /* Espaçamento entre cards no grid */
-  margin-bottom: 32px;
-  /* Espaçamento inferior do grid */
+  gap: 24px; /* Espaçamento entre cards no grid */
+  margin-bottom: 32px; /* Espaçamento inferior do grid */
 }
 
 /* Espaçamento adicional para cards individuais */
 .card-spacing {
-  margin-bottom: 24px;
+  margin: 16px;
+  padding: 8px;
+}
+
+/* Speech bubble styling para feedbacks */
+.feedback-bubble {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.feedback-bubble:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.feedback-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 32px;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 12px solid white;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
 /* Para seções com cards */
@@ -1377,3 +1309,7 @@ a:hover {
 .read-more-button:hover svg {
   transform: translateX(3px);
 }
+
+
+
+
