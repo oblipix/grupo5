@@ -194,7 +194,6 @@ function HotelCard({ hotel }) {
                                     >
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 18.75l-7.682-7.682a4.5 4.5 0 010-6.364z" />
                                     </svg>
-                                    <span className="text-xs font-medium hidden sm:inline">{isSaved ? 'Salvo' : 'Salvar'}</span>
                                 </button>
                                 {/* Container para os confetes */}
                                 <div ref={confettiRef} className="confetti-container"></div>
