@@ -112,12 +112,9 @@ function HotelsPage() {
   return (
     // 2. Usar um Fragment <> para agrupar os elementos
     <>
-      {/* 3. Hero e Menu com animações */}
+      {/* 3. Hero e Menu sem animação para manter posicionamento */}
       <HeroSwiper />
-      
-      <ScrollReveal animation="fadeUp" delay={200}>
-        <HomeMenu />
-      </ScrollReveal>
+      <HomeMenu />
 
       <section id="hotels-section" className="bg-gray-50 min-h-screen">
         <ScrollReveal animation="fadeUp" delay={300}>
