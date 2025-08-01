@@ -249,5 +249,13 @@ namespace ViagemImpacta.Services.Implementations
             await smtpClient.SendMailAsync(mensagem);
         }
 
+        public async Task<Reservation> UpdateAsync(UpdateReservationDto dto)
+        {
+            var reservation = await _unitOfWork.Reservations.GetByIdAsync(dto.ReservationId);
+
+            await _unitOfWork.Reservations.UpdateAsync(reservation);
+            await _unitOfWork.CommitAsync();
+            return reservation;
+        }
     }
 }
