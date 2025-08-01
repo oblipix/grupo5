@@ -90,18 +90,18 @@ function ContactPage() {
                             <div className="space-y-6 mb-8">
                                 <div className="flex items-center text-gray-700 text-lg">
                                     <EnvelopeIcon className="h-7 w-7 text-blue-600 mr-4" />
-                                    <span>email@tripz.com</span>
+                                    <span>contato@tripz.com</span>
                                 </div>
                                 <div className="flex items-center text-gray-700 text-lg">
                                     <PhoneIcon className="h-7 w-7 text-green-500 mr-4" />
-                                    <span>+55 (XX) 9XXXX-XXXX</span>
+                                    <span>(81) 4005-8181</span>
                                 </div>
                                 <div className="flex items-start text-gray-700 text-lg">
                                     <MapPinIcon className="h-7 w-7 text-red-500 mr-4 flex-shrink-0" />
                                     <span>
-                                        Rua Exemplo, 123 - Centro
+                                        Av. Boa Viagem, 1000 - Boa Viagem
 
-                                        Cidade, Estado - CEP 12345-678
+                                        Recife, Pernambuco - CEP 51021-000
 
                                         Brasil
                                     </span>
