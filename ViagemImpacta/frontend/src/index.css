@@ -24,7 +24,12 @@ body {
   overflow-y: auto;
   position: relative;
 }
-
+p {
+  margin: 0 0 1.2rem 0 !important;
+  padding: 0 !important;
+  text-indent: 0 !important;
+ 
+}
 /* Regras específicas para prevenir overflow apenas onde necessário */
 .container, 
 .footer-curve, 
