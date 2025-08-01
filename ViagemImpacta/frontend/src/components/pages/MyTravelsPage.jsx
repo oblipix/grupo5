@@ -4,6 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useModal } from '../context/ModalContext'; // Importa o contexto de modal
 import HotelCard from '../hotels/HotelCard'; // Usando o card unificado
 import ScrollReveal from '../common/ScrollReveal.jsx';
 import AnimatedSection from '../common/AnimatedSection.jsx';
@@ -29,6 +30,9 @@ function MyTravelsPage() {
     loadReservationHistory, // Adiciona função para carregar reservas
     token
   } = useAuth();
+
+  // Hook do contexto de modal
+  const { showModal } = useModal();
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState(currentUser || {});
@@ -193,7 +197,12 @@ function MyTravelsPage() {
       
       if (!receiptContent) {
         console.error('Conteúdo do comprovante vazio ou inválido');
-        alert('Não foi possível gerar o comprovante. Por favor, tente novamente.');
+        showModal({
+          title: '⚠️ Erro na Geração',
+          message: 'Não foi possível gerar o comprovante. Por favor, tente novamente.',
+          actionText: 'OK',
+          showHeader: true
+        });
         return;
       }
       
@@ -225,12 +234,22 @@ function MyTravelsPage() {
         console.log('Download finalizado e recursos liberados.');
       }, 100);
       
-      // Feedback visual para o usuário
-      alert('Comprovante baixado com sucesso!');
+      // Feedback visual para o usuário usando modal
+      showModal({
+        title: '🎉 Comprovante Baixado!',
+        message: 'Seu comprovante foi baixado com sucesso! Você pode encontrá-lo na pasta de downloads.',
+        actionText: 'OK',
+        showHeader: true
+      });
     } catch (error) {
       console.error('Erro ao baixar comprovante:', error);
       console.error('Stack trace:', error.stack);
-      alert('Ocorreu um erro ao baixar o comprovante. Por favor, tente novamente.');
+      showModal({
+        title: '❌ Erro no Download',
+        message: 'Ocorreu um erro ao baixar o comprovante. Por favor, tente novamente.',
+        actionText: 'Tentar Novamente',
+        showHeader: true
+      });
     }
   };
   
@@ -259,7 +278,12 @@ function MyTravelsPage() {
       
       if (!receiptContent) {
         console.error('Conteúdo do comprovante vazio ou inválido');
-        alert('Não foi possível gerar o comprovante. Por favor, tente novamente.');
+        showModal({
+          title: '⚠️ Erro na Geração',
+          message: 'Não foi possível gerar o comprovante. Por favor, tente novamente.',
+          actionText: 'OK',
+          showHeader: true
+        });
         return;
       }
 
@@ -385,7 +409,12 @@ function MyTravelsPage() {
           setCurrentReservation(confirmedReservation);
           setShowReceiptModal(true);
         } else {
-          alert('Ocorreu um erro ao visualizar o comprovante. Por favor, tente novamente.');
+          showModal({
+            title: '❌ Erro na Visualização',
+            message: 'Ocorreu um erro ao visualizar o comprovante. Por favor, tente novamente.',
+            actionText: 'OK',
+            showHeader: true
+          });
         }
       }
     }
