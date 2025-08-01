@@ -14,6 +14,10 @@ import NewsletterSection from '../pages/NewsletterSection.jsx';
 import PromocoesDestaque from '../hotels/PromocoesDestaque.jsx';
 import RecommendedHotelsSection from '../hotels/RecommendedHotelsSection.jsx';
 
+// Imports dos componentes de animação
+import ScrollReveal from '../common/ScrollReveal.jsx';
+import AnimatedSection from '../common/AnimatedSection.jsx';
+
 
 function HomePage() {
   const { isLoaded } = useOutletContext();
@@ -35,30 +39,46 @@ function HomePage() {
 
   return (
     <>
+      {/* Hero aparece imediatamente */}
       <HeroSwiper />
-      <HomeMenu />
-      <SearchHotelsBar
-        selectedAmenities={selectedAmenities}
-        onAmenitiesChange={setSelectedAmenities}
-        onSearch={handleSearch}
-        // ...outras props se necessário
-      />
+      
+      {/* Menu surge de baixo */}
+      <ScrollReveal animation="fadeUp" delay={300}>
+        <HomeMenu />
+      </ScrollReveal>
+      
+      {/* Barra de pesquisa surge suavemente */}
+      <ScrollReveal animation="fadeUp" delay={200}>
+        <SearchHotelsBar />
+      </ScrollReveal>
 
-      {/* Seção de Promoções em Destaque acima do Blog */}
-      <PromocoesDestaque />
+      {/* Seção de Promoções em Destaque - surge da esquerda */}
+      <ScrollReveal animation="slideLeft" delay={300}>
+        <PromocoesDestaque />
+      </ScrollReveal>
 
-      {/* Seção de Hotéis Recomendados */}
-      <div className="container mx-auto py-12">
+      {/* Seção de Hotéis Recomendados - efeito especial */}
+      <AnimatedSection animation="fadeUp" className="container mx-auto py-12">
         <RecommendedHotelsSection />
-      </div>
+      </AnimatedSection>
 
-      <BlogSection 
-        id="dicas-de-viagem"
-        title="Dicas de Viagem: Prepare sua Aventura!" 
-      />
+      {/* Blog surgindo com zoom */}
+      <ScrollReveal animation="zoomIn" delay={200}>
+        <BlogSection 
+          id="dicas-de-viagem"
+          title="Dicas de Viagem: Prepare sua Aventura!" 
+        />
+      </ScrollReveal>
 
-      <HotelsMapSection isLoaded={isLoaded} />
-      <NewsletterSection />
+      {/* Mapa surge da direita */}
+      <ScrollReveal animation="slideRight" delay={300}>
+        <HotelsMapSection isLoaded={isLoaded} />
+      </ScrollReveal>
+      
+      {/* Newsletter surge de baixo */}
+      <ScrollReveal animation="fadeUp" delay={400}>
+        <NewsletterSection />
+      </ScrollReveal>
     </>
   );
 }
