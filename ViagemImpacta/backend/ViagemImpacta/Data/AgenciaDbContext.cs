@@ -18,96 +18,17 @@ namespace ViagemImpacta.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-          
+            // Configuração para armazenar lista de URLs de imagem como string delimitada
+            modelBuilder.Entity<Hotel>()
+                .Property(h => h.ImageUrls)
+                .HasConversion(
+                    v => v != null && v.Any() ? string.Join('|', v.Where(url => !string.IsNullOrWhiteSpace(url))) : "", // Converter lista para string separada por |
+                    v => string.IsNullOrWhiteSpace(v) ? new List<string>() : v.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList() // Converter string de volta para lista
+                );
 
-    base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Hotel>().HasData(
-                new Hotel
-                {
-                    HotelId = 1,
-                    Name = "Hotel Copacabana Palace",
-                    City = "Rio de Janeiro",
-                    Stars = 5,
-                    HotelAddress = "Av. Atlântica, 1702",
-                    Phone = "(21) 2548-7070",
-                    Wifi = true,
-                    Parking = true,
-                    Pool = true,
-                    Gym = true,
-                    Restaurant = true,
-                    Bar = true,
-                    RoomService = true,
-                    Accessibility = true,
-                    WarmPool = false,
-                    Theater = false,
-                    Garden = true,
-                    PetFriendly = true,
-                    BreakfastIncludes = true,
-                    Description = "Luxuoso hotel localizado na praia de Copacabana, com suítes de alto padrão, spa e várias opções de lazer."
-                },
-                new Hotel
-                {
-                    HotelId = 2,
-                    Name = "Hotel Serra Gaúcha",
-                    City = "Gramado",
-                    Stars = 4,
-                    HotelAddress = "Rua das Hortênsias, 1000",
-                    Phone = "(54) 3286-1234",
-                    Wifi = true,
-                    Parking = true,
-                    Pool = true,
-                    Gym = false,
-                    Restaurant = true,
-                    Bar = false,
-                    RoomService = true,
-                    Accessibility = true,
-                    WarmPool = true,
-                    Theater = false,
-                    Garden = true,
-                    PetFriendly = false,
-                    BreakfastIncludes = true,
-                    Description = "Hotel aconchegante em Gramado, ideal para famílias, com quartos confortáveis e vista para as montanhas."
-                }
-            );
-            modelBuilder.Entity<Room>().HasData(
-    new Room
-    {
-        RoomId = 1,
-        HotelId = 1, // Hotel Copacabana Palace
-       
-        Capacity = 2,
-        AverageDailyPrice = 1200.00m,
-        Description = "Suíte luxo com vista para o mar, cama king size, ar-condicionado e varanda."
-    },
-    new Room
-    {
-        RoomId = 2,
-        HotelId = 1, // Hotel Copacabana Palace
-       
-        Capacity = 2,
-        AverageDailyPrice = 800.00m,
-        Description = "Quarto standard confortável, cama queen size, ar-condicionado."
-    },
-    new Room
-    {
-        RoomId = 3,
-        HotelId = 2, // Hotel Serra Gaúcha
-       
-        Capacity = 4,
-        AverageDailyPrice = 950.00m,
-        Description = "Quarto familiar amplo, duas camas de casal, vista para o jardim."
-    },
-    new Room
-    {
-        RoomId = 4,
-        HotelId = 2, // Hotel Serra Gaúcha
         
-        Capacity = 2,
-        AverageDailyPrice = 1100.00m,
-        Description = "Suíte luxo com lareira, cama king size, varanda privativa."
-    }
-);
 
 
             base.OnModelCreating(modelBuilder);

@@ -15,7 +15,7 @@ function BlogPostCard({ post }) {
         <Link to={`/blog/${post.id}`}
               className="block group w-full relative rounded-lg shadow-md
                          transform transition-all duration-300
-                         hover:scale-105 hover:shadow-xl">
+                         hover:scale-102 hover:shadow-xl">
             {/* O container interno para o fundo e o conteúdo */}
             <div className="bg-white w-full flex flex-col rounded-lg overflow-hidden">
                 <div className="relative w-full h-48 overflow-hidden rounded-t-lg">

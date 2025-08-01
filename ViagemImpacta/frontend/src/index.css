@@ -24,7 +24,12 @@ body {
   overflow-y: auto;
   position: relative;
 }
-
+p {
+  margin: 0 0 1.2rem 0 !important;
+  padding: 0 !important;
+  text-indent: 0 !important;
+ 
+}
 /* Regras específicas para prevenir overflow apenas onde necessário */
 .container, 
 .footer-curve, 
@@ -38,6 +43,186 @@ body {
   background: #60a5fa; /* Cor azul suave do Tailwind para as bolinhas inativas */
 }
 
+/* Estilos customizados para Swiper de seções específicas */
+.promocoes-swiper-pagination,
+.recomendados-swiper-pagination,
+.blog-swiper-pagination {
+  position: relative !important;
+  width: auto !important;
+  margin: 0 auto !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.promocoes-swiper-pagination .swiper-pagination-bullet,
+.recomendados-swiper-pagination .swiper-pagination-bullet,
+.blog-swiper-pagination .swiper-pagination-bullet {
+  background: #94a3b8; /* Cinza claro para bullets inativos */
+  opacity: 0.7;
+  width: 10px;
+  height: 10px;
+  margin: 0 4px;
+  transition: all 0.3s ease;
+}
+
+.promocoes-swiper-pagination .swiper-pagination-bullet-active,
+.recomendados-swiper-pagination .swiper-pagination-bullet-active,
+.blog-swiper-pagination .swiper-pagination-bullet-active {
+  background: #2563eb; /* Azul para bullet ativo */
+  opacity: 1;
+  transform: scale(1.3);
+}
+
+/* Estilos para botões de navegação customizados */
+.promocoes-swiper-button-prev,
+.promocoes-swiper-button-next,
+.recomendados-swiper-button-prev,
+.recomendados-swiper-button-next,
+.blog-swiper-button-prev,
+.blog-swiper-button-next {
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  border: none;
+  z-index: 10;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.promocoes-swiper-button-prev:disabled,
+.promocoes-swiper-button-next:disabled,
+.recomendados-swiper-button-prev:disabled,
+.recomendados-swiper-button-next:disabled,
+.blog-swiper-button-prev:disabled,
+.blog-swiper-button-next:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Garantir overflow visível para botões de navegação */
+@media (max-width: 768px) {
+  /* Remover padding que estava deformando os cards */
+  .swiper-container {
+    overflow: visible !important;
+  }
+  
+  .swiper-wrapper {
+    overflow: visible !important;
+  }
+  
+  .recomendados-swiper-button-prev,
+  .recomendados-swiper-button-next,
+  .promocoes-swiper-button-prev,
+  .promocoes-swiper-button-next,
+  .blog-swiper-button-prev,
+  .blog-swiper-button-next {
+    position: relative !important;
+    z-index: 50 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  }
+}
+
+/* Melhorar o layout dos cards no mobile */
+@media (max-width: 768px) {
+  .swiper-slide {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  
+  .swiper-slide > * {
+    width: 100% !important;
+    max-width: 90% !important;
+    margin: 0 auto !important;
+  }
+  
+  /* Garantir que o hover dos cards não seja cortado */
+  .swiper-container,
+  .swiper-wrapper {
+    overflow: visible !important;
+  }
+  
+  /* Espaçamento adequado para cards */
+  .hotel-card-modern {
+    margin: 8px 0 !important;
+  }
+  
+  /* Garantir que Swipers não cortem cards */
+  .swiper {
+    overflow: visible !important;
+    padding: 0 16px !important;
+  }
+  
+  /* REMOVER HOVER DOS CARDS NO MOBILE */
+  .hotel-card-modern:hover,
+  .card-hover-premium:hover {
+    transform: none !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .card-hover-premium:hover .card-image {
+    transform: none !important;
+  }
+  
+  .card-hover-premium:hover .card-title {
+    color: inherit !important;
+  }
+  
+  /* CENTRALIZAR DESCRIÇÃO DOS HOTÉIS NO MOBILE */
+  .hotel-card-modern .p-4,
+  .hotel-card-modern .p-3 {
+    text-align: center !important;
+  }
+  
+  .hotel-card-modern h3,
+  .hotel-card-modern .card-title {
+    text-align: center !important;
+  }
+  
+  .hotel-card-modern p {
+    text-align: center !important;
+  }
+  
+  /* CORRIGIR PREÇO DEFORMADO NO MOBILE */
+  .hotel-card-modern .price-tag {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #2563eb !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+  }
+  
+  .hotel-card-modern .mt-auto {
+    margin-top: 12px !important;
+  }
+  
+  .hotel-card-modern .flex.items-center.justify-between {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  
+  .hotel-card-modern .main-action-button {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+  }
+  
+  /* AJUSTAR TAG DE OFERTAS PARA FICAR DENTRO DO CARD */
+  .relative .absolute[class*="OFERTA"],
+  .relative .absolute[class*="bg-red-500"] {
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    z-index: 20 !important;
+  }
+}
+
 /* Estilos modernos para os cards de hotel */
 .hotel-card-modern {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -46,7 +231,14 @@ body {
 }
 
 .hotel-card-modern:hover {
-  transform: translateY(-5px);
+  transform: scale(1.02);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  border-radius: 12px !important; /* Mantém bordas arredondadas */
+}
+
+/* Hover scale mais sutil para todos os cards */
+.hover\:scale-102:hover {
+  transform: scale(1.02) !important;
 }
 
 .menu1 {
@@ -94,9 +286,202 @@ left: 20%;
 .searchHotelsBar,
 .HotelsSeachForm,
 .NewsLetterSection {
+  min-height: 200px; /* Altura mínima ao invés de fixa */
+  height: auto; /* Permite crescer automaticamente */
   align-items: center;
   text-align: center;
   background-image: linear-gradient(to right, #c9f0fdb4, #f9f3f3cf); /* Azul claro para Branco */
+  transition: all 0.3s ease; /* Transição suave para mudanças */
+}
+
+/* Quando o dropdown de comodidades estiver aberto, expande o container */
+.searchHotelsBar.dropdown-open {
+  min-height: 600px; /* Altura expandida ainda maior */
+  padding-bottom: 150px; /* Muito mais espaço para o dropdown */
+  margin-bottom: 100px; /* Margem inferior grande */
+}
+
+/* Estilos para o dropdown de comodidades */
+.amenities-dropdown-panel {
+  position: absolute !important;
+  z-index: 9999 !important; /* Z-index muito alto */
+  width: 100% !important;
+  max-height: 350px !important; /* Altura maior */
+  overflow-y: auto !important;
+  background: white !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important; /* Sombra mais forte */
+  margin-top: 12px !important; /* Mais espaço do trigger */
+  margin-bottom: 50px !important; /* Margem inferior */
+  animation: dropdownSlideDown 0.3s ease-out !important;
+}
+
+/* Animação para o dropdown aparecer */
+@keyframes dropdownSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Grid interno do dropdown */
+.comodidades-grid {
+  padding: 24px !important; /* Padding maior */
+  display: grid !important;
+  gap: 16px !important; /* Gap maior entre items */
+  min-height: 250px !important; /* Altura mínima garantida */
+}
+
+/* Items do dropdown */
+.comodidade-item {
+  display: flex !important;
+  align-items: center !important;
+  padding: 16px 20px !important; /* Padding ainda maior */
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  border: 1px solid transparent !important;
+  min-height: 50px !important; /* Altura mínima dos items */
+}
+
+.comodidade-item:hover {
+  background-color: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+}
+
+/* === ESTILOS PARA SELECTS (DROPDOWNS NORMAIS) === */
+
+/* Container dos inputs e selects */
+.searchHotelsBar .relative.flex.items-center {
+  position: relative;
+  transition: all 0.2s ease;
+  overflow: visible;
+}
+
+.searchHotelsBar .relative.flex.items-center:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo melhorado para os selects */
+.searchHotelsBar select {
+  background: white !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #374151 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 16px center !important;
+  background-repeat: no-repeat !important;
+  background-size: 16px !important;
+  padding-right: 50px !important;
+  min-height: 50px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.searchHotelsBar select:hover {
+  border-color: #60a5fa !important;
+  background: #f8fafc !important;
+  box-shadow: 0 8px 20px rgba(96, 165, 250, 0.15) !important;
+  transform: translateY(-1px);
+}
+
+.searchHotelsBar select:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 8px 20px rgba(96, 165, 250, 0.15) !important;
+  background: #ffffff !important;
+}
+
+/* Options do select */
+.searchHotelsBar select option {
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  color: #374151 !important;
+  background: white !important;
+  border: 1px solid transparent !important;
+  margin: 2px 0 !important;
+}
+
+.searchHotelsBar select option:hover {
+  background: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+}
+
+.searchHotelsBar select option:checked {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+  font-weight: 600 !important;
+}
+
+/* Estilo melhorado para os inputs de data */
+.searchHotelsBar input[type="date"],
+.searchHotelsBar input[type="text"] {
+  background: white !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #374151 !important;
+  transition: all 0.2s ease !important;
+  min-height: 50px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.searchHotelsBar input[type="date"]:hover,
+.searchHotelsBar input[type="text"]:hover {
+  border-color: #60a5fa !important;
+  background: #f8fafc !important;
+  box-shadow: 0 8px 20px rgba(96, 165, 250, 0.15) !important;
+  transform: translateY(-1px);
+}
+
+.searchHotelsBar input[type="date"]:focus,
+.searchHotelsBar input[type="text"]:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 8px 20px rgba(96, 165, 250, 0.15) !important;
+  background: #ffffff !important;
+}
+
+/* Estilo para o trigger do dropdown de comodidades */
+.amenities-dropdown-trigger {
+  background: white !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  min-height: 50px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.amenities-dropdown-trigger:hover {
+  border-color: #60a5fa !important;
+  background: #f8fafc !important;
+  box-shadow: 0 8px 20px rgba(96, 165, 250, 0.15) !important;
+  transform: translateY(-1px);
+}
+
+/* Labels melhoradas */
+.searchHotelsBar .labelForms {
+  font-weight: 600 !important;
+  color: #374151 !important;
+  font-size: 14px !important;
+  margin-bottom: 8px !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 
 
@@ -465,7 +850,27 @@ a:hover {
 }
 
 .hotel-card-modern:hover {
-  transform: translateY(-5px);
+  transform: scale(1.02);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos de hover personalizados para cards */
+.card-hover-premium {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backface-visibility: hidden;
+}
+
+.card-hover-premium:hover {
+  transform: scale(1.02);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.card-hover-premium:hover .card-image {
+  transform: scale(1.1);
+}
+
+.card-hover-premium:hover .card-title {
+  color: #1e3a8a;
 }
 
 .travel-pagination-bottom .swiper-pagination-bullet-active {
@@ -808,6 +1213,28 @@ a:hover {
   filter: blur(0);
 }
 
+/* Prevenir corte do hover em cards animados */
+.hotel-card-animated {
+  overflow: visible !important;
+  padding: 4px;
+}
+
+.hotel-card-animated .hotel-card-modern {
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* Garantir espaço para hover em Swiper */
+.swiper-slide .hotel-card-animated {
+  padding: 8px 4px;
+}
+
+@media (max-width: 768px) {
+  .swiper-slide .hotel-card-animated {
+    padding: 12px 8px;
+  }
+}
+
 /* Animação para títulos/headers */
 .scroll-reveal-titleSlide {
   transform: translateY(-30px);
@@ -882,18 +1309,100 @@ a:hover {
   contain: layout style paint;
 }
 
-/* Classes de performance para diferentes dispositivos */
-.scroll-reveal-performance-low {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+/* === RESPONSIVIDADE ESPECÍFICA PARA SEÇÕES DE HOTÉIS === */
+
+/* Melhorias para mobile nas seções de hotéis */
+@media (max-width: 640px) {
+  /* Seções de hotéis */
+  #recomendado-viajantes,
+  #promocoes-destaque {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+  
+  /* Grid de cards responsivo */
+  .cards-grid {
+    gap: 1rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  /* Card spacing otimizado para mobile */
+  .card-spacing {
+    margin: 0.5rem auto !important;
+    padding: 0.25rem !important;
+    max-width: 100% !important;
+  }
+  
+  /* Section titles responsivos */
+  .section-title h2 {
+    font-size: 1.25rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  /* Badge de oferta menor no mobile */
+  .grid .relative > div[class*="absolute"][class*="OFERTA"] {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.5rem !important;
+    top: 0.5rem !important;
+    right: 0.5rem !important;
+  }
+  
+  /* MOBILE CARDS ESPECÍFICOS */
+  /* Cards mais largos no mobile */
+  .swiper-slide > div {
+    width: 95% !important;
+    max-width: none !important;
+  }
+  
+  /* Centralizar todos os textos dos cards no mobile */
+  .hotel-card-modern * {
+    text-align: center !important;
+  }
+  
+  /* Centralizar avaliações e estrelas */
+  .hotel-card-modern .flex {
+    justify-content: center !important;
+  }
+  
+  /* Ajustar preços para ficar centralizado */
+  .hotel-card-modern .text-2xl,
+  .hotel-card-modern .font-bold {
+    text-align: center !important;
+    display: block !important;
+    width: 100% !important;
+  }
 }
 
-.scroll-reveal-performance-medium {
-  transition: opacity 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
-              transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+/* Tablet responsividade */
+@media (min-width: 641px) and (max-width: 1024px) {
+  #recomendado-viajantes,
+  #promocoes-destaque {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+  
+  .cards-grid {
+    gap: 1.5rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  .section-title h2 {
+    font-size: 1.5rem !important;
+  }
 }
 
-.scroll-reveal-performance-high {
-  transition: all 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+/* Desktop - mantém configurações existentes */
+@media (min-width: 1025px) {
+  .cards-grid {
+    gap: 3rem !important;
+  }
 }
 
 /* Otimizações para mobile */
@@ -1038,7 +1547,70 @@ a:hover {
 
 /* Espaçamento adicional para cards individuais */
 .card-spacing {
-  margin-bottom: 24px;
+  margin: 16px;
+  padding: 8px;
+}
+
+/* Speech bubble styling para feedbacks */
+.feedback-bubble {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.feedback-bubble:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.feedback-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 32px;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 12px solid white;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+/* Estilo personalizado para navegação Swiper */
+.swiper-button-prev-desejos,
+.swiper-button-next-desejos,
+.swiper-button-prev-visitados,
+.swiper-button-next-visitados {
+  background: white;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.swiper-button-prev-desejos:hover,
+.swiper-button-next-desejos:hover,
+.swiper-button-prev-visitados:hover,
+.swiper-button-next-visitados:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  border-color: #3b82f6;
+  transform: scale(1.05);
+}
+
+/* Oculta os botões padrão do Swiper */
+.swiper-button-next.swiper-button-disabled,
+.swiper-button-prev.swiper-button-disabled {
+  display: none;
 }
 
 /* Para seções com cards */

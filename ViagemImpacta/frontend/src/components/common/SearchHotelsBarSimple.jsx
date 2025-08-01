@@ -132,7 +132,7 @@ function SearchHotelsBar() {
     };
 
     return (
-        <div className="searchHotelsBar p-4 rounded-b-lg shadow-md">
+        <div className={`searchHotelsBar p-4 rounded-b-lg shadow-md relative z-40 bg-slate-100 ${isAmenitiesDropdownOpen ? 'dropdown-open' : ''}`}>
             <div className="max-w-6xl mx-auto py-4 px-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div className="flex flex-col">
@@ -242,12 +242,18 @@ function SearchHotelsBar() {
                             <span className="flex-grow pl-2 text-gray-800">{getAmenitiesDisplayText()}</span>
                         </div>
                         {isAmenitiesDropdownOpen && (
-                            <div className="amenities-dropdown-panel absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                <div className="comodidades-grid p-3">
+                            <div className="amenities-dropdown-panel">
+                                <div className="comodidades-grid">
                                     {selectableAmenityOptions.map((amenity) => (
-                                        <label key={amenity} className="comodidade-item cursor-pointer">
-                                            <input type="checkbox" value={amenity} checked={selectedAmenities.includes(amenity)} onChange={() => handleAmenityChange(amenity)} className="mr-2" />
-                                            {amenity}
+                                        <label key={amenity} className="comodidade-item">
+                                            <input 
+                                                type="checkbox" 
+                                                value={amenity} 
+                                                checked={selectedAmenities.includes(amenity)} 
+                                                onChange={() => handleAmenityChange(amenity)} 
+                                                className="mr-3 h-4 w-4 text-blue-600 border-2 border-gray-300 rounded focus:ring-blue-500" 
+                                            />
+                                            <span className="text-sm font-medium text-gray-800">{amenity}</span>
                                         </label>
                                     ))}
                                 </div>
