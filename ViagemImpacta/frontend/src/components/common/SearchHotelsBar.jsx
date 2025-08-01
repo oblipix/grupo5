@@ -1,4 +1,4 @@
-// src/components/SearchHotelsBar.jsx
+
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -31,14 +31,15 @@ function SearchHotelsBar({ selectedAmenities, onAmenitiesChange, onSearch }) {
     const [destination, setDestination] = useState('');
     const [guestsInfo, setGuestsInfo] = useState(roomGuestOptions[1]);
     const [minPrice, setMinPrice] = useState(0);
-const [maxPrice, setMaxPrice] = useState(10000);
-    // Removido estado interno de selectedAmenities, agora vem por props
+    const [maxPrice, setMaxPrice] = useState(10000);
+    const [selectedAmenities, setSelectedAmenities] = useState([]);
     const [roomTypeOptions, setRoomTypeOptions] = useState([]); // Estado para tipos de quarto do backend
     const [selectedRoomType, setSelectedRoomType] = useState('');
     const [isAmenitiesDropdownOpen, setIsAmenitiesDropdownOpen] = useState(false);
     const [isLoadingRoomTypes, setIsLoadingRoomTypes] = useState(true);
     const amenitiesDropdownRef = useRef(null);
-    
+    const [checkInDate, setCheckInDate] = useState('');
+    const [checkOutDate, setCheckOutDate] = useState('');
 
     // Função para buscar tipos de quarto do backend
     const fetchRoomTypes = async () => {
@@ -105,18 +106,10 @@ const [maxPrice, setMaxPrice] = useState(10000);
         if (maxPrice < 10000) searchParams.append('precoMax', maxPrice);
         if (selectedAmenities.length > 0) searchParams.append('comodidades', selectedAmenities.join(','));
         if (selectedRoomType) searchParams.append('tipoQuarto', selectedRoomType);
-        if (params.estrelas) searchParams.append('estrelas', params.estrelas);
-        console.log('[DEBUG][frontend] URL final:', `/hoteis?${searchParams.toString()}`);
-        if (onSearch) {
-            onSearch({
-                destination,
-                precoMin: minPrice,
-                precoMax: maxPrice,
-                selectedAmenities,
-                selectedRoomType,
-                ...params
-            });
-        }
+        if (checkInDate) searchParams.append('checkIn', checkInDate);
+        if (checkOutDate) searchParams.append('checkOut', checkOutDate);
+
+        navigate(`/hoteis?${searchParams.toString()}`);
     };
 
     // Função para limpar os filtros do formulário
@@ -125,7 +118,9 @@ const [maxPrice, setMaxPrice] = useState(10000);
         setGuestsInfo(roomGuestOptions[1]);
         setMinPrice(0);
         setMaxPrice(10000);
-        onAmenitiesChange([]);
+        setSelectedAmenities([]);
+        setCheckInDate('');
+        setCheckOutDate('');
         // Define o primeiro tipo de quarto como padrão ao limpar
         if (roomTypeOptions.length > 0) {
             setSelectedRoomType(roomTypeOptions[0].name || roomTypeOptions[0]);
@@ -158,6 +153,37 @@ const [maxPrice, setMaxPrice] = useState(10000);
                             />
                         </div>
                     </div>
+                    <div className="flex flex-col">
+                        <label className="labelForms mb-1">Check-in</label>
+                        <div className="relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm">
+                            <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <input
+                                type="date"
+                                className="flex-grow pl-2 bg-transparent focus:outline-none text-gray-800"
+                                value={checkInDate}
+                                onChange={(e) => setCheckInDate(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                    <div className="flex flex-col">
+                        <label className="labelForms mb-1">Check-out</label>
+                        <div className="relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm">
+                            <svg className="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                            <input
+                                type="date"
+                                className="flex-grow pl-2 bg-transparent focus:outline-none text-gray-800"
+                                value={checkOutDate}
+                                onChange={(e) => setCheckOutDate(e.target.value)}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div className="flex flex-col">
                         <label className="labelForms mb-1">Passageiros</label>
                         <div className="relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm">
@@ -195,33 +221,29 @@ const [maxPrice, setMaxPrice] = useState(10000);
                             </select>
                         </div>
                     </div>
-                </div>
-
-                <div className="flex flex-col mb-6">
-                    <label className="labelForms mb-1">Comodidades</label>
-                    <div className="relative" ref={amenitiesDropdownRef}>
-                        <div
-                            className="amenities-dropdown-trigger relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm cursor-pointer"
-                            onClick={() => setIsAmenitiesDropdownOpen(!isAmenitiesDropdownOpen)}
-                        >
-                            <Icons.Star className="h-5 w-5 text-gray-400" />
-                            <span className="flex-grow pl-2 text-gray-800">{getAmenitiesDisplayText()}</span>
-                        </div>
-                        {isAmenitiesDropdownOpen && (
-                            <div className="amenities-dropdown-panel absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                <div className="comodidades-grid p-3">
-                                    {selectableAmenityOptions.map((amenity) => {
-                                        const amenitiesArr = Array.isArray(selectedAmenities) ? selectedAmenities : [];
-                                        return (
+                    <div className="flex flex-col">
+                        <label className="labelForms mb-1">Comodidades</label>
+                        <div className="relative" ref={amenitiesDropdownRef}>
+                            <div
+                                className="amenities-dropdown-trigger relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm cursor-pointer"
+                                onClick={() => setIsAmenitiesDropdownOpen(!isAmenitiesDropdownOpen)}
+                            >
+                                <Icons.Star className="h-5 w-5 text-gray-400" />
+                                <span className="flex-grow pl-2 text-gray-800">{getAmenitiesDisplayText()}</span>
+                            </div>
+                            {isAmenitiesDropdownOpen && (
+                                <div className="amenities-dropdown-panel absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                    <div className="comodidades-grid p-3">
+                                        {selectableAmenityOptions.map((amenity) => (
                                             <label key={amenity} className="comodidade-item cursor-pointer">
-                                                <input type="checkbox" value={amenity} checked={amenitiesArr.includes(amenity)} onChange={() => handleAmenityChange(amenity)} className="mr-2" />
+                                                <input type="checkbox" value={amenity} checked={selectedAmenities.includes(amenity)} onChange={() => handleAmenityChange(amenity)} className="mr-2" />
                                                 {amenity}
                                             </label>
-                                        );
-                                    })}
+                                        ))}
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
                 </div>
 

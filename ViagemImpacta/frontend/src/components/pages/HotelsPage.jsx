@@ -24,6 +24,9 @@ function HotelsPage() {
  
 
 const [refreshFlag, setRefreshFlag] = useState(false);
+const refresh = () => {
+  setRefreshFlag(flag => !flag);
+};
 const [selectedAmenities, setSelectedAmenities] = useState([]);
 
   const queryParams = new URLSearchParams(location.search);
@@ -102,6 +105,7 @@ const [selectedAmenities, setSelectedAmenities] = useState([]);
   }
  
   // Componente de erro
+  
   if (error) {
     return (
       <>
