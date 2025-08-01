@@ -35,7 +35,7 @@ function BlogPostCard({ post }) {
                                 {post.category}
                             </p>
                         </div>
-                        <h3 className="text-blue-800 font-bold text-lg mb-3 text-center
+                        <h3 className="text-blue-800 font-bold text-lg mb-4 mt-3 text-center
                                        group-hover:text-blue-900 transition-colors line-clamp-2">
                             {post.title}
                         </h3>

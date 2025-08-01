@@ -57,7 +57,7 @@ const PackageCard = ({
       </div>
 
       <div className="p-4">
-        <h3 className="text-xl font-semibold mb-2 hover:text-blue-600 cursor-pointer"
+        <h3 className="text-xl font-semibold mb-3 mt-2 hover:text-blue-600 cursor-pointer"
             onClick={() => onCardClick(id)}>
           {title}
         </h3>

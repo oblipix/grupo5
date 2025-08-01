@@ -151,7 +151,7 @@ function HotelCard({ hotel }) {
                 </div>
                 
                 {/* Title moved to overlay on image for more modern look */}
-                <h3 className="Tittle absolute bottom-4 left-4 z-20 text-white font-bold text-2xl drop-shadow-lg">
+                <h3 className="Tittle absolute bottom-4 left-4 z-20 text-white font-bold text-2xl drop-shadow-lg mb-3 mt-2">
                     {hotel.title}
                 </h3>
                 

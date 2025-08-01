@@ -105,31 +105,33 @@
 
 .confetti {
     position: absolute;
-    width: 10px;
+    width: 12px;
     height: 10px;
     opacity: 0;
-    background-color: #FF5252;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     transform: rotate(-45deg);
 }
 
-.confetti::before,
+.confetti::before {
+    content: '';
+    position: absolute;
+    width: 7px;
+    height: 12px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-45deg);
+    border-radius: 50px 50px 0 0;
+    background-color: inherit;
+}
+
 .confetti::after {
     content: '';
-    width: 6px;
-    height: 10px;
     position: absolute;
-    left: 5px;
-    top: 0;
+    width: 7px;
+    height: 12px;
+    left: 50%;
+    transform: translateX(-50%) rotate(45deg);
+    border-radius: 50px 50px 0 0;
     background-color: inherit;
-    border-radius: 5px 5px 0 0;
-    transform: rotate(-45deg);
-    transform-origin: 0 100%;
-}
-
-.confetti::after {
-    left: 0;
-    transform: rotate(45deg);
-    transform-origin: 100% 100%;
 }
 
 .confetti.active {
