@@ -234,7 +234,18 @@ function MyTravelsPage() {
     }
   };
   
-  // Função para visualizar o comprovante em uma nova janela - corrigida e aprimorada
+  // Estado para modal de visualização do comprovante
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [currentReceiptContent, setCurrentReceiptContent] = useState('');
+  const [currentReservation, setCurrentReservation] = useState(null);
+
+  // Função para detectar se é mobile
+  const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+           window.innerWidth <= 768;
+  };
+  
+  // Função para visualizar o comprovante - otimizada para mobile
   const viewReceipt = (reservation) => {
     try {
       console.log('Abrindo comprovante para visualização:', reservation);
@@ -251,15 +262,25 @@ function MyTravelsPage() {
         alert('Não foi possível gerar o comprovante. Por favor, tente novamente.');
         return;
       }
+
+      // Se for mobile, usar modal em vez de popup
+      if (isMobile()) {
+        setCurrentReceiptContent(receiptContent);
+        setCurrentReservation(confirmedReservation);
+        setShowReceiptModal(true);
+        return;
+      }
       
-      // Abre uma nova janela
+      // Desktop: usar popup como antes
       const receiptWindow = window.open('', '_blank');
       console.log('Janela aberta:', !!receiptWindow);
       
       // Verifica se a janela foi aberta com sucesso
       if (!receiptWindow) {
-        alert('Por favor, permita popups para visualizar o comprovante.');
-        console.error('Falha ao abrir janela - popups podem estar bloqueados');
+        // Se popup falhou, usar modal como fallback
+        setCurrentReceiptContent(receiptContent);
+        setCurrentReservation(confirmedReservation);
+        setShowReceiptModal(true);
         return;
       }
       
@@ -355,7 +376,18 @@ function MyTravelsPage() {
     } catch (error) {
       console.error('Erro ao visualizar comprovante:', error);
       console.error('Stack trace:', error.stack);
-      alert('Ocorreu um erro ao visualizar o comprovante. Por favor, tente novamente. Verifique o console para mais detalhes.');
+      // Se houver erro, tentar usar modal como fallback
+      if (!showReceiptModal) {
+        const confirmedReservation = {...reservation, isConfirmed: true, IsConfirmed: true};
+        const receiptContent = generateReceiptContent(confirmedReservation);
+        if (receiptContent) {
+          setCurrentReceiptContent(receiptContent);
+          setCurrentReservation(confirmedReservation);
+          setShowReceiptModal(true);
+        } else {
+          alert('Ocorreu um erro ao visualizar o comprovante. Por favor, tente novamente.');
+        }
+      }
     }
   };
   
@@ -441,6 +473,7 @@ function MyTravelsPage() {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Comprovante de Reserva - ${hotelName}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
         <style>
           body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -476,19 +509,25 @@ function MyTravelsPage() {
             margin-bottom: 15px;
           }
           .logo {
-            font-family: 'Arial', sans-serif;
-            font-size: 42px;
-            font-weight: 900;
-            color: #3b82f6;
+            font-size: 35px;
+            padding: 8px;
+            font-weight: 400;
+            background: linear-gradient(to right, #1e3a8a, #60a5fa) !important;
+            background-image: linear-gradient(to right, #1e3a8a, #60a5fa) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            color: transparent !important;
+            font-family: "Pacifico", cursive !important;
+            font-style: normal !important;
+            z-index: 1;
+            height: 70px;
             margin: 0;
             letter-spacing: -1px;
-          }
-          .logo-icon {
-            font-size: 32px;
-            margin-right: 5px;
-          }
-          .logo-dot {
-            color: #f97316;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
           }
           .confirmation-id {
             background-color: #f0f9ff;
@@ -517,6 +556,7 @@ function MyTravelsPage() {
             margin-bottom: 12px;
             padding-bottom: 8px;
             border-bottom: 1px dashed #e5e7eb;
+            flex-wrap: wrap;
           }
           .detail-row:last-child {
             border-bottom: none;
@@ -525,9 +565,27 @@ function MyTravelsPage() {
             font-weight: bold;
             width: 40%;
             color: #4b5563;
+            min-width: 120px;
           }
           .detail-value {
             width: 60%;
+            word-break: break-word;
+            overflow-wrap: break-word;
+          }
+          @media (max-width: 600px) {
+            .detail-row {
+              flex-direction: column;
+              gap: 4px;
+            }
+            .detail-label {
+              width: 100%;
+              min-width: auto;
+              margin-bottom: 2px;
+            }
+            .detail-value {
+              width: 100%;
+              padding-left: 0;
+            }
           }
           .price-section {
             margin: 30px 0;
@@ -645,8 +703,7 @@ function MyTravelsPage() {
         <div class="receipt-container">
           <div class="receipt-header">
             <div class="brand">
-              <span class="logo-icon">✈️</span>
-              <h1 class="logo">Tripz<span class="logo-dot">.</span></h1>
+              <h1 class="logo">Tripz</h1>
             </div>
             <h1>Comprovante de Reserva</h1>
             <p>Emitido em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
@@ -1645,6 +1702,130 @@ function MyTravelsPage() {
         )}
         </section>
       </AnimatedSection>
+
+      {/* Modal para visualização do comprovante (otimizado para mobile) */}
+      {showReceiptModal && (
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4"
+          style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)'
+          }}
+        >
+          <div 
+            className="bg-white bg-opacity-95 rounded-xl shadow-2xl w-full max-w-6xl max-h-[95vh] flex flex-col"
+            style={{
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
+            }}
+          >
+            {/* Header do Modal */}
+            <div 
+              className="flex justify-between items-center p-4 border-b border-gray-200 border-opacity-30 rounded-t-xl"
+              style={{
+                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.1))',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)'
+              }}
+            >
+              <h3 className="text-lg font-semibold text-gray-800">Comprovante de Reserva</h3>
+              <div className="flex gap-2">
+                {/* Botão de impressão */}
+                <button
+                  onClick={() => {
+                    const printWindow = window.open('', '_blank');
+                    if (printWindow) {
+                      printWindow.document.write(currentReceiptContent);
+                      printWindow.document.close();
+                      setTimeout(() => {
+                        printWindow.print();
+                        printWindow.close();
+                      }, 500);
+                    } else {
+                      // Fallback para mobile: criar um iframe temporário
+                      const iframe = document.createElement('iframe');
+                      iframe.style.display = 'none';
+                      document.body.appendChild(iframe);
+                      iframe.contentDocument.write(currentReceiptContent);
+                      iframe.contentDocument.close();
+                      iframe.contentWindow.print();
+                      setTimeout(() => {
+                        document.body.removeChild(iframe);
+                      }, 1000);
+                    }
+                  }}
+                  className="px-3 py-2 bg-blue-600 bg-opacity-90 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center text-sm backdrop-blur-sm"
+                  title="Imprimir comprovante"
+                  style={{
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)'
+                  }}
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                  </svg>
+                  <span className="hidden sm:inline">Imprimir</span>
+                </button>
+                
+                {/* Botão de download */}
+                <button
+                  onClick={() => {
+                    if (currentReservation) {
+                      downloadReceipt(currentReservation);
+                    }
+                  }}
+                  className="px-3 py-2 bg-green-600 bg-opacity-90 text-white rounded-lg hover:bg-green-700 transition-all duration-200 flex items-center text-sm backdrop-blur-sm"
+                  title="Baixar comprovante"
+                  style={{
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)'
+                  }}
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  <span className="hidden sm:inline">Baixar</span>
+                </button>
+                
+                {/* Botão de fechar */}
+                <button
+                  onClick={() => {
+                    setShowReceiptModal(false);
+                    setCurrentReceiptContent('');
+                    setCurrentReservation(null);
+                  }}
+                  className="px-3 py-2 bg-gray-500 bg-opacity-90 text-white rounded-lg hover:bg-gray-600 transition-all duration-200 flex items-center text-sm backdrop-blur-sm"
+                  title="Fechar"
+                  style={{
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)'
+                  }}
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="hidden sm:inline">Fechar</span>
+                </button>
+              </div>
+            </div>
+            
+            {/* Conteúdo do Modal - Iframe com o comprovante */}
+            <div className="flex-1 overflow-hidden rounded-b-xl">
+              <iframe
+                srcDoc={currentReceiptContent}
+                className="w-full h-full border-0 rounded-b-xl"
+                title="Comprovante de Reserva"
+                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                style={{
+                  minHeight: '70vh'
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
