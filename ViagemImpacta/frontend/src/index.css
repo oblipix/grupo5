@@ -47,13 +47,15 @@ p {
 .promocoes-swiper-pagination,
 .recomendados-swiper-pagination,
 .blog-swiper-pagination {
-  position: relative !important;
-  width: auto !important;
-  margin: 0 auto !important;
+  position: static !important;
+  width: 100% !important;
+  margin: 16px auto 0 auto !important;
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;
-  gap: 8px !important;
+  gap: 6px !important;
+  height: auto !important;
+  padding: 8px 0 !important;
 }
 
 .promocoes-swiper-pagination .swiper-pagination-bullet,
@@ -65,6 +67,7 @@ p {
   height: 10px;
   margin: 0 4px;
   transition: all 0.3s ease;
+  position: static !important;
 }
 
 .promocoes-swiper-pagination .swiper-pagination-bullet-active,
@@ -534,12 +537,15 @@ left: 20%;
 /* Posiciona as bolinhas da paginação absolutamente no fundo da área do Swiper */
 /* O bottom negativo as empurra para fora da área dos slides, mas ainda dentro do padding-bottom do Swiper */
 .travel-pagination-bottom .swiper-pagination-bullets {
-  position: relative !important; /* Garante que é absoluto */
-  margin-top: 50px;       /* Fixa no fundo do Swiper (onde está o padding-bottom) */
-  left: 50% !important;         /* Centraliza horizontalmente */
-  transform: translateX(-50%) !important; /* Ajusta o centralização perfeita */
+  position: static !important; /* Garante que é estático para melhor controle */
+  margin-top: 20px !important;       /* Espaço acima das bolinhas */
+  left: auto !important;         /* Reset do left */
+  transform: none !important; /* Reset do transform */
   top: auto !important;         /* Reseta qualquer 'top' padrão do Swiper */
   z-index: 10;                  /* Garante que esteja acima de outros elementos se houver sobreposição inesperada */
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
 }
 
 
@@ -879,38 +885,9 @@ a:hover {
 }
 
 
-/*NOVO AJUSTE: SUBIR A PAGINAÇÃO DO HERO SWIPER === */
-/* Estilo para conectar o hero swiper com o header sem espaço em branco */
-.hero-swiper-pagination {
-  margin-top: -5px !important;
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-}
-
-/* Aumente o valor do 'bottom' para fazer as bolinhas subirem mais */
-.hero-swiper-pagination .swiper-pagination-bullets {
-  /* Quanto maior o valor, mais as bolinhas sobem */
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  bottom: 35px !important;
-  z-index: 20; /* Certifique-se de que esteja acima da próxima seção arredondada */
-}
-
 /* Estilos adicionais para garantir que não haja espaços brancos */
 .swiper-slide {
   overflow: hidden !important;
-}
-
-/* Opcional: Estilo para as bolinhas do Hero, se quiserem ser diferentes */
-.hero-swiper-pagination .swiper-pagination-bullet {
-  background: white; /* Bolinhas brancas para contraste no hero */
-  opacity: 0.7;
-}
-
-.hero-swiper-pagination .swiper-pagination-bullet-active {
-  background: white; /* Bolinha ativa branca */
-  opacity: 1;
 }
 
 /* Estilos para garantir que o botão de favorito apareça corretamente */
@@ -1651,6 +1628,65 @@ a:hover {
 
 .read-more-button:hover svg {
   transform: translateX(3px);
+}
+
+/* Ajustes específicos para bubbles/paginação em mobile e desktop */
+@media (max-width: 768px) {
+  .promocoes-swiper-pagination,
+  .recomendados-swiper-pagination,
+  .blog-swiper-pagination {
+    margin-top: 12px !important;
+    padding: 6px 0 !important;
+    gap: 4px !important;
+  }
+  
+  .promocoes-swiper-pagination .swiper-pagination-bullet,
+  .recomendados-swiper-pagination .swiper-pagination-bullet,
+  .blog-swiper-pagination .swiper-pagination-bullet {
+    width: 8px !important;
+    height: 8px !important;
+    margin: 0 2px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .promocoes-swiper-pagination,
+  .recomendados-swiper-pagination,
+  .blog-swiper-pagination {
+    margin-top: 20px !important;
+    padding: 10px 0 !important;
+    gap: 8px !important;
+  }
+  
+  .promocoes-swiper-pagination .swiper-pagination-bullet,
+  .recomendados-swiper-pagination .swiper-pagination-bullet,
+  .blog-swiper-pagination .swiper-pagination-bullet {
+    width: 12px !important;
+    height: 12px !important;
+    margin: 0 4px !important;
+  }
+}
+
+/* Classes utilitárias para truncar texto */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
 

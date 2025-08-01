@@ -4,11 +4,12 @@
   font-style: normal;
    text-transform: uppercase;
    font-size: 50px;
-   margin-left: 20px;
+   margin-left: 30px;
 }
 
-p{
-   margin-left: 30px;
+.paragrafoHero {
+   position: relative;
+   left: 30px;
 }
 
 /* Media query para telas maiores, a partir de um breakpoint (ex: 768px, que é o 'md' do Tailwind) */
@@ -29,6 +30,93 @@ p{
    .title {
        font-size: 40px; 
        width: 100%;
-       
+       margin-left: 10px;
+   }
+   
+   .paragrafoHero {
+       left: 10px;
+   }
+   
+}
+
+/* Estilos para o Hero Swiper ocupar 100% da tela no mobile */
+@media (max-width: 768px) {
+   /* Forçar container e elementos pai a ocuparem 100% */
+   .hero-swiper,
+   .hero-swiper-container,
+   .swiper,
+   .swiper-container {
+       height: 100vh !important;
+       max-height: 460px !important;
+       width: 100vw !important;
+       margin: 0 !important;
+       padding: 0 !important;
+       position: relative !important;
+       left: 50% !important;
+       right: 50% !important;
+       margin-left: -50vw !important;
+       margin-right: -50vw !important;
+   }
+   
+   .hero-swiper .swiper-slide {
+       height: 100vh !important;
+       min-height: 100vh !important;
+       width: 100vw !important;
+   }
+   
+   /* Garantir que as imagens preencham 100% sem laterais brancas */
+   .hero-swiper .swiper-slide img,
+   .hero-swiper img,
+   .hero-swiper .swiper-slide > div,
+   .hero-swiper .swiper-slide {
+       width: 100vw !important;
+       height: 460px !important;
+       object-fit: cover !important;
+       object-position: center !important;
+   }
+   
+   /* Remover qualquer padding ou margin que possa causar espaços brancos */
+   .hero-swiper .swiper-wrapper {
+       width: 100vw !important;
+       height: 100vh !important;
+   }
+   
+   /* Forçar elementos de fundo/background a ocuparem 100% */
+   .hero-swiper .swiper-slide::before,
+   .hero-swiper .swiper-slide::after {
+       content: none !important;
+   }
+}
+
+/* Regras adicionais para forçar 100% da tela no mobile */
+@media (max-width: 768px) {
+   /* Quebrar limitações de containers pai */
+   body,
+   #root,
+   main,
+   .container,
+   .max-w-7xl,
+   .mx-auto {
+       overflow-x: visible !important;
+   }
+   
+   /* Forçar hero a escapar de qualquer container */
+   .hero-swiper,
+   [class*="hero"],
+   .swiper {
+       position: relative !important;
+       width: 100vw !important;
+       left: 50% !important;
+       right: 50% !important;
+       margin-left: -50vw !important;
+       margin-right: -50vw !important;
+       max-width: none !important;
+   }
+   
+   /* Garantir que background-images também ocupem 100% */
+   .hero-swiper .swiper-slide {
+       background-size: cover !important;
+       background-position: center !important;
+       background-repeat: no-repeat !important;
    }
 }
