@@ -56,14 +56,14 @@ function BlogSection({ id, title }) { // Recebe o ID como prop
           </Swiper>
           
           {/* Botões de navegação customizados - centralizados */}
-          <div className="relative flex justify-center items-center mt-6">
-            <button className="blog-swiper-button-prev absolute left-4 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-10">
+          <div className="relative flex justify-between items-center mt-6 px-6">
+            <button className="blog-swiper-button-prev bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-30 flex-shrink-0">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <div className="blog-swiper-pagination flex justify-center"></div>
-            <button className="blog-swiper-button-next absolute right-4 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-10">
+            <div className="blog-swiper-pagination flex justify-center flex-grow mx-4"></div>
+            <button className="blog-swiper-button-next bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-30 flex-shrink-0">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
               </svg>

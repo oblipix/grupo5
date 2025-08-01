@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useHotels } from '../hooks/useHotels.js';
 import HotelCard from './HotelCard.jsx';
+import AnimatedHotelCard from '../common/AnimatedHotelCard.jsx';
 
 // Importa Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -118,10 +119,10 @@ const PromocoesDestaque = () => {
                 </div>
                 
                 {/* Mobile Swiper - visível apenas em telas pequenas */}
-                <div className="block md:hidden">
+                <div className="block md:hidden px-4">
                     <Swiper
                         modules={[Navigation, Pagination]}
-                        spaceBetween={16}
+                        spaceBetween={20}
                         slidesPerView={1.1}
                         centeredSlides={true}
                         navigation={{
@@ -135,34 +136,39 @@ const PromocoesDestaque = () => {
                         breakpoints={{
                             640: {
                                 slidesPerView: 1.3,
-                                spaceBetween: 20,
+                                spaceBetween: 24,
                                 centeredSlides: true,
                             },
                         }}
-                        className="px-4 py-4"
+                        className="py-4 overflow-visible"
+                        style={{ overflow: 'visible' }}
                     >
                         {promocoes.map(hotel => (
                             <SwiperSlide key={hotel.id}>
-                                <div className="relative card-spacing w-full">
-                                    {/* Badge de promoção */}
-                                    <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-red-500 text-white px-2 py-0.5 sm:px-3 sm:py-1 rounded-full font-bold z-30 shadow-lg transform rotate-12 text-xs sm:text-sm">
-                                        OFERTA
-                                    </div>
-                                    <HotelCard hotel={{...hotel, starRating: 5}} />
+                                <div className="relative w-full px-2">
+                                    <AnimatedHotelCard index={hotel.id}>
+                                        <div className="relative">
+                                            {/* Badge de promoção */}
+                                            <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-red-500 text-white px-2 py-0.5 sm:px-3 sm:py-1 rounded-full font-bold z-30 shadow-lg transform rotate-12 text-xs sm:text-sm">
+                                                OFERTA
+                                            </div>
+                                            <HotelCard hotel={{...hotel, starRating: 5}} />
+                                        </div>
+                                    </AnimatedHotelCard>
                                 </div>
                             </SwiperSlide>
                         ))}
                     </Swiper>
                     
                     {/* Botões de navegação customizados - centralizados */}
-                    <div className="relative flex justify-center items-center mt-6">
-                        <button className="promocoes-swiper-button-prev absolute left-4 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-10">
+                    <div className="relative flex justify-between items-center mt-6 px-6">
+                        <button className="promocoes-swiper-button-prev bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-30 flex-shrink-0">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
-                        <div className="promocoes-swiper-pagination flex justify-center"></div>
-                        <button className="promocoes-swiper-button-next absolute right-4 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-10">
+                        <div className="promocoes-swiper-pagination flex justify-center flex-grow mx-4"></div>
+                        <button className="promocoes-swiper-button-next bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-30 flex-shrink-0">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                             </svg>
@@ -174,11 +180,15 @@ const PromocoesDestaque = () => {
                 <div className="hidden md:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-12 cards-grid px-2 sm:px-4 lg:px-8 py-4">
                     {promocoes.map(hotel => (
                         <div key={hotel.id} className="relative card-spacing w-full">
-                            {/* Badge de promoção - agora com z-index maior para aparecer sobre todos os elementos */}
-                            <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-red-500 text-white px-2 py-0.5 sm:px-3 sm:py-1 rounded-full font-bold z-30 shadow-lg transform rotate-12 text-xs sm:text-sm">
-                                OFERTA
-                            </div>
-                            <HotelCard hotel={{...hotel, starRating: 5}} /> {/* Forçamos 5 estrelas como solicitado */}
+                            <AnimatedHotelCard>
+                                <div className="relative w-full">
+                                    {/* Badge de promoção - agora dentro do card */}
+                                    <div className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-red-500 text-white px-2 py-0.5 sm:px-3 sm:py-1 rounded-full font-bold z-30 shadow-lg transform rotate-12 text-xs sm:text-sm">
+                                        OFERTA
+                                    </div>
+                                    <HotelCard hotel={{...hotel, starRating: 5}} /> {/* Forçamos 5 estrelas como solicitado */}
+                                </div>
+                            </AnimatedHotelCard>
                         </div>
                     ))}
                 </div>

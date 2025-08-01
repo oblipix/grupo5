@@ -45,9 +45,9 @@ const RecommendedHotelsSection = () => {
     }
  
     return (
-        <section id="recomendado-viajantes" className="py-8 sm:py-12 lg:py-20 bg-white px-4 sm:px-6 lg:px-12 overflow-visible">
+        <section id="recomendado-viajantes" className="py-8 sm:py-12 lg:py-20 bg-white px-6 sm:px-8 lg:px-12 overflow-visible">
             <div className="container mx-auto overflow-visible max-w-7xl">
-                <div className="section-title">
+                <div className="section-title mb-8">
                     <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold">
                         Hotéis Recomendados pelos Nossos Viajantes <span className="text-yellow-500">★</span>
                     </h2>
@@ -79,7 +79,7 @@ const RecommendedHotelsSection = () => {
                     >
                         {topRatedHotels.map((hotel, index) => (
                             <SwiperSlide key={hotel.id}>
-                                <div className="relative card-spacing w-full">
+                                <div className="relative w-full px-2">
                                     <AnimatedHotelCard index={index}>
                                         <HotelCard hotel={hotel} />
                                     </AnimatedHotelCard>
@@ -89,14 +89,14 @@ const RecommendedHotelsSection = () => {
                     </Swiper>
                     
                     {/* Botões de navegação customizados - com espaço extra para não serem cortados */}
-                    <div className="relative flex justify-center items-center mt-6 px-4">
-                        <button className="recomendados-swiper-button-prev absolute left-0 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-20">
+                    <div className="relative flex justify-between items-center mt-6 px-6">
+                        <button className="recomendados-swiper-button-prev bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-30 flex-shrink-0">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
-                        <div className="recomendados-swiper-pagination flex justify-center"></div>
-                        <button className="recomendados-swiper-button-next absolute right-0 bg-blue-600 hover:bg-blue-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-20">
+                        <div className="recomendados-swiper-pagination flex justify-center flex-grow mx-4"></div>
+                        <button className="recomendados-swiper-button-next bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-30 flex-shrink-0">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
                             </svg>

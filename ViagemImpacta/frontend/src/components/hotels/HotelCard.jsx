@@ -131,8 +131,8 @@ function HotelCard({ hotel }) {
 
     return (
         <Link to={`/hoteis/${hotel.id}`}
-            className="block group hotel-card-modern bg-white rounded-xl shadow-md border-0 overflow-hidden
-                         h-full flex flex-col transform transition-all duration-300 hover:shadow-xl
+            className="block group hotel-card-modern card-hover-premium bg-white rounded-xl shadow-md border-0 overflow-hidden
+                         h-full flex flex-col transform transition-all duration-300 
                          w-full max-w-sm mx-auto sm:max-w-none min-h-[420px] sm:min-h-[450px]">
             <div className="relative w-full h-56 sm:h-64 md:h-80 overflow-hidden"> {/* Altura responsiva aumentada */}
                 {/* Overlay gradient over image - mais escuro para melhor contraste */}
@@ -141,7 +141,7 @@ function HotelCard({ hotel }) {
                 <img
                     src={hotel.mainImageUrl}
                     alt={hotel.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 card-image"
                 />
 
                 {/* Estrelas do hotel - posicionadas no topo esquerdo */}
@@ -160,7 +160,7 @@ function HotelCard({ hotel }) {
                 </div>
 
                 {/* Title moved to overlay on image for more modern look */}
-                <h3 className="Tittle absolute bottom-2 left-2 sm:bottom-4 sm:left-4 z-20 text-white font-bold text-lg sm:text-xl md:text-2xl drop-shadow-lg mb-1 sm:mb-3 mt-2 line-clamp-2 pr-2">
+                <h3 className="Tittle card-title absolute bottom-2 left-2 sm:bottom-4 sm:left-4 z-20 text-white font-bold text-lg sm:text-xl md:text-2xl drop-shadow-lg mb-1 sm:mb-3 mt-2 line-clamp-2 pr-2">
                     {hotel.title}
                 </h3>
             </div>
