@@ -8,9 +8,8 @@ import AnimatedHotelCard from '../common/AnimatedHotelCard.jsx';
 
 // Importa Swiper
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation, Pagination } from 'swiper/modules';
+import { Pagination } from 'swiper/modules';
 import 'swiper/css';
-import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 
 const PromocoesDestaque = () => {
@@ -121,14 +120,10 @@ const PromocoesDestaque = () => {
                 {/* Mobile Swiper - visível apenas em telas pequenas */}
                 <div className="block md:hidden px-4">
                     <Swiper
-                        modules={[Navigation, Pagination]}
+                        modules={[Pagination]}
                         spaceBetween={20}
                         slidesPerView={1.1}
                         centeredSlides={true}
-                        navigation={{
-                            nextEl: '.promocoes-swiper-button-next',
-                            prevEl: '.promocoes-swiper-button-prev',
-                        }}
                         pagination={{ 
                             clickable: true,
                             el: '.promocoes-swiper-pagination'
@@ -160,20 +155,8 @@ const PromocoesDestaque = () => {
                         ))}
                     </Swiper>
                     
-                    {/* Botões de navegação customizados - centralizados */}
-                    <div className="relative flex justify-between items-center mt-6 px-6">
-                        <button className="promocoes-swiper-button-prev bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-30 flex-shrink-0">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                            </svg>
-                        </button>
-                        <div className="promocoes-swiper-pagination flex justify-center flex-grow mx-4"></div>
-                        <button className="promocoes-swiper-button-next bg-gray-600 hover:bg-gray-700 text-white p-3 rounded-full shadow-lg transition-all duration-300 z-30 flex-shrink-0">
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                            </svg>
-                        </button>
-                    </div>
+                    {/* Apenas paginação centralizada */}
+                    <div className="promocoes-swiper-pagination flex justify-center mt-6"></div>
                 </div>
 
                 {/* Desktop Grid - visível apenas em telas médias e grandes */}
