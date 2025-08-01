@@ -40,7 +40,7 @@ import PromotionsPage from './components/pages/PromotionsPage.jsx'; // Nova pág
 import PromotionDetailsPage from './components/pages/PromotionDetailsPage.jsx'; // Detalhes de promoção
 import ContactPage from './components/pages/ContactPage.jsx';
 import PaymentSuccessPage from './components/pages/PaymentSuccessPage.jsx';
-
+import ConfirmReservation from './components/pages/ConfirmReservation.jsx'; // Página de confirmação de reserva
 // Removida a importação de BlogPage, pois BlogSection estará na HomePage.
 // import BlogPage from './components/pages/BlogPage.jsx'; 
 
@@ -85,6 +85,9 @@ const router = createBrowserRouter([
             { path: '/payment-success', element: <PaymentSuccessPage /> }, // Rota para página de pagamento com sucesso
             // Removida a rota '/blog' que renderizava BlogPage/BlogSection, pois BlogSection já está na HomePage.
             // { path: '/blog', element: <BlogPage /> }, 
+            { path: '/confirm-reservation', element: <ConfirmReservation /> }, // Rota para confirmação de reserva
+            // Rota de fallback para lidar com 404 - Deve ser a última rota
+            { path: '*', element: <ErrorPage /> }
         ],
     },
 ]);
