@@ -18,9 +18,15 @@ namespace ViagemImpacta.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-          
+            // Configuração para armazenar lista de URLs de imagem como string delimitada
+            modelBuilder.Entity<Hotel>()
+                .Property(h => h.ImageUrls)
+                .HasConversion(
+                    v => v != null && v.Any() ? string.Join('|', v.Where(url => !string.IsNullOrWhiteSpace(url))) : "", // Converter lista para string separada por |
+                    v => string.IsNullOrWhiteSpace(v) ? new List<string>() : v.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList() // Converter string de volta para lista
+                );
 
-    base.OnModelCreating(modelBuilder);
+            base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Hotel>().HasData(
                 new Hotel
@@ -44,7 +50,8 @@ namespace ViagemImpacta.Data
                     Garden = true,
                     PetFriendly = true,
                     BreakfastIncludes = true,
-                    Description = "Luxuoso hotel localizado na praia de Copacabana, com suítes de alto padrão, spa e várias opções de lazer."
+                    Description = "Luxuoso hotel localizado na praia de Copacabana, com suítes de alto padrão, spa e várias opções de lazer.",
+                    ImageUrls = new List<string> { "https://postimg.cc/xNQGX5BK", "https://postimg.cc/xkJb9QgB" }
                 },
                 new Hotel
                 {
@@ -67,7 +74,8 @@ namespace ViagemImpacta.Data
                     Garden = true,
                     PetFriendly = false,
                     BreakfastIncludes = true,
-                    Description = "Hotel aconchegante em Gramado, ideal para famílias, com quartos confortáveis e vista para as montanhas."
+                    Description = "Hotel aconchegante em Gramado, ideal para famílias, com quartos confortáveis e vista para as montanhas.",
+                    ImageUrls = new List<string> { "https://postimg.cc/Mfz4w5XG", "https://postimg.cc/cgH4yFQX", "https://postimg.cc/D8zD3h8N" }
                 }
             );
             modelBuilder.Entity<Room>().HasData(

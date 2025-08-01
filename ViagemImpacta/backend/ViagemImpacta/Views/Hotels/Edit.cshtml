@@ -39,6 +39,60 @@
                 <input asp-for="Stars" class="form-control" type="number" min="1" max="5" />
                 <span asp-validation-for="Stars" class="text-danger"></span>
             </div>
+            <div class="form-group mb-2">
+                <label asp-for="Description" class="control-label">Descrição</label>
+                <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <h5 class="mt-4 mb-3">Imagens do Hotel</h5>
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <strong>Dica:</strong> A primeira imagem será usada como imagem principal do hotel.
+                <a href="https://postimg.cc/gallery/fWZhj95" target="_blank" class="btn btn-sm btn-outline-primary ms-2">
+                    <i class="fas fa-external-link-alt"></i> Ver Galeria Postimg
+                </a>
+            </div>
+            
+            <div id="imageUrlsContainer">
+                @if (Model.ImageUrls != null && Model.ImageUrls.Any())
+                {
+                    @for (int i = 0; i < Model.ImageUrls.Count; i++)
+                    {
+                        <div class="image-url-entry mb-3">
+                            <label class="form-label">@(i == 0 ? "Imagem Principal *" : $"Imagem {i + 1}")</label>
+                            <div class="input-group">
+                                <input type="url" name="ImageUrls[@i]" value="@Model.ImageUrls[i]" class="form-control" placeholder="https://exemplo.com/imagem.jpg" />
+                                <button type="button" class="btn btn-outline-secondary" onclick="openPostimgGallery()">
+                                    <i class="fas fa-images"></i> Galeria
+                                </button>
+                                @if (i > 0)
+                                {
+                                    <button type="button" class="btn btn-outline-danger" onclick="removeImageUrl(this)">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="image-url-entry mb-3">
+                        <label class="form-label">Imagem Principal *</label>
+                        <div class="input-group">
+                            <input type="url" name="ImageUrls[0]" class="form-control" placeholder="https://exemplo.com/imagem.jpg" />
+                            <button type="button" class="btn btn-outline-secondary" onclick="openPostimgGallery()">
+                                <i class="fas fa-images"></i> Galeria
+                            </button>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            <button type="button" id="addImageUrl" class="btn btn-outline-primary btn-sm mb-3">
+                <i class="fas fa-plus"></i> Adicionar Mais Imagem
+            </button>
 
             <h5 class="mt-4 mb-3">Comodidades e Serviços</h5>
             
@@ -229,6 +283,70 @@
                     }
                 }
             });
+
+            // Gerenciamento dinâmico de URLs de imagem
+            let imageUrlIndex = document.querySelectorAll('input[name^="ImageUrls["]').length;
+            
+            document.getElementById('addImageUrl').addEventListener('click', function() {
+                if (imageUrlIndex >= 5) {
+                    alert('Máximo de 5 imagens permitidas.');
+                    return;
+                }
+                
+                const container = document.getElementById('imageUrlsContainer');
+                const newEntry = document.createElement('div');
+                newEntry.className = 'image-url-entry mb-3';
+                newEntry.innerHTML = `
+                    <label class="form-label">Imagem ${imageUrlIndex + 1}</label>
+                    <div class="input-group">
+                        <input type="url" name="ImageUrls[${imageUrlIndex}]" class="form-control" placeholder="https://exemplo.com/imagem.jpg" />
+                        <button type="button" class="btn btn-outline-secondary" onclick="openPostimgGallery()">
+                            <i class="fas fa-images"></i> Galeria
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" onclick="removeImageUrl(this)">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                container.appendChild(newEntry);
+                imageUrlIndex++;
+                
+                // Reorganizar índices após adicionar
+                reorganizeImageIndexes();
+            });
         });
+        
+        function removeImageUrl(button) {
+            const entry = button.closest('.image-url-entry');
+            if (entry.querySelector('input[name="ImageUrls[0]"]')) {
+                alert('A imagem principal não pode ser removida.');
+                return;
+            }
+            entry.remove();
+            reorganizeImageIndexes();
+        }
+        
+        function reorganizeImageIndexes() {
+            const inputs = document.querySelectorAll('input[name^="ImageUrls["]');
+            inputs.forEach((input, index) => {
+                input.name = `ImageUrls[${index}]`;
+            });
+            
+            const labels = document.querySelectorAll('.image-url-entry .form-label');
+            labels.forEach((label, index) => {
+                if (index === 0) {
+                    label.textContent = 'Imagem Principal *';
+                } else {
+                    label.textContent = `Imagem ${index + 1}`;
+                }
+            });
+            
+            // Atualizar contador global
+            imageUrlIndex = inputs.length;
+        }
+        
+        function openPostimgGallery() {
+            window.open('https://postimg.cc/gallery/fWZhj95', '_blank');
+        }
     </script>
 }
