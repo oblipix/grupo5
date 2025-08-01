@@ -90,7 +90,7 @@ function ContactPage() {
                             <div className="space-y-6 mb-8">
                                 <div className="flex items-center text-gray-700 text-lg">
                                     <EnvelopeIcon className="h-7 w-7 text-blue-600 mr-4" />
-                                    <span>email@tripz.com.br</span>
+                                    <span>email@tripz.com</span>
                                 </div>
                                 <div className="flex items-center text-gray-700 text-lg">
                                     <PhoneIcon className="h-7 w-7 text-green-500 mr-4" />
