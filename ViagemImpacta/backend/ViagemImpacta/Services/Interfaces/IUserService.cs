@@ -9,7 +9,7 @@ namespace ViagemImpacta.Services.Interfaces
         Task<IEnumerable<User>> ListAllClients(int skip, int take);
         Task<IEnumerable<User>> ListAllEmployees(int skip, int take);
         Task<User> CreateUser(CreateUserDto createUserDTO);
-        Task<User?> GetUserById(int id);
+        Task<User?> GetUserByIdAsync(int id);
         Task<User> UpdateUser(UpdateUserDto updateUserDTO);
         Task<bool> DeleteUser(int id);
         Task<User?> GetUserByEmail(string email);
