@@ -150,18 +150,18 @@ function HotelCard({ hotel }) {
                     ))}
                 </div>
 
+                {/* Location indicator below stars */}
+                <div className="absolute top-14 left-4 z-20 flex items-center bg-white/30 shadow-lg backdrop-blur-sm px-2 py-1 rounded-lg">
+                    <svg className="w-4 h-4 mr-1.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"></path>
+                    </svg>
+                    <span className="text-white text-sm">{hotel.location}</span>
+                </div>
+
                 {/* Title moved to overlay on image for more modern look */}
                 <h3 className="Tittle absolute bottom-4 left-4 z-20 text-white font-bold text-2xl drop-shadow-lg mb-3 mt-2">
                     {hotel.title}
                 </h3>
-
-                {/* Location indicator on image */}
-                <p className="absolute bottom-14 left-4 z-20 text-white/90 text-sm flex items-center drop-shadow-lg">
-                    <svg className="w-4 h-4 mr-1.5 text-white/90" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"></path>
-                    </svg>
-                    {hotel.location}
-                </p>
             </div>
 
             <div className="p-4 flex-grow flex flex-col justify-between bg-gradient-to-b from-white to-gray-50">

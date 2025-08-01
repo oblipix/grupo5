@@ -1270,6 +1270,39 @@ a:hover {
   filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
 }
 
+/* Estilo personalizado para navegação Swiper */
+.swiper-button-prev-desejos,
+.swiper-button-next-desejos,
+.swiper-button-prev-visitados,
+.swiper-button-next-visitados {
+  background: white;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.swiper-button-prev-desejos:hover,
+.swiper-button-next-desejos:hover,
+.swiper-button-prev-visitados:hover,
+.swiper-button-next-visitados:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  border-color: #3b82f6;
+  transform: scale(1.05);
+}
+
+/* Oculta os botões padrão do Swiper */
+.swiper-button-next.swiper-button-disabled,
+.swiper-button-prev.swiper-button-disabled {
+  display: none;
+}
+
 /* Para seções com cards */
 .cards-section {
   padding-bottom: 32px;

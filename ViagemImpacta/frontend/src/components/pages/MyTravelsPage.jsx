@@ -8,6 +8,12 @@ import HotelCard from '../hotels/HotelCard'; // Usando o card unificado
 import ScrollReveal from '../common/ScrollReveal.jsx';
 import AnimatedSection from '../common/AnimatedSection.jsx';
 import AnimatedHotelCard from '../common/AnimatedHotelCard.jsx';
+// Import do Swiper
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation, Pagination, Autoplay } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
 
 function MyTravelsPage() {
   const navigate = useNavigate();
@@ -1371,12 +1377,58 @@ function MyTravelsPage() {
         <section className="mb-12">
           <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Hotéis que Você Já Visitou</h2>
           {visitedHotels?.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {visitedHotels.map((hotel, index) => (
-                <AnimatedHotelCard key={hotel.id} index={index}>
-                  <HotelCard hotel={hotel} />
-                </AnimatedHotelCard>
-              ))}
+            <div className="relative">
+              <Swiper
+                modules={[Navigation, Pagination, Autoplay]}
+                spaceBetween={48}
+                slidesPerView={1}
+                navigation={{
+                  nextEl: '.swiper-button-next-visitados',
+                  prevEl: '.swiper-button-prev-visitados',
+                }}
+                pagination={{
+                  clickable: true,
+                  dynamicBullets: true,
+                }}
+                autoplay={{
+                  delay: 4500,
+                  disableOnInteraction: false,
+                }}
+                className="px-8 py-8 pb-16"
+                breakpoints={{
+                  640: {
+                    slidesPerView: 2,
+                    spaceBetween: 48,
+                  },
+                  1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 48,
+                  },
+                }}
+              >
+                {visitedHotels.map((hotel, index) => (
+                  <SwiperSlide key={hotel.id}>
+                    <div className="card-spacing">
+                      <AnimatedHotelCard index={index}>
+                        <HotelCard hotel={hotel} />
+                      </AnimatedHotelCard>
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+
+              {/* Botões de navegação customizados */}
+              <button className="swiper-button-prev-visitados absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-blue-300">
+                <svg className="w-6 h-6 text-gray-600 hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </button>
+              
+              <button className="swiper-button-next-visitados absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-blue-300">
+                <svg className="w-6 h-6 text-gray-600 hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
             </div>
           ) : (
           <div className="text-center p-8">
@@ -1430,17 +1482,67 @@ function MyTravelsPage() {
         <section>
           <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Sua Tripz de Desejos</h2>
           {savedHotels?.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {savedHotels.map((hotel, index) => (
-                <div key={hotel.id} className="relative group">
-                  <AnimatedHotelCard index={index}>
-                    <HotelCard hotel={hotel} />
-                  </AnimatedHotelCard>
-                  <button onClick={() => removeSavedHotel(hotel.id)} className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity" title="Remover da lista de desejos">
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                  </button>
-                </div>
-              ))}
+            <div className="relative">
+              <Swiper
+                modules={[Navigation, Pagination, Autoplay]}
+                spaceBetween={48}
+                slidesPerView={1}
+                navigation={{
+                  nextEl: '.swiper-button-next-desejos',
+                  prevEl: '.swiper-button-prev-desejos',
+                }}
+                pagination={{
+                  clickable: true,
+                  dynamicBullets: true,
+                }}
+                autoplay={{
+                  delay: 4000,
+                  disableOnInteraction: false,
+                }}
+                className="px-8 py-8 pb-16"
+                breakpoints={{
+                  640: {
+                    slidesPerView: 2,
+                    spaceBetween: 48,
+                  },
+                  1024: {
+                    slidesPerView: 3,
+                    spaceBetween: 48,
+                  },
+                }}
+              >
+                {savedHotels.map((hotel, index) => (
+                  <SwiperSlide key={hotel.id}>
+                    <div className="relative group card-spacing">
+                      <AnimatedHotelCard index={index}>
+                        <HotelCard hotel={hotel} />
+                      </AnimatedHotelCard>
+                      <button 
+                        onClick={() => removeSavedHotel(hotel.id)} 
+                        className="absolute top-4 right-4 bg-red-500 text-white rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10" 
+                        title="Remover da lista de desejos"
+                      >
+                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+
+              {/* Botões de navegação customizados */}
+              <button className="swiper-button-prev-desejos absolute left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-blue-300">
+                <svg className="w-6 h-6 text-gray-600 hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
+                </svg>
+              </button>
+              
+              <button className="swiper-button-next-desejos absolute right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200 hover:border-blue-300">
+                <svg className="w-6 h-6 text-gray-600 hover:text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+              </button>
             </div>
           ) : (
           <div className="text-center p-8">
