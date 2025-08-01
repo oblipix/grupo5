@@ -36,6 +36,10 @@ function MyTravelsPage() {
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState('');
   const [updateError, setUpdateError] = useState('');
+  
+  // Estados para paginação do histórico de reservas
+  const [currentReservationPage, setCurrentReservationPage] = useState(1);
+  const reservationsPerPage = 2;
 
   // Função para obter o número de hóspedes
   const getNumberOfGuests = (reservation) => {
@@ -156,6 +160,24 @@ function MyTravelsPage() {
     }
 
     return 'Usuário';
+  };
+  
+  // Funções para paginação do histórico de reservas
+  const getCurrentReservations = () => {
+    if (!reservationHistory || reservationHistory.length === 0) return [];
+    
+    const startIndex = (currentReservationPage - 1) * reservationsPerPage;
+    const endIndex = startIndex + reservationsPerPage;
+    return reservationHistory.slice(startIndex, endIndex);
+  };
+  
+  const getTotalReservationPages = () => {
+    if (!reservationHistory || reservationHistory.length === 0) return 0;
+    return Math.ceil(reservationHistory.length / reservationsPerPage);
+  };
+  
+  const handleReservationPageChange = (pageNumber) => {
+    setCurrentReservationPage(pageNumber);
   };
   
   // Função para gerar e baixar o comprovante de reserva - corrigida e aprimorada
@@ -1214,148 +1236,201 @@ function MyTravelsPage() {
         <section className="mb-12">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-blue-800 text-center flex-1">Histórico de Reservas</h2>
+          {reservationHistory?.length > 0 && (
+            <div className="text-sm text-gray-600">
+              Página {currentReservationPage} de {getTotalReservationPages()} • {reservationHistory.length} reserva(s) total
+            </div>
+          )}
         </div>
         
               
         {reservationHistory?.length > 0 ? (
-          <div className="space-y-6">
-            {reservationHistory.map((reservation, index) => (
-              <ScrollReveal key={reservation.id || reservation.ReservationId || reservation.reservationId} animation="fadeUp" delay={index * 150}>
-                <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 relative reservation-card">
-                {/* Removemos qualquer tag de status que possa estar aparecendo no topo */}
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                  {/* Informações da reserva */}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4 lg:mb-0">
-                    {/* Imagem do hotel */}
-                    {reservation.hotelImage && (
-                      <img 
-                        src={reservation.hotelImage} 
-                        alt={reservation.hotelName}
-                        className="w-full sm:w-24 h-24 object-cover rounded-lg"
-                        onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/96x96?text=Hotel';
-                        }}
-                      />
-                    )}
-                    
-                    {/* Detalhes da reserva */}
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-800 mb-1">
-                        {reservation.hotelName || reservation.HotelName}
-                      </h3>
-                      {reservation.location && (
-                        <p className="text-gray-600 mb-2">📍 {reservation.location}</p>
+          <>
+            <div className="space-y-6">
+              {getCurrentReservations().map((reservation, index) => (
+                <ScrollReveal key={reservation.id || reservation.ReservationId || reservation.reservationId} animation="fadeUp" delay={index * 150}>
+                  <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 relative reservation-card">
+                  {/* Removemos qualquer tag de status que possa estar aparecendo no topo */}
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                    {/* Informações da reserva */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4 lg:mb-0">
+                      {/* Imagem do hotel */}
+                      {reservation.hotelImage && (
+                        <img 
+                          src={reservation.hotelImage} 
+                          alt={reservation.hotelName}
+                          className="w-full sm:w-24 h-24 object-cover rounded-lg"
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/96x96?text=Hotel';
+                          }}
+                        />
                       )}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
-                        <p><strong>Quarto:</strong> {formatRoomType(reservation.roomType || reservation.RoomType)}</p>
-                        <p><strong>Hóspedes:</strong> {getNumberOfGuests(reservation)}</p>
-                        <p><strong>Check-in:</strong> {new Date(reservation.checkIn || reservation.CheckIn || reservation.checkInDate).toLocaleDateString('pt-BR')}</p>
-                        <p><strong>Check-out:</strong> {new Date(reservation.checkOut || reservation.CheckOut || reservation.checkOutDate).toLocaleDateString('pt-BR')}</p>
+                      
+                      {/* Detalhes da reserva */}
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-1">
+                          {reservation.hotelName || reservation.HotelName}
+                        </h3>
+                        {reservation.location && (
+                          <p className="text-gray-600 mb-2">📍 {reservation.location}</p>
+                        )}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
+                          <p><strong>Quarto:</strong> {formatRoomType(reservation.roomType || reservation.RoomType)}</p>
+                          <p><strong>Hóspedes:</strong> {getNumberOfGuests(reservation)}</p>
+                          <p><strong>Check-in:</strong> {new Date(reservation.checkIn || reservation.CheckIn || reservation.checkInDate).toLocaleDateString('pt-BR')}</p>
+                          <p><strong>Check-out:</strong> {new Date(reservation.checkOut || reservation.CheckOut || reservation.checkOutDate).toLocaleDateString('pt-BR')}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Status e valor */}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <div className="text-center sm:text-right">
-                      <p className="text-2xl font-bold text-blue-900">
-                        R$ {(reservation.totalPrice || reservation.TotalPrice || 0).toFixed(2).replace('.', ',')}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Reservado em {new Date(reservation.reservationDate || reservation.ReservationDate).toLocaleDateString('pt-BR')}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-center sm:items-end gap-2">
-                      {/* Badge de Status da Reserva */}
-                      {/* <span 
-                        // className={`px-2 py-1 rounded text-xs font-semibold border ${getReservationStatus(reservation).className}`}
-                        onClick={() => console.log('Reservation status:', reservation.id, 'is confirmed:', !!(reservation.isConfirmed || reservation.IsConfirmed))}
-                      >
-                        {getReservationStatus(reservation).text}
-                      </span> */}
-                      
-                      {/* Botões de ação */}
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => navigate(`/hoteis/${reservation.hotelId || reservation.HotelId}`)}
-                          className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition"
+                    
+                    {/* Status e valor */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                      <div className="text-center sm:text-right">
+                        <p className="text-2xl font-bold text-blue-900">
+                          R$ {(reservation.totalPrice || reservation.TotalPrice || 0).toFixed(2).replace('.', ',')}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Reservado em {new Date(reservation.reservationDate || reservation.ReservationDate).toLocaleDateString('pt-BR')}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-center sm:items-end gap-2">
+                        {/* Badge de Status da Reserva */}
+                        {/* <span 
+                          // className={`px-2 py-1 rounded text-xs font-semibold border ${getReservationStatus(reservation).className}`}
+                          onClick={() => console.log('Reservation status:', reservation.id, 'is confirmed:', !!(reservation.isConfirmed || reservation.IsConfirmed))}
                         >
-                          Ver Hotel
-                        </button>
-                        {/* Botões de comprovante sempre visíveis, independentemente do status */}
+                          {getReservationStatus(reservation).text}
+                        </span> */}
+                        
+                        {/* Botões de ação */}
                         <div className="flex gap-2">
                           <button 
-                            onClick={(e) => {
-                              console.log('Clique no botão de download:', reservation);
-                              // Forçar a reserva como confirmada para garantir que o comprovante seja gerado
-                              const confirmedReservation = {...reservation, isConfirmed: true, IsConfirmed: true};
-                              downloadReceipt(confirmedReservation);
-                            }}
-                            className="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition flex items-center receipt-button"
-                            title="Baixar comprovante"
+                            onClick={() => navigate(`/hoteis/${reservation.hotelId || reservation.HotelId}`)}
+                            className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition"
                           >
-                            <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Baixar
+                            Ver Hotel
                           </button>
-                          
-                          <button 
-                            onClick={(e) => {
-                              console.log('Clique no botão de visualização:', reservation);
-                              // Forçar a reserva como confirmada para garantir que o comprovante seja gerado
-                              const confirmedReservation = {...reservation, isConfirmed: true, IsConfirmed: true};
-                              viewReceipt(confirmedReservation);
-                            }}
-                            className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition flex items-center receipt-button"
-                            title="Visualizar comprovante"
-                          >
-                            <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                            Visualizar
-                          </button>
+                          {/* Botões de comprovante sempre visíveis, independentemente do status */}
+                          <div className="flex gap-2">
+                            <button 
+                              onClick={(e) => {
+                                console.log('Clique no botão de download:', reservation);
+                                // Forçar a reserva como confirmada para garantir que o comprovante seja gerado
+                                const confirmedReservation = {...reservation, isConfirmed: true, IsConfirmed: true};
+                                downloadReceipt(confirmedReservation);
+                              }}
+                              className="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition flex items-center receipt-button"
+                              title="Baixar comprovante"
+                            >
+                              <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                              </svg>
+                              Baixar
+                            </button>
+                            
+                            <button 
+                              onClick={(e) => {
+                                console.log('Clique no botão de visualização:', reservation);
+                                // Forçar a reserva como confirmada para garantir que o comprovante seja gerado
+                                const confirmedReservation = {...reservation, isConfirmed: true, IsConfirmed: true};
+                                viewReceipt(confirmedReservation);
+                              }}
+                              className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition flex items-center receipt-button"
+                              title="Visualizar comprovante"
+                            >
+                              <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                              Visualizar
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                
-                {/* Informações de Status da Reserva */}
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-semibold text-gray-700">Status da Reserva:</p>
-                      <p className="text-xs text-gray-500">
-                        {(reservation.isConfirmed || reservation.IsConfirmed) 
-                          ? 'Sua reserva foi confirmada e está garantida.' 
-                          : 'Sua reserva está pendente de confirmação. Você receberá um e-mail quando for confirmada.'}
-                      </p>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${getReservationStatus(reservation).className}`}>
-                      {getReservationStatus(reservation).text}
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Informações dos viajantes */}
-                {(reservation.travellers || reservation.Travellers) && (reservation.travellers || reservation.Travellers).length > 0 && (
+                  
+                  {/* Informações de Status da Reserva */}
                   <div className="mt-4 pt-4 border-t border-gray-200">
-                    <p className="text-sm font-semibold text-gray-700 mb-2">Viajantes:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {(reservation.travellers || reservation.Travellers).map((traveller, index) => (
-                        <span key={index} className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-700">
-                          {traveller.firstName || traveller.FirstName} {traveller.lastName || traveller.LastName}
-                        </span>
-                      ))}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-700">Status da Reserva:</p>
+                        <p className="text-xs text-gray-500">
+                          {(reservation.isConfirmed || reservation.IsConfirmed) 
+                            ? 'Sua reserva foi confirmada e está garantida.' 
+                            : 'Sua reserva está pendente de confirmação. Você receberá um e-mail quando for confirmada.'}
+                        </p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${getReservationStatus(reservation).className}`}>
+                        {getReservationStatus(reservation).text}
+                      </span>
                     </div>
                   </div>
-                )}
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
+                  
+                  {/* Informações dos viajantes */}
+                  {(reservation.travellers || reservation.Travellers) && (reservation.travellers || reservation.Travellers).length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <p className="text-sm font-semibold text-gray-700 mb-2">Viajantes:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {(reservation.travellers || reservation.Travellers).map((traveller, index) => (
+                          <span key={index} className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-700">
+                            {traveller.firstName || traveller.FirstName} {traveller.lastName || traveller.LastName}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  </div>
+                </ScrollReveal>
+              ))}
+            </div>
+            
+            {/* Controles de Paginação */}
+            {getTotalReservationPages() > 1 && (
+              <div className="mt-8 flex justify-center items-center space-x-2">
+                {/* Botão Anterior */}
+                <button
+                  onClick={() => handleReservationPageChange(currentReservationPage - 1)}
+                  disabled={currentReservationPage === 1}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                    currentReservationPage === 1
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  ← Anterior
+                </button>
+                
+                {/* Números das Páginas */}
+                {Array.from({ length: getTotalReservationPages() }, (_, index) => index + 1).map((pageNumber) => (
+                  <button
+                    key={pageNumber}
+                    onClick={() => handleReservationPageChange(pageNumber)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                      currentReservationPage === pageNumber
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {pageNumber}
+                  </button>
+                ))}
+                
+                {/* Botão Próximo */}
+                <button
+                  onClick={() => handleReservationPageChange(currentReservationPage + 1)}
+                  disabled={currentReservationPage === getTotalReservationPages()}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                    currentReservationPage === getTotalReservationPages()
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  Próximo →
+                </button>
+              </div>
+            )}
+          </>
         ) : (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🏨</div>
