@@ -1,4 +1,5 @@
 ﻿using ViagemImpacta.DTO.RoomDTO;
+using System.Linq;
 
 namespace ViagemImpacta.DTO.HotelDTO
 {
@@ -27,5 +28,11 @@ namespace ViagemImpacta.DTO.HotelDTO
         public string? Description { get; set; }
         public decimal? LowestRoomPrice { get; set; }
         public List<RoomDto> Rooms { get; set; } = new();
+
+        // Image URLs - A primeira será a imagem principal do card
+        public List<string> ImageUrls { get; set; } = new();
+        
+        // Propriedade computada para facilitar o acesso à imagem principal
+        public string? MainImageUrl => ImageUrls?.FirstOrDefault();
     }
 }
