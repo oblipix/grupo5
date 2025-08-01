@@ -69,7 +69,7 @@ function MyTravelCard({ travel, onCardClick }) {
       {/* Conteúdo do Card */}
       <div className="p-4 flex flex-col justify-start flex-grow">
         <div>
-          <h3 className="text-xl font-semibold text-gray-800 mb-2">{travel.title}</h3>
+          <h3 className="text-xl font-semibold text-gray-800 mb-3 mt-2">{travel.title}</h3>
           {/* Descrição/Dias de Viagem - Direto abaixo do título */}
           <p className="text-gray-600 text-sm">{travel.description}</p> 
         </div>

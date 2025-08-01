@@ -47,9 +47,14 @@ function HomePage() {
         <HomeMenu />
       </ScrollReveal>
       
-      {/* Barra de pesquisa surge suavemente */}
-      <ScrollReveal animation="fadeUp" delay={200}>
-        <SearchHotelsBar />
+       {/* Barra de pesquisa surge suavemente */}
+       <ScrollReveal animation="fadeUp" delay={200}>
+      <SearchHotelsBar
+        selectedAmenities={selectedAmenities}
+        onAmenitiesChange={setSelectedAmenities}
+        onSearch={handleSearch}
+        // ...outras props se necessário
+      />
       </ScrollReveal>
 
       {/* Seção de Promoções em Destaque - surge da esquerda */}

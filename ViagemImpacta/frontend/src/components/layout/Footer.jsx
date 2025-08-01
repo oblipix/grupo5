@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { GoogleMap, Marker } from '@react-google-maps/api';
 import { useHotels } from '../hooks/useHotels';
 
+
 // Importe os ícones das redes sociais
 import {
     FaFacebookF,
