@@ -47,7 +47,7 @@
     </div>
 
     <hr />
-    <h4>Viajantes</h4>
+    <h4>Hóspedes</h4>
     <div id="travellersList">
         @if (Model.Travellers != null && Model.Travellers.Count > 0)
         {
@@ -75,13 +75,13 @@
             }
         }
     </div>
-    <button type="button" class="btn btn-outline-primary mb-3" id="addTravellerBtn"><i class="bi bi-person-plus"></i> Adicionar Viajante</button>
+    <button type="button" class="btn btn-outline-primary mb-3" id="addTravellerBtn"><i class="bi bi-person-plus"></i> Adicionar Hóspede</button>
     <div class="text-danger" id="travellerValidation" style="display:none;">É obrigatório ao menos um viajante.</div>
 
     <hr />
     <div class="d-flex gap-2">
         <a asp-action="Index" class="btn btn-secondary">Voltar</a>
-        <button type="submit" class="btn btn-primary">Confirmar</button>
+        <button type="submit" class="btn btn-primary">Salvar</button>
         <a asp-action="Details" asp-route-id="@Model.ReservationId" class="btn btn-danger">Cancelar Reserva</a>
     </div>
 </form>

@@ -60,7 +60,7 @@
             <th>Check-in</th>
             <th>Check-out</th>
             <th>Preço Total</th>
-            <th>Confirmada?</th>
+            <th>Status Pagamento</th>
             <th>Ações</th>
         </tr>
     </thead>
@@ -76,15 +76,15 @@
                     <td>@reserva.Room?.TypeName</td>
                     <td>@reserva.CheckIn.ToString("dd/MM/yyyy")</td>
                     <td>@reserva.CheckOut.ToString("dd/MM/yyyy")</td>
-                    <td>@reserva.TotalPrice.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
-                    <td>
+                    <td class="col text-center">@reserva.TotalPrice.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
+                    <td class="col text-center">
                         @if (reserva.IsConfirmed)
                         {
-                            <span class="badge bg-success">Sim</span>
+                            <span class="badge bg-success">Pago</span>
                         }
                         else
                         {
-                            <span class="badge bg-danger">Não</span>
+                            <span class="badge bg-warning text-black">Pendente</span>
                         }
                     </td>
                     <td>
