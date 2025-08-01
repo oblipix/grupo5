@@ -26,10 +26,8 @@ function HomePage() {
       {/* Hero aparece imediatamente */}
       <HeroSwiper />
       
-      {/* Menu surge de baixo */}
-      <ScrollReveal animation="fadeUp" delay={300}>
-        <HomeMenu />
-      </ScrollReveal>
+      {/* Barrinha aparece imediatamente sem animação para manter o posicionamento */}
+      <HomeMenu />
       
       {/* Barra de pesquisa surge suavemente */}
       <ScrollReveal animation="fadeUp" delay={200}>
