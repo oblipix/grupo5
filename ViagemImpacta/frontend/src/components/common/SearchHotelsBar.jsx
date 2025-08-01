@@ -32,7 +32,6 @@ function SearchHotelsBar({ selectedAmenities, onAmenitiesChange, onSearch }) {
     const [guestsInfo, setGuestsInfo] = useState(roomGuestOptions[1]);
     const [minPrice, setMinPrice] = useState(0);
     const [maxPrice, setMaxPrice] = useState(10000);
-    const [selectedAmenities, setSelectedAmenities] = useState([]);
     const [roomTypeOptions, setRoomTypeOptions] = useState([]); // Estado para tipos de quarto do backend
     const [selectedRoomType, setSelectedRoomType] = useState('');
     const [isAmenitiesDropdownOpen, setIsAmenitiesDropdownOpen] = useState(false);
@@ -118,7 +117,7 @@ function SearchHotelsBar({ selectedAmenities, onAmenitiesChange, onSearch }) {
         setGuestsInfo(roomGuestOptions[1]);
         setMinPrice(0);
         setMaxPrice(10000);
-        setSelectedAmenities([]);
+        onAmenitiesChange([]);
         setCheckInDate('');
         setCheckOutDate('');
         // Define o primeiro tipo de quarto como padrão ao limpar
@@ -185,7 +184,7 @@ function SearchHotelsBar({ selectedAmenities, onAmenitiesChange, onSearch }) {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     <div className="flex flex-col">
-                        <label className="labelForms mb-1">Passageiros</label>
+                        <label className="labelForms mb-1">Hóspedes</label>
                         <div className="relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm">
                             <Icons.User />
                             <select
@@ -279,22 +278,26 @@ function SearchHotelsBar({ selectedAmenities, onAmenitiesChange, onSearch }) {
                                             position: 'absolute',
                                             
                                         }}
-                                    />
+                                    ></div>
                                     {children}
                                     </div>
                                 );
                             }}
-                           renderThumb={({ props }) => (
-                            <div
-                                {...props}
-                                className="h-5 w-5 bg-blue-800 rounded-full shadow-md border-2 border-white flex items-center justify-center"
-                                style={{ ...props.style }}
-                            />
-                            )}
-                         
-                            />
+                           renderThumb={({ props }) =>{ 
+                            const { key, ...rest } = props;
+                           return (
+                                <div
+                                    key={key}
+                                    {...rest}
+                                    className="h-5 w-5 bg-blue-800 rounded-full shadow-md border-2 border-white flex items-center justify-center"
+                                    style={{ ...props.style }}
+                                ></div>
+                            );
+                            }}
+                        />
                         </div>
                     </div>
+                           
                     <div className="flex flex-row gap-4 w-full md:w-auto mt-4 md:mt-0 justify-center">
                         <button onClick={handleClearSearch} className="bg-gray-300 text-gray-800 px-6 py-3 rounded-lg font-semibold hover:bg-gray-400">
                             Limpar

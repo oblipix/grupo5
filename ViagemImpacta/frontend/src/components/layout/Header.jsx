@@ -182,8 +182,8 @@ function Header() {
                         <li className="w-4/5">
                             <NavLink to="/hoteis" className={({ isActive }) => 
                                 isActive 
-                                    ? "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-white bg-blue-900/40 transition-all" 
-                                    : "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-blue-900/20 transition-all"
+                                    ? "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-white transition-all" 
+                                    : "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-gray-300 hover:text-blue-400 transition-all"
                             } onClick={toggleMobileMenu}>
                                 <FaBuilding className="text-lg" />
                                 <span>Hotéis</span>
@@ -192,12 +192,12 @@ function Header() {
                         <li className="w-4/5">
                             <NavLink to="/promocoes" className={({ isActive }) => 
                                 isActive 
-                                    ? "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-white bg-blue-900/40 transition-all" 
-                                    : "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-blue-900/20 transition-all"
+                                    ? "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-white transition-all" 
+                                    : "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-gray-300 hover:text-blue-400  transition-all"
                             } onClick={toggleMobileMenu}>
                                 <FaTag className="text-lg" />
                                 <span>Promoções</span>
-                            </div>
+                            
                         </NavLink></li>
                     </ul>
                 </div>

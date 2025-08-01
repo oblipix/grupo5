@@ -206,12 +206,15 @@ class HotelService {
 
   async getHotelsWithFilters(filters) {
     const params = {};
-    if (filters.destination) params.destination = filters.destination;
-    if (typeof filters.precoMin === 'number' && !isNaN(filters.precoMin)) params.minPrice = filters.precoMin;
-    if (typeof filters.precoMax === 'number' && !isNaN(filters.precoMax)) params.maxPrice = filters.precoMax;
+    if (filters.destination) params.destino = filters.destination;
+    if (typeof filters.precoMin === 'number' && !isNaN(filters.precoMin)) params.precoMin = filters.precoMin;
+    if (typeof filters.precoMax === 'number' && !isNaN(filters.precoMax)) params.precoMax = filters.precoMax;
     if (filters.estrelas) params.stars = filters.estrelas;
-    if (filters.tipoQuarto) params.roomType = filters.tipoQuarto;
+    if (filters.roomType) params.tipoQuarto = filters.roomType;
+    if (filters.guests) params.hospedes = filters.guests;
     if (filters.amenities) params.comodidades = filters.amenities;
+    if (filters.checkIn) params.checkIn = filters.checkIn;
+    if (filters.checkOut) params.checkOut = filters.checkOut;
     // Adicione outros filtros conforme necessário
     //DEBUG TEMPORARIO MELHORADO
     console.log('[DEBUG][hotelService][TEMP] Enviando para backend:', JSON.stringify(params));
@@ -411,7 +414,13 @@ class HotelService {
       }
     ];
   }
-
+getRoomTypes() {
+  return [
+    { id: 0, name: 'Quarto Standard' },
+    { id: 1, name: 'Quarto Luxo' },
+    { id: 2, name: 'Suíte' }
+  ];
+}
   /**
    * Converte o enum RoomType para nome legível
    */

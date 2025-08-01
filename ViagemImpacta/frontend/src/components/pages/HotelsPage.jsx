@@ -31,11 +31,15 @@ const [selectedAmenities, setSelectedAmenities] = useState([]);
 
   const queryParams = new URLSearchParams(location.search);
   const filters = {
-    destination: queryParams.get('destino') || '',
-    page: Number(queryParams.get('pagina')) || 1,
-    precoMin: queryParams.get('precoMin') ? Number(queryParams.get('precoMin')) : undefined,
-    precoMax: queryParams.get('precoMax') ? Number(queryParams.get('precoMax')) : undefined,
-    amenities: selectedAmenities.join(','), 
+     destination: queryParams.get('destino') || '',
+      page: Number(queryParams.get('pagina')) || 1,
+      precoMin: queryParams.get('precoMin') ? Number(queryParams.get('precoMin')) : undefined,
+      precoMax: queryParams.get('precoMax') ? Number(queryParams.get('precoMax')) : undefined,
+      amenities: selectedAmenities.join(','),
+      guests: queryParams.get('hospedes') ? Number(queryParams.get('hospedes')) : undefined,
+      roomType: queryParams.get('tipoQuarto') || '',
+      checkIn: queryParams.get('checkIn') || '',
+      checkOut: queryParams.get('checkOut') || '',
     // Adicione outros filtros da URL aqui se necessário
   };
 
@@ -61,6 +65,9 @@ const [selectedAmenities, setSelectedAmenities] = useState([]);
       newSearchParams.append('comodidades', params.selectedAmenities.join(','));
     }
     if (params.selectedRoomType) newSearchParams.append('tipoQuarto', params.selectedRoomType);
+    if (params.guests) newSearchParams.append('hospedes', params.guests);
+    if (params.checkIn) newSearchParams.append('checkIn', params.checkIn);
+    if (params.checkOut) newSearchParams.append('checkOut', params.checkOut);
     // Adicione outros filtros do formulário aqui se necessário
     newSearchParams.append('pagina', '1');
     navigate(`?${newSearchParams.toString()}`);
@@ -73,7 +80,11 @@ const [selectedAmenities, setSelectedAmenities] = useState([]);
     if (filters.precoMin !== undefined) newSearchParams.append('precoMin', filters.precoMin);
     if (filters.precoMax !== undefined) newSearchParams.append('precoMax', filters.precoMax);
     if (filters.amenities) newSearchParams.append('comodidades', filters.amenities);
-    if (filters.page) newSearchParams.append('pagina', pageNumber);
+    if (filters.guests) newSearchParams.append('hospedes', filters.guests);
+    if (filters.roomType) newSearchParams.append('tipoQuarto', filters.roomType);
+    if (filters.checkIn) newSearchParams.append('checkIn', filters.checkIn);
+    if (filters.checkOut) newSearchParams.append('checkOut', filters.checkOut);
+    newSearchParams.append('pagina', pageNumber);
     // Adicione outros filtros se necessário
     navigate(`?${newSearchParams.toString()}`);
     window.scrollTo({ top: 0, behavior: 'smooth' });
