@@ -272,7 +272,7 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
 
             {/* Dados dos viajantes */}
             <div className="mb-6">
-              <h4 className="text-lg font-semibold text-gray-800 mb-3">Dados dos Viajantes</h4>
+              <h4 className="text-lg font-semibold text-gray-800 mb-3">Dados dos Hóspedess</h4>
               {formData.travellers.map((traveller, index) => (
                 <div key={index} className="mb-4 p-4 border border-gray-200 rounded-lg">
                   <h5 className="font-medium text-gray-700 mb-3">
