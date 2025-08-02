@@ -90,3 +90,10 @@
     z-index: 10001;
     height: 70px;
 }
+
+/* Prevent .btn-outline-danger from having a solid red background on hover */
+.btn-outline-danger:hover, .btn-outline-danger:focus {
+    background-color: #dc3545 !important;
+    color: #fff !important;
+    border-color: #dc3545 !important;
+}

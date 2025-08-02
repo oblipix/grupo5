@@ -1,5 +1,8 @@
-﻿@{
-    var adminName = ViewBag.AdminName ?? User.Identity.Name ?? "Admin";
+﻿@using ViagemImpacta.Models
+@model User
+@{
+    // adminName is the logged-in user's first name, fallback to "Admin" if not set
+    var name = ViewBag.Name ?? "Admin";
     var balance = ViewBag.Balance ?? 0.0;
 }
 
@@ -8,16 +11,16 @@
 <!-- Google Fonts Icons -->
 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
 <!-- Chart.js CDN -->
- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link rel="stylesheet" href="~/css/dashboard.css"/>
 
 <div class="dashboard-container">
     <div class="dashboard-topbar d-flex align-items-center justify-content-between">
         <div class="d-flex align-items-center gap-2">
-            <h4 class="mb-0">Olá, @adminName</h4>
+            <h4 class="mb-0">Olá, @name</h4>
             <form asp-controller="Admins" asp-action="Logout" method="post" class="ms-2">
                 <button type="submit" class="btn btn-outline-danger p-0 d-flex align-items-center justify-content-center" title="Sair" style="width: 30px; height: 30px;">
-                    <span class="material-icons" style="font-size: 1.3rem; color: #dc3545;">logout</span>
+                    <span class="material-icons" style="font-size: 1.3rem;">logout</span>
                 </button>
             </form>
         </div>
@@ -30,11 +33,11 @@
         <aside class="dashboard-sidebar">
             <h5 class="mb-3">Gerenciamento</h5>
             <div class="list-group mb-4">
-                <a href="/users/index" class="list-group-item list-group-item-action"><span class="material-icons">group</span> Usuários</a>
-                <a href="/employees/index" class="list-group-item list-group-item-action"><span class="material-icons">badge</span> Funcionários</a>
-                <a href="/hotels/index" class="list-group-item list-group-item-action"><span class="material-icons">hotel</span> Hotéis</a>
-                <a href="/reservations/index" class="list-group-item list-group-item-action"><span class="material-icons">event</span> Reservas</a>
-                <a href="/Admin/Comentarios" class="list-group-item list-group-item-action"><span class="material-icons">rate_review</span> Avaliações</a>
+                <a asp-controller="Users" asp-action="Index" class="list-group-item list-group-item-action"><span class="material-icons">group</span> Clientes</a>
+                <a asp-controller="Employees" asp-action="Index" class="list-group-item list-group-item-action"><span class="material-icons">badge</span> Funcionários</a>
+                <a asp-controller="Hotels" asp-action="Index" class="list-group-item list-group-item-action"><span class="material-icons">hotel</span> Hotéis</a>
+                <a asp-controller="Reservations" asp-action="Index" class="list-group-item list-group-item-action"><span class="material-icons">event</span> Reservas</a>
+                <button class="list-group-item list-group-item-action" disabled><span class="material-icons">rate_review</span> Avaliações</button>
             </div>
         </aside>
         <section class="dashboard-content">
@@ -57,7 +60,7 @@
                 </div>
             </div>
             <div class="d-flex justify-content-end mt-4">
-                <a href="/Admin/FaturamentoDetalhado" class="btn btn-outline-primary"><span class="material-icons align-middle">bar_chart</span> Ver detalhes do faturamento</a>
+                <a asp-controller="Admin" asp-action="FaturamentoDetalhado" class="btn btn-outline-primary"><span class="material-icons align-middle">bar_chart</span> Ver detalhes do faturamento</a>
             </div>
         </section>
     </div>
