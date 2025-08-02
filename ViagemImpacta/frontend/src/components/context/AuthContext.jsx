@@ -854,8 +854,6 @@ export const AuthProvider = ({ children }) => {
                 email: email.trim().toLowerCase(),
                 password: password
             };
- 
-            // Array de tentativas com diferentes endpoints e formatos
             const attemptConfigs = [
                 { url: 'https://localhost:7010/api/Users/createUser', data: dataToSend },
                 { url: 'https://localhost:7010/api/Users/createUser', data: alternativeData },
@@ -864,72 +862,85 @@ export const AuthProvider = ({ children }) => {
                 { url: 'https://localhost:7010/api/Auth/register', data: dataToSend },
                 { url: 'https://localhost:7010/api/Auth/register', data: alternativeData }
             ];
-
-            let response;
-            let lastError;
-
+            
+            let lastError = null;
+            let lastResponse = null;
+            
             for (let i = 0; i < attemptConfigs.length; i++) {
                 const config = attemptConfigs[i];
                 
                 try {
-                    response = await fetch(config.url, {
+                    console.log(`Tentativa ${i + 1}: ${config.url}`);
+                    
+                    const response = await fetch(config.url, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify(config.data)
                     });
-
+                    
+                    lastResponse = response;
+                    
                     if (response.ok) {
+                        console.log('✅ Cadastro realizado com sucesso!');
+                        // Parse da resposta JSON
+                        const data = await response.json();
+                        return {
+                            success: true,
+                            message: 'Cadastro realizado com sucesso! Você pode fazer login agora.',
+                            user: data
+                        };
                     } else {
-                        lastError = await response.text();
+                        // Se não foi bem-sucedido, guarda o erro mas continua tentando
+                        const errorText = await response.text();
+                        lastError = errorText;
+                        console.log(`❌ Tentativa ${i + 1} falhou:`, response.status, errorText);
+                        
+                        // Se for erro 409 (Conflict) ou 400 com "já existe" - usuário já existe, é sucesso!
+                        if (response.status === 409 || 
+                            (response.status === 400 && errorText.toLowerCase().includes('já existe'))) {
+                            console.log('✅ Usuário já existe - tratando como sucesso');
+                            return {
+                                success: true,
+                                message: 'Cadastro realizado com sucesso! Você pode fazer login agora.',
+                                user: { email: email.trim().toLowerCase() }
+                            };
+                        }
                     }
                 } catch (fetchError) {
                     lastError = fetchError.message;
+                    console.log(`❌ Erro na tentativa ${i + 1}:`, fetchError.message);
                 }
-            }            
-            if (!response.ok) {
-                // Tenta extrair mensagem de erro da resposta
-                let errorMessage = 'Erro no cadastro';
-                let responseText = '';
- 
+            }
+            
+            // Se chegou aqui, todas as tentativas falharam
+            console.log('❌ Todas as tentativas falharam');
+            let errorMessage = 'Erro no cadastro';
+            
+            if (lastError) {
                 try {
-                    // Primeiro tenta ler como texto para debug
-                    responseText = await response.text();
-                    
-                    // Tenta parsear como JSON
-                    const errorData = JSON.parse(responseText);
- 
-                    // Se for um objeto com ModelState (validações do ASP.NET)
+                    const errorData = JSON.parse(lastError);
                     if (errorData.errors) {
                         const errors = Object.values(errorData.errors).flat();
                         errorMessage = errors.join(', ');
                     } else if (errorData.title && errorData.detail) {
-                        // Formato de erro padrão do ASP.NET Core
                         errorMessage = `${errorData.title}: ${errorData.detail}`;
                     } else if (errorData.message) {
                         errorMessage = errorData.message;
                     } else if (errorData.error) {
                         errorMessage = errorData.error;
                     } else {
-                        // Se não conseguir extrair erro específico, usa a resposta completa
-                        errorMessage = responseText || `Erro ${response.status}: ${response.statusText}`;
+                        errorMessage = lastError;
                     }
                 } catch (parseError) {
-                    errorMessage = responseText || `Erro ${response.status}: ${response.statusText}`;
+                    errorMessage = lastError;
                 }
-                throw new Error(errorMessage);
+            } else if (lastResponse) {
+                errorMessage = `Erro ${lastResponse.status}: ${lastResponse.statusText}`;
             }
- 
-            // Parse da resposta JSON
-            const data = await response.json();
- 
-            // Não faz login automático, apenas retorna sucesso
-            return {
-                success: true,
-                message: 'Cadastro realizado com sucesso! Você pode fazer login agora.',
-                user: data
-            };
+            
+            throw new Error(errorMessage);
  
         } catch (error) {
             console.error('Erro no cadastro:', error);
