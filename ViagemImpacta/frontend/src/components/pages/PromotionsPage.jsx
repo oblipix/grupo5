@@ -51,7 +51,7 @@ function PromocoesPage() {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-white py-12 px-6">
+            <div className="bg-white py-12 px-6">
                 <div className="container mx-auto">
                     <div className="text-center py-20">
                         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
@@ -64,7 +64,7 @@ function PromocoesPage() {
 
     if (error) {
         return (
-            <div className="min-h-screen bg-gray-50 py-12 px-6">
+            <div className="bg-gray-50 py-12 px-6">
                 <div className="container mx-auto">
                     <div className="text-center py-20">
                         <div className="bg-red-100 p-4 rounded-lg">
@@ -77,7 +77,7 @@ function PromocoesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-12 px-6">
+        <div className="bg-gray-50 py-12 px-6">
             <div className="container mx-auto">
                 <ScrollReveal animation="fadeUp" delay={200}>
                     <div className="bg-white shadow-md rounded-lg p-6 mb-8">

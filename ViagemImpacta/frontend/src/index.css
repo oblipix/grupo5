@@ -20,9 +20,39 @@ html, body, #root {
 body {
   display: flex;
   flex-direction: column;
-  overflow-x: hidden !important; /* Força que não haja scroll horizontal */
-  overflow-y: auto;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
   position: relative;
+  /* Barra de scroll personalizada para todos os navegadores */
+  scrollbar-width: thin !important; /* Firefox - barra fina */
+  scrollbar-color: #60a5fa #f1f5f9 !important; /* Firefox - cores */
+}
+
+/* Webkit scrollbar para Chrome, Safari, Edge */
+body::-webkit-scrollbar {
+  width: 12px !important; /* Largura da barra - aumentei para ficar mais visível */
+}
+
+body::-webkit-scrollbar-track {
+  background: #f1f5f9 !important; /* Cor de fundo cinza claro */
+  border-radius: 6px !important;
+  border: 1px solid #e2e8f0 !important; /* Borda sutil */
+}
+
+body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%) !important; /* Gradiente azul */
+  border-radius: 6px !important;
+  border: 2px solid #f1f5f9 !important; /* Borda interna */
+  transition: all 0.3s ease !important;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%) !important; /* Mais escuro no hover */
+  border-color: #e2e8f0 !important;
+}
+
+body::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%) !important; /* Ainda mais escuro quando clicado */
 }
 p {
   margin: 0 0 1.2rem 0 !important;
@@ -310,7 +340,7 @@ left: 20%;
   z-index: 9999 !important; /* Z-index muito alto */
   width: 100% !important;
   max-height: 350px !important; /* Altura maior */
-  overflow-y: auto !important;
+  overflow-y: visible !important;
   background: white !important;
   border: 2px solid #e5e7eb !important;
   border-radius: 12px !important;
@@ -566,12 +596,46 @@ color: transparent;
   
 }
 
-/* Garanta que o conteúdo principal permita rolagem */
+/* Main sem scroll - apenas o body controla */
 main.flex-grow {
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: visible;
   width: 100%;
   max-width: 100%;
+}
+
+/* Garantir que páginas específicas não tenham scroll próprio */
+.min-h-screen {
+  min-height: auto !important;
+}
+
+/* Remover qualquer scroll de containers internos das páginas */
+.max-h-screen,
+.max-h-\[95vh\],
+.overflow-y-auto {
+  max-height: none !important;
+  overflow-y: visible !important;
+}
+
+/* Esconder scroll de elementos específicos que causam duplicação */
+.swiper-container,
+.swiper-wrapper,
+.amenities-dropdown-panel,
+main.flex-grow,
+.container,
+.footer-curve,
+.header-curve {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* Internet Explorer */
+}
+
+.swiper-container::-webkit-scrollbar,
+.swiper-wrapper::-webkit-scrollbar,
+.amenities-dropdown-panel::-webkit-scrollbar,
+main.flex-grow::-webkit-scrollbar,
+.container::-webkit-scrollbar,
+.footer-curve::-webkit-scrollbar,
+.header-curve::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, Edge */
 }
 
 /* Ajustes específicos para o footer */

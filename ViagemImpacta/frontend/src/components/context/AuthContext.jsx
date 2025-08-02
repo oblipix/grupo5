@@ -185,12 +185,11 @@ export const AuthProvider = ({ children }) => {
             if (storedToken && storedUser) {
                 try {
                     const user = JSON.parse(storedUser);
-                    if (user && typeof user === 'object' && user.email) {
+                    
+                    if (user && typeof user === 'object' && (user.email || user.Email)) {
                         setCurrentUser(user);
                         setToken(storedToken);
                         setIsLoggedIn(true);
-                        
-                        console.log('✅ Usuário autenticado carregado do localStorage:', user.email);
                         
                         // Busca os dados de hotéis do usuário do backend
                         const userId = user.UserId || user.userId || user.id;
@@ -217,7 +216,6 @@ export const AuthProvider = ({ children }) => {
                         // Se os dados do usuário são inválidos, limpa o localStorage
                         localStorage.removeItem('authToken');
                         localStorage.removeItem('authUser');
-                        console.log('❌ Dados do usuário inválidos - removendo do localStorage');
                     }
                 } catch (e) {
                     console.error("Falha ao analisar dados de usuário armazenados:", e);
@@ -227,10 +225,7 @@ export const AuthProvider = ({ children }) => {
                     setCurrentUser(null);
                     setIsLoggedIn(false);
                     setToken(null);
-                    console.log('❌ Dados corrompidos - removendo autenticação');
                 }
-            } else {
-                console.log('ℹ️ Nenhum token/usuário encontrado no localStorage');
             }
             setIsLoadingAuth(false); // A checagem inicial terminou
         };
@@ -372,7 +367,6 @@ export const AuthProvider = ({ children }) => {
  
             // Parse da resposta JSON
             const data = await response.json();
-            console.log('Login bem-sucedido (dados do backend):', data);
  
             // Verificação mais robusta dos dados recebidos
             if (!data || typeof data !== 'object') {
@@ -390,7 +384,7 @@ export const AuthProvider = ({ children }) => {
                 throw new Error("Informações do usuário não encontradas na resposta");
             }
  
-            if (!userInfo.email || typeof userInfo.email !== 'string') {
+            if (!(userInfo.email || userInfo.Email) || typeof (userInfo.email || userInfo.Email) !== 'string') {
                 throw new Error("Email do usuário inválido recebido da API");
             }
  
@@ -562,7 +556,6 @@ export const AuthProvider = ({ children }) => {
  
             // Parse da resposta
             const responseData = await response.json();
-            console.log('Perfil atualizado com sucesso:', responseData);
  
             // Os dados atualizados vêm diretamente na resposta
             const updatedUserInfo = responseData;
@@ -572,6 +565,8 @@ export const AuthProvider = ({ children }) => {
  
             // Atualiza também no localStorage
             localStorage.setItem('authUser', JSON.stringify(updatedUserInfo));
+            
+            console.log('✅ Estado de autenticação mantido após atualização do perfil');
  
             return { success: true, message: 'Perfil atualizado com sucesso!' };
  
@@ -604,9 +599,7 @@ export const AuthProvider = ({ children }) => {
                 detail: { 
                     hotel: hotelToRemove,
                     onConfirm: () => {
-                        // Podemos navegar para a página de desejos se necessário
-                        // ou deixar o usuário na página atual
-                        // window.location.href = '/minhas-viagens';
+                        // Usuário confirma a remoção - modal fechará automaticamente
                     }
                 } 
             });
@@ -673,14 +666,13 @@ export const AuthProvider = ({ children }) => {
                 detail: { 
                     hotel: hotel,
                     onConfirm: () => {
-                        // Navega para a página de desejos depois que o usuário clicar no botão de ação
-                        // O X vai apenas fechar o modal sem executar este callback
-                        console.log("Redirecionando para Minhas Viagens");
+                        // Navega para a página de perfil onde ficam os hotéis favoritos
+                        console.log("Redirecionando para Perfil");
                         // Usando navigate se disponível, senão usa window.location
                         if (typeof navigate === 'function') {
-                            navigate('/minhas-viagens');
+                            navigate('/perfil');
                         } else {
-                            window.location.href = '/minhas-viagens';
+                            window.location.href = '/perfil';
                         }
                     }
                 } 
@@ -723,9 +715,6 @@ export const AuthProvider = ({ children }) => {
     // <<<<<<<<<<<< FUNÇÃO PARA ADICIONAR RESERVA AO HISTÓRICO >>>>>>>>>>>>
     const addReservationToHistory = async (reservationData) => {
         try {
-            console.log('Adicionando reserva ao histórico:', reservationData);
-            console.log('Usuário atual:', currentUser?.UserId || currentUser?.userId);
-            
             const userId = currentUser?.UserId || currentUser?.userId;
             if (!userId) {
                 console.error('Usuário não encontrado para adicionar reserva');
@@ -855,33 +844,61 @@ export const AuthProvider = ({ children }) => {
                 FirstName: capitalizeWords(firstName.trim()),
                 LastName: capitalizeWords(lastName.trim()),
                 Email: email.trim().toLowerCase(),
-                Password: password,
-                roles: 0 // 0 = User (conforme enum Roles)
+                Password: password
+            };
+
+            // Versão alternativa dos dados caso a primeira falhe
+            const alternativeData = {
+                firstName: capitalizeWords(firstName.trim()),
+                lastName: capitalizeWords(lastName.trim()),
+                email: email.trim().toLowerCase(),
+                password: password
             };
  
-            console.log('Dados validados - enviando para registro:', {
-                ...dataToSend,
-                Password: '***',
-                firstNameLength: dataToSend.FirstName.length,
-                lastNameLength: dataToSend.LastName.length,
-                emailLength: dataToSend.Email.length,
-                passwordLength: password.length
-            });
+            // Array de tentativas com diferentes endpoints e formatos
+            const attemptConfigs = [
+                { url: 'https://localhost:7010/api/Users/createUser', data: dataToSend },
+                { url: 'https://localhost:7010/api/Users/createUser', data: alternativeData },
+                { url: 'https://localhost:7010/api/Users', data: dataToSend },
+                { url: 'https://localhost:7010/api/Users', data: alternativeData },
+                { url: 'https://localhost:7010/api/Auth/register', data: dataToSend },
+                { url: 'https://localhost:7010/api/Auth/register', data: alternativeData }
+            ];
 
-            const response = await fetch('https://localhost:7010/api/Users/createUser', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(dataToSend)
-            });            
+            let response;
+            let lastError;
+
+            for (let i = 0; i < attemptConfigs.length; i++) {
+                const config = attemptConfigs[i];
+                
+                try {
+                    response = await fetch(config.url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(config.data)
+                    });
+
+                    if (response.ok) {
+                    } else {
+                        lastError = await response.text();
+                    }
+                } catch (fetchError) {
+                    lastError = fetchError.message;
+                }
+            }            
             if (!response.ok) {
                 // Tenta extrair mensagem de erro da resposta
                 let errorMessage = 'Erro no cadastro';
+                let responseText = '';
  
                 try {
-                    const errorData = await response.json();
-                    console.log('Erro detalhado do backend:', errorData);
+                    // Primeiro tenta ler como texto para debug
+                    responseText = await response.text();
+                    
+                    // Tenta parsear como JSON
+                    const errorData = JSON.parse(responseText);
  
                     // Se for um objeto com ModelState (validações do ASP.NET)
                     if (errorData.errors) {
@@ -890,20 +907,22 @@ export const AuthProvider = ({ children }) => {
                     } else if (errorData.title && errorData.detail) {
                         // Formato de erro padrão do ASP.NET Core
                         errorMessage = `${errorData.title}: ${errorData.detail}`;
+                    } else if (errorData.message) {
+                        errorMessage = errorData.message;
+                    } else if (errorData.error) {
+                        errorMessage = errorData.error;
                     } else {
-                        errorMessage = errorData.message || errorData.error || errorData || `Erro ${response.status}: ${response.statusText}`;
+                        // Se não conseguir extrair erro específico, usa a resposta completa
+                        errorMessage = responseText || `Erro ${response.status}: ${response.statusText}`;
                     }
-                } catch {
-                    errorMessage = `Erro ${response.status}: ${response.statusText}`;
+                } catch (parseError) {
+                    errorMessage = responseText || `Erro ${response.status}: ${response.statusText}`;
                 }
- 
-                console.error('Erro no cadastro - Status:', response.status, 'Message:', errorMessage);
                 throw new Error(errorMessage);
             }
  
             // Parse da resposta JSON
             const data = await response.json();
-            console.log('Cadastro bem-sucedido:', data);
  
             // Não faz login automático, apenas retorna sucesso
             return {
