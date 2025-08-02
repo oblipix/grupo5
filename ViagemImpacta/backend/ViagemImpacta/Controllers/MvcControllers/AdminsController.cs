@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using ViagemImpacta.Models;
 using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
@@ -27,11 +28,13 @@ public class AdminsController : Controller
         return View();
     }
 
-    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin, Attendant")]
     public IActionResult Dashboard()
     {
         var balance = _stripeService.GetBalance();
         ViewBag.Balance = balance;
+        var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+        ViewBag.Name = userName;
 
         return View();
     }
@@ -74,5 +77,10 @@ public class AdminsController : Controller
             ModelState.AddModelError(string.Empty, $"Erro ao fazer logout: {ex.Message}");
             return RedirectToAction("Dashboard");
         }
+    }
+
+    public IActionResult AccessDenied()
+    {
+        return View();
     }
 }
