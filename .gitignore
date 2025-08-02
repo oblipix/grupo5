@@ -67,4 +67,4 @@ coverage/
 Migrations/
 
 # Ignore appsettings.json
-backend/ViagemImpacta/appsettings.json
+appsettings.json
