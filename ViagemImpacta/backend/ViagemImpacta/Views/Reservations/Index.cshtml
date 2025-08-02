@@ -15,6 +15,11 @@
     int page = (skip / pageSize) + 1;
 }
 
+<!-- CSS do Litepicker -->
+<link href="https://cdn.jsdelivr.net/npm/litepicker/dist/css/litepicker.css" rel="stylesheet" />
+<!-- JS do Litepicker -->
+<script src="https://cdn.jsdelivr.net/npm/litepicker/dist/litepicker.js"></script>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h1>Lista de Reservas</h1>
     <a class="btn btn-secondary" asp-controller="Admins" asp-action="Dashboard">Voltar ao Dashboard</a>
@@ -22,29 +27,64 @@
 
 <form asp-action="Index" method="get" class="mb-4">
     <div class="row g-2 align-items-end">
-        <div class="col-md-3">
-            <label for="checkin" class="form-label">Check-in</label>
-            <input type="date" class="form-control" id="checkin" name="checkin" value="@checkin" />
-        </div>
-        <div class="col-md-3">
-            <label for="checkout" class="form-label">Check-out</label>
-            <input type="date" class="form-control" id="checkout" name="checkout" value="@checkout" />
-        </div>
-        <div class="col-md-3">
-            <label for="search" class="form-label">Cliente ou Hotel</label>
-            <input type="text" class="form-control" id="search" name="search" placeholder="Nome do usuário ou hotel" value="@search" />
-        </div>
-        <div class="col-md-2">
-            <label for="status" class="form-label">Status</label>
-            <select class="form-select" id="status" name="status">
-                <option value="" selected="@(string.IsNullOrEmpty(status) ? "selected" : null)">Todos</option>
-                <option value="confirmadas" selected="@(status == "confirmadas" ? "selected" : null)">Apenas confirmadas</option>
-                <option value="nao-confirmadas" selected="@(status == "nao-confirmadas" ? "selected" : null)">Apenas não confirmadas</option>
-            </select>
-        </div>
-        <div class="col-md-1">
-            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
-        </div>
+        <form asp-action="Index" method="get" class="mb-4" onsubmit="return validateDates();">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-4">
+                    <label for="dateRange" class="form-label">Período da Reserva</label>
+                    <input type="text" id="dateRange" class="form-control" readonly />
+                    <input type="hidden" id="checkin" name="checkin" value="@checkin" />
+                    <input type="hidden" id="checkout" name="checkout" value="@checkout" />
+                </div>
+                <div class="col-md-3">
+                    <label for="search" class="form-label">Cliente ou Hotel</label>
+                    <input type="text" class="form-control" id="search" name="search" placeholder="Nome do cliente ou hotel" value="@search" />
+                </div>
+                <div class="col-md-2">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="" selected="@(string.IsNullOrEmpty(status) ? "selected" : null)">Todos</option>
+                        <option value="confirmadas" selected="@(status == "confirmadas" ? "selected" : null)">Apenas confirmadas</option>
+                        <option value="nao-confirmadas" selected="@(status == "nao-confirmadas" ? "selected" : null)">Apenas não confirmadas</option>
+                    </select>
+                </div>
+                <div class="col-md-1">
+                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                </div>
+            </div>
+            <input type="hidden" name="skip" value="@skip" />
+            <input type="hidden" name="take" value="@pageSize" />
+
+            @section Scripts {
+                <script>
+                    const picker = new Litepicker({
+                        element: document.getElementById('dateRange'),
+                        singleMode: false,
+                        format: 'DD/MM/YYYY',
+                        numberOfMonths: 2,
+                        numberOfColumns: 2,
+                        minDate: new Date(),
+                        lang: 'pt-BR',
+                        tooltipText: {
+                            one: 'dia',
+                            other: 'dias'
+                        },
+                        setup: (picker) => {
+                            picker.on('selected', (start, end) => {
+                                document.getElementById('checkin').value = start.format('YYYY-MM-DD');
+                                document.getElementById('checkout').value = end.format('YYYY-MM-DD');
+                            });
+                        }
+                    });
+
+                    // Se já houver valores preenchidos do QueryString, mostrar no campo
+                    const existingCheckin = '@checkin';
+                    const existingCheckout = '@checkout';
+                    if (existingCheckin && existingCheckout) {
+                        picker.setDateRange(existingCheckin, existingCheckout);
+                    }
+                </script>
+            }
+        </form>
     </div>
     <input type="hidden" name="skip" value="@skip" />
     <input type="hidden" name="take" value="@pageSize" />
