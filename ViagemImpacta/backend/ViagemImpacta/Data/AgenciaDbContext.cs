@@ -28,11 +28,6 @@ namespace ViagemImpacta.Data
 
             base.OnModelCreating(modelBuilder);
 
-        
-
-
-            base.OnModelCreating(modelBuilder);
-
             // Hotel configuration
             modelBuilder.Entity<Hotel>(entity =>
             {
@@ -111,14 +106,27 @@ namespace ViagemImpacta.Data
                 {
                     UserId = 1,
                     Email = "admin@tripz.com",
-                    Password = "$2a$11$zMC5qcoZXYNaPQasD9OkkOp14kasuLjc3XPDJPH9m2PDZEji0n8Oi",
-                    FirstName = "Tripz",
-                    LastName = "Admin",
+                    Password = "$2a$11$zMC5qcoZXYNaPQasD9OkkOp14kasuLjc3XPDJPH9m2PDZEji0n8Oi", //senha: admin
+                    FirstName = "Administrador",
+                    LastName = "Tripz",
                     Phone = "+5581954320943",
                     Cpf = "123987345-09",
                     CreatedAt = DateTime.Now,
                     Active = true,
                     Role = Roles.Admin,
+                },
+                new User
+                {
+                    UserId = 2,
+                    Email = "maia@tripz.com",
+                    Password = "$2a$12$gJ9mxxNfkiJldbOPnghtuOLv7GFz9.VWUZsHmV.y9abuaruVjc7Am", //senha: equipetripz
+                    FirstName = "Maia",
+                    LastName = "",
+                    Phone = "+5581954320943",
+                    Cpf = "123987345-09",
+                    CreatedAt = DateTime.Now,
+                    Active = true,
+                    Role = Roles.Attendant,
                 }
             );
         }
