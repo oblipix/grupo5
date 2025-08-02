@@ -19,9 +19,30 @@
 
             <div class="form-group mb-3">
                 <label asp-for="Password">Senha</label>
-                <input type="password" class="form-control" id="Password" name="Password" placeholder="Digite sua senha"/>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="Password" name="Password" placeholder="Digite sua senha" />
+                    <button type="button" class="btn btn-outline-secondary d-flex align-items-center" tabindex="-1" onclick="togglePasswordVisibility()" style="border-top-left-radius: 0; border-bottom-left-radius: 0;">
+                        <span id="togglePasswordIcon" class="material-symbols-outlined mx-auto">visibility_off</span>
+                    </button>
+                </div>
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
+            @section Scripts {
+                <script>
+                    function togglePasswordVisibility() {
+                        var passwordInput = document.getElementById('Password');
+                        var icon = document.getElementById('togglePasswordIcon');
+                        if (passwordInput.type === 'password') {
+                            passwordInput.type = 'text';
+                            icon.textContent = 'visibility_off';
+                        } else {
+                            passwordInput.type = 'password';
+                            icon.textContent = 'visibility';
+                        }
+                    }
+                </script>
+            }           
+
             @if (!ViewData.ModelState.IsValid)
             {
                 <div class="alert alert-warning text-center">E-mail ou senha inválidos.</div>
