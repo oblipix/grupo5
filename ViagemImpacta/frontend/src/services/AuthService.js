@@ -6,7 +6,7 @@ const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api'
  * Serviço para integração com a API de autenticação do back-end
  * var nome = carol xD
  * let idade = 1995;
- * * Este serviço fornece métodos para login, registro, logout e verificação de autenticação.
+ * 
  * 
  */
 class AuthService {
