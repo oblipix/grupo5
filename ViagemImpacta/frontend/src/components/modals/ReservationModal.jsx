@@ -176,10 +176,10 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50 p-4">
-      <div className="bg-white/95 rounded-lg max-w-[80vh] w-full max-h-[90vh] overflow-y-auto shadow-xl border border-gray-200">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
+    <div className="fixed inset-0 backdrop-blur-sm bg-white/30 flex items-center justify-center z-50 overflow-y-auto p-4">
+      <div className="bg-white/95 rounded-lg max-w-4xl w-full max-h-[90vh] flex flex-col shadow-xl border border-gray-200 my-8">
+        <div className="flex-shrink-0 p-6 border-b border-gray-200">
+          <div className="flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-800">Fazer Reserva</h2>
             <button
               onClick={handleClose}
@@ -190,7 +190,9 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
               </svg>
             </button>
           </div>
-
+        </div>
+        
+        <div className="flex-1 overflow-y-auto p-6" style={{maxHeight: 'calc(90vh - 200px)'}}>
           {/* Info do Hotel e Quarto */}
           <div className="mb-6 p-4 bg-gray-100 rounded-lg">
             <h3 className="font-semibold text-lg text-gray-800">{hotel.title}</h3>
@@ -208,7 +210,7 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
           </div>
 
           {/* Formulário */}
-          <form onSubmit={handleSubmit}>
+          <form id="reservation-form" onSubmit={handleSubmit}>
             {/* Erros */}
             {errors.length > 0 && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -366,25 +368,27 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
                 </div>
               </div>
             )}
-
-            {/* Botões */}
-            <div className="flex gap-3">
-              <button
-                type="button"
-                onClick={handleClose}
-                className="bg-gray-200 flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="main-action-button flex-1 px-4 py-2 text-white rounded-md transition disabled:bg-blue-300"
-              >
-                {loading ? 'Processando...' : 'Reservar e Pagar'}
-              </button>
-            </div>
           </form>
+        </div>
+        
+        <div className="flex-shrink-0 p-6 border-t border-gray-200">
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="bg-gray-200 flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="main-action-button flex-1 px-4 py-2 text-white rounded-md transition disabled:bg-blue-300"
+              form="reservation-form"
+            >
+              {loading ? 'Processando...' : 'Reservar e Pagar'}
+            </button>
+          </div>
         </div>
       </div>
     </div>

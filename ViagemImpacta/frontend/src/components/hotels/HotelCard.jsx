@@ -4,12 +4,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // Importa o contexto para ações do usuário
+import { useModal } from '../context/ModalContext'; // Importa o contexto para modais
 import { StarIcon } from '@heroicons/react/24/solid'; // Para a avaliação
 import '../styles/HotelCard.css'; // Importa o CSS específico do card
 
 function HotelCard({ hotel }) {
     // Usa o contexto para gerenciar o estado de "salvo"
-    const { savedHotels, addSavedHotel, removeSavedHotel } = useAuth();
+    const { isLoggedIn, savedHotels, addSavedHotel, removeSavedHotel } = useAuth();
+    const { showModal } = useModal();
     const [showConfetti, setShowConfetti] = useState(false);
     const confettiRef = useRef(null);
     const buttonRef = useRef(null);
@@ -28,7 +30,8 @@ function HotelCard({ hotel }) {
 
     if (!hotel) return null;
 
-    const isSaved = savedHotels?.some(saved => saved.id === hotel.id);
+    // Só considera como favoritado se o usuário estiver logado E o hotel estiver na lista de favoritos
+    const isSaved = isLoggedIn && savedHotels?.some(saved => saved.id === hotel.id);
 
     // Determina a classificação do hotel (em estrelas)
     const getStarRating = () => {
@@ -102,6 +105,22 @@ function HotelCard({ hotel }) {
     const handleSaveClick = (e) => {
         e.preventDefault();  // Impede que o clique no botão ative o Link do card
         e.stopPropagation(); // Para a propagação do evento
+
+        // Verifica se o usuário está logado
+        if (!isLoggedIn) {
+            // Mostra modal de aviso se não estiver logado
+            showModal({
+                title: 'Login Necessário',
+                message: 'É necessário estar logado para favoritar hotéis. Faça login para salvar seus hotéis favoritos!',
+                actionText: 'Fazer Login',
+                showHeader: true,
+                onConfirm: () => {
+                    // Redireciona para a página de login
+                    window.location.href = '/login';
+                }
+            });
+            return;
+        }
 
         try {
             if (!isSaved) {

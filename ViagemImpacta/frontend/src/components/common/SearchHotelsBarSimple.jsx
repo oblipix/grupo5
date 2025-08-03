@@ -8,10 +8,34 @@ import { hotelService } from '../../services/hotelService'; // Importa o serviç
 
 // --- DADOS E OPÇÕES DO FORMULÁRIO ---
 const roomGuestOptions = [
-    { rooms: 1, adults: 1, children: 0, label: "1 Quarto, 1 adulto" },
-    { rooms: 1, adults: 2, children: 0, label: "1 Quarto, 2 adultos (Casal)" },
-    { rooms: 1, adults: 2, children: 1, label: "1 Quarto, 2 adultos, 1 criança" },
-    { rooms: 1, adults: 2, children: 2, label: "1 Quarto, 2 adultos, 2 crianças (Família)" },
+    { 
+        rooms: 1, 
+        adults: 1, 
+        children: 0, 
+        label: "1 Pessoa",
+        mobileLabel: "1 Pessoa"
+    },
+    { 
+        rooms: 1, 
+        adults: 2, 
+        children: 0, 
+        label: "2 Pessoas",
+        mobileLabel: "2 Pessoas"
+    },
+    { 
+        rooms: 1, 
+        adults: 2, 
+        children: 1, 
+        label: "3 Pessoas",
+        mobileLabel: "3 Pessoas"
+    },
+    { 
+        rooms: 1, 
+        adults: 2, 
+        children: 2, 
+        label: "4 Pessoas",
+        mobileLabel: "4 Pessoas"
+    },
 ];
 
 const selectableAmenityOptions = [ 
@@ -24,6 +48,9 @@ const selectableAmenityOptions = [
 function SearchHotelsBar() {
     const navigate = useNavigate();
 
+    // Estado para detectar se é mobile
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+
     // Estado interno do formulário
     const [destination, setDestination] = useState('');
     const [checkInDate, setCheckInDate] = useState('');
@@ -34,6 +61,21 @@ function SearchHotelsBar() {
     const [priceRange, setPriceRange] = useState(5000);
     const [selectedAmenities, setSelectedAmenities] = useState([]);
     const [isAmenitiesDropdownOpen, setIsAmenitiesDropdownOpen] = useState(false);
+
+    // Função para obter o label apropriado baseado no tamanho da tela
+    const getGuestLabel = (option) => {
+        return isMobile ? option.mobileLabel : option.label;
+    };
+
+    // useEffect para detectar mudanças no tamanho da tela
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 640);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
     const [isLoadingRoomTypes, setIsLoadingRoomTypes] = useState(true);
 
     // Refs para detectar cliques fora dos dropdowns
@@ -186,12 +228,19 @@ function SearchHotelsBar() {
                         <div className="relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm">
                             <Icons.User />
                             <select
-                                className="flex-grow pl-2 bg-transparent focus:outline-none text-gray-800 cursor-pointer appearance-none w-full"
-                                value={guestsInfo.label}
-                                onChange={(e) => setGuestsInfo(roomGuestOptions.find(option => option.label === e.target.value))}
+                                className="flex-grow pl-2 bg-transparent focus:outline-none text-gray-800 cursor-pointer appearance-none w-full text-sm"
+                                value={getGuestLabel(guestsInfo)}
+                                onChange={(e) => {
+                                    const selectedOption = roomGuestOptions.find(option => 
+                                        getGuestLabel(option) === e.target.value
+                                    );
+                                    setGuestsInfo(selectedOption);
+                                }}
                             >
                                 {roomGuestOptions.map((option, index) => (
-                                    <option key={index} value={option.label}>{option.label}</option>
+                                    <option key={index} value={getGuestLabel(option)}>
+                                        {getGuestLabel(option)}
+                                    </option>
                                 ))}
                             </select>
                         </div>

@@ -53,28 +53,34 @@ const RecommendedHotelsSection = () => {
                 </div>
                 
                 {/* Mobile Swiper - visível apenas em telas pequenas */}
-                <div className="block md:hidden">
+                <div className="block md:hidden pb-12">
                     <Swiper
                         modules={[Pagination]}
-                        spaceBetween={16}
-                        slidesPerView={1.1}
+                        spaceBetween={20}
+                        slidesPerView={1.0}
                         centeredSlides={true}
                         pagination={{ 
                             clickable: true,
                             el: '.recomendados-swiper-pagination'
                         }}
                         breakpoints={{
+                            480: {
+                                slidesPerView: 1.0,
+                                spaceBetween: 24,
+                                centeredSlides: true,
+                            },
                             640: {
-                                slidesPerView: 1.3,
-                                spaceBetween: 20,
+                                slidesPerView: 1.2,
+                                spaceBetween: 28,
                                 centeredSlides: true,
                             },
                         }}
-                        className="px-4 py-4"
+                        className="px-2 py-8 overflow-visible"
+                        style={{ overflow: 'visible' }}
                     >
                         {topRatedHotels.map((hotel, index) => (
-                            <SwiperSlide key={hotel.id}>
-                                <div className="relative w-full px-2">
+                            <SwiperSlide key={hotel.id} style={{ overflow: 'visible' }}>
+                                <div className="relative w-full px-1 pb-6">
                                     <AnimatedHotelCard index={index}>
                                         <HotelCard hotel={hotel} />
                                     </AnimatedHotelCard>

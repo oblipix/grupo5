@@ -181,13 +181,15 @@ p {
   
   /* Espaçamento adequado para cards */
   .hotel-card-modern {
-    margin: 8px 0 !important;
+    margin: 8px auto 12px auto !important;
+    max-width: none !important;
+    width: 100% !important;
   }
   
   /* Garantir que Swipers não cortem cards */
   .swiper {
     overflow: visible !important;
-    padding: 0 16px !important;
+    padding: 8px 16px 16px 16px !important;
   }
   
   /* REMOVER HOVER DOS CARDS NO MOBILE */
@@ -337,17 +339,33 @@ left: 20%;
 /* Estilos para o dropdown de comodidades */
 .amenities-dropdown-panel {
   position: absolute !important;
-  z-index: 9999 !important; /* Z-index muito alto */
+  z-index: 50 !important; /* Z-index mais baixo para ficar dentro do card */
   width: 100% !important;
-  max-height: 350px !important; /* Altura maior */
-  overflow-y: visible !important;
+  max-height: 280px !important; /* Altura controlada */
+  overflow-y: auto !important; /* Scroll se necessário */
   background: white !important;
   border: 2px solid #e5e7eb !important;
   border-radius: 12px !important;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important; /* Sombra mais forte */
-  margin-top: 12px !important; /* Mais espaço do trigger */
-  margin-bottom: 50px !important; /* Margem inferior */
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important; /* Sombra controlada */
+  margin-top: 8px !important; /* Pequeno espaço do trigger */
+  top: 100% !important; /* Posiciona logo abaixo do trigger */
+  left: 0 !important; /* Alinha à esquerda do container pai */
   animation: dropdownSlideDown 0.3s ease-out !important;
+}
+
+/* Garantir que o container do dropdown permita overflow visível */
+.relative[ref="amenitiesDropdownRef"],
+div[class*="relative"]:has(.amenities-dropdown-panel) {
+  overflow: visible !important;
+  z-index: 1 !important;
+}
+
+/* Container do formulário de busca deve permitir overflow */
+.searchHotelsBar,
+.HotelsSeachForm {
+  overflow: visible !important;
+  position: relative !important;
+  z-index: 1 !important;
 }
 
 /* Animação para o dropdown aparecer */
@@ -812,6 +830,74 @@ a{
 
 
 /* Responsive Navigation Menu Styles */
+/* Mobile Cards Layout - Specific for small screens */
+@media (max-width: 640px) {
+  /* Container margins for better mobile spacing */
+  .container {
+    padding: 0 12px !important;
+  }
+  
+  /* Grid containers for hotel cards */
+  .grid {
+    gap: 12px !important;
+    padding: 8px !important;
+  }
+  
+  /* Sections with hotel cards */
+  section[id*="hotel"], 
+  section[id*="recomendado"], 
+  section[id*="promocoes"] {
+    padding: 16px 8px !important;
+  }
+  
+  /* Cards grid specifically */
+  .cards-grid,
+  .grid.grid-cols-1,
+  .grid.grid-cols-2,
+  .grid.grid-cols-3 {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    padding: 8px 12px !important;
+  }
+  
+  /* Hotel cards specific mobile styling */
+  .hotel-card-modern {
+    margin: 8px auto 12px auto !important;
+    max-width: none !important;
+    width: 100% !important;
+    min-height: auto !important;
+  }
+  
+  /* Remove ALL hover effects on mobile */
+  .hotel-card-modern:hover {
+    transform: none !important;
+    box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.08) !important;
+  }
+  
+  .group:hover .group-hover\:scale-110 {
+    transform: none !important;
+  }
+  
+  /* Swiper mobile adjustments */
+  .swiper {
+    padding: 8px 12px 20px 12px !important;
+    overflow: visible !important;
+  }
+  
+  .swiper-slide {
+    width: auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    padding: 4px 2px !important;
+  }
+  
+  /* Better swiper card styling */
+  .swiper-slide > * {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
 /* Small Mobile devices */
 @media screen and (max-width: 479px) {
   .hamburger-menu {
@@ -1397,7 +1483,7 @@ a:hover {
   /* MOBILE CARDS ESPECÍFICOS */
   /* Cards mais largos no mobile */
   .swiper-slide > div {
-    width: 95% !important;
+    width: 100% !important;
     max-width: none !important;
   }
   
@@ -1752,6 +1838,214 @@ a:hover {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
+
+/* MyTravelCard mobile fixes */
+.my-travel-card {
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .my-travel-card {
+    width: 100% !important;
+    max-width: 280px !important;
+    margin: 0 auto !important;
+    position: relative !important;
+    transform: none !important;
+    left: auto !important;
+    right: auto !important;
+  }
+  
+  /* Garante que os botões não sejam cortados */
+  .my-travel-card .absolute {
+    z-index: 20 !important;
+  }
+  
+  /* Melhora o espaçamento interno no mobile */
+  .my-travel-card .p-4 {
+    padding: 12px !important;
+  }
+  
+  /* Garante que o texto não quebre o layout */
+  .my-travel-card h3 {
+    font-size: 1rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .my-travel-card p {
+    font-size: 0.875rem !important;
+    line-height: 1.3 !important;
+  }
+  
+  /* Container dos cards de viagens no mobile */
+  .travels-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+    padding: 0 20px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .travels-container {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    gap: 20px !important;
+    padding: 0 !important;
+  }
+}
+
+/* === MODAL RESERVATION FIXES === */
+/* Garantir que o modal de reserva tenha scroll adequado */
+.fixed.inset-0.backdrop-blur-sm {
+  overflow-y: auto !important;
+  padding: 20px !important;
+}
+
+.max-h-\[90vh\].flex.flex-col {
+  max-height: 90vh !important;
+  height: auto !important;
+  overflow: hidden !important;
+}
+
+.flex-1.overflow-y-auto {
+  overflow-y: auto !important;
+  max-height: calc(90vh - 200px) !important;
+  min-height: 200px !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #60a5fa #f1f5f9 !important;
+}
+
+.flex-1.overflow-y-auto::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+.flex-1.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+  border-radius: 4px !important;
+}
+
+.flex-1.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #60a5fa !important;
+  border-radius: 4px !important;
+}
+
+.flex-1.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6 !important;
+}
+
+/* Mobile modal fixes */
+@media (max-width: 768px) {
+  .fixed.inset-0.backdrop-blur-sm {
+    padding: 10px !important;
+    align-items: flex-start !important;
+    padding-top: 20px !important;
+  }
+  
+  .max-h-\[90vh\].flex.flex-col {
+    max-height: 95vh !important;
+    height: auto !important;
+  }
+  
+  .flex-1.overflow-y-auto {
+    overflow-y: auto !important;
+    max-height: calc(95vh - 160px) !important;
+    min-height: 300px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* Garantir que o container do modal não corte o conteúdo */
+  .bg-white\/95.rounded-lg {
+    margin: 0 !important;
+    min-height: auto !important;
+  }
+}
+
+/* Forçar remoção do filtro grayscale nas fotos dos criadores da página institucional */
+.institutional-card img,
+.creator-image,
+[alt*="criador" i] img,
+[alt*="creator" i] img,
+img[src*="creator" i],
+img[src*="criador" i],
+.team-member-image {
+  filter: none !important;
+  -webkit-filter: none !important;
+  -moz-filter: none !important;
+  -ms-filter: none !important;
+}
+
+.institutional-card img:hover,
+.creator-image:hover,
+[alt*="criador" i] img:hover,
+[alt*="creator" i] img:hover,
+img[src*="creator" i]:hover,
+img[src*="criador" i]:hover,
+.team-member-image:hover {
+  filter: none !important;
+  -webkit-filter: none !important;
+  -moz-filter: none !important;
+  -ms-filter: none !important;
+  transform: scale(1.05);
+}
+
+/* Dropdown de Passageiros - Mobile Fixes */
+@media (max-width: 640px) {
+  /* Corrigir overflow do dropdown de passageiros no mobile */
+  select.appearance-none {
+    max-width: 100% !important;
+    font-size: 12px !important;
+    padding-right: 24px !important; /* Espaço para a seta */
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  /* Container dos selects no mobile */
+  .relative.flex.items-center.bg-white.rounded-lg {
+    padding: 6px 8px !important;
+    min-height: 36px !important;
+  }
+  
+  /* Ícones nos selects menores no mobile */
+  .relative.flex.items-center.bg-white.rounded-lg svg {
+    width: 16px !important;
+    height: 16px !important;
+    margin-right: 4px !important;
+  }
+  
+  /* Grid do formulário mais compacto */
+  .grid.grid-cols-1.md\\:grid-cols-3 {
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+  }
+  
+  /* Labels menores no mobile */
+  .labelForms {
+    font-size: 12px !important;
+    margin-bottom: 2px !important;
+  }
+  
+  /* Evitar que os dropdowns passem da tela */
+  .searchHotelsBar,
+  .HotelsSeachForm {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  /* Container principal do formulário */
+  .searchHotelsBar > div,
+  .HotelsSeachForm > div {
+    max-width: calc(100vw - 16px) !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
+
 
 
 

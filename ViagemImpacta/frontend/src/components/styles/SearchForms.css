@@ -81,10 +81,28 @@ input[type="range"],
 
 /* Contêiner das comodidades dentro do painel do dropdown, ainda em GRID */
 .comodidades-grid {
-    display: grid; /* Essencial para o layout em grade */
-    grid-template-columns: 1fr; /* Padrão: 1 coluna em mobile */
-    gap: 0.75rem 1.5rem; /* Espaçamento entre as linhas (0.75rem) e colunas (1.5rem) */
-    padding: 0.5rem; /* Padding interno para as comodidades */
+    display: grid !important; /* Essencial para o layout em grade */
+    grid-template-columns: 1fr !important; /* Padrão: 1 coluna em mobile */
+    gap: 0.75rem 1.5rem !important; /* Espaçamento entre as linhas (0.75rem) e colunas (1.5rem) */
+    padding: 0.75rem !important; /* Padding interno para as comodidades */
+    background: white !important;
+    border-radius: 8px !important;
+    max-height: 240px !important;
+    overflow-y: auto !important;
+}
+
+/* Força o dropdown a estar contido dentro do card */
+.amenities-dropdown-panel {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 50 !important;
+    background: white !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+    margin-top: 4px !important;
 }
 
 /* Estilos para CADA ITEM de comodidade (a label que contém o checkbox e o texto) */
