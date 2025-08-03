@@ -11,7 +11,8 @@ namespace ViagemImpacta.Repositories.Implementations
         public IReservationRepository Reservations { get; private set; }
         public IRoomRepository Rooms { get; private set; }
         public ITravellerRepository Travellers { get; private set; }
-
+        public IPromotionRepository Promotions { get; private set; }
+        public IRoomsPromotionalRepository RoomsPromotions { get; private set; }
         public UnitOfWork(AgenciaDbContext context)
         {
             _context = context;
@@ -20,6 +21,8 @@ namespace ViagemImpacta.Repositories.Implementations
             Reservations = new ReservationRepository(_context);
             Rooms = new RoomRepository(_context);
             Travellers = new TravellerRepository(_context);
+            Promotions = new PromotionRepository(_context);
+            RoomsPromotions = new RoomsPromotionalRepository(_context);
         }
 
         public async Task<bool> CommitAsync()

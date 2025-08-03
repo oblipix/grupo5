@@ -17,6 +17,15 @@ const MAPS_API_KEY = import.meta.env.VITE_Maps_API_KEY;
 const libraries = ["places"]; // Definida uma única vez, fora da função do componente
 
 function App() {
+  useEffect(() => {
+    // Limpa apenas os dados de autenticação na primeira vez que o app é carregado
+    if (!sessionStorage.getItem('alreadyInitialized')) {
+      // Remove apenas os dados de autenticação, preservando outros dados do localStorage
+      localStorage.removeItem('authToken');
+      localStorage.removeItem('authUser');
+      sessionStorage.setItem('alreadyInitialized', 'true');
+    }
+  }, []);
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: MAPS_API_KEY,

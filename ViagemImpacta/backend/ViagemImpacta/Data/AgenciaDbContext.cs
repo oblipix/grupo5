@@ -16,6 +16,9 @@ namespace ViagemImpacta.Data
         public DbSet<Payment> Payments { get; set; } = null!;
         public DbSet<Travellers> Travellers { get; set; } = null!;
 
+        public DbSet<Promotion> Promotions { get; set; } = null!;
+        public DbSet<RoomsPromotional> RoomsPromotional { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configuração para armazenar lista de URLs de imagem como string delimitada

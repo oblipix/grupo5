@@ -9,7 +9,7 @@ using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Controllers.ViewsControllers;
 
-[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
+[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin, Attendant")]
 public class UsersController : Controller
 {
     private readonly IUserService _userService;

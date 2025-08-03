@@ -2,21 +2,20 @@
 
 import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay, Pagination, EffectFade, A11y } from 'swiper/modules';
+import { Autoplay, EffectFade, A11y } from 'swiper/modules';
 
 // 1. Importar os dados dos slides
 import { heroSlidesData } from '../data/heroSlides.js';
 
 // Importar os estilos necessários
 import 'swiper/css';
-import 'swiper/css/pagination';
 import 'swiper/css/effect-fade';
 import '../styles/HeroSwiper.css'; 
 
 function HeroSwiper() {
   return (
     <Swiper
-      modules={[Autoplay, Pagination, EffectFade, A11y]}
+      modules={[Autoplay, EffectFade, A11y]}
       spaceBetween={0}
       slidesPerView={1}
       effect="fade"
@@ -24,9 +23,8 @@ function HeroSwiper() {
         delay: 5000,
         disableOnInteraction: false,
       }}
-      pagination={{ clickable: true }}
       loop={true}
-      className="w-full h-[65vh] md:h-[75vh] lg:h-[85vh] text-white hero-swiper-pagination mt-[-10px]"
+      className="w-full h-[65vh] md:h-[75vh] lg:h-[85vh] text-white hero-swiper mt-[-10px]"
     >
       {/* 2. Mapear sobre os dados importados */}
       {heroSlidesData.map((slide) => (
@@ -47,7 +45,7 @@ function HeroSwiper() {
             <h1 className="title text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight mb-4 drop-shadow-lg max-w-4xl">
                 {slide.title}
               </h1>
-              <p className="text-base md:text-md lg:text-x drop-shadow-sm">
+              <p className="paragrafoHero text-base md:text-md lg:text-x drop-shadow-sm">
                 {slide.subtitle}
               </p>
             </div>

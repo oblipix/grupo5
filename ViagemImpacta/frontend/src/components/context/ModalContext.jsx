@@ -56,12 +56,12 @@ export const ModalProvider = ({ children }) => {
     const showWishlistSuccessModal = useCallback((onConfirm = null) => {
         showModal({
             title: 'Destino Salvo!',
-            message: 'Hotel adicionado à sua lista de desejos com sucesso! Você poderá visualizá-lo na página "Minhas Viagens".',
+            message: 'Hotel adicionado à sua lista de desejos com sucesso! Você poderá visualizá-lo em seu perfil.',
             actionText: 'Ver minha lista',
             showHeader: true,
             onConfirm: onConfirm || (() => {
                 // Navegação padrão para a página de favoritos se nenhum callback foi fornecido
-                window.location.href = '/minhas-viagens';
+                window.location.href = '/';
             })
         });
     }, [showModal]);
@@ -85,8 +85,8 @@ export const ModalProvider = ({ children }) => {
             requestAnimationFrame(() => {
                 const onConfirm = event.detail?.onConfirm || (() => {
                     // Navegação padrão se não foi fornecido um callback específico
-                    console.log("Redirecionando para Minhas Viagens");
-                    window.location.href = '/minhas-viagens';
+                    console.log("Redirecionando para Home");
+                    window.location.href = '/';
                 });
                 showWishlistSuccessModal(onConfirm);
             });

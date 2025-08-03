@@ -15,9 +15,9 @@ namespace ViagemImpacta.Controllers.ApiControllers
     {
 
         private readonly IUnitOfWork _unitOfWork;
-         private readonly IMapper _mapper;
+        private readonly IMapper _mapper;
 
-      
+
         public HotelsController(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _mapper = mapper;
@@ -42,18 +42,18 @@ namespace ViagemImpacta.Controllers.ApiControllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<HotelDto>> GetHotel(int id)
         {
-         
-            if (id <= 0) 
+
+            if (id <= 0)
                 return BadRequest("ID deve ser maior que zero");
 
 
             var hotel = await _unitOfWork.Hotels.GetHotelWithRoomsAsync(id);
             var hotelDto = _mapper.Map<HotelDto>(hotel);
-            
+
 
             if (hotel == null)
                 return NotFound($"Hotel com ID {id} não encontrado");
-                
+
 
             return Ok(hotelDto);
         }
@@ -176,7 +176,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
 
             var hotel = _mapper.Map<Hotel>(hotelDto);
             await _hotelService.UpdateHotelAsync(hotel);
-            
+
             var updatedHotel = await _hotelService.GetHotelWithRoomsAsync(id);
             var resultDto = _mapper.Map<HotelDto>(updatedHotel);
 

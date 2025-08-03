@@ -132,8 +132,9 @@ function HotelCard({ hotel }) {
     return (
         <Link to={`/hoteis/${hotel.id}`}
             className="block group hotel-card-modern bg-white rounded-xl shadow-md border-0 overflow-hidden
-                         h-full flex flex-col transform transition-all duration-300 hover:scale-102 hover:shadow-xl">
-            <div className="relative w-full h-80 overflow-hidden"> {/* Aumentei a altura para cobrir mais espaço */}
+                         h-full flex flex-col transform transition-all duration-300 hover:shadow-xl
+                         w-full max-w-sm mx-auto sm:max-w-none min-h-[420px] sm:min-h-[450px]">
+            <div className="relative w-full h-56 sm:h-64 md:h-80 overflow-hidden"> {/* Altura responsiva aumentada */}
                 {/* Overlay gradient over image - mais escuro para melhor contraste */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 z-10"></div>
 
@@ -144,14 +145,22 @@ function HotelCard({ hotel }) {
                 />
 
                 {/* Estrelas do hotel - posicionadas no topo esquerdo */}
-                <div className="absolute top-4 left-4 z-20 flex items-center bg-white/30 shadow-lg backdrop-blur-sm px-2 py-1 rounded-lg">
+                <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-20 flex items-center bg-white/30 shadow-lg backdrop-blur-sm px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg">
                     {[...Array(starRating)].map((_, index) => (
-                        <StarIcon key={index} className="h-4 w-4 text-yellow-400 star-icon" />
+                        <StarIcon key={index} className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 star-icon" />
                     ))}
                 </div>
 
+                {/* Location indicator below stars */}
+                <div className="absolute top-8 left-2 sm:top-14 sm:left-4 z-20 flex items-center bg-white/30 shadow-lg backdrop-blur-sm px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg">
+                    <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"></path>
+                    </svg>
+                    <span className="text-white text-xs sm:text-sm">{hotel.location}</span>
+                </div>
+
                 {/* Title moved to overlay on image for more modern look */}
-                <h3 className="Tittle absolute bottom-4 left-4 z-20 text-white font-bold text-2xl drop-shadow-lg mb-3 mt-2">
+                <h3 className="Tittle absolute bottom-2 left-2 sm:bottom-4 sm:left-4 z-20 text-white font-bold text-lg sm:text-xl md:text-2xl drop-shadow-lg mb-1 sm:mb-3 mt-2 line-clamp-2 pr-2">
                     {hotel.title}
                 </h3>
 
@@ -164,12 +173,12 @@ function HotelCard({ hotel }) {
                 </p>
             </div>
 
-            <div className="p-4 flex-grow flex flex-col justify-between bg-gradient-to-b from-white to-gray-50">
+            <div className="p-3 sm:p-4 flex-grow flex flex-col justify-between bg-gradient-to-b from-white to-gray-50">
                 <div>
                     {/* Reviews count and Save button */}
-                    <div className="flex items-center mb-3 justify-between">
-                        <div className="flex items-center gap-3">
-                            <span className="text-gray-600 text-sm">
+                    <div className="flex items-center mb-2 sm:mb-3 justify-between flex-wrap gap-2">
+                        <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+                            <span className="text-gray-600 text-xs sm:text-sm">
                                 {hotel.rating && !isNaN(parseFloat(hotel.rating)) && (
                                     <>
                                         <span className="font-medium text-blue-600">{parseFloat(hotel.rating).toFixed(1)}</span>
@@ -183,17 +192,17 @@ function HotelCard({ hotel }) {
                             <div className="relative">
                                 <button
                                     ref={buttonRef}
-                                    className="bg-white px-2 py-1 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex items-center space-x-1 border border-gray-200"
+                                    className="bg-white px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 flex items-center space-x-1 border border-gray-200"
                                     onClick={handleSaveClick}
                                     aria-label={isSaved ? "Remover dos favoritos" : "Salvar nos favoritos"}
                                 >
-                                    <svg className={`h-4 w-4 transition-colors favorite-icon ${isSaved ? 'text-red-500' : 'text-gray-500'}`}
+                                    <svg className={`h-3 w-3 sm:h-4 sm:w-4 transition-colors favorite-icon ${isSaved ? 'text-red-500' : 'text-gray-500'}`}
                                         fill={isSaved ? 'currentColor' : 'none'}
                                         viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"
                                     >
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 18.75l-7.682-7.682a4.5 4.5 0 010-6.364z" />
                                     </svg>
-                                    <span className="text-xs font-medium">{isSaved ? 'Salvo' : 'Salvar'}</span>
+                                    <span className="text-xs font-medium hidden sm:inline">{isSaved ? 'Salvo' : 'Salvar'}</span>
                                 </button>
                                 {/* Container para os confetes */}
                                 <div ref={confettiRef} className="confetti-container"></div>
@@ -201,19 +210,19 @@ function HotelCard({ hotel }) {
                         </div>
 
                         {/* Amenities icons */}
-                        <div className="flex space-x-1.5">
+                        <div className="flex space-x-1 sm:space-x-1.5">
                             <span className="text-gray-400 hover:text-blue-500" title="Wi-Fi gratuito">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.111 16.404a5.5 5.5 0 017.778 0M12 20h.01m-7.08-7.071c3.904-3.905 10.236-3.905 14.141 0M1.394 9.393c5.857-5.857 15.355-5.857 21.213 0" />
                                 </svg>
                             </span>
                             <span className="text-gray-400 hover:text-blue-500" title="Piscina">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
                                 </svg>
                             </span>
                             <span className="text-gray-400 hover:text-blue-500" title="Estacionamento">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
                                 </svg>
                             </span>
@@ -222,26 +231,26 @@ function HotelCard({ hotel }) {
 
                     {/* Description with improved styling */}
                     {hotel.description ? (
-                        <p className="text-gray-700 text-sm leading-relaxed line-clamp-2 truncate">
+                        <p className="text-gray-700 text-xs sm:text-sm leading-relaxed line-clamp-2 mb-2 sm:mb-3">
                             {hotel.description}
                         </p>
                     ) : (
-                        <p className="text-gray-400 text-sm italic mb-4">Sem descrição disponível.</p>
+                        <p className="text-gray-400 text-xs sm:text-sm italic mb-2 sm:mb-4">Sem descrição disponível.</p>
                     )}
                 </div>
 
                 {/* Price section with modern styling */}
                 <div className="mt-auto">
-                    <div className="flex items-center justify-between">
-                        <div>
+                    <div className="flex items-center justify-between gap-2">
+                        <div className="flex-1 min-w-0">
                             <span className="text-gray-500 text-xs block">
                                 Diárias a partir de
                             </span>
-                            <div className="price-tag inline-block mt-1">
+                            <div className="price-tag inline-block mt-1 text-sm sm:text-base">
                                 R$ {(minPrice !== undefined && minPrice !== null && !isNaN(minPrice)) ? Number(minPrice).toFixed(2).replace('.', ',') : '0,00'}
                             </div>
                         </div>
-                        <div className="main-action-button text-white px-4 py-2 rounded-lg font-bold text-sm pulse-price transform hover:scale-105 transition-all duration-200">
+                        <div className="main-action-button text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg font-bold text-xs sm:text-sm pulse-price transform hover:scale-105 transition-all duration-200 flex-shrink-0">
                             Ver detalhes
                         </div>
                     </div>

@@ -1,5 +1,8 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ViagemImpacta.DTO.ReservationDTO;
 using ViagemImpacta.DTO.RoomDTO;
 using ViagemImpacta.Models;
@@ -9,6 +12,7 @@ using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Controllers.MvcControllers;
 
+[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin, Attendant")]
 public class ReservationsController : Controller
 {
     private readonly IReservationService _reservationService;
@@ -46,11 +50,11 @@ public class ReservationsController : Controller
             var reservationViewModel = _mapper.Map<UpdateReservationViewModel>(reservation);
            
             var hotels = await _hotelService.GetAllHotelsAsync();
-            ViewBag.Hotels = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(hotels, "HotelId", "Name", reservation.HotelId); 
+            ViewBag.Hotels = new SelectList(hotels, "HotelId", "Name", reservation.HotelId); 
 
             var selectedHotel = hotels.FirstOrDefault(h => h.HotelId == reservation.HotelId);
             var rooms = selectedHotel != null && selectedHotel.Rooms != null ? selectedHotel.Rooms : new List<RoomDto>();
-            ViewBag.Rooms = new Microsoft.AspNetCore.Mvc.Rendering.SelectList(rooms, "RoomId", "TypeName", reservation.RoomId);
+            ViewBag.Rooms = new SelectList(rooms, "RoomId", "TypeName", reservation.RoomId);
 
             return View(reservationViewModel);
         }

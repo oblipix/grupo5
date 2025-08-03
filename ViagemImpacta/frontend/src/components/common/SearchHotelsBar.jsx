@@ -9,10 +9,34 @@ import { Range } from 'react-range';
 
 // --- DADOS E OPÇÕES DO FORMULÁRIO ---
 const roomGuestOptions = [
-    { rooms: 1, adults: 1, children: 0, label: "1 Quarto, 1 adulto" },
-    { rooms: 1, adults: 2, children: 0, label: "1 Quarto, 2 adultos (Casal)" },
-    { rooms: 1, adults: 2, children: 1, label: "1 Quarto, 2 adultos, 1 criança" },
-    { rooms: 1, adults: 2, children: 2, label: "1 Quarto, 2 adultos, 2 crianças (Família)" },
+    { 
+        rooms: 1, 
+        adults: 1, 
+        children: 0, 
+        label: "1 Pessoa",
+        mobileLabel: "1 Pessoa"
+    },
+    { 
+        rooms: 1, 
+        adults: 2, 
+        children: 0, 
+        label: "2 Pessoas",
+        mobileLabel: "2 Pessoas"
+    },
+    { 
+        rooms: 1, 
+        adults: 2, 
+        children: 1, 
+        label: "3 Pessoas",
+        mobileLabel: "3 Pessoas"
+    },
+    { 
+        rooms: 1, 
+        adults: 2, 
+        children: 2, 
+        label: "4 Pessoas",
+        mobileLabel: "4 Pessoas"
+    },
 ];
 
 const selectableAmenityOptions = [ 
@@ -27,6 +51,9 @@ const selectableAmenityOptions = [
 function SearchHotelsBar({ selectedAmenities, onAmenitiesChange, onSearch }) {
     const navigate = useNavigate();
 
+    // Estado para detectar se é mobile
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
+
     // Estado interno do formulário
     const [destination, setDestination] = useState('');
     const [guestsInfo, setGuestsInfo] = useState(roomGuestOptions[1]);
@@ -40,6 +67,21 @@ const [maxPrice, setMaxPrice] = useState(10000);
     const amenitiesDropdownRef = useRef(null);
     const [checkInDate, setCheckInDate] = useState('');
     const [checkOutDate, setCheckOutDate] = useState('');
+
+    // Função para obter o label apropriado baseado no tamanho da tela
+    const getGuestLabel = (option) => {
+        return isMobile ? option.mobileLabel : option.label;
+    };
+
+    // useEffect para detectar mudanças no tamanho da tela
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 640);
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     // Função para buscar tipos de quarto do backend
     const fetchRoomTypes = async () => {
@@ -249,12 +291,19 @@ const [maxPrice, setMaxPrice] = useState(10000);
                         <div className="relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm">
                             <Icons.User />
                             <select
-                                className="flex-grow pl-2 bg-transparent focus:outline-none text-gray-800 cursor-pointer appearance-none w-full"
-                                value={guestsInfo.label}
-                                onChange={(e) => setGuestsInfo(roomGuestOptions.find(option => option.label === e.target.value))}
+                                className="flex-grow pl-2 bg-transparent focus:outline-none text-gray-800 cursor-pointer appearance-none w-full text-sm"
+                                value={getGuestLabel(guestsInfo)}
+                                onChange={(e) => {
+                                    const selectedOption = roomGuestOptions.find(option => 
+                                        getGuestLabel(option) === e.target.value
+                                    );
+                                    setGuestsInfo(selectedOption);
+                                }}
                             >
                                 {roomGuestOptions.map((option, index) => (
-                                    <option key={index} value={option.label}>{option.label}</option>
+                                    <option key={index} value={getGuestLabel(option)}>
+                                        {getGuestLabel(option)}
+                                    </option>
                                 ))}
                             </select>
                         </div>
@@ -281,30 +330,35 @@ const [maxPrice, setMaxPrice] = useState(10000);
                             </select>
                         </div>
                     </div>
-                </div>
-
-                <div className="flex flex-col mb-6">
-                    <label className="labelForms mb-1">Comodidades</label>
-                    <div className="relative" ref={amenitiesDropdownRef}>
-                        <div
-                            className="amenities-dropdown-trigger relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm cursor-pointer"
-                            onClick={() => setIsAmenitiesDropdownOpen(!isAmenitiesDropdownOpen)}
-                        >
-                            <Icons.Star className="h-5 w-5 text-gray-400" />
-                            <span className="flex-grow pl-2 text-gray-800">{getAmenitiesDisplayText()}</span>
-                        </div>
-                        {isAmenitiesDropdownOpen && (
-                            <div className="amenities-dropdown-panel absolute z-10 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
-                                <div className="comodidades-grid p-3">
-                                    {selectableAmenityOptions.map((amenity) => (
-                                        <label key={amenity} className="comodidade-item cursor-pointer">
-                                            <input type="checkbox" value={amenity} checked={selectedAmenities.includes(amenity)} onChange={() => handleAmenityChange(amenity)} className="mr-2" />
-                                            {amenity}
-                                        </label>
-                                    ))}
-                                </div>
+                    <div className="flex flex-col">
+                        <label className="labelForms mb-1">Comodidades</label>
+                        <div className="relative" ref={amenitiesDropdownRef}>
+                            <div
+                                className="amenities-dropdown-trigger relative flex items-center bg-white rounded-lg px-3 py-2 shadow-sm cursor-pointer"
+                                onClick={() => setIsAmenitiesDropdownOpen(!isAmenitiesDropdownOpen)}
+                            >
+                                <Icons.Star className="h-5 w-5 text-gray-400" />
+                                <span className="flex-grow pl-2 text-gray-800">{getAmenitiesDisplayText()}</span>
                             </div>
-                        )}
+                            {isAmenitiesDropdownOpen && (
+                                <div className="amenities-dropdown-panel absolute z-50 w-full mt-2 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                    <div className="comodidades-grid p-3">
+                                        {selectableAmenityOptions.map((amenity) => (
+                                            <label key={amenity} className="comodidade-item">
+                                                <input 
+                                                    type="checkbox" 
+                                                    value={amenity} 
+                                                    checked={selectedAmenities.includes(amenity)} 
+                                                    onChange={() => handleAmenityChange(amenity)} 
+                                                    className="mr-3 h-4 w-4 text-blue-600 border-2 border-gray-300 rounded focus:ring-blue-500" 
+                                                />
+                                                <span className="text-sm font-medium text-gray-800">{amenity}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
 
