@@ -24,7 +24,7 @@ function HeroSwiper() {
         disableOnInteraction: false,
       }}
       loop={true}
-      className="w-full h-[65vh] md:h-[75vh] lg:h-[85vh] text-white hero-swiper mt-[-10px]"
+      className="w-full h-[50vh] md:h-[60vh] lg:h-[70vh] text-white hero-swiper"
     >
       {/* 2. Mapear sobre os dados importados */}
       {heroSlidesData.map((slide) => (
@@ -37,8 +37,7 @@ function HeroSwiper() {
               backgroundPosition: 'center center',
               backgroundRepeat: 'no-repeat',
               marginTop: '0px',
-              marginBottom: '0px',
-              transform: 'scale(1.05)' // Slightly increase scale to ensure no white edges
+              marginBottom: '0px'
             }}
           >
             <div className="z-10 max-w-6xl animate-fade-in-up"> 
