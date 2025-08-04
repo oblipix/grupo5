@@ -4,29 +4,29 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import HotelCard from '../hotels/HotelCard'; // Usando o card unificado
+import { useModal } from '../context/ModalContext'; // Importa o contexto de modal
+import ScrollReveal from '../common/ScrollReveal.jsx';
+import AnimatedSection from '../common/AnimatedSection.jsx';
 
 function MyTravelsPage() {
   const navigate = useNavigate();
-  // Pegando TUDO do contexto, incluindo as listas de hotéis e a função de remover
+  // Pegando apenas o necessário do contexto para reservas
   const {
     currentUser,
     isLoggedIn,
-    savedHotels,
-    visitedHotels,
-    reservationHistory, // Adiciona histórico de reservas
+    reservationHistory, // Apenas histórico de reservas
     logout,
-    updateUser,
-    removeSavedHotel,
-    loadReservationHistory, // Adiciona função para carregar reservas
-    token
+    loadReservationHistory, // Função para carregar reservas
+    token,
+    isLoadingAuth
   } = useAuth();
 
-  const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState(currentUser || {});
-  const [isUpdating, setIsUpdating] = useState(false);
-  const [updateMessage, setUpdateMessage] = useState('');
-  const [updateError, setUpdateError] = useState('');
+  // Hook do contexto de modal
+  const { showModal } = useModal();
+
+  // Estados para paginação do histórico de reservas
+  const [currentReservationPage, setCurrentReservationPage] = useState(1);
+  const reservationsPerPage = 2;
 
   // Função para obter o número de hóspedes
   const getNumberOfGuests = (reservation) => {
@@ -149,6 +149,24 @@ function MyTravelsPage() {
     return 'Usuário';
   };
   
+  // Funções para paginação do histórico de reservas
+  const getCurrentReservations = () => {
+    if (!reservationHistory || reservationHistory.length === 0) return [];
+    
+    const startIndex = (currentReservationPage - 1) * reservationsPerPage;
+    const endIndex = startIndex + reservationsPerPage;
+    return reservationHistory.slice(startIndex, endIndex);
+  };
+  
+  const getTotalReservationPages = () => {
+    if (!reservationHistory || reservationHistory.length === 0) return 0;
+    return Math.ceil(reservationHistory.length / reservationsPerPage);
+  };
+  
+  const handleReservationPageChange = (pageNumber) => {
+    setCurrentReservationPage(pageNumber);
+  };
+  
   // Função para gerar e baixar o comprovante de reserva - corrigida e aprimorada
   const downloadReceipt = (reservation) => {
     try {
@@ -163,7 +181,12 @@ function MyTravelsPage() {
       
       if (!receiptContent) {
         console.error('Conteúdo do comprovante vazio ou inválido');
-        alert('Não foi possível gerar o comprovante. Por favor, tente novamente.');
+        showModal({
+          title: '⚠️ Erro na Geração',
+          message: 'Não foi possível gerar o comprovante. Por favor, tente novamente.',
+          actionText: 'OK',
+          showHeader: true
+        });
         return;
       }
       
@@ -195,16 +218,37 @@ function MyTravelsPage() {
         console.log('Download finalizado e recursos liberados.');
       }, 100);
       
-      // Feedback visual para o usuário
-      alert('Comprovante baixado com sucesso!');
+      // Feedback visual para o usuário usando modal
+      showModal({
+        title: '🎉 Comprovante Baixado!',
+        message: 'Seu comprovante foi baixado com sucesso! Você pode encontrá-lo na pasta de downloads.',
+        actionText: 'OK',
+        showHeader: true
+      });
     } catch (error) {
       console.error('Erro ao baixar comprovante:', error);
       console.error('Stack trace:', error.stack);
-      alert('Ocorreu um erro ao baixar o comprovante. Por favor, tente novamente.');
+      showModal({
+        title: '❌ Erro no Download',
+        message: 'Ocorreu um erro ao baixar o comprovante. Por favor, tente novamente.',
+        actionText: 'Tentar Novamente',
+        showHeader: true
+      });
     }
   };
   
-  // Função para visualizar o comprovante em uma nova janela - corrigida e aprimorada
+  // Estado para modal de visualização do comprovante
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [currentReceiptContent, setCurrentReceiptContent] = useState('');
+  const [currentReservation, setCurrentReservation] = useState(null);
+
+  // Função para detectar se é mobile
+  const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+           window.innerWidth <= 768;
+  };
+  
+  // Função para visualizar o comprovante - otimizada para mobile
   const viewReceipt = (reservation) => {
     try {
       console.log('Abrindo comprovante para visualização:', reservation);
@@ -218,18 +262,33 @@ function MyTravelsPage() {
       
       if (!receiptContent) {
         console.error('Conteúdo do comprovante vazio ou inválido');
-        alert('Não foi possível gerar o comprovante. Por favor, tente novamente.');
+        showModal({
+          title: '⚠️ Erro na Geração',
+          message: 'Não foi possível gerar o comprovante. Por favor, tente novamente.',
+          actionText: 'OK',
+          showHeader: true
+        });
+        return;
+      }
+
+      // Se for mobile, usar modal em vez de popup
+      if (isMobile()) {
+        setCurrentReceiptContent(receiptContent);
+        setCurrentReservation(confirmedReservation);
+        setShowReceiptModal(true);
         return;
       }
       
-      // Abre uma nova janela
+      // Desktop: usar popup como antes
       const receiptWindow = window.open('', '_blank');
       console.log('Janela aberta:', !!receiptWindow);
       
       // Verifica se a janela foi aberta com sucesso
       if (!receiptWindow) {
-        alert('Por favor, permita popups para visualizar o comprovante.');
-        console.error('Falha ao abrir janela - popups podem estar bloqueados');
+        // Se popup falhou, usar modal como fallback
+        setCurrentReceiptContent(receiptContent);
+        setCurrentReservation(confirmedReservation);
+        setShowReceiptModal(true);
         return;
       }
       
@@ -325,7 +384,23 @@ function MyTravelsPage() {
     } catch (error) {
       console.error('Erro ao visualizar comprovante:', error);
       console.error('Stack trace:', error.stack);
-      alert('Ocorreu um erro ao visualizar o comprovante. Por favor, tente novamente. Verifique o console para mais detalhes.');
+      // Se houver erro, tentar usar modal como fallback
+      if (!showReceiptModal) {
+        const confirmedReservation = {...reservation, isConfirmed: true, IsConfirmed: true};
+        const receiptContent = generateReceiptContent(confirmedReservation);
+        if (receiptContent) {
+          setCurrentReceiptContent(receiptContent);
+          setCurrentReservation(confirmedReservation);
+          setShowReceiptModal(true);
+        } else {
+          showModal({
+            title: '❌ Erro na Visualização',
+            message: 'Ocorreu um erro ao visualizar o comprovante. Por favor, tente novamente.',
+            actionText: 'OK',
+            showHeader: true
+          });
+        }
+      }
     }
   };
   
@@ -411,6 +486,7 @@ function MyTravelsPage() {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Comprovante de Reserva - ${hotelName}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
         <style>
           body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -446,19 +522,25 @@ function MyTravelsPage() {
             margin-bottom: 15px;
           }
           .logo {
-            font-family: 'Arial', sans-serif;
-            font-size: 42px;
-            font-weight: 900;
-            color: #3b82f6;
+            font-size: 35px;
+            padding: 8px;
+            font-weight: 400;
+            background: linear-gradient(to right, #1e3a8a, #60a5fa) !important;
+            background-image: linear-gradient(to right, #1e3a8a, #60a5fa) !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            background-clip: text !important;
+            color: transparent !important;
+            font-family: "Pacifico", cursive !important;
+            font-style: normal !important;
+            z-index: 1;
+            height: 70px;
             margin: 0;
             letter-spacing: -1px;
-          }
-          .logo-icon {
-            font-size: 32px;
-            margin-right: 5px;
-          }
-          .logo-dot {
-            color: #f97316;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
           }
           .confirmation-id {
             background-color: #f0f9ff;
@@ -487,6 +569,7 @@ function MyTravelsPage() {
             margin-bottom: 12px;
             padding-bottom: 8px;
             border-bottom: 1px dashed #e5e7eb;
+            flex-wrap: wrap;
           }
           .detail-row:last-child {
             border-bottom: none;
@@ -495,9 +578,27 @@ function MyTravelsPage() {
             font-weight: bold;
             width: 40%;
             color: #4b5563;
+            min-width: 120px;
           }
           .detail-value {
             width: 60%;
+            word-break: break-word;
+            overflow-wrap: break-word;
+          }
+          @media (max-width: 600px) {
+            .detail-row {
+              flex-direction: column;
+              gap: 4px;
+            }
+            .detail-label {
+              width: 100%;
+              min-width: auto;
+              margin-bottom: 2px;
+            }
+            .detail-value {
+              width: 100%;
+              padding-left: 0;
+            }
           }
           .price-section {
             margin: 30px 0;
@@ -615,8 +716,7 @@ function MyTravelsPage() {
         <div class="receipt-container">
           <div class="receipt-header">
             <div class="brand">
-              <span class="logo-icon">✈️</span>
-              <h1 class="logo">Tripz<span class="logo-dot">.</span></h1>
+              <h1 class="logo">Tripz</h1>
             </div>
             <h1>Comprovante de Reserva</h1>
             <p>Emitido em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
@@ -774,208 +874,27 @@ function MyTravelsPage() {
   };
 
   useEffect(() => {
-    if (currentUser) {
-      // Extrai primeiro e último nome do nome completo
-      const fullName = getUserFullName();
-      const nameParts = fullName.trim().split(' ').filter(part => part.length > 0);
-      const firstName = nameParts[0] || '';
-      const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
-
-      setFormData({
-        ...currentUser,
-        name: fullName, // Mantém o nome completo para compatibilidade
-        firstName: currentUser.FirstName || firstName,
-        lastName: currentUser.LastName || lastName,
-        email: currentUser.Email || currentUser.email || '', // Campo Email do backend
-        phone: currentUser.Phone || currentUser.phone || '', // Campo Phone do backend
-        cpf: currentUser.Cpf || currentUser.cpf || '', // Campo CPF do backend
-        birthDate: currentUser.BirthDate || currentUser.birthDate || '', // Campo BirthDate do backend
-        points: currentUser.points || 0,
-        avatar: currentUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(getUserDisplayName())}&background=3B82F6&color=ffffff&size=200`
-      });
-    }
-  }, [currentUser]);
-
-  useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isLoadingAuth && !isLoggedIn) {
       navigate('/login');
     }
-  }, [isLoggedIn, navigate]);
+  }, [isLoggedIn, isLoadingAuth, navigate]);
 
-  // Debug e força carregamento de reservas
+  // Carregamento inicial de reservas (apenas quando necessário)
   useEffect(() => {
-    console.log('🔍 Debug MyTravelsPage:');
-    console.log('- isLoggedIn:', isLoggedIn);
-    console.log('- currentUser:', currentUser);
-    console.log('- reservationHistory:', reservationHistory);
-    console.log('- token:', token ? 'Token presente' : 'Token ausente');
-    
-    // Add testing functions to window for debugging
-    window.testDownload = (index = 0) => {
-      if (reservationHistory && reservationHistory.length > index) {
-        console.log('🧪 Testando download do comprovante:', index);
-        const testReservation = {...reservationHistory[index], isConfirmed: true};
-        downloadReceipt(testReservation);
-      } else {
-        console.error('❌ Reserva de teste não encontrada');
-      }
-    };
-    
-    window.testView = (index = 0) => {
-      if (reservationHistory && reservationHistory.length > index) {
-        console.log('🧪 Testando visualização do comprovante:', index);
-        const testReservation = {...reservationHistory[index], isConfirmed: true};
-        viewReceipt(testReservation);
-      } else {
-        console.error('❌ Reserva de teste não encontrada');
-      }
-    };
-    
-    // Log detalhado das reservas
-    if (reservationHistory && reservationHistory.length > 0) {
-      console.log('📋 Estrutura das reservas:');
-      reservationHistory.forEach((reservation, index) => {
-        console.log(`Reserva ${index + 1}:`, reservation);
-        console.log(`- ID: ${reservation.id || reservation.ReservationId || reservation.reservationId}`);
-        console.log(`- Hotel: ${reservation.hotelName || reservation.HotelName}`);
-        console.log(`- RoomType: ${reservation.roomType || reservation.RoomType} (tipo: ${typeof (reservation.roomType || reservation.RoomType)})`);
-        console.log(`- RoomType formatado: ${formatRoomType(reservation.roomType || reservation.RoomType)}`);
-        console.log(`- CheckIn: ${reservation.checkIn || reservation.CheckIn || reservation.checkInDate}`);
-        console.log(`- CheckOut: ${reservation.checkOut || reservation.CheckOut || reservation.checkOutDate}`);
-        console.log(`- NumberOfGuests: ${reservation.numberOfGuests || reservation.NumberOfGuests} (tipo: ${typeof (reservation.numberOfGuests || reservation.NumberOfGuests)})`);
-        console.log(`- Travellers: ${JSON.stringify(reservation.travellers || reservation.Travellers)}`);
-        console.log('- Todos os campos disponíveis:', Object.keys(reservation));
-      });
-    }
-    
-    // Se o usuário está logado mas não há reservas carregadas, tenta carregar
+    // Se o usuário está logado mas não há reservas carregadas, tenta carregar uma única vez
     if (isLoggedIn && currentUser && token && loadReservationHistory) {
       const userId = currentUser.UserId || currentUser.userId || currentUser.id;
       if (userId && (!reservationHistory || reservationHistory.length === 0)) {
-        console.log('🔄 Tentando recarregar reservas para userId:', userId);
         loadReservationHistory(userId, token).catch(error => {
-          console.error('❌ Erro ao recarregar reservas:', error);
+          console.error('Erro ao carregar reservas:', error);
         });
       }
     }
-  }, [isLoggedIn, currentUser, token, reservationHistory, loadReservationHistory]);
+  }, [isLoggedIn, currentUser, token]); // Removido reservationHistory e loadReservationHistory das dependências para evitar loop
 
   if (!currentUser) {
     return <div className="text-center p-10">Carregando perfil...</div>;
   }
-
-  const handleFormChange = (e) => {
-    const { id, value } = e.target;
-    
-    // Formatação para telefone
-    if (id === 'phone') {
-      // Remove tudo que não é número
-      const numbers = value.replace(/\D/g, '');
-      // Aplica a máscara (XX) XXXXX-XXXX
-      const formatted = numbers.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
-      setFormData(prev => ({ ...prev, [id]: formatted }));
-    }
-    // Formatação para CPF
-    else if (id === 'cpf') {
-      // Remove tudo que não é número
-      const numbers = value.replace(/\D/g, '');
-      // Aplica a máscara XXX.XXX.XXX-XX
-      const formatted = numbers.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-      setFormData(prev => ({ ...prev, [id]: formatted }));
-    }
-    else {
-      setFormData(prev => ({ ...prev, [id]: value }));
-    }
-  };
-
-  const handleAvatarChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData(prev => ({ ...prev, avatar: reader.result }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleSaveChanges = async () => {
-    // Limpa mensagens anteriores
-    setUpdateMessage('');
-    setUpdateError('');
-    setIsUpdating(true);
-
-    try {
-      console.log('FormData antes de validar:', formData);
-
-      // Validações básicas no frontend
-      if (!formData.firstName?.trim() || !formData.lastName?.trim()) {
-        throw new Error('Primeiro nome e último nome são obrigatórios');
-      }
-
-      if (!formData.email?.trim()) {
-        throw new Error('Email é obrigatório');
-      }
-
-      // Validação simples de email
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email.trim())) {
-        throw new Error('Por favor, insira um email válido');
-      }
-
-      // Validação de telefone (se preenchido, deve ter 11 dígitos)
-      if (formData.phone?.trim()) {
-        const phoneNumbers = formData.phone.replace(/\D/g, '');
-        if (phoneNumbers.length !== 11) {
-          throw new Error('Telefone deve ter 11 dígitos (com DDD)');
-        }
-      }
-
-      // Validação de CPF (se preenchido, deve ter 11 dígitos)
-      if (formData.cpf?.trim()) {
-        const cpfNumbers = formData.cpf.replace(/\D/g, '');
-        if (cpfNumbers.length !== 11) {
-          throw new Error('CPF deve ter 11 dígitos');
-        }
-      }
-
-      // Prepara os dados no formato correto para o backend
-      const updateData = {
-        firstName: formData.firstName.trim(),
-        lastName: formData.lastName.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone?.trim() || '',
-        cpf: formData.cpf?.trim() || '',
-        birthDate: formData.birthDate?.trim() || ''
-      };
-
-      console.log('UpdateData preparado:', updateData);
-
-      // Chama a função de atualização do contexto
-      const result = await updateUser(updateData);
-
-      if (result.success) {
-        setUpdateMessage(result.message);
-        setIsEditing(false);
-
-        // Remove a mensagem de sucesso após 3 segundos
-        setTimeout(() => {
-          setUpdateMessage('');
-        }, 3000);
-      }
-
-    } catch (error) {
-      console.error('Erro ao salvar alterações:', error);
-      setUpdateError(error.message || 'Erro ao atualizar perfil. Tente novamente.');
-
-      // Remove a mensagem de erro após 5 segundos
-      setTimeout(() => {
-        setUpdateError('');
-      }, 5000);
-    } finally {
-      setIsUpdating(false);
-    }
-  };
 
   return (
     <div className="container mx-auto p-6 md:p-10 bg-white shadow-lg rounded-lg my-8 animate-fade-in">
@@ -1011,335 +930,209 @@ function MyTravelsPage() {
       `}</style>
 
 
-      <h1 className="text-4xl font-extrabold text-blue-800 mb-8 text-center">Meu Perfil Tripz</h1>
-
-      {/* ==================================================================== */}
-      {/* INÍCIO DO JSX DO PERFIL (agora usando o estado 'formData')          */}
-      {/* ==================================================================== */}
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12">
-        {/* Coluna do Avatar e Edição de Perfil */}
-        <div className="flex flex-col items-center md:w-1/3">
-          <div className="relative mb-6 group">
-            <img
-              src={formData.avatar}
-              alt="Avatar do Usuário"
-              className="w-40 h-40 rounded-full object-cover border-4 border-blue-400 shadow-md"
-            />
-            {isEditing && (
-              <label htmlFor="avatar-upload" className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity" title="Mudar Avatar">
-                <input id="avatar-upload" type="file" accept="image/*" onChange={handleAvatarChange} className="hidden" />
-                <svg className="h-10 w-10 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.218A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.218A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path strokeLinecap="round" strokeLinejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
-              </label>
-            )}
-          </div>
-          <div className="text-center w-full px-4">
-            {/* Mensagens de sucesso e erro */}
-            {updateMessage && (
-              <div className="mb-4 p-3 bg-green-100 border border-green-400 text-green-700 rounded-md">
-                {updateMessage}
-              </div>
-            )}
-
-            {updateError && (
-              <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-md">
-                {updateError}
-              </div>
-            )}
-
-            {isEditing ? (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                  <div>
-                    <label htmlFor="firstName" className="block text-gray-700 text-sm font-bold mb-2 text-left">
-                      Primeiro Nome
-                    </label>
-                    <input
-                      id="firstName"
-                      type="text"
-                      value={formData.firstName || ''}
-                      onChange={handleFormChange}
-                      className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Primeiro nome"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label htmlFor="lastName" className="block text-gray-700 text-sm font-bold mb-2 text-left">
-                      Último Nome
-                    </label>
-                    <input
-                      id="lastName"
-                      type="text"
-                      value={formData.lastName || ''}
-                      onChange={handleFormChange}
-                      className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      placeholder="Último nome"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2 text-left">
-                    Email
-                  </label>
-                  <input
-                    id="email"
-                    type="email"
-                    value={formData.email || ''}
-                    onChange={handleFormChange}
-                    className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Seu email"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="phone" className="block text-gray-700 text-sm font-bold mb-2 text-left">
-                    Telefone (opcional)
-                  </label>
-                  <input
-                    id="phone"
-                    type="text"
-                    value={formData.phone || ''}
-                    onChange={handleFormChange}
-                    className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="(11) 99999-9999"
-                    maxLength="15"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="cpf" className="block text-gray-700 text-sm font-bold mb-2 text-left">
-                    CPF (opcional)
-                  </label>
-                  <input
-                    id="cpf"
-                    type="text"
-                    value={formData.cpf || ''}
-                    onChange={handleFormChange}
-                    className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="000.000.000-00"
-                    maxLength="14"
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label htmlFor="birthDate" className="block text-gray-700 text-sm font-bold mb-2 text-left">
-                    Data de Nascimento (opcional)
-                  </label>
-                  <input
-                    id="birthDate"
-                    type="date"
-                    value={formData.birthDate || ''}
-                    onChange={handleFormChange}
-                    className="block w-full p-2 border rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  />
-                </div>
-
-                <div className="flex space-x-2">
-                  <button
-                    onClick={handleSaveChanges}
-                    disabled={isUpdating}
-                    className={`main-action-button flex-1 ${isUpdating ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700'} text-white font-bold py-2 px-6 rounded-full transition-colors`}
-                  >
-                    {isUpdating ? (
-                      <span className="flex items-center justify-center">
-                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Salvando...
-                      </span>
-                    ) : (
-                      'Salvar Alterações'
-                    )}
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setIsEditing(false);
-                      setUpdateError('');
-                      setUpdateMessage('');
-                    }}
-                    disabled={isUpdating}
-                    className="main-action-button flex-1 bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded-full transition-colors"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </>
-            ) : (
-              <>
-                <h2 className="text-3xl font-bold text-gray-800 mb-2">{getUserDisplayName()}</h2>
-                <p className="text-lg text-gray-600 mb-4">{currentUser?.Email || currentUser?.email || formData.email}</p>
-                <button onClick={() => setIsEditing(true)} className="main-action-button w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-full">Editar Perfil</button>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Coluna do Club de Pontuação */}
-        <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 rounded-lg shadow-xl md:w-2/3 flex flex-col items-center justify-center text-center">
-          <h3 className="text-3xl font-extrabold mb-3">Tripz Club Fidelidade</h3>
-          <p className="text-lg mb-4">Seus pontos valem experiências incríveis!</p>
-          <div className="flex items-baseline mb-4">
-            <span className="text-6xl font-black text-yellow-300">{formData.points}</span>
-            <span className="text-2xl font-semibold ml-2">pontos</span>
-          </div>
-          <button className="bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold py-3 px-8 rounded-full shadow-lg">Ver Recompensas</button>
-        </div>
-      </div>
-      {/* ==================================================================== */}
-      {/* FIM DO JSX DO PERFIL                                               */}
-      {/* ==================================================================== */}
-
-      <hr className="my-12" />
+      <ScrollReveal animation="fadeUp" delay={200}>
+        <h1 className="text-4xl font-extrabold text-blue-800 mb-8 text-center">Minhas Viagens</h1>
+      </ScrollReveal>
 
       {/* Seção de Histórico de Reservas */}
-      <section className="mb-12">
+      <AnimatedSection animation="fadeUp" delay={500}>
+        <section className="mb-12">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-3xl font-bold text-blue-800 text-center flex-1">Histórico de Reservas</h2>
+          {reservationHistory?.length > 0 && (
+            <div className="text-sm text-gray-600">
+              Página {currentReservationPage} de {getTotalReservationPages()} • {reservationHistory.length} reserva(s) total
+            </div>
+          )}
         </div>
         
               
         {reservationHistory?.length > 0 ? (
-          <div className="space-y-6">
-            {reservationHistory.map(reservation => (
-              <div key={reservation.id || reservation.ReservationId || reservation.reservationId} className="bg-white rounded-lg shadow-md p-6 border border-gray-200 relative reservation-card">
-                {/* Removemos qualquer tag de status que possa estar aparecendo no topo */}
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
-                  {/* Informações da reserva */}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4 lg:mb-0">
-                    {/* Imagem do hotel */}
-                    {reservation.hotelImage && (
-                      <img 
-                        src={reservation.hotelImage} 
-                        alt={reservation.hotelName}
-                        className="w-full sm:w-24 h-24 object-cover rounded-lg"
-                        onError={(e) => {
-                          e.target.src = 'https://via.placeholder.com/96x96?text=Hotel';
-                        }}
-                      />
-                    )}
-                    
-                    {/* Detalhes da reserva */}
-                    <div className="flex-1">
-                      <h3 className="text-xl font-semibold text-gray-800 mb-1">
-                        {reservation.hotelName || reservation.HotelName}
-                      </h3>
-                      {reservation.location && (
-                        <p className="text-gray-600 mb-2">📍 {reservation.location}</p>
+          <>
+            <div className="space-y-6">
+              {getCurrentReservations().map((reservation, index) => (
+                <ScrollReveal key={reservation.id || reservation.ReservationId || reservation.reservationId} animation="fadeUp" delay={index * 150}>
+                  <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 relative reservation-card">
+                  {/* Removemos qualquer tag de status que possa estar aparecendo no topo */}
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
+                    {/* Informações da reserva */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-4 lg:mb-0">
+                      {/* Imagem do hotel */}
+                      {reservation.hotelImage && (
+                        <img 
+                          src={reservation.hotelImage} 
+                          alt={reservation.hotelName}
+                          className="w-full sm:w-24 h-24 object-cover rounded-lg"
+                          onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/96x96?text=Hotel';
+                          }}
+                        />
                       )}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
-                        <p><strong>Quarto:</strong> {formatRoomType(reservation.roomType || reservation.RoomType)}</p>
-                        <p><strong>Hóspedes:</strong> {getNumberOfGuests(reservation)}</p>
-                        <p><strong>Check-in:</strong> {new Date(reservation.checkIn || reservation.CheckIn || reservation.checkInDate).toLocaleDateString('pt-BR')}</p>
-                        <p><strong>Check-out:</strong> {new Date(reservation.checkOut || reservation.CheckOut || reservation.checkOutDate).toLocaleDateString('pt-BR')}</p>
+                      
+                      {/* Detalhes da reserva */}
+                      <div className="flex-1">
+                        <h3 className="text-xl font-semibold text-gray-800 mb-1">
+                          {reservation.hotelName || reservation.HotelName}
+                        </h3>
+                        {reservation.location && (
+                          <p className="text-gray-600 mb-2">📍 {reservation.location}</p>
+                        )}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-600">
+                          <p><strong>Quarto:</strong> {formatRoomType(reservation.roomType || reservation.RoomType)}</p>
+                          <p><strong>Hóspedes:</strong> {getNumberOfGuests(reservation)}</p>
+                          <p><strong>Check-in:</strong> {new Date(reservation.checkIn || reservation.CheckIn || reservation.checkInDate).toLocaleDateString('pt-BR')}</p>
+                          <p><strong>Check-out:</strong> {new Date(reservation.checkOut || reservation.CheckOut || reservation.checkOutDate).toLocaleDateString('pt-BR')}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Status e valor */}
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-                    <div className="text-center sm:text-right">
-                      <p className="text-2xl font-bold text-blue-900">
-                        R$ {(reservation.totalPrice || reservation.TotalPrice || 0).toFixed(2).replace('.', ',')}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Reservado em {new Date(reservation.reservationDate || reservation.ReservationDate).toLocaleDateString('pt-BR')}
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-center sm:items-end gap-2">
-                      {/* Badge de Status da Reserva */}
-                      <span 
-                        className={`px-2 py-1 rounded text-xs font-semibold border ${getReservationStatus(reservation).className}`}
-                        onClick={() => console.log('Reservation status:', reservation.id, 'is confirmed:', !!(reservation.isConfirmed || reservation.IsConfirmed))}
-                      >
-                        {getReservationStatus(reservation).text}
-                      </span>
-                      
-                      {/* Botões de ação */}
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => navigate(`/hoteis/${reservation.hotelId || reservation.HotelId}`)}
-                          className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition"
+                    
+                    {/* Status e valor */}
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                      <div className="text-center sm:text-right">
+                        <p className="text-2xl font-bold text-blue-900">
+                          R$ {(reservation.totalPrice || reservation.TotalPrice || 0).toFixed(2).replace('.', ',')}
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Reservado em {new Date(reservation.reservationDate || reservation.ReservationDate).toLocaleDateString('pt-BR')}
+                        </p>
+                      </div>
+                      <div className="flex flex-col items-center sm:items-end gap-2">
+                        {/* Badge de Status da Reserva */}
+                        {/* <span 
+                          // className={`px-2 py-1 rounded text-xs font-semibold border ${getReservationStatus(reservation).className}`}
+                          onClick={() => console.log('Reservation status:', reservation.id, 'is confirmed:', !!(reservation.isConfirmed || reservation.IsConfirmed))}
                         >
-                          Ver Hotel
-                        </button>
-                        {/* Botões de comprovante sempre visíveis, independentemente do status */}
+                          {getReservationStatus(reservation).text}
+                        </span> */}
+                        
+                        {/* Botões de ação */}
                         <div className="flex gap-2">
                           <button 
-                            onClick={(e) => {
-                              console.log('Clique no botão de download:', reservation);
-                              // Forçar a reserva como confirmada para garantir que o comprovante seja gerado
-                              const confirmedReservation = {...reservation, isConfirmed: true, IsConfirmed: true};
-                              downloadReceipt(confirmedReservation);
-                            }}
-                            className="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition flex items-center receipt-button"
-                            title="Baixar comprovante"
+                            onClick={() => navigate(`/hoteis/${reservation.hotelId || reservation.HotelId}`)}
+                            className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition"
                           >
-                            <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                            </svg>
-                            Baixar
+                            Ver Hotel
                           </button>
-                          
-                          <button 
-                            onClick={(e) => {
-                              console.log('Clique no botão de visualização:', reservation);
-                              // Forçar a reserva como confirmada para garantir que o comprovante seja gerado
-                              const confirmedReservation = {...reservation, isConfirmed: true, IsConfirmed: true};
-                              viewReceipt(confirmedReservation);
-                            }}
-                            className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition flex items-center receipt-button"
-                            title="Visualizar comprovante"
-                          >
-                            <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                            </svg>
-                            Visualizar
-                          </button>
+                          {/* Botões de comprovante sempre visíveis, independentemente do status */}
+                          <div className="flex gap-2">
+                            <button 
+                              onClick={(e) => {
+                                console.log('Clique no botão de download:', reservation);
+                                // Forçar a reserva como confirmada para garantir que o comprovante seja gerado
+                                const confirmedReservation = {...reservation, isConfirmed: true, IsConfirmed: true};
+                                downloadReceipt(confirmedReservation);
+                              }}
+                              className="px-3 py-1 bg-green-600 text-white rounded text-xs hover:bg-green-700 transition flex items-center receipt-button"
+                              title="Baixar comprovante"
+                            >
+                              <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                              </svg>
+                              Baixar
+                            </button>
+                            
+                            <button 
+                              onClick={(e) => {
+                                console.log('Clique no botão de visualização:', reservation);
+                                // Forçar a reserva como confirmada para garantir que o comprovante seja gerado
+                                const confirmedReservation = {...reservation, isConfirmed: true, IsConfirmed: true};
+                                viewReceipt(confirmedReservation);
+                              }}
+                              className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition flex items-center receipt-button"
+                              title="Visualizar comprovante"
+                            >
+                              <svg className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                              Visualizar
+                            </button>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                
-                {/* Informações de Status da Reserva */}
-                <div className="mt-4 pt-4 border-t border-gray-200">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-semibold text-gray-700">Status da Reserva:</p>
-                      <p className="text-xs text-gray-500">
-                        {(reservation.isConfirmed || reservation.IsConfirmed) 
-                          ? 'Sua reserva foi confirmada e está garantida.' 
-                          : 'Sua reserva está pendente de confirmação. Você receberá um e-mail quando for confirmada.'}
-                      </p>
-                    </div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${getReservationStatus(reservation).className}`}>
-                      {getReservationStatus(reservation).text}
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Informações dos viajantes */}
-                {(reservation.travellers || reservation.Travellers) && (reservation.travellers || reservation.Travellers).length > 0 && (
+                  
+                  {/* Informações de Status da Reserva */}
                   <div className="mt-4 pt-4 border-t border-gray-200">
-                    <p className="text-sm font-semibold text-gray-700 mb-2">Viajantes:</p>
-                    <div className="flex flex-wrap gap-2">
-                      {(reservation.travellers || reservation.Travellers).map((traveller, index) => (
-                        <span key={index} className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-700">
-                          {traveller.firstName || traveller.FirstName} {traveller.lastName || traveller.LastName}
-                        </span>
-                      ))}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-700">Status da Reserva:</p>
+                        <p className="text-xs text-gray-500">
+                          {(reservation.isConfirmed || reservation.IsConfirmed) 
+                            ? 'Sua reserva foi confirmada e está garantida.' 
+                            : 'Sua reserva está pendente de confirmação. Você receberá um e-mail quando for confirmada.'}
+                        </p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-sm font-semibold border ${getReservationStatus(reservation).className}`}>
+                        {getReservationStatus(reservation).text}
+                      </span>
                     </div>
                   </div>
-                )}
+                  
+                  {/* Informações dos viajantes */}
+                  {(reservation.travellers || reservation.Travellers) && (reservation.travellers || reservation.Travellers).length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-gray-200">
+                      <p className="text-sm font-semibold text-gray-700 mb-2">Viajantes:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {(reservation.travellers || reservation.Travellers).map((traveller, index) => (
+                          <span key={index} className="bg-gray-100 px-2 py-1 rounded text-xs text-gray-700">
+                            {traveller.firstName || traveller.FirstName} {traveller.lastName || traveller.LastName}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  </div>
+                </ScrollReveal>
+              ))}
+            </div>
+            
+            {/* Controles de Paginação */}
+            {getTotalReservationPages() > 1 && (
+              <div className="mt-8 flex justify-center items-center space-x-2">
+                {/* Botão Anterior */}
+                <button
+                  onClick={() => handleReservationPageChange(currentReservationPage - 1)}
+                  disabled={currentReservationPage === 1}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                    currentReservationPage === 1
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  ← Anterior
+                </button>
+                
+                {/* Números das Páginas */}
+                {Array.from({ length: getTotalReservationPages() }, (_, index) => index + 1).map((pageNumber) => (
+                  <button
+                    key={pageNumber}
+                    onClick={() => handleReservationPageChange(pageNumber)}
+                    className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                      currentReservationPage === pageNumber
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    {pageNumber}
+                  </button>
+                ))}
+                
+                {/* Botão Próximo */}
+                <button
+                  onClick={() => handleReservationPageChange(currentReservationPage + 1)}
+                  disabled={currentReservationPage === getTotalReservationPages()}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition ${
+                    currentReservationPage === getTotalReservationPages()
+                      ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                      : 'bg-blue-600 text-white hover:bg-blue-700'
+                  }`}
+                >
+                  Próximo →
+                </button>
               </div>
-            ))}
-          </div>
+            )}
+          </>
         ) : (
           <div className="text-center py-12">
             <div className="text-6xl mb-4">🏨</div>
@@ -1352,136 +1145,132 @@ function MyTravelsPage() {
             </button>
           </div>
         )}
-      </section>
+        </section>
+      </AnimatedSection>
 
-      <hr className="my-12" />
-
-      <section className="mb-12">
-        <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Hotéis que Você Já Visitou</h2>
-        {visitedHotels?.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {visitedHotels.map(hotel => <HotelCard key={hotel.id} hotel={hotel} />)}
-          </div>
-        ) : (
-          <div className="text-center p-8">
-            <div className="w-40 h-40 mx-auto mb-4 flex items-center justify-center">
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                {/* Corpo do mascote (mala de viagem) */}
-                <rect x="20" y="35" width="60" height="50" rx="5" ry="5" fill="#3b82f6" stroke="#1e40af" strokeWidth="2" />
+      {/* Modal para visualização do comprovante (otimizado para mobile) */}
+      {showReceiptModal && (
+        <div 
+          className="fixed inset-0 z-[9999] flex items-center justify-center p-2 sm:p-4"
+          style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)'
+          }}
+        >
+          <div 
+            className="bg-white bg-opacity-95 rounded-xl shadow-2xl w-full max-w-6xl flex flex-col"
+            style={{
+              backdropFilter: 'blur(20px)',
+              WebkitBackdropFilter: 'blur(20px)',
+              border: '1px solid rgba(255, 255, 255, 0.2)'
+            }}
+          >
+            {/* Header do Modal */}
+            <div 
+              className="flex justify-between items-center p-4 border-b border-gray-200 border-opacity-30 rounded-t-xl"
+              style={{
+                background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(147, 197, 253, 0.1))',
+                backdropFilter: 'blur(10px)',
+                WebkitBackdropFilter: 'blur(10px)'
+              }}
+            >
+              <h3 className="text-lg font-semibold text-gray-800">Comprovante de Reserva</h3>
+              <div className="flex gap-2">
+                {/* Botão de impressão */}
+                <button
+                  onClick={() => {
+                    const printWindow = window.open('', '_blank');
+                    if (printWindow) {
+                      printWindow.document.write(currentReceiptContent);
+                      printWindow.document.close();
+                      setTimeout(() => {
+                        printWindow.print();
+                        printWindow.close();
+                      }, 500);
+                    } else {
+                      // Fallback para mobile: criar um iframe temporário
+                      const iframe = document.createElement('iframe');
+                      iframe.style.display = 'none';
+                      document.body.appendChild(iframe);
+                      iframe.contentDocument.write(currentReceiptContent);
+                      iframe.contentDocument.close();
+                      iframe.contentWindow.print();
+                      setTimeout(() => {
+                        document.body.removeChild(iframe);
+                      }, 1000);
+                    }
+                  }}
+                  className="px-3 py-2 bg-blue-600 bg-opacity-90 text-white rounded-lg hover:bg-blue-700 transition-all duration-200 flex items-center text-sm backdrop-blur-sm"
+                  title="Imprimir comprovante"
+                  style={{
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)'
+                  }}
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2z" />
+                  </svg>
+                  <span className="hidden sm:inline">Imprimir</span>
+                </button>
                 
-                {/* Detalhes da mala */}
-                <rect x="30" y="45" width="40" height="30" rx="2" ry="2" fill="#60a5fa" stroke="#1e40af" strokeWidth="1" />
+                {/* Botão de download */}
+                <button
+                  onClick={() => {
+                    if (currentReservation) {
+                      downloadReceipt(currentReservation);
+                    }
+                  }}
+                  className="px-3 py-2 bg-green-600 bg-opacity-90 text-white rounded-lg hover:bg-green-700 transition-all duration-200 flex items-center text-sm backdrop-blur-sm"
+                  title="Baixar comprovante"
+                  style={{
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)'
+                  }}
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                  </svg>
+                  <span className="hidden sm:inline">Baixar</span>
+                </button>
                 
-                {/* Alça da mala */}
-                <path d="M40 35 Q50 15 60 35" fill="none" stroke="#1e40af" strokeWidth="3" />
-                
-                {/* Rosto animado */}
-                <circle cx="40" cy="60" r="5" fill="white" /> {/* Olho esquerdo */}
-                <circle cx="60" cy="60" r="5" fill="white" /> {/* Olho direito */}
-                <circle cx="40" cy="60" r="2" fill="#1e40af" /> {/* Pupila esquerda */}
-                <circle cx="60" cy="60" r="2" fill="#1e40af" /> {/* Pupila direita */}
-                
-                {/* Lágrimas */}
-                <path d="M37 65 C37 69, 36 73, 34 77" stroke="#60a5fa" strokeWidth="2" fill="none" /> {/* Lágrima esquerda */}
-                <path d="M63 65 C63 69, 64 73, 66 77" stroke="#60a5fa" strokeWidth="2" fill="none" /> {/* Lágrima direita */}
-                <circle cx="34" cy="77" r="1.5" fill="#60a5fa" /> {/* Gota esquerda */}
-                <circle cx="66" cy="77" r="1.5" fill="#60a5fa" /> {/* Gota direita */}
-                
-                {/* Boca triste */}
-                <path d="M35 75 Q50 70 65 75" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" />
-                
-                {/* Chapéu de viagem */}
-                <path d="M30 40 L50 30 L70 40" fill="#fcd34d" stroke="#1e40af" strokeWidth="1" />
-                
-                {/* Adesivos de viagem na mala */}
-                <circle cx="25" cy="45" r="3" fill="#f87171" />
-                <circle cx="75" cy="50" r="3" fill="#34d399" />
-                <circle cx="30" cy="80" r="3" fill="#a78bfa" />
-                
-               
-              </svg>
-            </div>
-            <p className="text-center text-gray-600 text-lg font-semibold">Você ainda não tem hotéis visitados</p>
-            <p className="text-center text-blue-500 text-sm mt-2">Tripz está esperando para acompanhar você em sua próxima aventura!</p>
-          </div>
-        )}
-      </section>
-
-      <hr className="my-12" />
-
-      <section>
-        <h2 className="text-3xl font-bold text-blue-800 mb-6 text-center">Sua Tripz de Desejos</h2>
-        {savedHotels?.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {savedHotels.map(hotel => (
-              <div key={hotel.id} className="relative group">
-                <HotelCard hotel={hotel} />
-                <button onClick={() => removeSavedHotel(hotel.id)} className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-2 shadow-md opacity-0 group-hover:opacity-100 transition-opacity" title="Remover da lista de desejos">
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                {/* Botão de fechar */}
+                <button
+                  onClick={() => {
+                    setShowReceiptModal(false);
+                    setCurrentReceiptContent('');
+                    setCurrentReservation(null);
+                  }}
+                  className="px-3 py-2 bg-gray-500 bg-opacity-90 text-white rounded-lg hover:bg-gray-600 transition-all duration-200 flex items-center text-sm backdrop-blur-sm"
+                  title="Fechar"
+                  style={{
+                    backdropFilter: 'blur(10px)',
+                    WebkitBackdropFilter: 'blur(10px)'
+                  }}
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="hidden sm:inline">Fechar</span>
                 </button>
               </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center p-8">
-            <div className="w-40 h-40 mx-auto mb-4 flex items-center justify-center">
-              <svg viewBox="0 0 100 100" className="w-full h-full">
-                {/* Corpo principal do avião (fuselagem) */}
-                <path d="M25 50 L80 50 C85 50, 90 45, 90 40 C90 35, 85 30, 80 30 L25 30 C20 30, 15 35, 15 40 C15 45, 20 50, 25 50 Z" fill="#3b82f6" stroke="#1e40af" strokeWidth="1.5" />
-                
-                {/* Nariz arredondado do avião */}
-                <circle cx="15" cy="40" r="10" fill="#3b82f6" stroke="#1e40af" strokeWidth="1.5" />
-                
-                {/* Cauda do avião */}
-                <path d="M80 30 L90 15 L95 15 L90 40 L80 50 L80 30" fill="#3b82f6" stroke="#1e40af" strokeWidth="1.5" />
-                <path d="M85 25 L90 22" stroke="#1e40af" strokeWidth="0.8" />
-                
-                {/* Asa superior - redesenhada */}
-                <path d="M45 30 L58 18 L70 12 L75 16 L65 28 L50 30 Z" fill="#60a5fa" stroke="#1e40af" strokeWidth="1" />
-                <path d="M58 18 L62 22" stroke="#1e40af" strokeWidth="0.8" fill="none" />
-                
-                {/* Asa inferior - redesenhada */}
-                <path d="M45 50 L58 62 L70 68 L75 64 L65 52 L50 50 Z" fill="#60a5fa" stroke="#1e40af" strokeWidth="1" />
-                <path d="M58 62 L62 58" stroke="#1e40af" strokeWidth="0.8" fill="none" />
-                
-                {/* Janelas do avião */}
-                <circle cx="30" cy="40" r="3" fill="white" stroke="#1e40af" strokeWidth="0.7" />
-                <circle cx="45" cy="40" r="3" fill="white" stroke="#1e40af" strokeWidth="0.7" />
-                <circle cx="60" cy="40" r="3" fill="white" stroke="#1e40af" strokeWidth="0.7" />
-                <circle cx="75" cy="40" r="3" fill="white" stroke="#1e40af" strokeWidth="0.7" />
-                
-                {/* Cabine do piloto (vidro) */}
-                <path d="M15 35 C20 30, 25 30, 25 35 L25 45 C25 50, 20 50, 15 45 Z" fill="#a5f3fc" stroke="#1e40af" strokeWidth="1" />
-                
-                {/* Detalhes na cabine */}
-                <path d="M20 35 L20 45" stroke="#1e40af" strokeWidth="0.5" fill="none" />
-                <path d="M15 40 L25 40" stroke="#1e40af" strokeWidth="0.5" fill="none" opacity="0.7" />
-                
-                {/* Brilho da cabine */}
-                <circle cx="18" cy="37" r="1.5" fill="white" opacity="0.7" />
-                
-                {/* Detalhes decorativos */}
-                <path d="M80 40 L85 40" stroke="#1e40af" strokeWidth="1" />
-                <path d="M15 55 Q50 60 85 55" fill="none" stroke="#1e40af" strokeWidth="0.8" />
-                
-                {/* Marca "Tripz" na lateral do avião */}
-                <path d="M33 43 L55 43" stroke="#fcd34d" strokeWidth="2" strokeLinecap="round" />
-                <circle cx="60" cy="43" r="2" fill="#fcd34d" />
-                
-                {/* Faixa decorativa */}
-                <path d="M25 36 L75 36" stroke="#fcd34d" strokeWidth="1" opacity="0.8" strokeDasharray="2,1" />
-                
-                {/* Estrelas (representando desejos) */}
-                <path d="M80 20 L82 23 L86 23 L83 26 L84 30 L80 28 L76 30 L77 26 L74 23 L78 23 Z" fill="#fcd34d" />
-                <path d="M30 15 L32 18 L36 18 L33 21 L34 25 L30 23 L26 25 L27 21 L24 18 L28 18 Z" fill="#fcd34d" />
-                <path d="M60 65 L62 68 L66 68 L63 71 L64 75 L60 73 L56 75 L57 71 L54 68 L58 68 Z" fill="#fcd34d" />
-              </svg>
             </div>
-            <p className="text-center text-gray-600 text-lg font-semibold">Sua lista de desejos está vazia</p>
-            <p className="text-center text-blue-500 text-sm mt-2">Deixe o Tripz te ajudar a encontrar destinos dos seus sonhos!</p>
+            
+            {/* Conteúdo do Modal - Iframe com o comprovante */}
+            <div className="flex-1 overflow-hidden rounded-b-xl">
+              <iframe
+                srcDoc={currentReceiptContent}
+                className="w-full h-full border-0 rounded-b-xl"
+                title="Comprovante de Reserva"
+                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                style={{
+                  minHeight: '70vh'
+                }}
+              />
+            </div>
           </div>
-        )}
-      </section>
+        </div>
+      )}
     </div>
   );
 }

@@ -9,35 +9,63 @@
 
 
 html, body, #root {
-  min-height: 100%;
+  min-height: 100vh;
   padding: 0;
+  margin: 0;
   width: 100%;
   overflow-x: hidden;
+  box-sizing: border-box;
 }
 
 body {
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-}
-
-/* Header curve - curva na parte inferior do header */
-.header-curve {
-  overflow: visible;
-  position: absolute;
-  bottom: 0; /* Ajustado para mostrar a curva abaixo do header */
-  left: 0;
-  right: 0;
-  height: 25px; /* Aumentado para dar mais espaço para a curva */
-  z-index: 1;
-}
-
-/* Ajustes específicos para o header */
-header {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
   position: relative;
-  z-index: 10;
-  margin-bottom: 0; /* Removido o margin-bottom para não criar espaço */
-  overflow: visible; /* Permitir que a curva seja visível fora do header */
+  /* Barra de scroll personalizada para todos os navegadores */
+  scrollbar-width: thin !important; /* Firefox - barra fina */
+  scrollbar-color: #60a5fa #f1f5f9 !important; /* Firefox - cores */
+}
+
+/* Webkit scrollbar para Chrome, Safari, Edge */
+body::-webkit-scrollbar {
+  width: 12px !important; /* Largura da barra - aumentei para ficar mais visível */
+}
+
+body::-webkit-scrollbar-track {
+  background: #f1f5f9 !important; /* Cor de fundo cinza claro */
+  border-radius: 6px !important;
+  border: 1px solid #e2e8f0 !important; /* Borda sutil */
+}
+
+body::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #60a5fa 0%, #3b82f6 100%) !important; /* Gradiente azul */
+  border-radius: 6px !important;
+  border: 2px solid #f1f5f9 !important; /* Borda interna */
+  transition: all 0.3s ease !important;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%) !important; /* Mais escuro no hover */
+  border-color: #e2e8f0 !important;
+}
+
+body::-webkit-scrollbar-thumb:active {
+  background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%) !important; /* Ainda mais escuro quando clicado */
+}
+p {
+  margin: 0 0 1.2rem 0 !important;
+  padding: 0 !important;
+  text-indent: 0 !important;
+ 
+}
+/* Regras específicas para prevenir overflow apenas onde necessário */
+.container, 
+.footer-curve, 
+.header-curve {
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 /* Estilos de cor das bolinhas, para combinar com seu tema */
@@ -45,31 +73,207 @@ header {
   background: #60a5fa; /* Cor azul suave do Tailwind para as bolinhas inativas */
 }
 
+/* Estilos customizados para Swiper de seções específicas */
+.promocoes-swiper-pagination,
+.recomendados-swiper-pagination,
+.blog-swiper-pagination {
+  position: static !important;
+  width: 100% !important;
+  margin: 16px auto 0 auto !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: auto !important;
+  padding: 8px 0 !important;
+}
+
+.promocoes-swiper-pagination .swiper-pagination-bullet,
+.recomendados-swiper-pagination .swiper-pagination-bullet,
+.blog-swiper-pagination .swiper-pagination-bullet {
+  background: #94a3b8; /* Cinza claro para bullets inativos */
+  opacity: 0.7;
+  width: 10px;
+  height: 10px;
+  margin: 0 4px;
+  transition: all 0.3s ease;
+  position: static !important;
+}
+
+.promocoes-swiper-pagination .swiper-pagination-bullet-active,
+.recomendados-swiper-pagination .swiper-pagination-bullet-active,
+.blog-swiper-pagination .swiper-pagination-bullet-active {
+  background: #2563eb; /* Azul para bullet ativo */
+  opacity: 1;
+  transform: scale(1.3);
+}
+
+/* Estilos para botões de navegação customizados */
+.promocoes-swiper-button-prev,
+.promocoes-swiper-button-next,
+.recomendados-swiper-button-prev,
+.recomendados-swiper-button-next,
+.blog-swiper-button-prev,
+.blog-swiper-button-next {
+  cursor: pointer;
+  user-select: none;
+  outline: none;
+  border: none;
+  z-index: 10;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+.promocoes-swiper-button-prev:disabled,
+.promocoes-swiper-button-next:disabled,
+.recomendados-swiper-button-prev:disabled,
+.recomendados-swiper-button-next:disabled,
+.blog-swiper-button-prev:disabled,
+.blog-swiper-button-next:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Garantir overflow visível para botões de navegação */
+@media (max-width: 768px) {
+  /* Remover padding que estava deformando os cards */
+  .swiper-container {
+    overflow: visible !important;
+  }
+  
+  .swiper-wrapper {
+    overflow: visible !important;
+  }
+  
+  .recomendados-swiper-button-prev,
+  .recomendados-swiper-button-next,
+  .promocoes-swiper-button-prev,
+  .promocoes-swiper-button-next,
+  .blog-swiper-button-prev,
+  .blog-swiper-button-next {
+    position: relative !important;
+    z-index: 50 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+  }
+}
+
+/* Melhorar o layout dos cards no mobile */
+@media (max-width: 768px) {
+  .swiper-slide {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: stretch !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+  
+  .swiper-slide > * {
+    width: 100% !important;
+    max-width: 90% !important;
+    margin: 0 auto !important;
+  }
+  
+  /* Garantir que o hover dos cards não seja cortado */
+  .swiper-container,
+  .swiper-wrapper {
+    overflow: visible !important;
+  }
+  
+  /* Espaçamento adequado para cards */
+  .hotel-card-modern {
+    margin: 8px auto 12px auto !important;
+    max-width: none !important;
+    width: 100% !important;
+  }
+  
+  /* Garantir que Swipers não cortem cards */
+  .swiper {
+    overflow: visible !important;
+    padding: 8px 16px 16px 16px !important;
+  }
+  
+  /* REMOVER HOVER DOS CARDS NO MOBILE */
+  .hotel-card-modern:hover,
+  .card-hover-premium:hover {
+    transform: none !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+  }
+  
+  .card-hover-premium:hover .card-image {
+    transform: none !important;
+  }
+  
+  .card-hover-premium:hover .card-title {
+    color: inherit !important;
+  }
+  
+  /* CENTRALIZAR DESCRIÇÃO DOS HOTÉIS NO MOBILE */
+  .hotel-card-modern .p-4,
+  .hotel-card-modern .p-3 {
+    text-align: center !important;
+  }
+  
+  .hotel-card-modern h3,
+  .hotel-card-modern .card-title {
+    text-align: center !important;
+  }
+  
+  .hotel-card-modern p {
+    text-align: center !important;
+  }
+  
+  /* CORRIGIR PREÇO DEFORMADO NO MOBILE */
+  .hotel-card-modern .price-tag {
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    color: #2563eb !important;
+    line-height: 1.2 !important;
+    white-space: nowrap !important;
+  }
+  
+  .hotel-card-modern .mt-auto {
+    margin-top: 12px !important;
+  }
+  
+  .hotel-card-modern .flex.items-center.justify-between {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 8px !important;
+  }
+  
+  .hotel-card-modern .main-action-button {
+    width: 100% !important;
+    text-align: center !important;
+    padding: 10px 16px !important;
+    font-size: 14px !important;
+  }
+  
+  /* AJUSTAR TAG DE OFERTAS PARA FICAR DENTRO DO CARD */
+  .relative .absolute[class*="OFERTA"],
+  .relative .absolute[class*="bg-red-500"] {
+    position: absolute !important;
+    top: 8px !important;
+    right: 8px !important;
+    z-index: 20 !important;
+  }
+}
+
 /* Estilos modernos para os cards de hotel */
 .hotel-card-modern {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backface-visibility: hidden;
+  margin-bottom: 24px; /* Adiciona espaçamento inferior aos cards */
 }
 
 .hotel-card-modern:hover {
-  transform: translateY(-5px);
+  transform: scale(1.02);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+  border-radius: 12px !important; /* Mantém bordas arredondadas */
 }
 
-.header-curve::after {
-  content: '';
-  position: absolute;
-  bottom: 0; /* Ajustado para posicionar corretamente na parte inferior do .header-curve */
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 25px; /* Aumentado para garantir visibilidade */
-  display: block; /* Garante que o elemento seja exibido */
-  
-  /* A mágica da curva - neste caso, invertida em relação ao footer */
-  border-bottom: 5px solid #60A5FA; /* Cor azul para combinar com o footer */
-  border-radius: 0 0 0 0; /* Removidas as bordas arredondadas para combinar com o header sem arredondamento */
-  box-shadow: 0 4px 10px rgba(96, 165, 250, 0.3); /* Sombra sutil para destacar - mesma cor do footer */
-  z-index: 20; /* Aumentado para garantir que esteja visível acima de outros elementos */
+/* Hover scale mais sutil para todos os cards */
+.hover\:scale-102:hover {
+  transform: scale(1.02) !important;
 }
 
 .menu1 {
@@ -78,8 +282,19 @@ left: 20%;
 
 }
 
-
-
+.header-curve::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 2px;
+  display: block;
+  z-index: 5;
+  background: linear-gradient(to right, transparent 10%, #60A5FA 50%, transparent 90%);
+  pointer-events: none;
+}
 
 /* Esta classe deve ser aplicada nos botões no JSX, por exemplo: className="main-action-button" */
 .main-action-button,
@@ -106,9 +321,218 @@ left: 20%;
 .searchHotelsBar,
 .HotelsSeachForm,
 .NewsLetterSection {
+  min-height: 200px; /* Altura mínima ao invés de fixa */
+  height: auto; /* Permite crescer automaticamente */
   align-items: center;
   text-align: center;
   background-image: linear-gradient(to right, #c9f0fdb4, #f9f3f3cf); /* Azul claro para Branco */
+  transition: all 0.3s ease; /* Transição suave para mudanças */
+}
+
+/* Quando o dropdown de comodidades estiver aberto, expande o container */
+.searchHotelsBar.dropdown-open {
+  min-height: 600px; /* Altura expandida ainda maior */
+  padding-bottom: 150px; /* Muito mais espaço para o dropdown */
+  margin-bottom: 100px; /* Margem inferior grande */
+}
+
+/* Estilos para o dropdown de comodidades */
+.amenities-dropdown-panel {
+  position: absolute !important;
+  z-index: 50 !important; /* Z-index mais baixo para ficar dentro do card */
+  width: 100% !important;
+  max-height: 280px !important; /* Altura controlada */
+  overflow-y: auto !important; /* Scroll se necessário */
+  background: white !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important; /* Sombra controlada */
+  margin-top: 8px !important; /* Pequeno espaço do trigger */
+  top: 100% !important; /* Posiciona logo abaixo do trigger */
+  left: 0 !important; /* Alinha à esquerda do container pai */
+  animation: dropdownSlideDown 0.3s ease-out !important;
+}
+
+/* Garantir que o container do dropdown permita overflow visível */
+.relative[ref="amenitiesDropdownRef"],
+div[class*="relative"]:has(.amenities-dropdown-panel) {
+  overflow: visible !important;
+  z-index: 1 !important;
+}
+
+/* Container do formulário de busca deve permitir overflow */
+.searchHotelsBar,
+.HotelsSeachForm {
+  overflow: visible !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+
+/* Animação para o dropdown aparecer */
+@keyframes dropdownSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Grid interno do dropdown */
+.comodidades-grid {
+  padding: 24px !important; /* Padding maior */
+  display: grid !important;
+  gap: 16px !important; /* Gap maior entre items */
+  min-height: 250px !important; /* Altura mínima garantida */
+}
+
+/* Items do dropdown */
+.comodidade-item {
+  display: flex !important;
+  align-items: center !important;
+  padding: 16px 20px !important; /* Padding ainda maior */
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  border: 1px solid transparent !important;
+  min-height: 50px !important; /* Altura mínima dos items */
+}
+
+.comodidade-item:hover {
+  background-color: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+}
+
+/* === ESTILOS PARA SELECTS (DROPDOWNS NORMAIS) === */
+
+/* Container dos inputs e selects */
+.searchHotelsBar .relative.flex.items-center {
+  position: relative;
+  transition: all 0.2s ease;
+  overflow: visible;
+}
+
+.searchHotelsBar .relative.flex.items-center:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo melhorado para os selects */
+.searchHotelsBar select {
+  background: white !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #374151 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+  background-position: right 16px center !important;
+  background-repeat: no-repeat !important;
+  background-size: 16px !important;
+  padding-right: 50px !important;
+  min-height: 50px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.searchHotelsBar select:hover {
+  border-color: #60a5fa !important;
+  background: #f8fafc !important;
+  box-shadow: 0 8px 20px rgba(96, 165, 250, 0.15) !important;
+  transform: translateY(-1px);
+}
+
+.searchHotelsBar select:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 8px 20px rgba(96, 165, 250, 0.15) !important;
+  background: #ffffff !important;
+}
+
+/* Options do select */
+.searchHotelsBar select option {
+  padding: 12px 16px !important;
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  color: #374151 !important;
+  background: white !important;
+  border: 1px solid transparent !important;
+  margin: 2px 0 !important;
+}
+
+.searchHotelsBar select option:hover {
+  background: #f3f4f6 !important;
+  border-color: #d1d5db !important;
+}
+
+.searchHotelsBar select option:checked {
+  background: #eff6ff !important;
+  color: #1d4ed8 !important;
+  font-weight: 600 !important;
+}
+
+/* Estilo melhorado para os inputs de data */
+.searchHotelsBar input[type="date"],
+.searchHotelsBar input[type="text"] {
+  background: white !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #374151 !important;
+  transition: all 0.2s ease !important;
+  min-height: 50px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.searchHotelsBar input[type="date"]:hover,
+.searchHotelsBar input[type="text"]:hover {
+  border-color: #60a5fa !important;
+  background: #f8fafc !important;
+  box-shadow: 0 8px 20px rgba(96, 165, 250, 0.15) !important;
+  transform: translateY(-1px);
+}
+
+.searchHotelsBar input[type="date"]:focus,
+.searchHotelsBar input[type="text"]:focus {
+  outline: none !important;
+  border-color: #3b82f6 !important;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1), 0 8px 20px rgba(96, 165, 250, 0.15) !important;
+  background: #ffffff !important;
+}
+
+/* Estilo para o trigger do dropdown de comodidades */
+.amenities-dropdown-trigger {
+  background: white !important;
+  border: 2px solid #e5e7eb !important;
+  border-radius: 12px !important;
+  padding: 16px 20px !important;
+  transition: all 0.2s ease !important;
+  cursor: pointer !important;
+  min-height: 50px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
+}
+
+.amenities-dropdown-trigger:hover {
+  border-color: #60a5fa !important;
+  background: #f8fafc !important;
+  box-shadow: 0 8px 20px rgba(96, 165, 250, 0.15) !important;
+  transform: translateY(-1px);
+}
+
+/* Labels melhoradas */
+.searchHotelsBar .labelForms {
+  font-weight: 600 !important;
+  color: #374151 !important;
+  font-size: 14px !important;
+  margin-bottom: 8px !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05) !important;
 }
 
 
@@ -161,12 +585,15 @@ left: 20%;
 /* Posiciona as bolinhas da paginação absolutamente no fundo da área do Swiper */
 /* O bottom negativo as empurra para fora da área dos slides, mas ainda dentro do padding-bottom do Swiper */
 .travel-pagination-bottom .swiper-pagination-bullets {
-  position: relative !important; /* Garante que é absoluto */
-  margin-top: 50px;       /* Fixa no fundo do Swiper (onde está o padding-bottom) */
-  left: 50% !important;         /* Centraliza horizontalmente */
-  transform: translateX(-50%) !important; /* Ajusta o centralização perfeita */
+  position: static !important; /* Garante que é estático para melhor controle */
+  margin-top: 20px !important;       /* Espaço acima das bolinhas */
+  left: auto !important;         /* Reset do left */
+  transform: none !important; /* Reset do transform */
   top: auto !important;         /* Reseta qualquer 'top' padrão do Swiper */
   z-index: 10;                  /* Garante que esteja acima de outros elementos se houver sobreposição inesperada */
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
 }
 
 
@@ -187,9 +614,46 @@ color: transparent;
   
 }
 
-/* Garanta que o conteúdo principal permita rolagem */
+/* Main sem scroll - apenas o body controla */
 main.flex-grow {
-  overflow-y: auto;
+  overflow: visible;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Garantir que páginas específicas não tenham scroll próprio */
+.min-h-screen {
+  min-height: auto !important;
+}
+
+/* Remover qualquer scroll de containers internos das páginas */
+.max-h-screen,
+.max-h-\[95vh\],
+.overflow-y-auto {
+  max-height: none !important;
+  overflow-y: visible !important;
+}
+
+/* Esconder scroll de elementos específicos que causam duplicação */
+.swiper-container,
+.swiper-wrapper,
+.amenities-dropdown-panel,
+main.flex-grow,
+.container,
+.footer-curve,
+.header-curve {
+  scrollbar-width: none !important; /* Firefox */
+  -ms-overflow-style: none !important; /* Internet Explorer */
+}
+
+.swiper-container::-webkit-scrollbar,
+.swiper-wrapper::-webkit-scrollbar,
+.amenities-dropdown-panel::-webkit-scrollbar,
+main.flex-grow::-webkit-scrollbar,
+.container::-webkit-scrollbar,
+.footer-curve::-webkit-scrollbar,
+.header-curve::-webkit-scrollbar {
+  display: none !important; /* Chrome, Safari, Edge */
 }
 
 /* Ajustes específicos para o footer */
@@ -197,22 +661,23 @@ footer {
   margin-bottom: 0;
   position: relative;
   z-index: 10;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 .footer-curve::before {
   content: '';
   position: absolute;
-  top: -2px; /* Ajustado para cobrir perfeitamente a borda do footer */
+  top: 0;
   left: 0;
   right: 0;
   width: 100%;
-  height: 22px; /* Aumentado para garantir cobertura completa */
-  display: block; /* Garante que o elemento seja exibido */
-  z-index: 5; /* Garante que esteja visível */
-  /* A mágica da curva invertida: */
-  border-top: 5px solid #60A5FA; /* Cor (azul) e espessura do traço */
-  border-radius: 0 0 0 0; /* Removido o arredondamento */
-  box-shadow: 0 -4px 10px rgba(96, 165, 250, 0.3); /* Sombra sutil para destacar */
+  height: 2px;
+  display: block;
+  z-index: 5;
+  background: linear-gradient(to right, transparent 10%, #60A5FA 50%, transparent 90%);
+  pointer-events: none;
 }
 
 
@@ -365,6 +830,74 @@ a{
 
 
 /* Responsive Navigation Menu Styles */
+/* Mobile Cards Layout - Specific for small screens */
+@media (max-width: 640px) {
+  /* Container margins for better mobile spacing */
+  .container {
+    padding: 0 12px !important;
+  }
+  
+  /* Grid containers for hotel cards */
+  .grid {
+    gap: 12px !important;
+    padding: 8px !important;
+  }
+  
+  /* Sections with hotel cards */
+  section[id*="hotel"], 
+  section[id*="recomendado"], 
+  section[id*="promocoes"] {
+    padding: 16px 8px !important;
+  }
+  
+  /* Cards grid specifically */
+  .cards-grid,
+  .grid.grid-cols-1,
+  .grid.grid-cols-2,
+  .grid.grid-cols-3 {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+    padding: 8px 12px !important;
+  }
+  
+  /* Hotel cards specific mobile styling */
+  .hotel-card-modern {
+    margin: 8px auto 12px auto !important;
+    max-width: none !important;
+    width: 100% !important;
+    min-height: auto !important;
+  }
+  
+  /* Remove ALL hover effects on mobile */
+  .hotel-card-modern:hover {
+    transform: none !important;
+    box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.08) !important;
+  }
+  
+  .group:hover .group-hover\:scale-110 {
+    transform: none !important;
+  }
+  
+  /* Swiper mobile adjustments */
+  .swiper {
+    padding: 8px 12px 20px 12px !important;
+    overflow: visible !important;
+  }
+  
+  .swiper-slide {
+    width: auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    padding: 4px 2px !important;
+  }
+  
+  /* Better swiper card styling */
+  .swiper-slide > * {
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
+
 /* Small Mobile devices */
 @media screen and (max-width: 479px) {
   .hamburger-menu {
@@ -473,7 +1006,27 @@ a:hover {
 }
 
 .hotel-card-modern:hover {
-  transform: translateY(-5px);
+  transform: scale(1.02);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+/* Estilos de hover personalizados para cards */
+.card-hover-premium {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backface-visibility: hidden;
+}
+
+.card-hover-premium:hover {
+  transform: scale(1.02);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.card-hover-premium:hover .card-image {
+  transform: scale(1.1);
+}
+
+.card-hover-premium:hover .card-title {
+  color: #1e3a8a;
 }
 
 .travel-pagination-bottom .swiper-pagination-bullet-active {
@@ -482,38 +1035,9 @@ a:hover {
 }
 
 
-/*NOVO AJUSTE: SUBIR A PAGINAÇÃO DO HERO SWIPER === */
-/* Estilo para conectar o hero swiper com o header sem espaço em branco */
-.hero-swiper-pagination {
-  margin-top: -5px !important;
-  position: relative;
-  z-index: 1;
-  overflow: hidden;
-}
-
-/* Aumente o valor do 'bottom' para fazer as bolinhas subirem mais */
-.hero-swiper-pagination .swiper-pagination-bullets {
-  /* Quanto maior o valor, mais as bolinhas sobem */
-  left: 50% !important;
-  transform: translateX(-50%) !important;
-  bottom: 35px !important;
-  z-index: 20; /* Certifique-se de que esteja acima da próxima seção arredondada */
-}
-
 /* Estilos adicionais para garantir que não haja espaços brancos */
 .swiper-slide {
   overflow: hidden !important;
-}
-
-/* Opcional: Estilo para as bolinhas do Hero, se quiserem ser diferentes */
-.hero-swiper-pagination .swiper-pagination-bullet {
-  background: white; /* Bolinhas brancas para contraste no hero */
-  opacity: 0.7;
-}
-
-.hero-swiper-pagination .swiper-pagination-bullet-active {
-  background: white; /* Bolinha ativa branca */
-  opacity: 1;
 }
 
 /* Estilos para garantir que o botão de favorito apareça corretamente */
@@ -546,6 +1070,982 @@ a:hover {
   color: #EF4444 !important; /* Vermelho quando favorito */
   fill: #EF4444 !important;
 }
+
+/* === LAZY LOADING ANIMATIONS FOR SCROLL TO TOP === */
+
+/* Animação de fade in suave para o botão voltar ao topo */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Animação mais lenta e suave para efeito esmaecente */
+@keyframes fadeInSlow {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.7) rotate(-5deg);
+    filter: blur(3px);
+  }
+  30% {
+    opacity: 0.3;
+    transform: translateY(20px) scale(0.8) rotate(-2deg);
+    filter: blur(2px);
+  }
+  70% {
+    opacity: 0.7;
+    transform: translateY(10px) scale(0.9) rotate(0deg);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+/* Animação de fade out quando some */
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+    filter: blur(0);
+  }
+  30% {
+    opacity: 0.7;
+    transform: translateY(10px) scale(0.9) rotate(2deg);
+    filter: blur(1px);
+  }
+  70% {
+    opacity: 0.3;
+    transform: translateY(20px) scale(0.8) rotate(5deg);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.7) rotate(8deg);
+    filter: blur(3px);
+  }
+}
+
+/* Animação sutil de "respiração" */
+@keyframes breathe {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+  }
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+  }
+}
+
+/* Animação rápida para lazy loading de componentes */
+@keyframes lazyFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) rotate(-15deg);
+    filter: blur(2px);
+  }
+  30% {
+    opacity: 0.3;
+    transform: scale(0.8) rotate(-5deg);
+    filter: blur(1px);
+  }
+  70% {
+    opacity: 0.8;
+    transform: scale(1.1) rotate(2deg);
+    filter: blur(0.5px);
+  }
+  85% {
+    opacity: 0.95;
+    transform: scale(0.98) rotate(0deg);
+    filter: blur(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+    filter: blur(0);
+  }
+}
+
+/* Animação de "pop" quando o ícone carrega */
+@keyframes iconPop {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
+  80% {
+    transform: scale(0.9);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Animação para spinner de loading */
+@keyframes spinFade {
+  0% {
+    opacity: 0.4;
+    transform: rotate(0deg) scale(0.8);
+  }
+  50% {
+    opacity: 0.8;
+    transform: rotate(180deg) scale(1);
+  }
+  100% {
+    opacity: 0.4;
+    transform: rotate(360deg) scale(0.8);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-fadeInSlow {
+  animation: fadeInSlow 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.animate-fadeOut {
+  animation: fadeOut 0.8s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
+}
+
+.animate-breathe {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.animate-lazyFadeIn {
+  animation: lazyFadeIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.animate-iconPop {
+  animation: iconPop 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+}
+
+.animate-spinFade {
+  animation: spinFade 1.5s ease-in-out infinite;
+}
+
+/* Optimização para lazy loading */
+.lazy-loading {
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.lazy-loaded {
+  opacity: 1;
+}
+
+/* Hover effect melhorado para o botão scroll to top */
+.scroll-to-top-button {
+  will-change: transform;
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}
+
+/* Performance otimizada para animações */
+.smooth-transition {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* === SCROLL REVEAL ANIMATIONS === */
+
+/* Base para todos os elementos de scroll reveal */
+.scroll-reveal {
+  opacity: 0;
+  will-change: transform, opacity;
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.scroll-reveal-visible {
+  opacity: 1;
+}
+
+/* Animação Fade Up - elementos sobem enquanto aparecem */
+.scroll-reveal-fadeUp {
+  transform: translateY(60px);
+}
+
+.scroll-reveal-fadeUp.scroll-reveal-visible {
+  transform: translateY(0);
+}
+
+/* Animação Fade In - aparecem no lugar */
+.scroll-reveal-fadeIn {
+  transform: scale(0.9);
+}
+
+.scroll-reveal-fadeIn.scroll-reveal-visible {
+  transform: scale(1);
+}
+
+/* Animação Slide Left - vem da direita */
+.scroll-reveal-slideLeft {
+  transform: translateX(80px);
+}
+
+.scroll-reveal-slideLeft.scroll-reveal-visible {
+  transform: translateX(0);
+}
+
+/* Animação Slide Right - vem da esquerda */
+.scroll-reveal-slideRight {
+  transform: translateX(-80px);
+}
+
+.scroll-reveal-slideRight.scroll-reveal-visible {
+  transform: translateX(0);
+}
+
+/* Animação Zoom In - cresce do centro */
+.scroll-reveal-zoomIn {
+  transform: scale(0.6);
+}
+
+.scroll-reveal-zoomIn.scroll-reveal-visible {
+  transform: scale(1);
+}
+
+/* Animação Flip - roda enquanto aparece */
+.scroll-reveal-flip {
+  transform: perspective(1000px) rotateY(90deg);
+}
+
+.scroll-reveal-flip.scroll-reveal-visible {
+  transform: perspective(1000px) rotateY(0deg);
+}
+
+/* Animação especial para cards */
+.scroll-reveal-cardPop {
+  transform: translateY(40px) scale(0.8) rotateX(45deg);
+  filter: blur(1px);
+}
+
+.scroll-reveal-cardPop.scroll-reveal-visible {
+  transform: translateY(0) scale(1) rotateX(0deg);
+  filter: blur(0);
+}
+
+/* Prevenir corte do hover em cards animados */
+.hotel-card-animated {
+  overflow: visible !important;
+  padding: 4px;
+}
+
+.hotel-card-animated .hotel-card-modern {
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* Garantir espaço para hover em Swiper */
+.swiper-slide .hotel-card-animated {
+  padding: 8px 4px;
+}
+
+@media (max-width: 768px) {
+  .swiper-slide .hotel-card-animated {
+    padding: 12px 8px;
+  }
+}
+
+/* Animação para títulos/headers */
+.scroll-reveal-titleSlide {
+  transform: translateY(-30px);
+  opacity: 0;
+  filter: blur(2px);
+}
+
+.scroll-reveal-titleSlide.scroll-reveal-visible {
+  transform: translateY(0);
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* Container para elementos em sequência */
+.scroll-reveal-container {
+  position: relative;
+}
+
+/* Animações especiais para diferentes tipos de conteúdo */
+
+/* Para hero sections */
+.scroll-reveal-hero {
+  transform: translateY(100px) scale(0.9);
+  opacity: 0;
+}
+
+.scroll-reveal-hero.scroll-reveal-visible {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+  transition: all 1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Para grid de cards */
+.scroll-reveal-gridItem {
+  transform: translateY(50px) scale(0.85);
+  opacity: 0;
+}
+
+.scroll-reveal-gridItem.scroll-reveal-visible {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+/* Para seções de texto */
+.scroll-reveal-textBlock {
+  transform: translateY(30px);
+  opacity: 0;
+}
+
+.scroll-reveal-textBlock.scroll-reveal-visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Para imagens */
+.scroll-reveal-image {
+  transform: scale(1.1);
+  opacity: 0;
+  filter: blur(5px);
+}
+
+.scroll-reveal-image.scroll-reveal-visible {
+  transform: scale(1);
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* Melhorias de performance para scroll reveals */
+.scroll-reveal {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  contain: layout style paint;
+}
+
+/* === RESPONSIVIDADE ESPECÍFICA PARA SEÇÕES DE HOTÉIS === */
+
+/* Melhorias para mobile nas seções de hotéis */
+@media (max-width: 640px) {
+  /* Seções de hotéis */
+  #recomendado-viajantes,
+  #promocoes-destaque {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    padding-top: 2rem !important;
+    padding-bottom: 2rem !important;
+  }
+  
+  /* Grid de cards responsivo */
+  .cards-grid {
+    gap: 1rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+    padding-top: 1rem !important;
+    padding-bottom: 1rem !important;
+  }
+  
+  /* Card spacing otimizado para mobile */
+  .card-spacing {
+    margin: 0.5rem auto !important;
+    padding: 0.25rem !important;
+    max-width: 100% !important;
+  }
+  
+  /* Section titles responsivos */
+  .section-title h2 {
+    font-size: 1.25rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  /* Badge de oferta menor no mobile */
+  .grid .relative > div[class*="absolute"][class*="OFERTA"] {
+    font-size: 0.75rem !important;
+    padding: 0.25rem 0.5rem !important;
+    top: 0.5rem !important;
+    right: 0.5rem !important;
+  }
+  
+  /* MOBILE CARDS ESPECÍFICOS */
+  /* Cards mais largos no mobile */
+  .swiper-slide > div {
+    width: 100% !important;
+    max-width: none !important;
+  }
+  
+  /* Centralizar todos os textos dos cards no mobile */
+  .hotel-card-modern * {
+    text-align: center !important;
+  }
+  
+  /* Centralizar avaliações e estrelas */
+  .hotel-card-modern .flex {
+    justify-content: center !important;
+  }
+  
+  /* Ajustar preços para ficar centralizado */
+  .hotel-card-modern .text-2xl,
+  .hotel-card-modern .font-bold {
+    text-align: center !important;
+    display: block !important;
+    width: 100% !important;
+  }
+}
+
+/* Tablet responsividade */
+@media (min-width: 641px) and (max-width: 1024px) {
+  #recomendado-viajantes,
+  #promocoes-destaque {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+  }
+  
+  .cards-grid {
+    gap: 1.5rem !important;
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  
+  .section-title h2 {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Desktop - mantém configurações existentes */
+@media (min-width: 1025px) {
+  .cards-grid {
+    gap: 3rem !important;
+  }
+}
+
+/* Otimizações para mobile */
+@media (max-width: 768px) {
+  .scroll-reveal {
+    will-change: auto; /* Remove will-change em mobile para economizar memória */
+  }
+  
+  .scroll-reveal-fadeUp {
+    transform: translateY(30px); /* Movimento menor em mobile */
+  }
+  
+  .scroll-reveal-slideLeft,
+  .scroll-reveal-slideRight {
+    transform: translateX(30px); /* Movimento menor em mobile */
+  }
+  
+  .scroll-reveal-cardPop {
+    transform: translateY(20px) scale(0.9); /* Animação mais sutil */
+    filter: none; /* Remove blur em mobile */
+  }
+}
+
+/* Otimizações para dispositivos de baixa performance */
+.reduced-animations .scroll-reveal {
+  transition: opacity 0.2s ease !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* Classe para elementos críticos que devem aparecer imediatamente */
+.scroll-reveal-critical {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Animação especial para primeira fold (acima da dobra) */
+.scroll-reveal-above-fold {
+  animation: quickFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes quickFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Media queries para dispositivos móveis */
+@media (max-width: 768px) {
+  .scroll-reveal-fadeUp {
+    transform: translateY(40px);
+  }
+  
+  .scroll-reveal-slideLeft,
+  .scroll-reveal-slideRight {
+    transform: translateX(40px);
+  }
+}
+
+/* Reduz animações para usuários que preferem menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  .scroll-reveal {
+    transition: opacity 0.3s ease;
+    transform: none !important;
+  }
+}
+
+/* === ESTILOS ESPECIAIS PARA TÍTULOS DE SEÇÃO === */
+.section-title {
+  background: linear-gradient(135deg, rgba(248, 250, 252, 0.95) 0%, rgba(241, 245, 249, 0.9) 100%);
+  padding: 16px 24px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(226, 232, 240, 0.6);
+  backdrop-filter: blur(8px);
+  margin-bottom: 32px;
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.section-title::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #60A5FA 0%, #3B82F6 50%, #1D4ED8 100%);
+  border-radius: 12px 12px 0 0;
+}
+
+.section-title h2,
+.section-title h3,
+.section-title h4 {
+  margin: 0;
+  color: #1e293b;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.section-title p {
+  margin: 8px 0 0 0;
+  color: #64748b;
+  font-size: 0.875rem;
+  opacity: 0.9;
+}
+
+/* Variação mais sutil para títulos menores */
+.section-title-subtle {
+  background: linear-gradient(135deg, rgba(252, 252, 253, 0.8) 0%, rgba(248, 250, 252, 0.7) 100%);
+  padding: 12px 20px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(226, 232, 240, 0.4);
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.section-title-subtle::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #60A5FA 30%, #3B82F6 70%);
+  border-radius: 8px 8px 0 0;
+}
+
+/* === ESPAÇAMENTO PARA CARDS E GRIDS === */
+.cards-grid {
+  gap: 24px; /* Espaçamento entre cards no grid */
+  margin-bottom: 32px; /* Espaçamento inferior do grid */
+}
+
+/* Espaçamento adicional para cards individuais */
+.card-spacing {
+  margin: 16px;
+  padding: 8px;
+}
+
+/* Speech bubble styling para feedbacks */
+.feedback-bubble {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.feedback-bubble:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.feedback-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 32px;
+  width: 0;
+  height: 0;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 12px solid white;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+/* Estilo personalizado para navegação Swiper */
+.swiper-button-prev-desejos,
+.swiper-button-next-desejos,
+.swiper-button-prev-visitados,
+.swiper-button-next-visitados {
+  background: white;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.swiper-button-prev-desejos:hover,
+.swiper-button-next-desejos:hover,
+.swiper-button-prev-visitados:hover,
+.swiper-button-next-visitados:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  border-color: #3b82f6;
+  transform: scale(1.05);
+}
+
+/* Oculta os botões padrão do Swiper */
+.swiper-button-next.swiper-button-disabled,
+.swiper-button-prev.swiper-button-disabled {
+  display: none;
+}
+
+/* Para seções com cards */
+.cards-section {
+  padding-bottom: 32px;
+}
+
+/* === BOTÃO LER MAIS DELICADO === */
+.read-more-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #60A5FA;
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  border: 1px solid rgba(96, 165, 250, 0.3);
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.05) 0%, rgba(59, 130, 246, 0.1) 100%);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(2px);
+}
+
+.read-more-button:hover {
+  color: #3B82F6;
+  border-color: rgba(59, 130, 246, 0.5);
+  background: linear-gradient(135deg, rgba(96, 165, 250, 0.1) 0%, rgba(59, 130, 246, 0.15) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2);
+}
+
+.read-more-button svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.read-more-button:hover svg {
+  transform: translateX(3px);
+}
+
+/* Ajustes específicos para bubbles/paginação em mobile e desktop */
+@media (max-width: 768px) {
+  .promocoes-swiper-pagination,
+  .recomendados-swiper-pagination,
+  .blog-swiper-pagination {
+    margin-top: 12px !important;
+    padding: 6px 0 !important;
+    gap: 4px !important;
+  }
+  
+  .promocoes-swiper-pagination .swiper-pagination-bullet,
+  .recomendados-swiper-pagination .swiper-pagination-bullet,
+  .blog-swiper-pagination .swiper-pagination-bullet {
+    width: 8px !important;
+    height: 8px !important;
+    margin: 0 2px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .promocoes-swiper-pagination,
+  .recomendados-swiper-pagination,
+  .blog-swiper-pagination {
+    margin-top: 20px !important;
+    padding: 10px 0 !important;
+    gap: 8px !important;
+  }
+  
+  .promocoes-swiper-pagination .swiper-pagination-bullet,
+  .recomendados-swiper-pagination .swiper-pagination-bullet,
+  .blog-swiper-pagination .swiper-pagination-bullet {
+    width: 12px !important;
+    height: 12px !important;
+    margin: 0 4px !important;
+  }
+}
+
+/* Classes utilitárias para truncar texto */
+.line-clamp-1 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
+.line-clamp-2 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.line-clamp-3 {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+/* MyTravelCard mobile fixes */
+.my-travel-card {
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .my-travel-card {
+    width: 100% !important;
+    max-width: 280px !important;
+    margin: 0 auto !important;
+    position: relative !important;
+    transform: none !important;
+    left: auto !important;
+    right: auto !important;
+  }
+  
+  /* Garante que os botões não sejam cortados */
+  .my-travel-card .absolute {
+    z-index: 20 !important;
+  }
+  
+  /* Melhora o espaçamento interno no mobile */
+  .my-travel-card .p-4 {
+    padding: 12px !important;
+  }
+  
+  /* Garante que o texto não quebre o layout */
+  .my-travel-card h3 {
+    font-size: 1rem !important;
+    line-height: 1.4 !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .my-travel-card p {
+    font-size: 0.875rem !important;
+    line-height: 1.3 !important;
+  }
+  
+  /* Container dos cards de viagens no mobile */
+  .travels-container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 16px !important;
+    padding: 0 20px !important;
+  }
+}
+
+@media (min-width: 769px) {
+  .travels-container {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    gap: 20px !important;
+    padding: 0 !important;
+  }
+}
+
+/* === MODAL RESERVATION FIXES === */
+/* Garantir que o modal de reserva tenha scroll adequado */
+.fixed.inset-0.backdrop-blur-sm {
+  overflow-y: auto !important;
+  padding: 20px !important;
+}
+
+.max-h-\[90vh\].flex.flex-col {
+  max-height: 90vh !important;
+  height: auto !important;
+  overflow: hidden !important;
+}
+
+.flex-1.overflow-y-auto {
+  overflow-y: auto !important;
+  max-height: calc(90vh - 200px) !important;
+  min-height: 200px !important;
+  scrollbar-width: thin !important;
+  scrollbar-color: #60a5fa #f1f5f9 !important;
+}
+
+.flex-1.overflow-y-auto::-webkit-scrollbar {
+  width: 8px !important;
+}
+
+.flex-1.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f5f9 !important;
+  border-radius: 4px !important;
+}
+
+.flex-1.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #60a5fa !important;
+  border-radius: 4px !important;
+}
+
+.flex-1.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6 !important;
+}
+
+/* Mobile modal fixes */
+@media (max-width: 768px) {
+  .fixed.inset-0.backdrop-blur-sm {
+    padding: 10px !important;
+    align-items: flex-start !important;
+    padding-top: 20px !important;
+  }
+  
+  .max-h-\[90vh\].flex.flex-col {
+    max-height: 95vh !important;
+    height: auto !important;
+  }
+  
+  .flex-1.overflow-y-auto {
+    overflow-y: auto !important;
+    max-height: calc(95vh - 160px) !important;
+    min-height: 300px !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  
+  /* Garantir que o container do modal não corte o conteúdo */
+  .bg-white\/95.rounded-lg {
+    margin: 0 !important;
+    min-height: auto !important;
+  }
+}
+
+/* Forçar remoção do filtro grayscale nas fotos dos criadores da página institucional */
+.institutional-card img,
+.creator-image,
+[alt*="criador" i] img,
+[alt*="creator" i] img,
+img[src*="creator" i],
+img[src*="criador" i],
+.team-member-image {
+  filter: none !important;
+  -webkit-filter: none !important;
+  -moz-filter: none !important;
+  -ms-filter: none !important;
+}
+
+.institutional-card img:hover,
+.creator-image:hover,
+[alt*="criador" i] img:hover,
+[alt*="creator" i] img:hover,
+img[src*="creator" i]:hover,
+img[src*="criador" i]:hover,
+.team-member-image:hover {
+  filter: none !important;
+  -webkit-filter: none !important;
+  -moz-filter: none !important;
+  -ms-filter: none !important;
+  transform: scale(1.05);
+}
+
+/* Dropdown de Passageiros - Mobile Fixes */
+@media (max-width: 640px) {
+  /* Corrigir overflow do dropdown de passageiros no mobile */
+  select.appearance-none {
+    max-width: 100% !important;
+    font-size: 12px !important;
+    padding-right: 24px !important; /* Espaço para a seta */
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+  
+  /* Container dos selects no mobile */
+  .relative.flex.items-center.bg-white.rounded-lg {
+    padding: 6px 8px !important;
+    min-height: 36px !important;
+  }
+  
+  /* Ícones nos selects menores no mobile */
+  .relative.flex.items-center.bg-white.rounded-lg svg {
+    width: 16px !important;
+    height: 16px !important;
+    margin-right: 4px !important;
+  }
+  
+  /* Grid do formulário mais compacto */
+  .grid.grid-cols-1.md\\:grid-cols-3 {
+    gap: 8px !important;
+    margin-bottom: 8px !important;
+  }
+  
+  /* Labels menores no mobile */
+  .labelForms {
+    font-size: 12px !important;
+    margin-bottom: 2px !important;
+  }
+  
+  /* Evitar que os dropdowns passem da tela */
+  .searchHotelsBar,
+  .HotelsSeachForm {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  
+  /* Container principal do formulário */
+  .searchHotelsBar > div,
+  .HotelsSeachForm > div {
+    max-width: calc(100vw - 16px) !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+}
+
 
 
 

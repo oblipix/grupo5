@@ -55,9 +55,9 @@ function HotelsMapSection({ isLoaded }) {
   return (
     <section id="mapa-hoteis" className="py-12 bg-white px-6">
       <div className="container mx-auto">
-        <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-800">Onde Estamos: Nossos Hotéis no Mapa</h2>
-            <p className="text-gray-600 mt-2">Explore nossas unidades e planeje sua estadia!</p>
+        <div className="section-title">
+          <h2 className="text-3xl font-bold">Onde Estamos: Nossos Hotéis no Mapa</h2>
+          <p className="text-gray-600 mt-2">Explore nossas unidades e planeje sua estadia!</p>
         </div>
        
         {/* Estado de loading */}

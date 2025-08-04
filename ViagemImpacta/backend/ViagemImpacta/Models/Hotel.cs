@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ViagemImpacta.Models
 {
@@ -45,6 +46,13 @@ namespace ViagemImpacta.Models
 
         [StringLength(500, ErrorMessage = "Descrição deve ter no máximo 500 caracteres")]
         public string? Description { get; set; }
+
+        // IMAGES ----------------
+        /// <summary>
+        /// Lista de URLs das imagens do hotel. A primeira imagem será usada como imagem principal.
+        /// Cada URL deve ter no máximo 500 caracteres.
+        /// </summary>
+        public List<string> ImageUrls { get; set; } = new List<string>();
     }
 }
 

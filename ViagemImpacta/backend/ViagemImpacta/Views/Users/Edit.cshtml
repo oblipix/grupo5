@@ -3,43 +3,74 @@
     ViewData["Title"] = "Editar Usuário";
 }
 
-<h2 class="mb-4">Editar Usuário</h2>
-<div class="card" style="max-width: 600px;">
-    <div class="card-body">
-        <form asp-action="Edit" asp-route-id="@Model.UserId" method="post">
-            <input type="hidden" asp-for="UserId" />
-            <div class="mb-3">
-                <label asp-for="Email" class="form-label">Email</label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="FirstName" class="form-label">Primeiro Nome</label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="LastName" class="form-label">Sobrenome</label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Phone" class="form-label">Telefone</label>
-                <input asp-for="Phone" class="form-control" />
-                <span asp-validation-for="Phone" class="text-danger"></span>
-            </div>
-            <div class="mb-3">
-                <label asp-for="Photo" class="form-label">Foto (URL)</label>
-                <input asp-for="Photo" class="form-control" />
-                <span asp-validation-for="Photo" class="text-danger"></span>
-            </div>
-            <div class="d-flex gap-2 mt-4">
-                <a asp-action="Index" class="btn btn-secondary w-50">Voltar</a>
-                <button type="submit" class="btn btn-primary w-50">Confirmar</button>
-            </div>
-        </form>
+<h1 class="d-flex align-items-center gap-2 mb-4">
+    <span class="material-symbols-outlined" style="font-size: 2.5rem">account_circle</span>
+    Editar Usuário
+</h1>
+
+<form asp-action="Edit" asp-route-id="@Model.UserId" method="post">
+    <input type="hidden" asp-for="UserId" />
+    <div class="row mb-3">
+        <div class="col-md-6 mb-3">
+            <label asp-for="FirstName" class="form-label">
+                <span class="material-icons align-middle" title="Nome">person</span> Nome
+            </label>
+            <input asp-for="FirstName" class="form-control" />
+            <span asp-validation-for="FirstName" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="LastName" class="form-label">
+                <span class="material-icons align-middle" title="Sobrenome">badge</span> Sobrenome
+            </label>
+            <input asp-for="LastName" class="form-control" />
+            <span asp-validation-for="LastName" class="text-danger"></span>
+        </div>
     </div>
-</div>
+    <div class="row mb-3">
+        <div class="col-md-6 mb-3">
+            <label asp-for="Email" class="form-label">
+                <span class="material-icons align-middle" title="Email">mail</span> Email
+            </label>
+            <input asp-for="Email" class="form-control" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="Phone" class="form-label">
+                <span class="material-icons align-middle" title="Telefone">call</span> Telefone
+            </label>
+            <input asp-for="Phone" class="form-control" />
+            <span asp-validation-for="Phone" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="row mb-3">
+        @{
+            string FormatCpf(string cpf)
+            {
+                if (string.IsNullOrEmpty(cpf) || cpf.Length < 11) return string.Empty;
+                return $"{cpf.Substring(0, 3)}.{cpf.Substring(3, 3)}.{cpf.Substring(6, 3)}-{cpf.Substring(7, 2)}";
+            }
+        }
+        <div class="col-md-6 mb-3">
+            <label asp-for="Cpf" class="form-label">
+                <span class="material-symbols-outlined align-middle" title="CPF">id_card</span> CPF
+            </label>
+            <input class="form-control" value="@FormatCpf(Model.Cpf)" disabled />
+            <span asp-validation-for="Cpf" class="text-danger"></span>
+        </div>
+        <div class="col-md-6 mb-3">
+            <label asp-for="BirthDate" class="form-label">
+                <span class="material-icons align-middle" title="Data de Nascimento">calendar_month</span> Data de Nascimento
+            </label>
+            <input asp-for="BirthDate" class="form-control" disabled />
+            <span asp-validation-for="BirthDate" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+        <button type="submit" class="btn btn-primary">Salvar</button>
+    </div>
+</form>
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

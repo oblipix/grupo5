@@ -30,14 +30,9 @@ function Header() {
 
     const UserLoginLink = () => {
         if (isLoggedIn) {
-            // Debug temporário - remover após corrigir
-            console.log('Debug currentUser no Header:', currentUser);
-
             // Função para obter o primeiro nome do usuário de forma segura
             const getFirstName = () => {
                 if (!currentUser) return 'Usuário';
-
-                // Tenta diferentes propriedades que podem conter o nome
                 const possibleNames = [
                     currentUser.name,
                     currentUser.firstName,
@@ -45,31 +40,35 @@ function Header() {
                     currentUser.username,
                     currentUser.email
                 ];
-
                 for (const nameField of possibleNames) {
                     if (nameField && typeof nameField === 'string' && nameField.trim()) {
-                        // Se for email, pega a parte antes do @
                         if (nameField.includes('@')) {
                             return nameField.split('@')[0];
                         }
-                        // Se for nome completo, pega o primeiro nome
                         return nameField.split(' ')[0];
                     }
                 }
-
-                return 'Usuário'; // Fallback
+                return 'Usuário';
             };
-
             return (
                 <div className="flex items-center space-x-3">
-                    <NavLink to="/minhas-viagens" className="text-gray-300 hover:text-blue-400 transition-all flex items-center py-1 px-3 rounded-lg ">
+                    <NavLink
+                        to="/perfil"
+                        className={({ isActive }) =>
+                            isActive
+                                ? "group text-blue-400 font-medium focus:outline-none transition-all duration-300 flex items-center px-4 py-2 rounded-xl active-link"
+                                : "group text-gray-300 hover:text-blue-400 font-medium focus:outline-none transition-all duration-300 flex items-center px-4 py-2 rounded-xl"
+                        }
+                        style={{ zIndex: 10 }}
+                    >
                         <UserCircleIcon className="h-8 w-8 md:h-6 md:w-6 text-blue-400" />
                         <span className="ml-2 hidden md:inline-block font-medium">Olá, {getFirstName()}!</span>
                     </NavLink>
                     <button
                         onClick={logout}
-                        className="text-gray-300 hover:text-white transition-all flex items-center bg-gradient-to-r from-blue-900/40 to-blue-700/40 hover:from-red-900/40 hover:to-red-700/40 px-3 py-1 rounded-lg"
+                        className="text-gray-300 hover:text-white transition-all flex items-center bg-gradient-to-r from-blue-900/40 to-blue-700/40 hover:from-red-900/40 hover:to-red-700/40 px-3 py-1 rounded-lg cursor-pointer"
                         title="Sair"
+                        style={{ zIndex: 10 }}
                     >
                          <ArrowRightEndOnRectangleIcon className="h-6 w-6 md:h-5 md:w-5" />
                          <span className="ml-1 hidden md:inline-block text-sm font-medium">Sair</span>
@@ -88,7 +87,7 @@ function Header() {
 
     return (
         <header className="w-full bg-gradient-to-b from-slate-800 to-slate-900 shadow-lg py-4 sticky top-0 z-50 relative">
-            {/* Elemento específico para a curva */}
+            {/* Elemento específico para a linha inferior do header */}
             <div className="header-curve absolute bottom-0 left-0 w-full h-5"></div>
             <div className="container mx-auto px-6 flex items-center justify-between">
 
@@ -141,6 +140,14 @@ function Header() {
                                     Institucional
                                 </NavLink>
                             </li>
+                            {isLoggedIn && (
+                                <li>
+                                    <NavLink to="/minhas-viagens" className={getNavLinkClasses}>
+                                        <span className="w-1 h-1 bg-blue-500 rounded-full mr-2 group-hover:w-2 transition-all"></span>
+                                        Minhas Viagens
+                                    </NavLink>
+                                </li>
+                            )}
                         </ul>
                     </nav>
                     <UserLoginLink />
@@ -195,6 +202,17 @@ function Header() {
                                 <span>Institucional</span>
                             </NavLink>
                         </li>
+                        {isLoggedIn && (
+                            <li className="w-4/5">
+                                <NavLink to="/minhas-viagens" className={({ isActive }) => 
+                                    isActive 
+                                        ? "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-white bg-blue-900/40 transition-all" 
+                                        : "flex items-center justify-center space-x-2 w-full py-2 px-3 rounded-lg text-gray-300 hover:text-blue-400 hover:bg-blue-900/20 transition-all"
+                                } onClick={toggleMobileMenu}>
+                                    <span>Minhas Viagens</span>
+                                </NavLink>
+                            </li>
+                        )}
                         <li className="w-4/5">
                             <NavLink to="/hoteis" className={({ isActive }) => 
                                 isActive 

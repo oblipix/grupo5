@@ -2,6 +2,7 @@ using AutoMapper;
 using ViagemImpacta.DTO.ReservationDTO;
 using ViagemImpacta.DTO.TravellerDTO;
 using ViagemImpacta.Models;
+using ViagemImpacta.ViewModels;
 
 namespace ViagemImpacta.Profiles
 {
@@ -30,6 +31,9 @@ namespace ViagemImpacta.Profiles
                 .ForMember(dest => dest.HotelName, opt => opt.MapFrom(src => src.Hotel!.Name))
                 .ForMember(dest => dest.TotalDays, opt => opt.MapFrom(src => (src.CheckOut - src.CheckIn).Days))
                 .ForMember(dest => dest.Travellers, opt => opt.MapFrom(src => src.Travellers));
+
+            CreateMap<Reservation, UpdateReservationViewModel>();
+            CreateMap<Reservation, UpdateReservationDto>();
 
             // Traveller mappings
             CreateMap<CreateTravellerDto, Travellers>()

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { GoogleMap, Marker } from '@react-google-maps/api';
 import { useHotels } from '../hooks/useHotels';
 
+
 // Importe os ícones das redes sociais
 import {
     FaFacebookF,
@@ -148,15 +149,15 @@ function Footer({ isLoaded }) {
                             <div className="mt-4 space-y-2">
                                 <div className="flex items-center text-gray-300">
                                     <FaMapMarkerAlt className="text-blue-400 mr-2" />
-                                    <span>Av. Paulista, 1000 - São Paulo, SP</span>
+                                    <span>Av. Boa Viagem, 1000 - Recife, PE</span>
                                 </div>
                                 <div className="flex items-center text-gray-300">
                                     <FaEnvelope className="text-blue-400 mr-2" />
-                                    <span>contato@tripz.com.br</span>
+                                    <span>contato@tripz.com</span>
                                 </div>
                                 <div className="flex items-center text-gray-300">
                                     <FaPhone className="text-blue-400 mr-2" />
-                                    <span>(11) 4002-8922</span>
+                                    <span>(81) 4005-8181</span>
                                 </div>
                                 <Link to="/contato" className="mt-3 inline-block bg-blue-900 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all text-sm">
                                     Ver página de contato

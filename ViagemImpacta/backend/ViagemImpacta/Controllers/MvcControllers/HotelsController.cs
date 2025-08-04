@@ -6,7 +6,7 @@ using ViagemImpacta.Services.Interfaces;
 
 namespace ViagemImpacta.Controllers;
 
-[Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
+
 public class HotelsController : Controller
 {
     private readonly IHotelService _hotelService;
@@ -16,12 +16,14 @@ public class HotelsController : Controller
         _hotelService = hotelService;
     }
 
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin, Attendant")]
     public async Task<IActionResult> Index()
     {
         var hotels = await _hotelService.GetAllHotelsAsync();
         return View(hotels);
     }
 
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
     public IActionResult Create()
     {
         return View();
@@ -30,6 +32,7 @@ public class HotelsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> Create(Hotel hotel) 
     {
         if (ModelState.IsValid)
@@ -39,6 +42,8 @@ public class HotelsController : Controller
         }
         return View(hotel);
     }
+
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin, Attendant")]
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
@@ -57,6 +62,7 @@ public class HotelsController : Controller
         return View(hotel);
     }
 
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
@@ -76,6 +82,7 @@ public class HotelsController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> Edit(int id, Hotel hotel)
     {
         if (id != hotel.HotelId)
@@ -91,6 +98,7 @@ public class HotelsController : Controller
         return View(hotel);
     }
 
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
@@ -110,6 +118,7 @@ public class HotelsController : Controller
     
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
+    [Authorize(AuthenticationSchemes = CookieAuthenticationDefaults.AuthenticationScheme, Roles = "Admin")]
     public async Task<IActionResult> DeleteConfirmed(int id)
     {
         await _hotelService.DeleteHotelAsync(id);
@@ -120,8 +129,8 @@ public class HotelsController : Controller
     {
         ViewBag.Location = location;
         ViewBag.MinStars = minStars;
-
-        var hotels = await _hotelService.GetHotelsWithFiltersAsync(location, minStars, null, null);
+        
+        var hotels = await _hotelService.GetHotelsWithFiltersAsync(location, minStars, null, null, null);
 
         return View(hotels);
     }

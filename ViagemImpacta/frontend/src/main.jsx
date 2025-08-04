@@ -9,6 +9,14 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './components/context/AuthContext.jsx';
 import { ModalProvider } from './components/context/ModalContext.jsx';
 
+// Utilitários de teste (apenas em desenvolvimento)
+if (import.meta.env.DEV) {
+  import('./utils/testCache.js').then(({ testCache }) => {
+    window.testCache = testCache;
+    console.log('🧪 testCache disponível no console! Digite: testCache.showCacheInfo()');
+  });
+}
+
 
 
 // Estilos Globais
@@ -43,6 +51,7 @@ import PromotionDetailsPage from './components/pages/PromotionDetailsPage.jsx'; 
 import ContactPage from './components/pages/ContactPage.jsx';
 import PaymentSuccessPage from './components/pages/PaymentSuccessPage.jsx';
 import ConfirmReservation from './components/pages/ConfirmReservation.jsx'; // Página de confirmação de reserva
+import ProfilePage from './components/pages/ProfilePage.jsx'; // Página de perfil do usuário
 // Removida a importação de BlogPage, pois BlogSection estará na HomePage.
 // import BlogPage from './components/pages/BlogPage.jsx'; 
 
@@ -53,6 +62,7 @@ const AppLayout = () => (
         <App />
     </ModalProvider>
 );
+
 
 // Configuração de todas as rotas da aplicação
 const router = createBrowserRouter([
@@ -79,6 +89,7 @@ const router = createBrowserRouter([
             { path: '/purchase/:packageId', element: <PurchasePage /> },
             { path: '/payment', element: <PaymentPage /> },
             { path: '/minhas-viagens', element: <MyTravelsPage /> },
+            { path: '/perfil', element: <ProfilePage /> }, // Nova rota para perfil do usuário
             { path: '/meus-hoteis', element: <MyHotelsPage /> },
             // ROTA DE EVENTOS COMENTADA
             // { path: '/evento', element: <EventBlogSection /> }, // Rota para Eventos

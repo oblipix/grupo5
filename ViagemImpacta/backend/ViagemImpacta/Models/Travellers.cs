@@ -15,11 +15,9 @@ namespace ViagemImpacta.Models
         [Required]
         public string Cpf { get; set; } 
 
-
         // Relacionamento com Reservation (obrigatório)
         public int ReservationId { get; set; }
         public Reservation Reservation { get; set; } 
-
 
     }
 }

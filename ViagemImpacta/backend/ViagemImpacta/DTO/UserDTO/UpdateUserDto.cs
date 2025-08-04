@@ -29,8 +29,6 @@ namespace ViagemImpacta.DTO.UserDTO
         
         public DateOnly? BirthDate { get; set; }
         
-        public string? Photo { get; set; }
-        
         [RegularExpression(@"^\d{11}$", ErrorMessage = "O CPF deve conter exatamente 11 dígitos, sem pontos ou traços.")]
         public string? Cpf { get; set; }
     }

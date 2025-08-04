@@ -65,3 +65,6 @@ coverage/
 
 # Ignore Migrations
 Migrations/
+
+# Ignore appsettings.json
+appsettings.json

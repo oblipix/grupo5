@@ -21,6 +21,9 @@ import {
     FaYoutube
 } from 'react-icons/fa';
 
+import ScrollReveal from '../common/ScrollReveal.jsx';
+import AnimatedSection from '../common/AnimatedSection.jsx';
+
 
 // <<<<<<<<<<<< REUTILIZANDO CONFIGURAÇÕES DO MAPA DO FOOTER (com ajustes de altura) >>>>>>>>>>>>
 const mapOptions = { disableDefaultUI: true, gestureHandling: 'greedy', zoomControl: true }; // Permite zoom e arrastar, mas sem UI padrão
@@ -68,13 +71,16 @@ function ContactPage() {
     return (
         <div className="bg-gray-50 py-12 px-6">
             <div className="container mx-auto max-w-6xl">
-                <h1 className="text-5xl font-extrabold text-center text-gray-900 mb-12">
-                    Fale Conosco
-                </h1>
+                <ScrollReveal animation="fadeUp" delay={200}>
+                    <h1 className="text-5xl font-extrabold text-center text-gray-900 mb-12">
+                        Fale Conosco
+                    </h1>
+                </ScrollReveal>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
                     {/* Informações de Contato */}
-                    <div className="bg-white rounded-lg shadow-xl p-8 flex flex-col justify-between">
+                    <ScrollReveal animation="slideLeft" delay={400}>
+                        <div className="bg-white rounded-lg shadow-xl p-8 flex flex-col justify-between">
                         <div>
                             <h2 className="text-3xl font-bold text-gray-800 mb-6">Estamos aqui para ajudar!</h2>
                             <p className="text-gray-600 mb-6">
@@ -84,18 +90,18 @@ function ContactPage() {
                             <div className="space-y-6 mb-8">
                                 <div className="flex items-center text-gray-700 text-lg">
                                     <EnvelopeIcon className="h-7 w-7 text-blue-600 mr-4" />
-                                    <span>email@tripz.com.br</span>
+                                    <span>contato@tripz.com</span>
                                 </div>
                                 <div className="flex items-center text-gray-700 text-lg">
                                     <PhoneIcon className="h-7 w-7 text-green-500 mr-4" />
-                                    <span>+55 (XX) 9XXXX-XXXX</span>
+                                    <span>(81) 4005-8181</span>
                                 </div>
                                 <div className="flex items-start text-gray-700 text-lg">
                                     <MapPinIcon className="h-7 w-7 text-red-500 mr-4 flex-shrink-0" />
                                     <span>
-                                        Rua Exemplo, 123 - Centro
+                                        Av. Boa Viagem, 1000 - Boa Viagem
 
-                                        Cidade, Estado - CEP 12345-678
+                                        Recife, Pernambuco - CEP 51021-000
 
                                         Brasil
                                     </span>
@@ -121,10 +127,12 @@ function ContactPage() {
                                 </a>
                             </div>
                         </div>
-                    </div>
+                        </div>
+                    </ScrollReveal>
 
                     {/* Formulário de Contato */}
-                    <div className="bg-white rounded-lg shadow-xl p-8">
+                    <ScrollReveal animation="slideRight" delay={600}>
+                        <div className="bg-white rounded-lg shadow-xl p-8">
                         <h2 className="text-3xl font-bold text-gray-800 mb-6">Envie-nos uma Mensagem</h2>
                         {isSubmitted ? (
                             <div className="bg-green-100 text-green-800 p-4 rounded-lg text-center font-medium">
@@ -179,11 +187,13 @@ function ContactPage() {
                                 </button>
                             </form>
                         )}
-                    </div>
+                        </div>
+                    </ScrollReveal>
                 </div>
 
                 {/* Mapa Maior na Parte Inferior da Página de Contato - AGORA COM TODOS OS MARCADORES */}
-                <div className="mt-12 bg-white rounded-lg shadow-xl p-8">
+                <ScrollReveal animation="fadeUp" delay={800}>
+                    <div className="mt-12 bg-white rounded-lg shadow-xl p-8">
                     <h2 className="text-3xl font-bold text-gray-800 text-center mb-6">Nossa Localização no Mapa</h2>
                     <div className="rounded-lg overflow-hidden shadow-md">
                         {isLoaded ? (
@@ -222,7 +232,8 @@ function ContactPage() {
                             </div>
                         )}
                     </div>
-                </div>
+                    </div>
+                </ScrollReveal>
             </div>
         </div>
     );

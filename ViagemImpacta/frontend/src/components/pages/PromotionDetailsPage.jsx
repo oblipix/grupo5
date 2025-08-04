@@ -9,6 +9,8 @@ import 'react-calendar/dist/Calendar.css';
 // 2. Importar dados de arquivos separados
 import { allPromotionalTravels } from '../data/promotions.js';
 import { allReservationDates } from '../data/reservations.js';
+import ScrollReveal from '../common/ScrollReveal.jsx';
+import AnimatedSection from '../common/AnimatedSection.jsx';
 
 
 // --- COMPONENTES E FUNÇÕES AUXILIARES (mantidos como estão) ---
@@ -89,23 +91,30 @@ const PromotionDetailsPage = () => {
         return (
                 <div className="container mx-auto p-6 bg-white shadow-lg rounded-lg my-8">
                         {/* 5. Botão "Voltar" usa o navigate */}
-                        <button 
-                                onClick={() => navigate(-1)} 
-                                className="main-action-button px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 mb-6 main-action-button"
-                        >
-                                ← Voltar
-                        </button>
+                        <ScrollReveal animation="fadeUp" delay={200}>
+                                <button 
+                                        onClick={() => navigate(-1)} 
+                                        className="main-action-button px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition duration-300 mb-6 main-action-button"
+                                >
+                                        ← Voltar
+                                </button>
+                        </ScrollReveal>
 
                         {/* O restante do seu JSX continua o mesmo, pois já depende de `promotionData` */}
-                        <h1 className="text-5xl font-extrabold text-gray-900 mb-6 text-center">{promotionData.title}</h1>
+                        <ScrollReveal animation="fadeUp" delay={400}>
+                                <h1 className="text-5xl font-extrabold text-gray-900 mb-6 text-center">{promotionData.title}</h1>
+                        </ScrollReveal>
                         
                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                                <div>
-                                        <img src={promotionData.imageUrl} alt={promotionData.title} className="w-full h-80 object-cover rounded-lg shadow-md mb-6" />
-                                        <p className="text-lg text-gray-700 leading-relaxed mb-6">{promotionData.description}</p>
-                                </div>
+                                <ScrollReveal animation="slideLeft" delay={600}>
+                                        <div>
+                                                <img src={promotionData.imageUrl} alt={promotionData.title} className="w-full h-80 object-cover rounded-lg shadow-md mb-6" />
+                                                <p className="text-lg text-gray-700 leading-relaxed mb-6">{promotionData.description}</p>
+                                        </div>
+                                </ScrollReveal>
 
-                                <div>
+                                <ScrollReveal animation="slideRight" delay={800}>
+                                        <div>
                                         <h2 className="text-3xl font-bold text-gray-800 mb-4">Opções de Pacotes</h2>
                                         <div className="space-y-4">
                                                 {Object.entries(promotionData.packagePrices).map(([packageType, price]) => (
@@ -127,18 +136,21 @@ const PromotionDetailsPage = () => {
                                                         </div>
                                                 </div>
                                         )}
-                                </div>
+                                        </div>
+                                </ScrollReveal>
                         </div>
                         
                         {/* 6. Botão "Reservar Agora" usa o navigate para ir para a página de compra com o ID correto */}
-                        <div className="mt-12 text-center">
-                                <button 
-                                        onClick={() => navigate(`/purchase/${promotionData.id}`)} 
-                                        className="main-action-button px-10 py-4 bg-green-600 text-white font-bold text-xl rounded-full hover:bg-green-700 transition duration-300 shadow-lg transform hover:scale-105 promotion-data-button"
-                                >
-                                        Reservar Agora!
-                                </button>
-                        </div>
+                        <ScrollReveal animation="zoomIn" delay={1000}>
+                                <div className="mt-12 text-center">
+                                        <button 
+                                                onClick={() => navigate(`/purchase/${promotionData.id}`)} 
+                                                className="main-action-button px-10 py-4 bg-green-600 text-white font-bold text-xl rounded-full hover:bg-green-700 transition duration-300 shadow-lg transform hover:scale-105 promotion-data-button"
+                                        >
+                                                Reservar Agora!
+                                        </button>
+                                </div>
+                        </ScrollReveal>
                 </div>
         );
 };

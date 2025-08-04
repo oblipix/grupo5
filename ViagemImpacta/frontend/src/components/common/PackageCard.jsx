@@ -28,7 +28,7 @@ const PackageCard = ({
     : 0;
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden transform transition-all duration-300 hover:scale-102 hover:shadow-xl">
       <div className="relative">
         <img
           src={imageUrl}
@@ -57,7 +57,7 @@ const PackageCard = ({
       </div>
 
       <div className="p-4">
-        <h3 className="text-xl font-semibold mb-2 hover:text-blue-600 cursor-pointer"
+        <h3 className="text-xl font-semibold mb-3 mt-2 hover:text-blue-600 cursor-pointer"
             onClick={() => onCardClick(id)}>
           {title}
         </h3>

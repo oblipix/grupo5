@@ -51,7 +51,7 @@ public class EmployeesController : Controller
     {
         try
         {
-            var user = await _userService.GetUserById(id);
+            var user = await _userService.GetUserByIdAsync(id);
             if (user == null) return NotFound();
             return View(user);
         }
@@ -91,7 +91,7 @@ public class EmployeesController : Controller
     {
         try
         {
-            var user = await _userService.GetUserById(id);
+            var user = await _userService.GetUserByIdAsync(id);
             if (user == null) return NotFound();
 
             var userViewModel = _mapper.Map<UpdateUserViewModel>(user);
@@ -126,7 +126,7 @@ public class EmployeesController : Controller
 
     public async Task<IActionResult> Delete(int id)
     {
-        var user = await _userService.GetUserById(id);
+        var user = await _userService.GetUserByIdAsync(id);
         if (user == null) return NotFound();
 
         return View(user);
@@ -138,7 +138,7 @@ public class EmployeesController : Controller
     {
         try
         {
-            var user = await _userService.GetUserById(id);
+            var user = await _userService.GetUserByIdAsync(id);
             if (user == null) return NotFound();
 
             var result = await _userService.DeleteUser(id);

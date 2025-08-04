@@ -56,12 +56,12 @@ export const ModalProvider = ({ children }) => {
     const showWishlistSuccessModal = useCallback((onConfirm = null) => {
         showModal({
             title: 'Destino Salvo!',
-            message: 'Hotel adicionado à sua lista de desejos com sucesso! Você poderá visualizá-lo na página "Minhas Viagens".',
+            message: 'Hotel adicionado à sua lista de desejos com sucesso! Você poderá visualizá-lo em seu perfil.',
             actionText: 'Ver minha lista',
             showHeader: true,
             onConfirm: onConfirm || (() => {
                 // Navegação padrão para a página de favoritos se nenhum callback foi fornecido
-                window.location.href = '/minhas-viagens';
+                window.location.href = '/';
             })
         });
     }, [showModal]);
@@ -85,8 +85,8 @@ export const ModalProvider = ({ children }) => {
             requestAnimationFrame(() => {
                 const onConfirm = event.detail?.onConfirm || (() => {
                     // Navegação padrão se não foi fornecido um callback específico
-                    console.log("Redirecionando para Minhas Viagens");
-                    window.location.href = '/minhas-viagens';
+                    console.log("Redirecionando para Home");
+                    window.location.href = '/';
                 });
                 showWishlistSuccessModal(onConfirm);
             });
@@ -140,6 +140,15 @@ export const ModalProvider = ({ children }) => {
                     {modalState.title === 'Destino Removido' && (
                         <div className="mb-4 bg-blue-100 p-3 rounded-full">
                             <svg className="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                    )}
+                    
+                    {/* Warning icon for login required modal */}
+                    {modalState.title === 'Login Necessário' && (
+                        <div className="mb-4 bg-red-100 p-3 rounded-full">
+                            <svg className="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>

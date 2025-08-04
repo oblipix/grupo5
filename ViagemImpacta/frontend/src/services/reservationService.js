@@ -1,6 +1,6 @@
 // src/services/reservationService.js
 
-const API_BASE_URL = 'https://localhost:7010/api';
+const API_BASE_URL = 'http://localhost:5155/api';
 
 /**
  * Serviço para gerenciar operações relacionadas a reservas
@@ -289,10 +289,8 @@ class ReservationService {
       const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
       const subtotal = dailyPrice * daysDiff;
-      // TAXAS REMOVIDAS - MOSTRAR APENAS VALOR CRU
-      // const taxes = subtotal * 0.1; // 10% de taxas
-      const taxes = 0; // Taxa zerada
-      const total = subtotal; // Total = subtotal sem taxas
+      const taxes = subtotal * 0.1; // 10% de taxas
+      const total = subtotal + taxes;
 
       return {
         days: daysDiff,

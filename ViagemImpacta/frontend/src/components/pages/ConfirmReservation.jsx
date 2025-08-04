@@ -11,7 +11,7 @@ function ConfirmReservation() {
             return;
         }
 
-        fetch(`https://localhost:7010/confirm-reservation?sessionId=${sessionId}`)
+        fetch(`https://localhost:7010/api/stripe/confirm-reservation?sessionId=${sessionId}`)
             .then(response => response.text())
             .then(text => {setStatusMessage(text); })
             .catch(error => {
