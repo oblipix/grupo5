@@ -3,12 +3,89 @@
 *@
 @{
     ViewData["Title"] = "Acesso Negado";
+    Layout = null; // Remove o layout padrão para ter controle total do design
 }
 
-<link rel="stylesheet" href="~/css/accessDenied.css" />
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - ViagemImpacta</title>
+    <link rel="stylesheet" href="~/css/accessDenied.css" />
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico" />
+</head>
+<body>
+    <!-- Efeito de partículas no fundo -->
+    <div class="particles">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
 
-<div class="access-denied-container">
-    <div class="access-denied-title">Acesso Negado</div>
-    <div class="access-denied-code">Erro 403</div>
-    <button onclick="history.back()" class="btn btn-outline-primary">Retornar</button>
-</div>
+    <div class="access-denied-container">
+        <!-- Ícone de acesso negado -->
+        <div class="access-denied-icon">🚫</div>
+        
+        <!-- Título -->
+        <div class="access-denied-title">Acesso Negado</div>
+        
+        <!-- Código do erro -->
+        <div class="access-denied-code">Erro 403</div>
+        
+        <!-- Mensagem explicativa -->
+        <div class="access-denied-message">
+            Você não tem permissão para acessar esta área. Entre em contato com o administrador do sistema se acredita que isso é um erro.
+        </div>
+        
+        <!-- Botões de ação -->
+        <div class="access-denied-buttons">
+            <button onclick="history.back()" class="btn-modern btn-secondary">
+                ← Voltar
+            </button>
+            <a href="/" class="btn-modern btn-primary">
+                🏠 Início
+            </a>
+        </div>
+        
+        <!-- Rodapé -->
+        <div class="access-denied-footer">
+            Precisa de ajuda? Entre em contato com o <a href="mailto:admin@viagemimpacta.com">suporte</a>
+        </div>
+    </div>
+
+    <script>
+        // Adiciona um pouco de interatividade
+        document.addEventListener('DOMContentLoaded', function() {
+            // Efeito de hover nos botões
+            const buttons = document.querySelectorAll('.btn-modern');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px) scale(1.05)';
+                });
+                
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+            
+            // Efeito de clique
+            buttons.forEach(button => {
+                button.addEventListener('mousedown', function() {
+                    this.style.transform = 'translateY(0) scale(0.98)';
+                });
+                
+                button.addEventListener('mouseup', function() {
+                    this.style.transform = 'translateY(-2px) scale(1.05)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
