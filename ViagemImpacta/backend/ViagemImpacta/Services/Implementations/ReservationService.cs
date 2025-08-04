@@ -145,7 +145,7 @@ namespace ViagemImpacta.Services.Implementations
             _unitOfWork.Reservations.Update(reservation);
             await _unitOfWork.CommitAsync();
             var user = await _unitOfWork.Users.GetByIdAsync(reservation.UserId);
-            await SendEmailAsync(user);
+            await SendEmailAsync(user, reservation);
             return true;
 
         }
@@ -219,7 +219,7 @@ namespace ViagemImpacta.Services.Implementations
             return reservations;
         }
 
-        private async Task SendEmailAsync(User user)
+        private async Task SendEmailAsync(User user, Reservation reservation)
         {
             var smtpClient = new SmtpClient(_smtpOptions.Host)
             {
@@ -229,22 +229,47 @@ namespace ViagemImpacta.Services.Implementations
 
             };
 
+            // Caminho absoluto ou relativo da imagem
+            var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "banner-tripz.png");
+
             var emailBody = $@"
-                <h1>Parabéns, {user.FirstName}!</h1>
-                <p>Sua reserva foi confirmada com sucesso!</p>
-                <p>Agora você pode acessar nossa plataforma e aproveitar todos os benefícios.</p>
-                <p>Você pode acessar sua conta usando o email: {user.Email}</p>
-                <p>Atenciosamente,<br>Equipe Tripz</p>";
+                <img src=""cid:logoTripz"" alt=""Logo Tripz"" style=""width:600px; height:auto; display:block; margin-bottom: 20px;"" />
+                <h1>Parabéns, {user.FirstName}! </h1>
+                <p>Estamos muito felizes em confirmar que sua reserva foi realizada com sucesso!</p>
+                <p>A partir de agora, você já pode acessar a nossa plataforma e começar a planejar a sua experiência com a gente.</p>
+                <p><strong>Detalhes da sua reserva:</strong></p>
+                <ul>
+                    <li><strong>Hotel:</strong> {reservation.Hotel?.Name}</li>
+                    <li><strong>Chekin:</strong> {reservation.CheckIn.ToString("dd/MM/yyyy")}</li>
+                    <li><strong>Checkout:</strong> {reservation.CheckOut.ToString("dd/MM/yyyy")}</li>
+                    <li><strong>Valor total:</strong> {reservation.TotalPrice.ToString("N2")}</li>
+                </ul>
+                <p>Use este e-mail para fazer login: <strong>{user.Email}</strong></p>
+                <p>Se tiver qualquer dúvida, nossa equipe está pronta para te ajudar.</p>
+                <p>Você pode acessar nosso site a qualquer momento em: <a href=""https://tripz.com"">tripz.com</a></p>
+                <p>Aproveite sua estadia ao máximo!</p>
+                <p><strong>Equipe Tripz</strong></p>";
 
             var mensagem = new MailMessage
             {
                 From = new MailAddress(_smtpOptions.From),
-                Subject = "Confirmação de Cadastro",
+                Subject = "Confirmação de Reserva",
                 Body = emailBody,
                 IsBodyHtml = true
             };
 
             mensagem.To.Add(user.Email);
+
+            // Cria o LinkedResource para a imagem
+            var logo = new LinkedResource(imagePath)
+            {
+                ContentId = "logoTripz"
+            };
+
+            // Cria o AlternateView e adiciona o LinkedResource
+            var htmlView = AlternateView.CreateAlternateViewFromString(emailBody, null, "text/html");
+            htmlView.LinkedResources.Add(logo);
+            mensagem.AlternateViews.Add(htmlView);
 
             await smtpClient.SendMailAsync(mensagem);
         }

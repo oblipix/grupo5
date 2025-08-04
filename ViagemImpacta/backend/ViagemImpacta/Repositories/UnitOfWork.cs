@@ -11,6 +11,7 @@ namespace ViagemImpacta.Repositories.Implementations
         public IReservationRepository Reservations { get; private set; }
         public IRoomRepository Rooms { get; private set; }
         public ITravellerRepository Travellers { get; private set; }
+        public IPasswordResetTokenRepository PasswordResetTokens { get; set; }
 
         public UnitOfWork(AgenciaDbContext context)
         {
@@ -20,6 +21,7 @@ namespace ViagemImpacta.Repositories.Implementations
             Reservations = new ReservationRepository(_context);
             Rooms = new RoomRepository(_context);
             Travellers = new TravellerRepository(_context);
+            PasswordResetTokens = new PasswordResetTokenRepository(_context);
         }
 
         public async Task<bool> CommitAsync()

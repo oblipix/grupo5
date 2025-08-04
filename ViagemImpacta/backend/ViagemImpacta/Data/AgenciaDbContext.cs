@@ -15,6 +15,7 @@ namespace ViagemImpacta.Data
         public DbSet<Reservation> Reservations { get; set; } = null!;
         public DbSet<Payment> Payments { get; set; } = null!;
         public DbSet<Travellers> Travellers { get; set; } = null!;
+        public DbSet<PasswordResetToken> PasswordResetTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
