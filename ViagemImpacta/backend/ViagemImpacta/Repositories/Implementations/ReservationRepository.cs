@@ -24,6 +24,11 @@ namespace ViagemImpacta.Repositories.Implementations
                     .Include(r => r.Hotel);
         }
 
+        public async Task<Reservation?> GetReservationById(int id)
+        {
+            return await GetReservationWithUserRoomAndHotel().FirstOrDefaultAsync(r => r.ReservationId == id);
+        }
+
         public async Task<IEnumerable<Reservation>> GetReservationsByUserIdAsync(int userId)
         {
             return await GetReservationWithUserRoomAndHotel()
