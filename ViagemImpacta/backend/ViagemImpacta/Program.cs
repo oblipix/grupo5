@@ -109,6 +109,7 @@ builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
 builder.Services.AddScoped<IHotelMappingService, HotelMappingService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<StripeService>();
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));

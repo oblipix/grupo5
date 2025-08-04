@@ -1,0 +1,528 @@
+@using ViagemImpacta.Services.Interfaces
+@{
+    ViewData["Title"] = "Dashboard Administrativo Avançado";
+    var name = ViewBag.Name ?? "Admin";
+    var userRole = ViewBag.Role ?? "Admin";
+    var dashboardStats = ViewBag.DashboardStats as DashboardStats;
+    var hotelRevenueData = ViewBag.HotelRevenueData as IEnumerable<HotelRevenueData>;
+    var monthlyRevenueData = ViewBag.MonthlyRevenueData as IEnumerable<MonthlyRevenueData>;
+    var reservationStatusData = ViewBag.ReservationStatusData as IEnumerable<ReservationStatusData>;
+    var topHotelsData = ViewBag.TopHotelsData as IEnumerable<TopHotelData>;
+    var mostReservedRooms = ViewBag.MostReservedRooms as IEnumerable<MostReservedRoomData>;
+    var hotelDetailedAnalytics = ViewBag.HotelDetailedAnalytics as IEnumerable<HotelDetailedAnalytics>;
+    var cityPerformance = ViewBag.CityPerformance as IEnumerable<CityPerformanceData>;
+    var financialSummary = ViewBag.FinancialSummary as FinancialSummaryData;
+}
+
+<link rel="stylesheet" href="~/css/dashboard.css"/>
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
+<div class="container-fluid px-4">
+    <!-- Header Avançado -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="text-primary mb-1">📊 Dashboard Administrativo Avançado</h1>
+                    <p class="text-muted mb-0">Olá, @name - Análise completa de performance</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a asp-controller="Admins" asp-action="Dashboard" class="btn btn-outline-secondary">
+                        <i class="material-icons">arrow_back</i> Voltar
+                    </a>
+                    @if (ViewBag.Role == "Attendant")
+                    {
+                        <span class="badge bg-warning fs-6 py-2 px-3">Modo Atendente</span>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPIs Principais Coloridos - Ajustados para ficar menores -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-4 col-md-4">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #007bff, #0056b3); min-height: 120px;">
+                <div class="card-body text-white text-center py-3">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="material-icons" style="font-size: 2.5rem;">hotel</i>
+                    </div>
+                    <h3 class="mb-1">@(dashboardStats?.TotalHotels ?? 0)</h3>
+                    <p class="mb-0 opacity-75 small">Total Hotéis</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #28a745, #1e7e34); min-height: 120px;">
+                <div class="card-body text-white text-center py-3">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="material-icons" style="font-size: 2.5rem;">event</i>
+                    </div>
+                    <h3 class="mb-1">@(dashboardStats?.TotalReservations ?? 0)</h3>
+                    <p class="mb-0 opacity-75 small">Total Reservas</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #17a2b8, #117a8b); min-height: 120px;">
+                <div class="card-body text-white text-center py-3">
+                    <div class="d-flex align-items-center justify-content-center mb-2">
+                        <i class="material-icons" style="font-size: 2.5rem;">group</i>
+                    </div>
+                    <h3 class="mb-1">@(dashboardStats?.TotalUsers ?? 0)</h3>
+                    <p class="mb-0 opacity-75 small">Total Clientes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Segunda linha de KPIs - Menores -->
+    <div class="row g-3 mb-4">
+        <div class="col-lg-2 col-md-4">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #6c757d, #5a6268); min-height: 100px;">
+                <div class="card-body text-white text-center py-2">
+                    <h4 class="mb-1">@(dashboardStats?.ReservationsThisMonth ?? 0)</h4>
+                    <p class="mb-0 opacity-75 small">Reservas Este Mês</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-2 col-md-4">
+            <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #dc3545, #c82333); min-height: 100px;">
+                <div class="card-body text-white text-center py-2">
+                    <h4 class="mb-1">@((dashboardStats?.OccupancyRate ?? 0).ToString("F1"))%</h4>
+                    <p class="mb-0 opacity-75 small">Taxa Ocupação</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-8">
+            <!-- Resumo Financeiro -->
+            @if (financialSummary != null)
+            {
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="card border-0 shadow-sm text-center" style="background: #f8f9fa; min-height: 100px;">
+                            <div class="card-body py-2 d-flex flex-column justify-content-center">
+                                <h6 class="text-muted mb-1">@financialSummary.RevenueThisMonth.ToString("C0", new System.Globalization.CultureInfo("pt-BR"))</h6>
+                                <small class="text-muted">Receita Este Mês</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card border-0 shadow-sm text-center" style="background: #f8f9fa; min-height: 100px;">
+                            <div class="card-body py-2 d-flex flex-column justify-content-center">
+                                <h6 class="@(financialSummary.RevenueGrowth >= 0 ? "text-success" : "text-danger") mb-1">
+                                    @(financialSummary.RevenueGrowth >= 0 ? "+" : "")@financialSummary.RevenueGrowth.ToString("F1")%
+                                </h6>
+                                <small class="text-muted">Crescimento</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card border-0 shadow-sm text-center" style="background: #f8f9fa; min-height: 100px;">
+                            <div class="card-body py-2 d-flex flex-column justify-content-center">
+                                <h6 class="text-info mb-1">@financialSummary.AverageReservationValue.ToString("C0", new System.Globalization.CultureInfo("pt-BR"))</h6>
+                                <small class="text-muted">Ticket Médio</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="card border-0 shadow-sm text-center" style="background: #f8f9fa; min-height: 100px;">
+                            <div class="card-body py-2 d-flex flex-column justify-content-center">
+                                <h6 class="text-warning mb-1">@financialSummary.PendingPayments.ToString("C0", new System.Globalization.CultureInfo("pt-BR"))</h6>
+                                <small class="text-muted">Pagamentos Pendentes</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Gráficos Principais -->
+    <div class="row g-4 mb-4">
+        <!-- Top 10 Hotéis - Faturamento -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0 text-primary">📊 Top 10 Hotéis - Faturamento</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="hotelRevenueChart" style="height: 350px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Status das Reservas -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0 text-success">🎯 Status das Reservas</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="reservationStatusChart" style="height: 350px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evolução Mensal -->
+        <div class="col-lg-3">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0 text-info">📈 Evolução Mensal do Faturamento</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="monthlyRevenueChart" style="height: 350px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Segunda linha de gráficos -->
+    <div class="row g-4 mb-4">
+        <!-- Quartos Mais Reservados -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0 text-warning">🛏️ Quartos Mais Reservados</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="roomTypesChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance por Cidade -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white border-0">
+                    <h5 class="mb-0 text-purple">🏙️ Performance por Cidade</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="cityPerformanceChart" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tabela dos Top 10 Hotéis que Mais Vendem -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">⭐ Top 10 Hotéis que Mais Vendem</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="fw-bold">Hotel</th>
+                                    <th class="fw-bold">Cidade</th>
+                                    <th class="fw-bold">Estrelas</th>
+                                    <th class="fw-bold">Total Reservas</th>
+                                    <th class="fw-bold">Faturamento Total</th>
+                                    <th class="fw-bold">Ticket Médio</th>
+                                    <th class="fw-bold">Receita/Quarto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (hotelDetailedAnalytics != null && hotelDetailedAnalytics.Any())
+                                {
+                                    foreach (var hotel in hotelDetailedAnalytics.Take(10))
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="bg-primary bg-opacity-10 rounded p-1 me-2">
+                                                        <i class="material-icons text-primary" style="font-size: 1.2rem;">hotel</i>
+                                                    </div>
+                                                    <strong class="text-primary">@hotel.HotelName</strong>
+                                                </div>
+                                            </td>
+                                            <td>@hotel.City</td>
+                                            <td>
+                                                @for (int i = 0; i < hotel.Stars; i++)
+                                                {
+                                                    <span class="text-warning">⭐</span>
+                                                }
+                                            </td>
+                                            <td><span class="badge bg-primary rounded-pill">@hotel.TotalReservations</span></td>
+                                            <td class="text-success fw-bold">@hotel.TotalRevenue.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
+                                            <td>@hotel.AverageReservationValue.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
+                                            <td>@hotel.RevenuePerRoom.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr><td colspan="7" class="text-center text-muted py-4">Nenhum dado disponível</td></tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Detalhada dos Hotéis -->
+    <div class="row g-4 mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">📈 Performance Detalhada dos Hotéis</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="fw-bold">Hotel</th>
+                                    <th class="fw-bold">Cidade</th>
+                                    <th class="fw-bold">Estrelas</th>
+                                    <th class="fw-bold">Reservas</th>
+                                    <th class="fw-bold">Faturamento</th>
+                                    <th class="fw-bold">Ticket Médio</th>
+                                    <th class="fw-bold">Taxa Ocupação</th>
+                                    <th class="fw-bold">Quartos Disponíveis</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (hotelDetailedAnalytics != null && hotelDetailedAnalytics.Any())
+                                {
+                                    foreach (var hotel in hotelDetailedAnalytics)
+                                    {
+                                        <tr>
+                                            <td><strong class="text-info">@hotel.HotelName</strong></td>
+                                            <td>@hotel.City</td>
+                                            <td>@hotel.Stars ⭐</td>
+                                            <td><span class="badge bg-info">@hotel.TotalReservations</span></td>
+                                            <td class="text-success">@hotel.TotalRevenue.ToString("C0", new System.Globalization.CultureInfo("pt-BR"))</td>
+                                            <td>@hotel.AverageReservationValue.ToString("C0", new System.Globalization.CultureInfo("pt-BR"))</td>
+                                            <td>
+                                                @{
+                                                    var occupancyRate = hotel.OccupancyRate;
+                                                    string barColor = occupancyRate > 70 ? "bg-success" : occupancyRate > 40 ? "bg-warning" : "bg-danger";
+                                                    string progressWidth = Math.Min(occupancyRate, 100).ToString("F1");
+                                                }
+                                                @if (occupancyRate > 0)
+                                                {
+                                                    <div class="progress" style="height: 20px;">
+                                                        <div class="progress-bar @barColor" 
+                                                             style="width: @progressWidth%">
+                                                            <span class="text-white fw-bold">@occupancyRate.ToString("F1")%</span>
+                                                        </div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">0%</span>
+                                                }
+                                            </td>
+                                            <td>
+                                                @if (hotel.TotalRooms > 0)
+                                                {
+                                                    <span class="badge @(hotel.TotalRooms > 5 ? "bg-success" : hotel.TotalRooms > 0 ? "bg-warning" : "bg-danger")">
+                                                        @hotel.TotalRooms
+                                                    </span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger">Esgotado</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Botões de Ação -->
+    <div class="text-center mb-4">
+        <div class="btn-group" role="group">
+            <a asp-controller="Hotels" asp-action="Index" class="btn btn-primary btn-lg">
+                <i class="material-icons">hotel</i> Gerenciar Hotéis
+            </a>
+            <a asp-controller="Reservations" asp-action="Index" class="btn btn-success btn-lg">
+                <i class="material-icons">event</i> Gerenciar Reservas
+            </a>
+            <a asp-controller="Users" asp-action="Index" class="btn btn-info btn-lg">
+                <i class="material-icons">group</i> Gerenciar Clientes
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Dados do servidor
+        const hotelRevenueData = @Html.Raw(hotelRevenueData != null ? Newtonsoft.Json.JsonConvert.SerializeObject(hotelRevenueData) : "[]");
+        const monthlyRevenueData = @Html.Raw(monthlyRevenueData != null ? Newtonsoft.Json.JsonConvert.SerializeObject(monthlyRevenueData) : "[]");
+        const reservationStatusData = @Html.Raw(reservationStatusData != null ? Newtonsoft.Json.JsonConvert.SerializeObject(reservationStatusData) : "[]");
+        const mostReservedRooms = @Html.Raw(mostReservedRooms != null ? Newtonsoft.Json.JsonConvert.SerializeObject(mostReservedRooms) : "[]");
+        const cityPerformanceData = @Html.Raw(cityPerformance != null ? Newtonsoft.Json.JsonConvert.SerializeObject(cityPerformance) : "[]");
+
+        // Paleta de cores vibrantes como nas imagens
+        const colors = {
+            blue: '#007bff',
+            green: '#28a745',
+            yellow: '#ffc107',
+            red: '#dc3545',
+            cyan: '#17a2b8',
+            purple: '#6f42c1',
+            orange: '#fd7e14',
+            pink: '#e83e8c'
+        };
+
+        // 1. Gráfico de Top Hotéis (Barras Azuis)
+        if (hotelRevenueData && hotelRevenueData.length > 0) {
+            new Chart(document.getElementById('hotelRevenueChart'), {
+                type: 'bar',
+                data: {
+                    labels: hotelRevenueData.slice(0, 10).map(h => h.hotelName || h.HotelName),
+                    datasets: [{
+                        label: 'Faturamento',
+                        data: hotelRevenueData.slice(0, 10).map(h => h.revenue || h.Revenue),
+                        backgroundColor: colors.blue,
+                        borderRadius: 4,
+                        borderSkipped: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f8f9fa' },
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+                                }
+                            }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // 2. Status das Reservas (Doughnut Verde)
+        if (reservationStatusData && reservationStatusData.length > 0) {
+            new Chart(document.getElementById('reservationStatusChart'), {
+                type: 'doughnut',
+                data: {
+                    labels: reservationStatusData.map(r => r.status || r.Status),
+                    datasets: [{
+                        data: reservationStatusData.map(r => r.count || r.Count),
+                        backgroundColor: [colors.green, colors.yellow, colors.red],
+                        borderWidth: 0,
+                        cutout: '65%'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: { padding: 15, usePointStyle: true, font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 3. Evolução Mensal (Linha)
+        if (monthlyRevenueData && monthlyRevenueData.length > 0) {
+            new Chart(document.getElementById('monthlyRevenueChart'), {
+                type: 'line',
+                data: {
+                    labels: monthlyRevenueData.map(m => m.month || m.Month),
+                    datasets: [{
+                        data: monthlyRevenueData.map(m => m.revenue || m.Revenue),
+                        borderColor: colors.cyan,
+                        backgroundColor: colors.cyan + '20',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f8f9fa' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        // 4. Quartos Mais Reservados (Pizza)
+        if (mostReservedRooms && mostReservedRooms.length > 0) {
+            new Chart(document.getElementById('roomTypesChart'), {
+                type: 'pie',
+                data: {
+                    labels: mostReservedRooms.map(r => r.roomType || r.RoomType),
+                    datasets: [{
+                        data: mostReservedRooms.map(r => r.reservationCount || r.ReservationCount),
+                        backgroundColor: [colors.blue, colors.red, colors.green, colors.yellow, colors.purple, colors.orange]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: { padding: 10, usePointStyle: true, font: { size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // 5. Performance por Cidade (Barras Horizontais)
+        if (cityPerformanceData && cityPerformanceData.length > 0) {
+            new Chart(document.getElementById('cityPerformanceChart'), {
+                type: 'bar',
+                data: {
+                    labels: cityPerformanceData.map(c => c.city || c.City),
+                    datasets: [{
+                        label: 'Faturamento',
+                        data: cityPerformanceData.map(c => c.totalRevenue || c.TotalRevenue),
+                        backgroundColor: colors.purple,
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: { color: '#f8f9fa' },
+                            ticks: {
+                                callback: function(value) {
+                                    return 'R$ ' + value.toLocaleString('pt-BR', { maximumFractionDigits: 0 });
+                                }
+                            }
+                        },
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+    </script>
+}
