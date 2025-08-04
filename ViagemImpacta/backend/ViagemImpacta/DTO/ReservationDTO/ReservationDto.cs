@@ -1,6 +1,8 @@
 using ViagemImpacta.DTO.TravellerDTO;
 using ViagemImpacta.Models.Enums;
 
+
+// VERIFICAR SE ESTÁ SENDO UTILIZADO!!
 namespace ViagemImpacta.DTO.ReservationDTO
 {
     public class ReservationDto
