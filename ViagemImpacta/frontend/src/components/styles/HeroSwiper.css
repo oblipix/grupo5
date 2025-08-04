@@ -39,15 +39,21 @@
    
 }
 
-/* Estilos para o Hero Swiper ocupar 100% da tela no mobile */
+/* Estilos para o Hero Swiper ocupar 100% da tela no mobile sem bordas */
 @media (max-width: 768px) {
+   /* Remover margens e padding do body e containers principais */
+   body {
+       margin: 0 !important;
+       padding: 0 !important;
+   }
+   
    /* Forçar container e elementos pai a ocuparem 100% */
    .hero-swiper,
    .hero-swiper-container,
    .swiper,
    .swiper-container {
        height: 100vh !important;
-       max-height: 460px !important;
+       max-height: 420px !important;
        width: 100vw !important;
        margin: 0 !important;
        padding: 0 !important;
@@ -56,12 +62,17 @@
        right: 50% !important;
        margin-left: -50vw !important;
        margin-right: -50vw !important;
+       border: none !important;
+       box-shadow: none !important;
    }
    
    .hero-swiper .swiper-slide {
        height: 100vh !important;
        min-height: 100vh !important;
        width: 100vw !important;
+       margin: 0 !important;
+       padding: 0 !important;
+       border: none !important;
    }
    
    /* Garantir que as imagens preencham 100% sem laterais brancas */
@@ -73,12 +84,18 @@
        height: 460px !important;
        object-fit: cover !important;
        object-position: center !important;
+       margin: 0 !important;
+       padding: 0 !important;
+       border: none !important;
+       outline: none !important;
    }
    
    /* Remover qualquer padding ou margin que possa causar espaços brancos */
    .hero-swiper .swiper-wrapper {
        width: 100vw !important;
        height: 100vh !important;
+       margin: 0 !important;
+       padding: 0 !important;
    }
    
    /* Forçar elementos de fundo/background a ocuparem 100% */
@@ -88,9 +105,9 @@
    }
 }
 
-/* Regras adicionais para forçar 100% da tela no mobile */
+/* Regras adicionais para forçar 100% da tela no mobile sem bordas */
 @media (max-width: 768px) {
-   /* Quebrar limitações de containers pai */
+   /* Quebrar limitações de containers pai e remover espaçamentos */
    body,
    #root,
    main,
@@ -98,6 +115,8 @@
    .max-w-7xl,
    .mx-auto {
        overflow-x: visible !important;
+       margin: 0 !important;
+       padding: 0 !important;
    }
    
    /* Forçar hero a escapar de qualquer container */
@@ -111,12 +130,30 @@
        margin-left: -50vw !important;
        margin-right: -50vw !important;
        max-width: none !important;
+       border: none !important;
+       outline: none !important;
+       box-shadow: none !important;
    }
    
-   /* Garantir que background-images também ocupem 100% */
+   /* Garantir que background-images também ocupem 100% sem bordas */
    .hero-swiper .swiper-slide {
        background-size: cover !important;
        background-position: center !important;
        background-repeat: no-repeat !important;
+       margin: 0 !important;
+       padding: 0 !important;
+   }
+   
+   /* Forçar remoção completa de espaçamentos no mobile */
+   html, body {
+       margin: 0 !important;
+       padding: 0 !important;
+   }
+   
+   /* Remover qualquer espaçamento do container principal */
+   .hero-swiper {
+       box-sizing: border-box !important;
+       -webkit-box-sizing: border-box !important;
+       -moz-box-sizing: border-box !important;
    }
 }
