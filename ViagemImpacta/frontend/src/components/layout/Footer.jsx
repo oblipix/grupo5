@@ -122,7 +122,7 @@ function Footer({ isLoaded }) {
                     {/* Onde Estamos - Mapa no Footer */}
                     <div>
                         <h4 className="font-semibold text-white text-lg tracking-wider mb-6 border-b border-blue-400 pb-2 inline-block">Nossa Localização</h4>
-                        <div className="rounded-lg overflow-hidden shadow-lg shadow-blue-900/20">
+                        <div className="rounded-lg overflow-hidden">
                             {isLoaded && !loading && hotels.length > 0 ? (
                                 <GoogleMap mapContainerStyle={mapContainerStyle} center={defaultCenter} zoom={3.5} options={mapOptions}>
                                     {hotels.map(hotel => (
