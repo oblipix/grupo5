@@ -1,0 +1,31 @@
+﻿@model IEnumerable<ViagemImpacta.Models.Reservation>
+
+@{
+    ViewData["Title"] = "Reservas do Usuário";
+}
+
+<h1>Reservas do Usuário</h1>
+
+@if (Model != null && Model.Any())
+{
+    foreach (var reservation in Model)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">Reserva #@reservation.ReservationId</h5>
+                <p class="card-text">
+                    <strong>Hotel:</strong> @reservation.Hotel?.Name<br />
+                    <strong>Quarto:</strong> @reservation.Room?.TypeName<br />
+                    <strong>Check-In:</strong> @reservation.CheckIn.ToString("dd/MM/yyyy")<br />
+                    <strong>Check-Out:</strong> @reservation.CheckOut.ToString("dd/MM/yyyy")<br />
+                    <strong>Status:</strong> @(reservation.IsCanceled ? "Cancelada" : reservation.IsConfirmed ? "Confirmada" : "Pendente")<br />
+                </p>
+                <a asp-action="Details" asp-route-id="@reservation.ReservationId" class="btn btn-primary">Detalhes</a>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <p>Nenhuma reserva encontrada para este usuário.</p>
+}

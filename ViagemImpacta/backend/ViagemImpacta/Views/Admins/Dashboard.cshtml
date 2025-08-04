@@ -1,96 +1,100 @@
-﻿@using ViagemImpacta.Models
-@model User
-@{
-    // adminName is the logged-in user's first name, fallback to "Admin" if not set
-    var name = ViewBag.Name ?? "Admin";
-    var balance = ViewBag.Balance ?? 0.0;
+﻿@model ViagemImpacta.Models.User 
+@{  
+    var name = ViewBag.Name ?? "Admin";  
+    var balance = ViewBag.Balance ?? 0.0;  
+}  
+
+<link rel="stylesheet" href="~/css/dashboard.css"/>  
+
+@if (ViewBag.Role == "Attendant")
+{  
+    <div class="alert alert-warning text-center" role="alert">  
+        Você está acessando o dashboard como atendente, logo, possui algumas opções bloqueadas.  
+    </div>  
 }
+<div class="dashboard-container">  
+    <div class="dashboard-topbar d-flex align-items-center justify-content-between">  
+        <div class="d-flex align-items-center gap-2">  
+            <h4 class="mb-0">Olá, @name</h4>  
+            <form asp-controller="Admins" asp-action="Logout" method="post" class="ms-2">  
+                <button type="submit" class="btn btn-outline-danger p-0 d-flex align-items-center justify-content-center" title="Sair" style="width: 30px; height: 30px;">  
+                    <span class="material-icons" style="font-size: 1.3rem;">logout</span>  
+                </button>  
+            </form>  
+        </div>  
+        <div class="faturamento-box">  
+            <strong>Faturamento:</strong>  
+            <span class="fs-4">@balance.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</span>  
+        </div>  
+    </div>  
+    <div class="dashboard-main">  
+        <aside class="dashboard-sidebar">  
+            <h5 class="mb-3">Gerenciamento</h5>  
+            <div class="list-group mb-4">  
+                <a asp-controller="Users" asp-action="Index" class="list-group-item list-group-item-action"><span class="material-icons">group</span> Clientes</a>  
+                <a asp-controller="Employees" asp-action="Index" class="list-group-item list-group-item-action"><span class="material-icons">badge</span> Funcionários</a>  
+                <a asp-controller="Hotels" asp-action="Index" class="list-group-item list-group-item-action"><span class="material-icons">hotel</span> Hotéis</a>  
+                <a asp-controller="Reservations" asp-action="Index" class="list-group-item list-group-item-action"><span class="material-icons">event</span> Reservas</a>  
+                <button class="list-group-item list-group-item-action" disabled><span class="material-icons">rate_review</span> Avaliações</button>  
+            </div>  
+        </aside>  
+        <section class="dashboard-content">  
+            <div class="row g-4">  
+                <div class="col-lg-6 col-md-12">  
+                    <div class="card h-100 shadow-sm">  
+                        <div class="card-body">  
+                            <h5 class="card-title mb-4">Faturamento por Hospedagem</h5>  
+                            <canvas id="faturamentoPacoteChart" style="min-height: 260px;"></canvas>  
+                        </div>  
+                    </div>  
+                </div>  
+                <div class="col-lg-6 col-md-12">  
+                    <div class="card h-100 shadow-sm">  
+                        <div class="card-body">  
+                            <h5 class="card-title mb-4">Faturamento por Hotel</h5>  
+                            <canvas id="faturamentoHotelChart" style="min-height: 260px;"></canvas>  
+                        </div>  
+                    </div>  
+                </div>  
+            </div>  
+             @section Scripts {  
+                <script>  
+                    const faturamentoPacoteData = {  
+                    labels: ["Pacote A", "Pacote B", "Pacote C"],  
+                    datasets: [{  
+                    label: "Faturamento (R$)",  
+                    data: [40000, 50000, 35000],  
+                    backgroundColor: ["#0d6efd", "#6c757d", "#198754"],  
+                    }]  
+                    };  
+                    const faturamentoHotelData = {  
+                    labels: ["Hotel X", "Hotel Y", "Hotel Z", "Hotel W", "Hotel V", "Hotel U"],  
+                    datasets: [{  
+                    label: "Faturamento (R$)",  
+                    data: [10000, 60000, 35000, 45000, 25000, 55000],  
+                    backgroundColor: ["#ffc107", "#dc3545", "#20c997", "#6f42c1", "#fd7e14", "#e83e8c"],  
+                    }]  
+                    };  
 
-<link rel="stylesheet" href="~/css/dashboard.css"/>
-
-<div class="dashboard-container">
-    <div class="dashboard-topbar d-flex align-items-center justify-content-between">
-        <div class="d-flex align-items-center gap-2">
-            <h4 class="mb-0">Olá, @name</h4>
-            <form asp-controller="Admins" asp-action="Logout" method="post" class="ms-2">
-                <button type="submit" class="btn btn-outline-danger p-0 d-flex align-items-center justify-content-center" title="Sair" style="width: 30px; height: 30px;">
-                    <span class="material-icons" style="font-size: 1.3rem;">logout</span>
-                </button>
-            </form>
-        </div>
-        <div class="faturamento-box">
-            <strong>Faturamento:</strong>
-            <span class="fs-4">@balance.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</span>
-        </div>
-    </div>
-    <div class="dashboard-main">
-        <aside class="dashboard-sidebar">
-            <h5 class="mb-3">Gerenciamento</h5>
-            <div class="list-group mb-4">
-                <a asp-controller="Users" asp-action="Index" class="list-group-item list-group-item-action"><span class="material-icons">group</span> Clientes</a>
-                <a asp-controller="Employees" asp-action="Index" class="list-group-item list-group-item-action"><span class="material-icons">badge</span> Funcionários</a>
-                <a asp-controller="Hotels" asp-action="Index" class="list-group-item list-group-item-action"><span class="material-icons">hotel</span> Hotéis</a>
-                <a asp-controller="Reservations" asp-action="Index" class="list-group-item list-group-item-action"><span class="material-icons">event</span> Reservas</a>
-                <button class="list-group-item list-group-item-action" disabled><span class="material-icons">rate_review</span> Avaliações</button>
-            </div>
-        </aside>
-        <section class="dashboard-content">
-            <div class="row g-4">
-                <div class="col-lg-6 col-md-12">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title mb-4">Faturamento por Hospedagem</h5>
-                            <canvas id="faturamentoPacoteChart" style="min-height: 260px;"></canvas>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-6 col-md-12">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title mb-4">Faturamento por Hotel</h5>
-                            <canvas id="faturamentoHotelChart" style="min-height: 260px;"></canvas>
-                        </div>
-                    </div>
-                </div>
-            </div>
-             @section Scripts {
-                <script>
-                    const faturamentoPacoteData = {
-                    labels: ["Pacote A", "Pacote B", "Pacote C"],
-                    datasets: [{
-                    label: "Faturamento (R$)",
-                    data: [40000, 50000, 35000],
-                    backgroundColor: ["#0d6efd", "#6c757d", "#198754"],
-                    }]
-                    };
-                    const faturamentoHotelData = {
-                    labels: ["Hotel X", "Hotel Y", "Hotel Z", "Hotel W", "Hotel V", "Hotel U"],
-                    datasets: [{
-                    label: "Faturamento (R$)",
-                    data: [10000, 60000, 35000, 45000, 25000, 55000],
-                    backgroundColor: ["#ffc107", "#dc3545", "#20c997", "#6f42c1", "#fd7e14", "#e83e8c"],
-                    }]
-                    };
-
-                    new Chart(document.getElementById('faturamentoPacoteChart'), {
-                    type: 'pie',
-                    data: faturamentoPacoteData,
-                    options: {
-                    responsive: true,
-                    }
-                    });
-                    new Chart(document.getElementById('faturamentoHotelChart'), {
-                    type: 'pie',
-                    data: faturamentoHotelData,
-                    options: {
-                    responsive: true,
-                    }
-                    });
-                </script>
-            }
-            <div class="d-flex justify-content-end mt-4">
-                <a asp-controller="Admin" asp-action="FaturamentoDetalhado" class="btn btn-outline-primary"><span class="material-icons align-middle">bar_chart</span> Ver detalhes do faturamento</a>
-            </div>
-        </section>
-    </div>
+                    new Chart(document.getElementById('faturamentoPacoteChart'), {  
+                    type: 'pie',  
+                    data: faturamentoPacoteData,  
+                    options: {  
+                    responsive: true,  
+                    }  
+                    });  
+                    new Chart(document.getElementById('faturamentoHotelChart'), {  
+                    type: 'pie',  
+                    data: faturamentoHotelData,  
+                    options: {  
+                    responsive: true,  
+                    }  
+                    });  
+                </script>  
+            }  
+            <div class="d-flex justify-content-end mt-4">  
+                <a asp-controller="Admin" asp-action="FaturamentoDetalhado" class="btn btn-outline-primary"><span class="material-icons align-middle">bar_chart</span> Ver detalhes do faturamento</a>  
+            </div>  
+        </section>  
+    </div>  
 </div>

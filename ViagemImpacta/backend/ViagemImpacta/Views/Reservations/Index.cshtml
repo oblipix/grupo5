@@ -46,11 +46,14 @@
                     <select class="form-select" id="status" name="status">
                         <option value="" selected="@(string.IsNullOrEmpty(status) ? "selected" : null)">Todos</option>
                         <option value="confirmadas" selected="@(status == "confirmadas" ? "selected" : null)">Apenas confirmadas</option>
-                        <option value="nao-confirmadas" selected="@(status == "nao-confirmadas" ? "selected" : null)">Apenas não confirmadas</option>
+                        <option value="pendentes" selected="@(status == "pendentes" ? "selected" : null)">Apenas pendentes</option>
+                        <option value="canceladas" selected="@(status == "canceladas" ? "selected" : null)">Apenas canceladas</option>
                     </select>
                 </div>
                 <div class="col-md-1">
-                    <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                    <button type="submit" class="btn btn-primary w-100">
+                        Filtrar
+                    </button>
                 </div>
             </div>
             <input type="hidden" name="skip" value="@skip" />
@@ -71,13 +74,12 @@
                         },
                         setup: (picker) => {
                             picker.on('selected', (start, end) => {
-                                document.getElementById('checkin').value = start.format('YYYY-MM-DD');
-                                document.getElementById('checkout').value = end.format('YYYY-MM-DD');
+                                document.getElementById('checkin').value = start.format('DD-MM-YYYY');
+                                document.getElementById('checkout').value = end.format('DD-MM-YYYY');
                             });
                         }
                     });
 
-                    // Se já houver valores preenchidos do QueryString, mostrar no campo
                     const existingCheckin = '@checkin';
                     const existingCheckout = '@checkout';
                     if (existingCheckin && existingCheckout) {
@@ -119,13 +121,17 @@
                     <td>@reserva.CheckOut.ToString("dd/MM/yyyy")</td>
                     <td class="col text-center">@reserva.TotalPrice.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</td>
                     <td class="col text-center">
-                        @if (reserva.IsConfirmed)
+                        @if (reserva.IsConfirmed && !reserva.IsCanceled)
                         {
                             <span class="badge bg-success">Confirmado</span>
                         }
-                        else
+                        else if (!reserva.IsConfirmed && !reserva.IsCanceled)
                         {
                             <span class="badge bg-warning text-black">Pendente</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Cancelado</span>
                         }
                     </td>
                     <td>
