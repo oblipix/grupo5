@@ -158,10 +158,10 @@ function ProfilePage() {
                                 {!isEditing && (
                                     <button
                                         onClick={() => setIsEditing(true)}
-                                        className="flex items-center space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-3 rounded-xl font-medium transition-all transform hover:scale-105 shadow-lg"
+                                        className="flex items-center sm:space-x-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-3 sm:px-6 py-3 rounded-xl font-medium transition-all transform hover:scale-105 shadow-lg"
                                     >
                                         <PencilIcon className="h-5 w-5" />
-                                        <span>Editar Perfil</span>
+                                        <span className="hidden sm:inline">Editar Perfil</span>
                                     </button>
                                 )}
                             </div>

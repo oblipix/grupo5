@@ -428,7 +428,7 @@ export const AuthProvider = ({ children }) => {
  
             // Redireciona para a página principal após o login
             try {
-                navigate('/minhas-viagens');
+                navigate('/');
             } catch (navError) {
                 console.error('Erro na navegação:', navError);
                 // Se a navegação falhar, ainda considera o login bem-sucedido

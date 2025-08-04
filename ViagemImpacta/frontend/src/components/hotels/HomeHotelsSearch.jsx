@@ -28,10 +28,10 @@ const HotelSearchForm = () => {
         // 3. Construir os parâmetros de busca para a URL
         const searchParams = new URLSearchParams();
 
-        if (destination) searchParams.append('destino', destination);
-        if (checkIn) searchParams.append('checkin', checkIn);
-        if (checkOut) searchParams.append('checkout', checkOut);
-        if (guests) searchParams.append('hospedes', guests);
+        if (destination) searchParams.append('destination', destination);
+        if (checkIn) searchParams.append('checkIn', checkIn);
+        if (checkOut) searchParams.append('checkOut', checkOut);
+        if (guests) searchParams.append('guests', guests);
         // Adicione outros filtros que desejar na URL
 
         // 4. Navegar para a página de hotéis com os filtros na URL

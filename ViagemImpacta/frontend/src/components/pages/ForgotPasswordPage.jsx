@@ -8,11 +8,30 @@ function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // A lógica de simulação permanece a mesma
-    console.log('Solicitação de recuperação de senha para:', email);
-    setMessage('Se as credenciais estiverem corretas, um link de recuperação foi enviado para o seu email.');
+
+    console.log("Email enviado:", email);
+
+    
+    try {
+      const response = await fetch('https://localhost:7010/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        setMessage('Se as credenciais estiverem corretas, um link de recuperação foi enviado para o seu email.');
+      } else {
+        setMessage('Ocorreu um erro. Tente novamente mais tarde.');
+      }
+    } catch (error) {
+      console.error('Erro ao enviar solicitação de redefinição:', error);
+      setMessage('Erro de conexão com o servidor.');
+    }
   };
 
   return (

@@ -129,8 +129,8 @@ public class HotelsController : Controller
     {
         ViewBag.Location = location;
         ViewBag.MinStars = minStars;
-
-        var hotels = await _hotelService.GetHotelsWithFiltersAsync(location, minStars, null, null);
+        
+        var hotels = await _hotelService.GetHotelsWithFiltersAsync(location, minStars, null, null, null);
 
         return View(hotels);
     }

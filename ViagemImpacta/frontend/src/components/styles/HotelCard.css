@@ -9,9 +9,27 @@
 /* Mobile-specific improvements */
 @media (max-width: 640px) {
     .hotel-card-modern {
-        margin: 0 auto 16px auto;
-        max-width: 320px; /* Largura máxima no mobile */
-        width: 100%;
+        margin: 8px auto 20px auto; /* Margens menores no mobile */
+        max-width: none; /* Remove limitação de largura */
+        width: 100%; /* Ocupa toda a largura disponível */
+        min-height: auto; /* Altura automática */
+    }
+    
+    /* Remove hover effects on mobile */
+    .hotel-card-modern:hover {
+        transform: none !important;
+        box-shadow: 0 4px 8px -2px rgba(0, 0, 0, 0.12), 0 2px 6px -1px rgba(0, 0, 0, 0.08) !important;
+        border-radius: 0.75rem !important;
+    }
+    
+    /* Remove hover scale on mobile */
+    .group:hover .group-hover\:scale-110 {
+        transform: none !important;
+    }
+    
+    /* Remove pulse animation on mobile */
+    .pulse-price {
+        animation: none !important;
     }
     
     .Tittle {
@@ -26,15 +44,444 @@
     
     /* Botão de ação menor no mobile */
     .main-action-button {
-        font-size: 11px;
-        padding: 6px 12px;
+        font-size: 12px;
+        padding: 8px 16px;
         white-space: nowrap;
+        width: auto !important;
+        min-width: max-content !important;
     }
     
     /* Price tag responsivo */
     .price-tag {
         font-size: 14px !important;
         font-weight: 700;
+    }
+    
+    /* Specific improvements for Swiper cards (Recommended Hotels) */
+    .swiper-slide .hotel-card-modern {
+        margin: 4px auto 8px auto !important;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1) !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        background: white !important;
+        width: 100% !important;
+        max-width: none !important;
+    }
+    
+    /* Better padding for swiper cards */
+    .swiper-slide .hotel-card-modern .p-3,
+    .swiper-slide .hotel-card-modern .p-4 {
+        padding: 14px !important;
+    }
+    
+    /* Improve swiper slide containers */
+    .swiper-slide {
+        padding: 8px 6px !important;
+        width: auto !important;
+        display: flex !important;
+        justify-content: center !important;
+        overflow: visible !important;
+        height: auto !important;
+    }
+    
+    /* Ensure swiper containers don't cut content */
+    .swiper {
+        overflow: visible !important;
+        padding-bottom: 32px !important;
+    }
+    
+    .swiper-wrapper {
+        overflow: visible !important;
+    }
+    
+    /* Better spacing for recommended section */
+    section[id*="recomendado"] {
+        padding-bottom: 5rem !important;
+        overflow: visible !important;
+        min-height: auto !important;
+    }
+
+    section[id*="recomendado"] .container {
+        padding-bottom: 4rem !important;
+        overflow: visible !important;
+    }
+
+    section[id*="recomendado"] .block.md\\:hidden {
+        padding-bottom: 5rem !important;
+        margin-bottom: 3rem !important;
+        overflow: visible !important;
+    }
+
+    section[id*="recomendado"] .swiper {
+        padding: 12px 8px 4rem 8px !important;
+        margin-bottom: 3rem !important;
+        overflow: visible !important;
+    }
+    
+    section[id*="recomendado"] .swiper-slide {
+        padding: 8px 6px 3rem 6px !important;
+        margin-bottom: 2rem !important;
+        width: auto !important;
+        display: flex !important;
+        justify-content: center !important;
+        height: auto !important;
+        overflow: visible !important;
+    }
+    
+    section[id*="recomendado"] .swiper-slide .hotel-card-modern {
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 320px !important;
+        margin-bottom: 3rem !important;
+        padding-bottom: 2rem !important;
+        height: auto !important;
+        min-height: auto !important;
+        overflow: visible !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
+    }
+
+    section[id*="recomendado"] .swiper-wrapper {
+        padding-bottom: 3rem !important;
+        overflow: visible !important;
+    }
+    
+    /* Ensure recommended hotels button area is properly visible */
+    section[id*="recomendado"] .hotel-card-modern .main-action-button {
+        width: 100% !important;
+        min-width: 100% !important;
+        text-align: center !important;
+        padding: 10px 16px !important;
+        font-size: 14px !important;
+        white-space: nowrap !important;
+        margin: 0 !important;
+        display: block !important;
+    }
+    
+    section[id*="recomendado"] .hotel-card-modern .flex.items-center.justify-between {
+        flex-wrap: nowrap !important;
+        gap: 8px !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    
+    /* Ensure price section has enough space in recommended cards */
+    section[id*="recomendado"] .hotel-card-modern .mt-auto {
+        margin-top: auto !important;
+        padding-top: 8px !important;
+        width: 100% !important;
+    }
+    
+    section[id*="recomendado"] .hotel-card-modern .price-tag {
+        font-size: 13px !important;
+        padding: 4px 8px !important;
+        white-space: nowrap !important;
+    }
+    
+    /* Promotions section mobile improvements */
+    section[id*="promocoes"] .swiper {
+        padding: 12px 8px 20px 8px !important;
+    }
+    
+    section[id*="promocoes"] .swiper-slide .hotel-card-modern {
+        margin: 4px auto 8px auto !important;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1) !important;
+        border-radius: 12px !important;
+    }
+    
+    /* Blog Cards Mobile Improvements */
+    .blog-post-card,
+    a[href*="/blog/"] {
+        margin: 8px auto 16px auto !important;
+        max-width: calc(100vw - 64px) !important;
+        width: calc(100% - 32px) !important;
+        min-width: 260px !important;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1) !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+    }
+    
+    /* Remove hover effects on blog cards mobile */
+    .blog-post-card:hover,
+    a[href*="/blog/"]:hover {
+        transform: none !important;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1) !important;
+    }
+    
+    /* Blog card image hover disabled and properly sized */
+    .blog-post-card .group-hover\:scale-110,
+    a[href*="/blog/"] .group-hover\:scale-110 {
+        transform: none !important;
+    }
+    
+    /* Blog card image container */
+    .blog-post-card .relative.w-full.h-48,
+    a[href*="/blog/"] .relative.w-full.h-48 {
+        width: 100% !important;
+        height: 180px !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+    }
+    
+    /* Blog card image */
+    .blog-post-card img,
+    a[href*="/blog/"] img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        max-width: 100% !important;
+    }
+    
+    /* Blog card content padding */
+    .blog-post-card .p-6,
+    a[href*="/blog/"] .p-6 {
+        padding: 16px !important;
+    }
+    
+    /* Blog card titles */
+    .blog-post-card h3,
+    a[href*="/blog/"] h3 {
+        font-size: 16px !important;
+        line-height: 1.3 !important;
+        margin-bottom: 12px !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    /* Blog card descriptions */
+    .blog-post-card p,
+    a[href*="/blog/"] p {
+        font-size: 14px !important;
+        line-height: 1.4 !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+    
+    /* Blog section grid improvements */
+    section[id*="blog"] .grid,
+    .blog-section .grid {
+        gap: 16px !important;
+        padding: 16px !important;
+        max-width: 100% !important;
+    }
+    
+    /* Blog swiper improvements */
+    section[id*="blog"] .swiper,
+    .blog-section .swiper {
+        padding: 16px 8px 24px 8px !important;
+        overflow: visible !important;
+        max-width: 100% !important;
+    }
+    
+    /* Blog swiper slide improvements */
+    section[id*="blog"] .swiper-slide,
+    .blog-section .swiper-slide {
+        padding: 8px 16px !important;
+        width: auto !important;
+        max-width: calc(100vw - 64px) !important;
+        overflow: visible !important;
+    }
+    
+    /* Blog card container in swiper */
+    section[id*="blog"] .swiper-slide .card-spacing,
+    .blog-section .swiper-slide .card-spacing {
+        width: calc(100% - 16px) !important;
+        max-width: calc(100vw - 80px) !important;
+        margin: 0 auto !important;
+    }
+    
+    /* MyTravelCard mobile improvements */
+    .my-travel-card {
+        margin: 8px auto 16px auto !important;
+        max-width: none !important;
+        width: 100% !important;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1) !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        min-height: auto !important;
+    }
+    
+    .my-travel-card .p-4 {
+        padding: 14px !important;
+    }
+    
+    .my-travel-card h3 {
+        font-size: 16px !important;
+        line-height: 1.3 !important;
+        margin-bottom: 12px !important;
+    }
+    
+    .my-travel-card p {
+        font-size: 14px !important;
+        line-height: 1.4 !important;
+    }
+
+    /* Profile Page Cards Mobile Improvements */
+    /* Cards de Informações Pessoais */
+    .bg-white.rounded-2xl.shadow-xl {
+        margin: 8px auto 16px auto !important;
+        max-width: calc(100vw - 32px) !important;
+        width: calc(100% - 16px) !important;
+        padding: 16px !important;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1) !important;
+        border-radius: 12px !important;
+    }
+
+    /* Grid de informações dentro dos cards do perfil */
+    .grid.grid-cols-1.md\\:grid-cols-2.gap-6 {
+        gap: 12px !important;
+        margin: 0 !important;
+    }
+
+    /* Cards individuais de informação (Nome, Email, etc.) */
+    .bg-gradient-to-br.from-blue-50.to-blue-100 {
+        margin: 4px auto !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        padding: 12px !important;
+        border-radius: 8px !important;
+    }
+
+    /* Cards da coluna lateral (Ações Rápidas e Estatísticas) */
+    .space-y-8 > .flex.flex-col.gap-8 > div {
+        margin: 8px auto 16px auto !important;
+        max-width: calc(100vw - 32px) !important;
+        width: calc(100% - 16px) !important;
+        padding: 16px !important;
+    }
+
+    /* Botões dentro dos cards de ações rápidas */
+    .w-full.text-left.p-4 {
+        padding: 12px !important;
+        margin: 4px 0 !important;
+    }
+
+    /* Container principal do perfil */
+    .max-w-7xl.mx-auto {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+    }
+
+    /* Grid principal do perfil */
+    .grid.grid-cols-1.lg\\:grid-cols-3 {
+        gap: 16px !important;
+        margin: 0 !important;
+    }
+
+    /* Botão Editar Perfil mobile */
+    .bg-gradient-to-r.from-blue-600.to-blue-700 {
+        padding: 8px 16px !important;
+        font-size: 14px !important;
+        border-radius: 8px !important;
+        min-width: auto !important;
+        white-space: nowrap !important;
+    }
+
+    .bg-gradient-to-r.from-blue-600.to-blue-700 span {
+        font-size: 14px !important;
+    }
+
+    .bg-gradient-to-r.from-blue-600.to-blue-700 svg {
+        width: 16px !important;
+        height: 16px !important;
+    }
+
+    /* Botões de ação (Salvar/Cancelar) mobile */
+    .bg-gradient-to-r.from-green-600.to-emerald-600,
+    .bg-gradient-to-r.from-gray-500.to-gray-600 {
+        padding: 10px 16px !important;
+        font-size: 14px !important;
+        border-radius: 8px !important;
+    }
+
+    .bg-gradient-to-r.from-green-600.to-emerald-600 span,
+    .bg-gradient-to-r.from-gray-500.to-gray-600 span {
+        font-size: 14px !important;
+    }
+
+    /* Footer Mobile Improvements */
+    /* Centralizar títulos das seções no footer mobile */
+    footer h4 {
+        text-align: center !important;
+        margin: 0 auto 1.5rem auto !important;
+        display: block !important;
+        width: fit-content !important;
+    }
+
+    /* Centralizar os links do footer no mobile */
+    footer ul {
+        text-align: center !important;
+    }
+
+    /* Centralizar container do footer no mobile */
+    footer .container {
+        text-align: center !important;
+    }
+
+    /* Centralizar grid do footer no mobile */
+    footer .grid {
+        gap: 2rem !important;
+        justify-items: center !important;
+    }
+
+    /* Centralizar cada coluna do footer */
+    footer .grid > div {
+        width: 100% !important;
+        text-align: center !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+    }
+
+    /* Remover alinhamento específico no mobile */
+    footer .flex.flex-col.items-center.md\\:items-start {
+        align-items: center !important;
+    }
+
+    /* Centralizar redes sociais */
+    footer .flex.space-x-4 {
+        justify-content: center !important;
+    }
+
+    /* Search Form Mobile Improvements */
+    /* Dropdown de Passageiros responsivo */
+    .labelForms {
+        font-size: 14px !important;
+        margin-bottom: 4px !important;
+    }
+    
+    /* Container do select de passageiros */
+    div:has(select) .relative.flex.items-center {
+        padding: 8px 12px !important;
+        min-height: 40px !important;
+    }
+    
+    /* Select de passageiros no mobile */
+    select {
+        font-size: 13px !important;
+        padding: 0 !important;
+        line-height: 1.3 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        max-width: 100% !important;
+    }
+    
+    /* Grid do formulário mais compacto no mobile */
+    .grid.grid-cols-1.md\\:grid-cols-3 {
+        gap: 12px !important;
+        margin-bottom: 12px !important;
+    }
+    
+    /* Inputs do formulário de busca menores no mobile */
+    .bg-white.rounded-lg.px-3.py-2 {
+        padding: 8px 12px !important;
+        min-height: 38px !important;
+    }
+    
+    .bg-white.rounded-lg.px-3.py-2 select,
+    .bg-white.rounded-lg.px-3.py-2 input {
+        font-size: 13px !important;
+        padding-left: 6px !important;
     }
 }
 
@@ -226,6 +673,32 @@
 .confetti.c6::before,
 .confetti.c6::after {
     background-color: #FF9800;
+}
+
+/* Extra small mobile devices */
+@media (max-width: 480px) {
+    .hotel-card-modern {
+        margin: 6px auto 12px auto !important;
+        max-width: none !important;
+        width: 100% !important;
+        min-height: auto !important;
+    }
+    
+    /* Smaller padding for very small screens */
+    .hotel-card-modern .p-3 {
+        padding: 10px !important;
+    }
+    
+    /* Even smaller button on tiny screens */
+    .main-action-button {
+        font-size: 11px !important;
+        padding: 6px 12px !important;
+    }
+    
+    /* Adjust title size for tiny screens */
+    .Tittle {
+        font-size: 14px !important;
+    }
 }
 
 /* Make price section stand out with light blue background */

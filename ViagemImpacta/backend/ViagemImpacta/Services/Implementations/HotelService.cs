@@ -65,7 +65,7 @@ namespace ViagemImpacta.Services.Interfaces
 
             // Agora processar os quartos - apenas criar registros para tipos com quantidade > 0
             var roomsToCreate = new List<Room>();
-            
+
             foreach (var roomConfig in hotel.Rooms)
             {
                 if (roomConfig.TotalRooms > 0)
@@ -78,7 +78,7 @@ namespace ViagemImpacta.Services.Interfaces
                         Capacity = roomConfig.Capacity,
                         AverageDailyPrice = roomConfig.AverageDailyPrice
                     };
-                    
+
                     roomsToCreate.Add(roomToCreate);
                 }
             }
@@ -128,7 +128,7 @@ namespace ViagemImpacta.Services.Interfaces
             foreach (var roomConfig in hotel.Rooms)
             {
                 var existingRoom = existingHotel.Rooms.FirstOrDefault(r => r.TypeName == roomConfig.TypeName);
-                
+
                 if (roomConfig.TotalRooms > 0)
                 {
                     if (existingRoom != null)
@@ -172,13 +172,26 @@ namespace ViagemImpacta.Services.Interfaces
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<IEnumerable<HotelDto>> GetHotelsWithFiltersAsync(string? hotelAddress, int? minStars, int? maxPrice, int? guestCount)
+        public async Task<IEnumerable<HotelDto>> GetHotelsWithFiltersAsync(string? hotelAddress, int? minStars, int? minPrice, int? maxPrice, int? guestCount)
         {
             var hotels = await _unitOfWork.Hotels.GetAllAsync(include: q => q.Include(h => h.Rooms));
             if (!string.IsNullOrEmpty(hotelAddress))
                 hotels = hotels.Where(h => h.HotelAddress != null && h.HotelAddress.Contains(hotelAddress, StringComparison.OrdinalIgnoreCase));
             if (minStars.HasValue)
                 hotels = hotels.Where(h => h.Stars >= minStars.Value);
+
+            if (minPrice.HasValue || maxPrice.HasValue)
+            {
+                foreach (var hotel in hotels)
+                {
+                    // Filtrar quartos com base no preço mínimo e máximo
+                    hotel.Rooms = hotel.Rooms
+                        .Where(r =>
+                            (!minPrice.HasValue || r.AverageDailyPrice >= minPrice.Value) &&
+                            (!maxPrice.HasValue || r.AverageDailyPrice <= maxPrice.Value)
+                        ).ToList();
+                }
+            }
 
             return _mapper.Map<IEnumerable<HotelDto>>(hotels);
         }

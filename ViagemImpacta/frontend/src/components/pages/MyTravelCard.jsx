@@ -1,4 +1,6 @@
 import React from 'react';
+import { useAuth } from '../context/AuthContext';
+import { useModal } from '../context/ModalContext';
 
 // Função auxiliar para gerar URLs de imagem aleatórias
 const generateRandomImageUrl = (id, width = 400, height = 300) => {
@@ -21,10 +23,41 @@ const getStatusTagClasses = (status) => {
 
 // MyTravelCard: Usado na página Minhas Viagens
 function MyTravelCard({ travel, onCardClick }) {
-  // isFavorited não é mais usado para o coração neste card
+  // Obtém o status de login do contexto de autenticação
+  const { isLoggedIn, addSavedHotel, savedHotels } = useAuth();
+  const { showModal } = useModal();
+  
+  // Verifica se o hotel já está nos favoritos - só se estiver logado
+  const isFavorited = isLoggedIn && (savedHotels?.some(saved => saved.id === travel.id) || travel.isFavorited);
+  
+  // Função para lidar com o clique no coração
+  const handleFavoriteClick = (e) => {
+    e.stopPropagation(); // Evita que o clique ative o onClick do card
+    
+    if (!isLoggedIn) {
+      // Mostra modal de aviso se não estiver logado
+      showModal({
+        title: 'Login Necessário',
+        message: 'É necessário estar logado para favoritar destinos. Faça login para salvar seus hotéis favoritos!',
+        actionText: 'Fazer Login',
+        showHeader: true,
+        onConfirm: () => {
+          // Redireciona para a página de login
+          window.location.href = '/login';
+        }
+      });
+      return;
+    }
+    
+    // Se estiver logado, adiciona aos favoritos
+    if (!isFavorited) {
+      addSavedHotel(travel);
+    }
+  };
+  
   return (
     <div
-      className="bg-white rounded-lg shadow-xl border border-gray-200 p-2 max-w-[220px] mx-auto relative h-96 flex flex-col cursor-pointer"
+      className="bg-white rounded-lg shadow-xl border border-gray-200 p-2 w-full max-w-[220px] md:max-w-[240px] mx-auto relative h-96 flex flex-col cursor-pointer my-travel-card"
       onClick={() => onCardClick(travel.id)} // O card inteiro é clicável para ir aos detalhes
     >
       {/* Imagem do Card */}
@@ -43,27 +76,29 @@ function MyTravelCard({ travel, onCardClick }) {
           </span>
         )}
 
-        {/* ÍCONE DE CORAÇÃO PEQUENO - SUPERIOR ESQUERDO DA FOTO (se quiser ele aqui) */}
-        {/* Adicionei de volta aqui no canto esquerdo, se a imagem de referência tiver
-            um coração, e não for o botão de like, pode ser este aqui */}
-        {travel.isFavorited && ( // Renderiza apenas se travel.isFavorited for true
-          <div className="absolute top-2 left-2 p-1 rounded-full bg-white/50 z-10"> 
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              className={`h-4 w-4 text-red-500`} // Cor vermelha para indicar favorito
-              fill="currentColor" // Sempre preenchido se isFavorited
-              viewBox="0 0 24 24" 
-              stroke="currentColor"
-            >
-              <path 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
-                strokeWidth="2" 
-                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-              />
-            </svg>
-          </div>
-        )}
+        {/* BOTÃO DE CORAÇÃO PARA FAVORITAR - SEMPRE VISÍVEL */}
+        <button
+          onClick={handleFavoriteClick}
+          className="absolute top-2 left-2 p-1 rounded-full bg-white/50 hover:bg-white/70 transition-all duration-200 z-10"
+          title={isFavorited ? "Favoritado" : "Favoritar"}
+        >
+          <svg 
+            xmlns="http://www.w3.org/2000/svg" 
+            className={`h-4 w-4 transition-colors duration-200 ${
+              isFavorited ? 'text-red-500' : 'text-gray-400 hover:text-red-400'
+            }`}
+            fill={isFavorited ? 'currentColor' : 'none'}
+            viewBox="0 0 24 24" 
+            stroke="currentColor"
+            strokeWidth="2"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+            />
+          </svg>
+        </button>
       </div>
 
       {/* Conteúdo do Card */}

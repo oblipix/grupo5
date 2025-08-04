@@ -14,7 +14,6 @@
 
 
 .institutional-card img {
-  filter: grayscale(100%);
   transition: filter 0.3s ease-in-out, transform 0.3s ease-in-out;
 
   /* JÁ DEVE TER: Garante que a imagem preencha a div do card */
@@ -25,7 +24,6 @@
 
 /* Remove o filtro P&B ao passar o mouse */
 .institutional-card img:hover {
-  filter: grayscale(0%);
   transform: scale(1.05); /* Pequeno zoom no hover */
 }
 
