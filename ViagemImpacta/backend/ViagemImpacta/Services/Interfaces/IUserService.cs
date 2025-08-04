@@ -14,5 +14,12 @@ namespace ViagemImpacta.Services.Interfaces
         Task<bool> DeleteUser(int id);
         Task<User?> GetUserByEmail(string email);
         Task<User> CreateManagementAccess(CreateUserDto dto);
+
+        //Métodos para recuperação de senha de usuário
+        Task SavePasswordResetToken(int userId, string token, DateTime expiration);
+        Task SendPasswordRecoveryEmail(User user, string token);
+        Task<PasswordResetToken?> GetPasswordResetToken(string token);
+        Task InvalidatePasswordResetToken(string token);
+        Task UpdateUserPassword(User user);
     }
 }

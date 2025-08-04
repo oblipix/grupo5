@@ -14,6 +14,7 @@ namespace ViagemImpacta.Repositories
         public IReservationRepository Reservations { get; private set; }
         public IRoomRepository Rooms { get; private set; }
         public ITravellerRepository Travellers { get; private set; }
+        public IPasswordResetTokenRepository PasswordResetTokens { get; set; }
         public IPromotionRepository Promotions { get; private set; }
         public IRoomsPromotionalRepository RoomsPromotions { get; private set; }
         public UnitOfWork(AgenciaDbContext context, ILoggerFactory loggerFactory)
@@ -25,6 +26,7 @@ namespace ViagemImpacta.Repositories
             Reservations = new ReservationRepository(_context);
             Rooms = new RoomRepository(_context);
             Travellers = new TravellerRepository(_context);
+            PasswordResetTokens = new PasswordResetTokenRepository(_context);
             Promotions = new PromotionRepository(_context);
             RoomsPromotions = new RoomsPromotionRepository(_context);
         }

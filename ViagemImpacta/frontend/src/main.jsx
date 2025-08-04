@@ -30,6 +30,7 @@ import HomePage from './components/pages/HomePage.jsx';
 import LoginPage from './components/pages/LoginPage.jsx';
 import RegisterPage from './components/pages/RegisterPage.jsx';
 import ForgotPasswordPage from './components/pages/ForgotPasswordPage.jsx';
+import ResetPasswordPage from './components/pages/ResetPasswordPage.jsx';
 import InstitutionalPage from './components/pages/InstitutionalPage.jsx';
 import HotelsPage from './components/pages/HotelsPage.jsx';
 import HotelDetailsPage from './components/pages/HotelDetailsPage.jsx';
@@ -76,6 +77,7 @@ const router = createBrowserRouter([
             { path: '/login', element: <LoginPage /> },
             { path: '/register', element: <RegisterPage /> },
             { path: '/forgot-password', element: <ForgotPasswordPage /> },
+            { path: '/reset-password/:token', element: <ResetPasswordPage /> },
             { path: '/institucional', element: <InstitutionalPage /> },
             { path: '/recomendados', element: <RecommendedPage /> }, // Nova rota para página de recomendados
             { path: '/hoteis', element: <HotelsPage /> },

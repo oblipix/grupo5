@@ -1,27 +1,47 @@
 ﻿@model ViagemImpacta.ViewModels.UpdateReservationViewModel
 @{
-    ViewData["Title"] = "Editar Reserva";
+    ViewData["Title"] = "Editar Reserva"; 
+
     var minCheckIn = DateTime.Today.ToString("yyyy-MM-dd");
+    bool isConfirmed = ViewBag.IsConfirmed as bool? ?? false;
 }
 
-<h1>Editar Reserva</h1>
+<h1 class="d-flex align-items-center gap-3">
+    <span>Editar Reserva</span>
+    <span class="badge @(isConfirmed ? "bg-success" : "bg-warning")" style="font-size: 0.8rem;">
+        @(isConfirmed ? "Confirmada" : "Pendente")
+    </span>
+</h1>
 
-<form asp-action="Edit" method="post">
+<form asp-action="Edit" asp-route-id="@Model.ReservationId" method="post">
+    <partial name="_ValidationScriptsPartial" />
+    <div asp-validation-summary="All" class="text-danger"></div>
+
     <input type="hidden" asp-for="ReservationId" />
     <input type="hidden" asp-for="UserId" />
+    <input type="hidden" asp-for="HotelId" />
 
     <div class="row mb-3">
         <div class="mb-3">
             <label asp-for="UserId" class="form-label">Cliente</label>
-            <input class="form-control" value="@Model.User.FirstName @Model.User.LastName" readonly />
+            <input class="form-control" value="@Model.User?.FirstName @Model.User?.LastName" readonly />
         </div>
         <div class="col-md-6">
             <label asp-for="HotelId" class="form-label">Hotel</label>
-            <select asp-for="HotelId" class="form-select" asp-items="ViewBag.Hotels" id="hotelSelect"></select>
+            <input class="form-control" value="@Model.Hotel?.Name" readonly />
         </div>
         <div class="col-md-6">
             <label asp-for="RoomId" class="form-label">Tipo de Quarto</label>
-            <select asp-for="RoomId" class="form-select" asp-items="ViewBag.Rooms" id="roomSelect"></select>
+            <select asp-for="RoomId" class="form-select" id="roomSelect">
+                @foreach (var room in ViewBag.Rooms)
+                {
+                    <option value="@room.RoomId"
+                            data-price="@room.AverageDailyPrice"
+                            selected="@(room.RoomId == Model.RoomId ? "selected" : null)">
+                        @room.TypeName - R$ @room.AverageDailyPrice.ToString("F2")
+                    </option>
+                }
+            </select>
         </div>
     </div>
 
@@ -41,10 +61,18 @@
         <textarea asp-for="Description" class="form-control" rows="2" placeholder="Adicione ou remova uma descrição..."></textarea>
     </div>
 
-    <div class="mb-3">
-        <label class="form-label">Preço Total</label>
-        <input asp-for="TotalPrice" class="form-control" id="totalPriceInput" readonly />
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <label class="form-label">Preço Original</label>
+            <input class="form-control" id="totalPriceOriginal" value="@Model.TotalPrice.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("pt-BR"))" readonly />
+        </div>
+        <div class="col-md-12">
+            <label class="form-label">Preço Total</label>
+            <input class="form-control" id="totalPriceFormatted" readonly />
+        </div>
     </div>
+
+    <input asp-for="TotalPrice" type="hidden" id="totalPriceInput" />
 
     <hr />
     <h4>Hóspedes</h4>
@@ -55,19 +83,25 @@
             foreach (var traveller in Model.Travellers)
             {
                 <div class="traveller-item mb-2" data-index="@idx">
-                    <input type="hidden" name="Travellers[@idx].TravellersId" value="@traveller.TravellersId" />
-                    <div class="row g-2">
+                    <div class="row g-2 align-items-end">
                         <div class="col-md-4">
+                            <label class="form-label">Nome</label>
                             <input class="form-control" name="Travellers[@idx].FirstName" value="@traveller.FirstName" placeholder="Nome" required />
                         </div>
                         <div class="col-md-4">
+                            <label class="form-label">Sobrenome</label>
                             <input class="form-control" name="Travellers[@idx].LastName" value="@traveller.LastName" placeholder="Sobrenome" required />
                         </div>
                         <div class="col-md-3">
+                            <label class="form-label">CPF</label>
                             <input class="form-control" name="Travellers[@idx].Cpf" value="@traveller.Cpf" placeholder="CPF" required />
                         </div>
-                        <div class="col-md-1 d-flex align-items-center">
-                            <button type="button" class="btn btn-danger btn-sm remove-traveller" title="Remover" @(Model.Travellers.Count == 1 ? "disabled" : "")><i class="bi bi-trash"></i></button>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger btn-remove-traveller" 
+                                title="Remover hóspede"
+                                style="padding: .3rem .4rem 0 .4rem" >
+                                <span class="material-symbols-outlined">delete</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -75,13 +109,111 @@
             }
         }
     </div>
-    <button type="button" class="btn btn-outline-primary mb-3" id="addTravellerBtn"><i class="bi bi-person-plus"></i> Adicionar Hóspede</button>
-    <div class="text-danger" id="travellerValidation" style="display:none;">É obrigatório ao menos um viajante.</div>
+    <button type="button" class="btn btn-outline-primary mb-3" id="addTravellerBtn">
+        Adicionar Hóspede
+    </button>
+    <div class="text-danger" id="travellerValidation" style="display:none;">É obrigatório ao menos um hóspede.</div>
 
     <hr />
     <div class="d-flex gap-2">
         <a asp-action="Index" class="btn btn-secondary">Voltar</a>
-        <button type="submit" class="btn btn-primary">Salvar</button>
-        <a asp-action="Details" asp-route-id="@Model.ReservationId" class="btn btn-danger">Cancelar Reserva</a>
+        <button type="submit" class="btn btn-primary">Gerar Nova Reserva</button>
+        <a asp-action="Cancel" asp-route-id="@Model.ReservationId" class="btn btn-danger">Cancelar Reserva</a>
     </div>
 </form>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const roomSelect = document.getElementById('roomSelect');
+            const checkinInput = document.getElementById('checkinInput');
+            const checkoutInput = document.getElementById('checkoutInput');
+            const totalPriceInput = document.getElementById('totalPriceInput');
+            const totalPriceFormatted = document.getElementById('totalPriceFormatted');
+            const totalPriceOriginal = document.getElementById('totalPriceOriginal');
+            const travellersList = document.getElementById("travellersList");
+            const addBtn = document.getElementById("addTravellerBtn");
+
+            let travellerIndex = travellersList.querySelectorAll(".traveller-item").length;
+
+            addBtn.addEventListener("click", function () {
+                const div = document.createElement("div");
+                div.classList.add("traveller-item", "mb-2");
+                div.setAttribute("data-index", travellerIndex);
+
+                div.innerHTML = `
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label">Nome</label>
+                            <input class="form-control" name="Travellers[${travellerIndex}].FirstName" placeholder="Nome" required />
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Sobrenome</label>
+                            <input class="form-control" name="Travellers[${travellerIndex}].LastName" placeholder="Sobrenome" required />
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">CPF</label>
+                            <input class="form-control" name="Travellers[${travellerIndex}].Cpf" placeholder="CPF" required />
+                        </div>
+                        <div class="col-md-1 d-flex align-items-end">
+                            <button type="button" class="btn btn-danger btn-remove-traveller" style="padding: .3rem .4rem 0 .4rem">
+                                <span class="material-symbols-outlined">
+                                    delete
+                                </span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                div.querySelector('.btn-remove-traveller').addEventListener('click', function () {
+                    div.remove();
+                });
+
+                travellersList.appendChild(div);
+                travellerIndex++;
+            });
+
+            travellersList.addEventListener('click', function (event) {
+                if (event.target.closest('.btn-remove-traveller')) {
+                    const travellerItem = event.target.closest('.traveller-item');
+                    if (travellerItem) {
+                        travellerItem.remove();
+                    }
+                }
+            });
+
+            function updateTotalPrice() {
+                const selectedRoom = roomSelect.options[roomSelect.selectedIndex];
+                if (!selectedRoom) return;
+
+                const dailyPrice = parseFloat(selectedRoom.dataset.price || 0);
+                const checkinDate = new Date(checkinInput.value);
+                const checkoutDate = new Date(checkoutInput.value);
+
+                if (!isNaN(checkinDate) && !isNaN(checkoutDate) && checkoutDate > checkinDate) {
+                    const days = (checkoutDate - checkinDate) / (1000 * 60 * 60 * 24);
+                    const totalPrice = days * dailyPrice;
+
+                    totalPriceFormatted.value = totalPrice.toLocaleString('pt-BR', {
+                        style: 'currency',
+                        currency: 'BRL'
+                    });
+
+                    const originalPrice = parseFloat(totalPriceOriginal.value.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
+                    const priceToSend = Math.abs(totalPrice - originalPrice) > 0.01 ? totalPrice : originalPrice;
+
+                    totalPriceInput.value = priceToSend.toFixed(2);
+                } else {
+                    totalPriceFormatted.value = 'R$ 0,00';
+                    totalPriceInput.value = '0.00';
+                }
+            }
+
+            roomSelect.addEventListener('change', updateTotalPrice);
+            checkinInput.addEventListener('change', updateTotalPrice);
+            checkoutInput.addEventListener('change', updateTotalPrice);
+
+            updateTotalPrice();
+        });
+    </script>
+}

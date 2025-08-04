@@ -163,12 +163,38 @@ namespace ViagemImpacta.Services.Implementations
 
             };
 
+            // Caminho absoluto ou relativo da imagem
+            var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "banner-tripz.png");
+
             var emailBody = $@"
-                <h1>Bem-vindo(a) {user.FirstName}!</h1>
-                <p>Seu cadastro foi realizado com sucesso!</p>
-                <p>Agora você pode acessar nossa plataforma e aproveitar todos os benefícios.</p>
-                <p>Você pode acessar sua conta usando o email: {user.Email}</p>
-                <p>Atenciosamente,<br>Equipe Tripz</p>";
+                <img src=""cid:logoTripz"" alt=""Logo Tripz"" style=""width:600px; height:auto; display:block; margin-bottom: 20px;"" />
+
+                <h1>Bem-vindo(a) à Tripz, {user.FirstName}! 🌟</h1>
+
+                <p>Seu cadastro foi realizado com sucesso e agora você faz parte da nossa comunidade de viajantes!</p>
+                <p>Com sua conta, você poderá:</p>
+                <ul>
+                    <li>Reservar viagens de forma rápida e segura</li>
+                    <li>Acessar promoções exclusivas</li>
+                    <li>Receber dicas personalizadas de roteiros</li>
+                </ul>
+
+                <p>Para acessar sua conta, use este e-mail: <strong>{user.Email}</strong></p>
+
+                <p style='text-align: center; margin-top: 20px;'>
+                  <a href='https://tripz.com/login' style='
+                    background-color: #1e90ff;
+                    color: white;
+                    padding: 12px 24px;
+                    text-align: left;
+                    text-decoration: none;
+                    border-radius: 6px;
+                    font-weight: bold;'>
+                    Acessar minha conta
+                  </a>
+                </p>
+                <p>Qualquer dúvida, nossa equipe está pronta para te ajudar. <a href='https://tripz.com/ajuda'>Fale com a gente</a>.</p>
+                <p>Boas viagens! 🌍<br><strong>Equipe Tripz</strong></p>";
 
             var mensagem = new MailMessage
             {
@@ -180,7 +206,92 @@ namespace ViagemImpacta.Services.Implementations
 
             mensagem.To.Add(user.Email);
 
+            // Cria o LinkedResource para a imagem
+            var logo = new LinkedResource(imagePath)
+            {
+                ContentId = "logoTripz"
+            };
+
+            // Cria o AlternateView e adiciona o LinkedResource
+            var htmlView = AlternateView.CreateAlternateViewFromString(emailBody, null, "text/html");
+            htmlView.LinkedResources.Add(logo);
+            mensagem.AlternateViews.Add(htmlView);
+
             await smtpClient.SendMailAsync(mensagem);
+        }
+
+        //salva token no banco
+        public async Task SavePasswordResetToken(int userId, string token, DateTime expiration)
+        {
+            var resetToken = new PasswordResetToken
+            {
+                UserId = userId,
+                Token = token,
+                Expiration = expiration, //DateTime.UtcNow.AddHours(1)
+                Used = false
+            };
+
+            await _unitOfWork.PasswordResetTokens.SaveTokenAsync(resetToken);
+            await _unitOfWork.CommitAsync();
+        }
+
+        //envia email com o link
+        public async Task SendPasswordRecoveryEmail(User user, string token)
+        {
+            //para evitar enviar um email para um email não cadastrado
+            var foundUser = await _unitOfWork.Users.GetUserByEmail(user.Email);
+            if (foundUser == null) return;
+
+            var smtpClient = new SmtpClient(_smtpOptions.Host)
+            {
+                Port = _smtpOptions.Port,
+                Credentials = new NetworkCredential(_smtpOptions.User, _smtpOptions.Pass),
+                EnableSsl = true
+            };
+
+           
+            var emailBody = $@"
+                <h1>Recuperação de senha</h1>
+                <p>Olá, {foundUser.FirstName}!</p>
+                <p>Para redefinir sua senha, clique no link abaixo:</p>
+                <p><a href='{token}'>Redefinir senha</a></p>
+                <p>Se você não solicitou, ignore este e-mail.</p>";
+
+            var mensagem = new MailMessage
+            {
+                From = new MailAddress(_smtpOptions.From),
+                Subject = "Recuperação de senha",
+                Body = emailBody,
+                IsBodyHtml = true
+            };
+
+            mensagem.To.Add(foundUser.Email);
+
+            await smtpClient.SendMailAsync(mensagem);
+        }
+
+        //busca o token válido
+        public async Task<PasswordResetToken?> GetPasswordResetToken(string token)
+        {
+            return await _unitOfWork.PasswordResetTokens.GetByTokenAsync(token);
+        }
+
+        //invalida o token (marca como usado)
+        public async Task InvalidatePasswordResetToken(string token)
+        {
+            var resetToken = await _unitOfWork.PasswordResetTokens.GetByTokenAsync(token);
+            if (resetToken != null)
+            {
+                resetToken.Used = true;
+                await _unitOfWork.PasswordResetTokens.InvalidateTokenAsync(resetToken);
+                await _unitOfWork.CommitAsync();
+            }
+        }
+
+        public async Task UpdateUserPassword (User user)
+        {
+            await _unitOfWork.Users.UpdateAsync(user);
+            await _unitOfWork.CommitAsync ();
         }
     }
 }

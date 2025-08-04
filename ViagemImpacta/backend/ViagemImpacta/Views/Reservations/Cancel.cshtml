@@ -1,0 +1,53 @@
+﻿@model ViagemImpacta.Models.Reservation
+@{
+    ViewData["Title"] = "Cancelar Reserva";
+    var days = (Model.CheckOut - Model.CheckIn).Days;
+}
+
+<h1>Cancelar Reserva</h1>
+
+@if (Model != null)
+{
+    <div class="card" style="max-width: 600px;">
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-4">ID</dt>
+                <dd class="col-sm-8">@Model.ReservationId</dd>
+                <dt class="col-sm-4">Cliente</dt>
+                <dd class="col-sm-8">@((Model.User?.FirstName ?? "") + (string.IsNullOrWhiteSpace(Model.User?.LastName) ? "" : $" {Model.User.LastName}"))</dd>
+                <dt class="col-sm-4">Hotel</dt>
+                <dd class="col-sm-8">@Model.Hotel?.Name</dd>
+                <dt class="col-sm-4">Quarto</dt>
+                <dd class="col-sm-8">@Model.Room?.TypeName</dd>
+                <dt class="col-sm-4">Check-In</dt>
+                <dd class="col-sm-8">@Model.CheckIn.ToString("dd/MM/yyyy")</dd>
+                <dt class="col-sm-4">Check-Out</dt>
+                <dd class="col-sm-8">@Model.CheckOut.ToString("dd/MM/yyyy")</dd>
+                <dt class="col-sm-4">Nº de Noites</dt>
+                <dd class="col-sm-8">@days noite(s)</dd>
+                <dt class="col-sm-4">Preço Total</dt>
+                <dd class="col-sm-8">@Model.TotalPrice.ToString("C", new System.Globalization.CultureInfo("pt-BR"))</dd>
+                <dt class="col-sm-4">Confirmada</dt>
+                <dd class="col-sm-8">@(Model.IsConfirmed ? "Sim" : "Não")</dd>
+                <dt class="col-sm-4">Descrição</dt>
+                <dd class="col-sm-8">@Model.Description</dd>
+                <dt class="col-sm-4">Criada em</dt>
+                <dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+                <dt class="col-sm-4">Atualizada em</dt>
+                <dd class="col-sm-8">@Model.UpdatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+            </dl>
+            <form asp-action="Cancel" method="post">
+                <input type="hidden" asp-for="ReservationId" />
+                <div class="alert alert-warning">Tem certeza que deseja cancelar esta reserva?</div>
+                <div class="d-flex gap-2">
+                    <a asp-action="Index" class="btn btn-secondary">Voltar</a>
+                    <button type="submit" class="btn btn-danger">Confirmar Cancelamento</button>
+                </div>
+            </form>
+        </div>
+    </div>
+}
+else
+{
+    <div class="alert alert-warning">Reserva não encontrada.</div>
+}

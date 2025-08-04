@@ -1,6 +1,6 @@
 // src/services/paymentService.js
 
-const API_BASE_URL = 'http://localhost:5155/api';
+const API_BASE_URL = 'https://localhost:7010/api';
 
 /**
  * Serviço para gerenciar operações relacionadas a pagamentos
@@ -19,7 +19,7 @@ class PaymentService {
       const token = localStorage.getItem('authToken');
       console.log('Auth token exists:', !!token);
       
-      const response = await fetch(`http://localhost:5155/checkout?id=${reservationId}`, {
+      const response = await fetch(`https://localhost:7010/api/Stripe/checkout?id=${reservationId}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ class PaymentService {
    */
   redirectToStripeCheckout(checkoutUrl) {
     if (checkoutUrl) {
-      window.location.href = checkoutUrl;
+      window.location.href = checkoutUrl.result;
     } else {
       throw new Error('URL de checkout inválida');
     }

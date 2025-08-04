@@ -1,4 +1,5 @@
-﻿using ViagemImpacta.Models;
+﻿using ViagemImpacta.DTO.TravellerDTO;
+using ViagemImpacta.Models;
 
 namespace ViagemImpacta.ViewModels;
 
@@ -16,5 +17,5 @@ public class UpdateReservationViewModel
     public string? Description { get; set; }
     public decimal TotalPrice { get; set; }
     public DateTime UpdatedAt { get; set; }
-    public ICollection<Travellers>? Travellers { get; set; }
+    public List<CreateTravellerDto> Travellers { get; set; } = new();
 }

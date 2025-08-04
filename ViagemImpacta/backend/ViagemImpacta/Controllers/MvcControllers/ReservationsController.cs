@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Newtonsoft.Json;
 using ViagemImpacta.DTO.ReservationDTO;
-using ViagemImpacta.DTO.RoomDTO;
 using ViagemImpacta.Models;
-using ViagemImpacta.Repositories;
 using ViagemImpacta.Services.Interfaces;
 using ViagemImpacta.ViewModels;
 
@@ -17,7 +16,7 @@ public class ReservationsController : Controller
 {
     private readonly IReservationService _reservationService;
     private readonly IMapper _mapper;
-    private readonly IHotelService _hotelService; // Adicionado para o carregamento dos hotéis
+    private readonly IHotelService _hotelService;
 
     public ReservationsController(IReservationService reservationService, IMapper mapper, IHotelService hotelService)
     {
@@ -47,14 +46,14 @@ public class ReservationsController : Controller
         {
             var reservation = await _reservationService.GetReservationByIdAsync(id);
             if (reservation == null) return NotFound();
-            var reservationViewModel = _mapper.Map<UpdateReservationViewModel>(reservation);
-           
-            var hotels = await _hotelService.GetAllHotelsAsync();
-            ViewBag.Hotels = new SelectList(hotels, "HotelId", "Name", reservation.HotelId); 
 
-            var selectedHotel = hotels.FirstOrDefault(h => h.HotelId == reservation.HotelId);
-            var rooms = selectedHotel != null && selectedHotel.Rooms != null ? selectedHotel.Rooms : new List<RoomDto>();
-            ViewBag.Rooms = new SelectList(rooms, "RoomId", "TypeName", reservation.RoomId);
+            ViewBag.IsConfirmed = reservation.IsConfirmed;
+
+            var hotel = await _hotelService.GetHotelWithRoomsAsync(reservation.HotelId);
+
+            ViewBag.Rooms = hotel?.Rooms;
+
+            var reservationViewModel = _mapper.Map<UpdateReservationViewModel>(reservation);
 
             return View(reservationViewModel);
         }
@@ -66,21 +65,40 @@ public class ReservationsController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Edit(int id, UpdateReservationViewModel reservation)
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, UpdateReservationViewModel res)
     {
-        if (id != reservation.ReservationId) return BadRequest();
-        if (!ModelState.IsValid) return View(reservation);
+        if (id != res.ReservationId) return BadRequest();
+        if (!ModelState.IsValid) return View(res);
 
         try
         {
-            var dto = _mapper.Map<UpdateReservationDto>(reservation);
-            await _reservationService.UpdateAsync(dto);
+            var reservation = await _reservationService.GetReservationByIdAsync(id);
+            if(reservation == null) return NotFound();
+
+            var numberOfGuests = res.Travellers?.Count ?? 0;
+            
+            if (reservation?.TotalPrice != res.TotalPrice)
+            {
+                await _reservationService.CancelReservationAsync(id);
+
+                var createDTO = _mapper.Map<CreateReservationDto>(res);
+                createDTO.NumberOfGuests = numberOfGuests;
+                var newReservation = await _reservationService.CreateReservationAsync(createDTO);
+                 
+                await _reservationService.SendPaymentLinkToUserEmail(newReservation);
+            }
+            else
+            {
+                var updateDTO = _mapper.Map<UpdateReservationDto>(res);
+                await _reservationService.UpdateAsync(updateDTO);
+            }
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, $"Erro ao atualizar usuário: {ex.Message}");
-            return View(reservation);
+            ModelState.AddModelError(string.Empty, $"Erro ao atualizar reserva: {ex.Message}");
+            return View(res);
         }
     }
 
@@ -102,32 +120,39 @@ public class ReservationsController : Controller
         }
     }
 
-    // AINDA EM IMPLEMENTAÇÃO
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Cancel(int id)
     {
         var reservation = await _reservationService.GetReservationByIdAsync(id);
         if (reservation == null) return NotFound();
         return View(reservation);
     }
 
-    [HttpPost, ActionName("Delete")]
+    [HttpPost, ActionName("Cancel")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    public async Task<IActionResult> CancelReservation(int id)
     {
         try
         {
-            var reservation = await _reservationService.GetReservationByIdAsync(id);
-            if (reservation == null) return NotFound();
-
-            //var result = await _reservationService.CancelReservationAsync(id);
-            //if (!result != null) return BadRequest("Erro ao cancelar a reserva.");
-
+            await _reservationService.CancelReservationAsync(id);
             return RedirectToAction(nameof(Index));
         }
         catch (Exception ex)
         {
             ModelState.AddModelError(string.Empty, $"Erro ao cancelar reserva: {ex.Message}");
             return View("Delete");
+        }
+    }
+    public async Task<ActionResult> ReservationsByUser(int id)
+    {
+        try
+        {
+            var reservationsByUser = await _reservationService.GetReservationsByUserIdAsync(id);
+            return View(reservationsByUser);
+        }
+        catch (Exception ex)
+        {
+            ModelState.AddModelError(string.Empty, $"Erro ao carregar detalhes do usuário: {ex.Message}");
+            return View(null);
         }
     }
 }

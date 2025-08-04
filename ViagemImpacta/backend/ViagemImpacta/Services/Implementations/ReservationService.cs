@@ -1,7 +1,7 @@
 using AutoMapper;
 using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.Collections;
+using Stripe;
+using Stripe.Checkout;
 using System.Net;
 using System.Net.Mail;
 using ViagemImpacta.DTO.ReservationDTO;
@@ -17,12 +17,17 @@ namespace ViagemImpacta.Services.Implementations
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly SmtpOptions _smtpOptions;
+        private readonly StripeModel _model;
+        private readonly StripeService _stripeService;
 
-        public ReservationService(IUnitOfWork unitOfWork, IMapper mapper, IOptions<SmtpOptions> smtpOptions)
+        public ReservationService(IUnitOfWork unitOfWork, IMapper mapper, IOptions<SmtpOptions> smtpOptions,
+            IOptions<StripeModel> model, StripeService stripeService)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
             _smtpOptions = smtpOptions.Value;
+            _model = model.Value;
+            _stripeService = stripeService;
         }
 
         public async Task<Reservation> CreateReservationAsync(CreateReservationDto createReservationDto)
@@ -119,35 +124,47 @@ namespace ViagemImpacta.Services.Implementations
             return reservations;
         }
 
-        public async Task<bool> CancelReservationAsync(int reservationId, int userId)
+        public async Task<bool> CancelReservationAsync(int reservationId)
         {
-            var reservation = await _unitOfWork.Reservations.GetByIdAsync(reservationId);
-            if (reservation == null || reservation.UserId != userId)
-                return false;
+            var reservation = await _unitOfWork.Reservations.GetReservationById(reservationId);
+            if (reservation == null) return false;
 
-            // Verificar se pode cancelar (ex: n�o pode cancelar no mesmo dia do check-in)
-            if (reservation.CheckIn <= DateTime.Today)
-                throw new InvalidOperationException("N�o � poss�vel cancelar reservas no dia do check-in ou ap�s");
+            if (reservation.IsConfirmed && !string.IsNullOrEmpty(reservation.PaymentIntentId))
+            {
+                GiveRefund(reservation.PaymentIntentId);
+            }
 
-            _unitOfWork.Reservations.Remove(reservation);
-            return await _unitOfWork.CommitAsync();
+            reservation.IsCanceled = true;
+            reservation.UpdatedAt = DateTime.UtcNow;
+            Console.WriteLine(reservation);
+            await _unitOfWork.CommitAsync();
+            return true;
         }
 
-        public async Task<bool> ConfirmReservationAsync(int reservationId)
+        public async Task<bool> ConfirmReservationAsync(string sessionId)
         {
-            var reservation = await _unitOfWork.Reservations.GetByIdAsync(reservationId);
-            if (reservation == null)
+            StripeConfiguration.ApiKey = _model.SecretKey;
+            var service = new SessionService();
+            var session = await service.GetAsync(sessionId);
+            var reservationId = session.Metadata["reservationId"];
+            if (!int.TryParse(reservationId, out int Id))
+            {
                 return false;
+            }
+
+            var reservation = await _unitOfWork.Reservations.GetReservationById(Id);
+            if (reservation == null)
+                return false;   
 
             reservation.IsConfirmed = true;
             reservation.UpdatedAt = DateTime.Now;
-            
+            reservation.PaymentIntentId = session.PaymentIntentId;
+
             _unitOfWork.Reservations.Update(reservation);
             await _unitOfWork.CommitAsync();
-            var user = await _unitOfWork.Users.GetByIdAsync(reservation.UserId);
-            await SendEmailAsync(user);
+            await SendEmailAsync(reservation);
+            
             return true;
-
         }
 
         public async Task<bool> IsRoomAvailableAsync(int roomId, DateTime checkIn, DateTime checkOut)
@@ -211,15 +228,17 @@ namespace ViagemImpacta.Services.Implementations
             if (!string.IsNullOrWhiteSpace(status))
             {
                 if (status == "confirmadas")
-                    reservations = reservations.Where(r => r.IsConfirmed);
-                else if (status == "nao-confirmadas")
-                    reservations = reservations.Where(r => !r.IsConfirmed);
+                    reservations = reservations.Where(r => r.IsConfirmed && !r.IsCanceled);
+                else if (status == "pendentes")
+                    reservations = reservations.Where(r => !r.IsConfirmed && !r.IsCanceled);
+                else if (status == "canceladas")
+                    reservations = reservations.Where(r => r.IsCanceled);
             }
 
             return reservations;
         }
 
-        private async Task SendEmailAsync(User user)
+        private async Task SendEmailAsync(Reservation reservation)
         {
             var smtpClient = new SmtpClient(_smtpOptions.Host)
             {
@@ -229,22 +248,47 @@ namespace ViagemImpacta.Services.Implementations
 
             };
 
+            // Caminho absoluto ou relativo da imagem
+            var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "banner-tripz.png");
+
             var emailBody = $@"
-                <h1>Parab�ns, {user.FirstName}!</h1>
-                <p>Sua reserva foi confirmada com sucesso!</p>
-                <p>Agora voc� pode acessar nossa plataforma e aproveitar todos os benef�cios.</p>
-                <p>Voc� pode acessar sua conta usando o email: {user.Email}</p>
-                <p>Atenciosamente,<br>Equipe Tripz</p>";
+                <img src=""cid:logoTripz"" alt=""Logo Tripz"" style=""width:600px; height:auto; display:block; margin-bottom: 20px;"" />
+                <h1>Parab�ns, {reservation.User.FirstName}! </h1>
+                <p>Estamos muito felizes em confirmar que sua reserva foi realizada com sucesso!</p>
+                <p>A partir de agora, voc� j� pode acessar a nossa plataforma e come�ar a planejar a sua experi�ncia com a gente.</p>
+                <p><strong>Detalhes da sua reserva:</strong></p>
+                <ul>
+                    <li><strong>Hotel:</strong> {reservation.Hotel?.Name}</li>
+                    <li><strong>Chekin:</strong> {reservation.CheckIn.ToString("dd/MM/yyyy")}</li>
+                    <li><strong>Checkout:</strong> {reservation.CheckOut.ToString("dd/MM/yyyy")}</li>
+                    <li><strong>Valor total:</strong> {reservation.TotalPrice.ToString("N2")}</li>
+                </ul>
+                <p>Use este e-mail para fazer login: <strong>{reservation.User.Email}</strong></p>
+                <p>Se tiver qualquer d�vida, nossa equipe est� pronta para te ajudar.</p>
+                <p>Voc� pode acessar nosso site a qualquer momento em: <a href=""https://tripz.com"">tripz.com</a></p>
+                <p>Aproveite sua estadia ao m�ximo!</p>
+                <p><strong>Equipe Tripz</strong></p>";
 
             var mensagem = new MailMessage
             {
                 From = new MailAddress(_smtpOptions.From),
-                Subject = "Confirma��o de Cadastro",
+                Subject = "Confirma��o de Reserva",
                 Body = emailBody,
                 IsBodyHtml = true
             };
 
-            mensagem.To.Add(user.Email);
+            mensagem.To.Add(reservation.User.Email);
+
+            // Cria o LinkedResource para a imagem
+            var logo = new LinkedResource(imagePath)
+            {
+                ContentId = "logoTripz"
+            };
+
+            // Cria o AlternateView e adiciona o LinkedResource
+            var htmlView = AlternateView.CreateAlternateViewFromString(emailBody, null, "text/html");
+            htmlView.LinkedResources.Add(logo);
+            mensagem.AlternateViews.Add(htmlView);
 
             await smtpClient.SendMailAsync(mensagem);
         }
@@ -253,9 +297,60 @@ namespace ViagemImpacta.Services.Implementations
         {
             var reservation = await _unitOfWork.Reservations.GetByIdAsync(dto.ReservationId);
 
+            _mapper.Map(dto, reservation);
+
             await _unitOfWork.Reservations.UpdateAsync(reservation);
             await _unitOfWork.CommitAsync();
             return reservation;
+        }
+
+        private async void GiveRefund(string paymentId)
+        {
+            StripeConfiguration.ApiKey = _model.SecretKey;
+            var refund = new RefundService();
+            var service = await refund.CreateAsync(new RefundCreateOptions
+            {
+                PaymentIntent = paymentId,
+            });
+        }
+
+        public async Task SendPaymentLinkToUserEmail(Reservation reservation)
+        {
+            var smtpClient = new SmtpClient(_smtpOptions.Host)
+            {
+                Port = _smtpOptions.Port,
+                Credentials = new NetworkCredential(_smtpOptions.User, _smtpOptions.Pass),
+                EnableSsl = true
+            };
+
+            var url = await _stripeService.CreateCheckout(reservation);
+
+            var emailBody = $@"
+                <h1Ol�, {reservation.User?.FirstName}!</h1>
+                <p>Aqui est� o link de pagamento da sua nova reserva</p>
+                <p>Link de pagamento: <a href=""{url}"">Clique Aqui</a>.</p>
+                <p>Voc� ter� 45 minutos para efetuar o pagamento</p>
+                <p>Atenciosamente,<br>Equipe Tripz</p>";
+
+            var mensagem = new MailMessage
+            {
+                From = new MailAddress(_smtpOptions.From),
+                Subject = "Link de Pagamento da Reserva - Tripz",
+                Body = emailBody,
+                IsBodyHtml = true
+            };
+
+            mensagem.To.Add(reservation.User.Email);
+
+            try
+            {
+                await smtpClient.SendMailAsync(mensagem);
+            }
+            catch (SmtpException ex)
+            {
+                Console.WriteLine($"Erro ao enviar e-mail: {ex.Message}");
+                throw;
+            }
         }
     }
 }

@@ -61,7 +61,7 @@
                         <a class="btn btn-sm btn-info" asp-action="Details" asp-route-id="@user.UserId">Detalhar</a>
                         <a class="btn btn-sm btn-warning" asp-action="Edit" asp-route-id="@user.UserId">Editar</a>
                         @*<a class="btn btn-sm btn-secondary" asp-action="Reviews" asp-route-id="@user.UserId">Avaliações</a>*@
-                        <a class="btn btn-sm btn-primary" asp-action="Reservations" asp-route-id="@user.UserId">Reservas</a>
+                        <a class="btn btn-sm btn-primary" asp-action="ReservationsByUser" asp-controller="Reservations" asp-route-id="@user.UserId">Reservas</a>
                         <a asp-action="Delete" asp-route-id="@user.UserId" class="btn btn-sm btn-danger">Deletar</a>
                     </td>
                 </tr>

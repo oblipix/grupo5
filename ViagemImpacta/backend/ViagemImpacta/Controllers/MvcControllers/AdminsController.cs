@@ -34,7 +34,9 @@ public class AdminsController : Controller
         var balance = _stripeService.GetBalance();
         ViewBag.Balance = balance;
         var userName = HttpContext.User.FindFirst(ClaimTypes.Name)?.Value;
+        var userRole = HttpContext.User.FindFirst(ClaimTypes.Role)?.Value;
         ViewBag.Name = userName;
+        ViewBag.Role = userRole;
 
         return View();
     }

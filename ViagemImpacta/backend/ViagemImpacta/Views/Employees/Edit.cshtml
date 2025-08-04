@@ -44,7 +44,14 @@
     </div>
     <div class="row mb-3">
         @{
-            string FormatCpf(string cpf) { return $"{cpf.Substring(0, 3)}.{cpf.Substring(3, 3)}.{cpf.Substring(6, 3)}-{cpf.Substring(7, 2)}"; }
+            string FormatCpf(string cpf) 
+            { 
+                if (string.IsNullOrEmpty(cpf))
+                {
+                    return string.Empty;
+                }
+                return $"{cpf.Substring(0, 3)}.{cpf.Substring(3, 3)}.{cpf.Substring(6, 3)}-{cpf.Substring(7, 2)}"; 
+            }
         }
         <div class="col-md-6 mb-3">
             <label asp-for="Cpf" class="form-label">

@@ -1,6 +1,6 @@
 // src/services/reservationService.js
 
-const API_BASE_URL = 'http://localhost:5155/api';
+const API_BASE_URL = 'https://localhost:7010/api';
 
 /**
  * Serviço para gerenciar operações relacionadas a reservas
