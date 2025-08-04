@@ -1,6 +1,7 @@
 // src/pages/HomePage.jsx
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useOutletContext } from 'react-router-dom';
 
 // Importe todas as seções que compõem sua página inicial
@@ -20,18 +21,40 @@ import AnimatedSection from '../common/AnimatedSection.jsx';
 
 function HomePage() {
   const { isLoaded } = useOutletContext();
+  const navigate = useNavigate();
+
+  // Função para redirecionar para página de resultados com querystring
+  const handleSearch = ({ destination, minPrice, maxPrice, selectedAmenities, selectedRoomType, guests, checkIn, checkOut }) => {
+    const searchParams = new URLSearchParams();
+    if (destination) searchParams.append('destination', destination);
+    if (minPrice > 0) searchParams.append('minPrice', minPrice);
+    if (maxPrice < 10000) searchParams.append('maxPrice', maxPrice);
+    if (Array.isArray(selectedAmenities) && selectedAmenities.length > 0) 
+      searchParams.append('amenities', selectedAmenities.join(','));
+    if (selectedRoomType) searchParams.append('roomType', selectedRoomType);
+    if (guests) searchParams.append('guests', guests); 
+    if (checkIn) searchParams.append('checkIn', checkIn);
+    if (checkOut) searchParams.append('checkOut', checkOut); 
+    // Adicione outros filtros se necessário
+    navigate(`/hoteis?${searchParams.toString()}`);
+  };
 
   return (
     <>
       {/* Hero aparece imediatamente */}
       <HeroSwiper />
       
-      {/* Barrinha aparece imediatamente sem animação para manter o posicionamento */}
-      <HomeMenu />
+      {/* Menu surge de baixo */}
+      <ScrollReveal animation="fadeUp" delay={300}>
+        <HomeMenu />
+      </ScrollReveal>
       
       {/* Barra de pesquisa surge suavemente */}
       <ScrollReveal animation="fadeUp" delay={200}>
-        <SearchHotelsBar />
+        <SearchHotelsBar
+        enableOnChange={false}
+          onSearch={handleSearch}
+        />
       </ScrollReveal>
 
       {/* Seção de Promoções em Destaque - surge da esquerda */}

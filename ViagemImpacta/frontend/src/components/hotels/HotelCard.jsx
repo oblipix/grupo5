@@ -2,11 +2,12 @@
 // src/components/HotelCard.jsx
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // Importa o contexto para ações do usuário
 import { useModal } from '../context/ModalContext'; // Importa o contexto para modais
 import { StarIcon } from '@heroicons/react/24/solid'; // Para a avaliação
 import '../styles/HotelCard.css'; // Importa o CSS específico do card
+import DebugImage from '../common/DebugImage';
 
 function HotelCard({ hotel }) {
     // Usa o contexto para gerenciar o estado de "salvo"
@@ -15,6 +16,7 @@ function HotelCard({ hotel }) {
     const [showConfetti, setShowConfetti] = useState(false);
     const confettiRef = useRef(null);
     const buttonRef = useRef(null);
+    const location = useLocation();
 
     // Limpeza dos confetes quando o componente for desmontado
     useEffect(() => {
@@ -49,20 +51,15 @@ function HotelCard({ hotel }) {
     };
 
     // Calcula o menor preço dos quartos disponíveis
+    const getMinPrice = () => {
+        if (hotel.roomOptions && hotel.roomOptions.length > 0) {
+            const prices = hotel.roomOptions.map(room => room.price).filter(price => price > 0);
+            return prices.length > 0 ? Math.min(...prices) : hotel.price || 0;
+        }
+        return hotel.price || 0;
+    };
 
-
-    const minPrice = hotel.lowestRoomPrice; // Usa o preço mais baixo disponível
-    /*
-        const getMinPrice = () => {
-            if (hotel.roomOptions && hotel.roomOptions.length > 0) {
-                const prices = hotel.roomOptions.map(room => room.price).filter(price => price > 0);
-                return prices.length > 0 ? Math.min(...prices) : hotel.price || 0;
-            }
-            return hotel.price || 0;
-        };
-    
-        const minPrice = getMinPrice();
-        */
+    const minPrice = getMinPrice();
     const starRating = getStarRating();
 
     // Função para criar e animar confetes
@@ -150,17 +147,18 @@ function HotelCard({ hotel }) {
 
     return (
         <Link to={`/hoteis/${hotel.id}`}
-            className="block group hotel-card-modern card-hover-premium bg-white rounded-xl shadow-md border-0 overflow-hidden
-                         h-full flex flex-col transform transition-all duration-300 
+            className="block group hotel-card-modern bg-white rounded-xl shadow-md border-0 overflow-hidden
+                         h-full flex flex-col transform transition-all duration-300 hover:shadow-xl
                          w-full max-w-sm mx-auto sm:max-w-none min-h-[420px] sm:min-h-[450px]">
             <div className="relative w-full h-56 sm:h-64 md:h-80 overflow-hidden"> {/* Altura responsiva aumentada */}
                 {/* Overlay gradient over image - mais escuro para melhor contraste */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 z-10"></div>
 
-                <img
+                <DebugImage
                     src={hotel.mainImageUrl}
                     alt={hotel.title}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 card-image"
+                    hotel={hotel}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                 />
 
                 {/* Estrelas do hotel - posicionadas no topo esquerdo */}
@@ -179,7 +177,7 @@ function HotelCard({ hotel }) {
                 </div>
 
                 {/* Title moved to overlay on image for more modern look */}
-                <h3 className="Tittle card-title absolute bottom-2 left-2 sm:bottom-4 sm:left-4 z-20 text-white font-bold text-lg sm:text-xl md:text-2xl drop-shadow-lg mb-1 sm:mb-3 mt-2 line-clamp-2 pr-2">
+                <h3 className="Tittle absolute bottom-2 left-2 sm:bottom-4 sm:left-4 z-20 text-white font-bold text-lg sm:text-xl md:text-2xl drop-shadow-lg mb-1 sm:mb-3 mt-2 line-clamp-2 pr-2">
                     {hotel.title}
                 </h3>
             </div>
@@ -213,6 +211,7 @@ function HotelCard({ hotel }) {
                                     >
                                         <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 016.364 0L12 7.5l1.318-1.182a4.5 4.5 0 116.364 6.364L12 18.75l-7.682-7.682a4.5 4.5 0 010-6.364z" />
                                     </svg>
+                                    <span className="text-xs font-medium hidden sm:inline">{isSaved ? 'Salvo' : 'Salvar'}</span>
                                 </button>
                                 {/* Container para os confetes */}
                                 <div ref={confettiRef} className="confetti-container"></div>

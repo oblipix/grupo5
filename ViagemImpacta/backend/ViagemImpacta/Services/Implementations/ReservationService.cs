@@ -27,31 +27,31 @@ namespace ViagemImpacta.Services.Implementations
 
         public async Task<Reservation> CreateReservationAsync(CreateReservationDto createReservationDto)
         {
-            // Validações de negócio
+            // Validaï¿½ï¿½es de negï¿½cio
             await ValidateReservationAsync(createReservationDto);
 
             // Buscar entidades relacionadas
             var user = await _unitOfWork.Users.GetByIdAsync(createReservationDto.UserId);
             if (user == null)
-                throw new ArgumentException("Usuário não encontrado");
+                throw new ArgumentException("Usuï¿½rio nï¿½o encontrado");
 
             var room = await _unitOfWork.Rooms.GetByIdAsync(createReservationDto.RoomId);
             if (room == null)
-                throw new ArgumentException("Quarto não encontrado");
+                throw new ArgumentException("Quarto nï¿½o encontrado");
 
             var hotel = await _unitOfWork.Hotels.GetByIdAsync(createReservationDto.HotelId);
             if (hotel == null)
-                throw new ArgumentException("Hotel não encontrado");
+                throw new ArgumentException("Hotel nï¿½o encontrado");
 
             // Validar capacidade do quarto
             if (createReservationDto.NumberOfGuests > room.Capacity)
-                throw new ArgumentException($"Número de hóspedes ({createReservationDto.NumberOfGuests}) excede a capacidade do quarto ({room.Capacity})");
+                throw new ArgumentException($"Nï¿½mero de hï¿½spedes ({createReservationDto.NumberOfGuests}) excede a capacidade do quarto ({room.Capacity})");
 
-            // Validar número de viajantes
+            // Validar nï¿½mero de viajantes
             if (createReservationDto.Travellers.Count != createReservationDto.NumberOfGuests)
-                throw new ArgumentException("Número de viajantes deve ser igual ao número de hóspedes");
+                throw new ArgumentException("Nï¿½mero de viajantes deve ser igual ao nï¿½mero de hï¿½spedes");
 
-            // NOVA VALIDAÇÃO: Verificar disponibilidade por tipo de quarto
+            // NOVA VALIDAï¿½ï¿½O: Verificar disponibilidade por tipo de quarto
             var isRoomTypeAvailable = await _unitOfWork.Reservations.IsRoomTypeAvailableAsync(
                 createReservationDto.HotelId,
                 room.TypeName,
@@ -67,12 +67,12 @@ namespace ViagemImpacta.Services.Implementations
                     createReservationDto.CheckOut);
                 
                 throw new InvalidOperationException(
-                    $"Não há quartos do tipo {room.TypeName} disponíveis para o período solicitado. " +
+                    $"Nï¿½o hï¿½ quartos do tipo {room.TypeName} disponï¿½veis para o perï¿½odo solicitado. " +
                     $"Total de quartos ocupados: {occupiedRooms}/{room.TotalRooms}");
             }
 
 
-            // Calcular preço total
+            // Calcular preï¿½o total
             var totalDays = (createReservationDto.CheckOut - createReservationDto.CheckIn).Days;
             var totalPrice = room.AverageDailyPrice * totalDays;
 
@@ -87,7 +87,7 @@ namespace ViagemImpacta.Services.Implementations
             await _unitOfWork.Reservations.AddAsync(reservation);
             await _unitOfWork.CommitAsync();
 
-            // Associar viajantes à reserva e adicionar
+            // Associar viajantes ï¿½ reserva e adicionar
             foreach (var traveller in travellers)
             {
                 traveller.ReservationId = reservation.ReservationId;
@@ -125,9 +125,9 @@ namespace ViagemImpacta.Services.Implementations
             if (reservation == null || reservation.UserId != userId)
                 return false;
 
-            // Verificar se pode cancelar (ex: não pode cancelar no mesmo dia do check-in)
+            // Verificar se pode cancelar (ex: nï¿½o pode cancelar no mesmo dia do check-in)
             if (reservation.CheckIn <= DateTime.Today)
-                throw new InvalidOperationException("Não é possível cancelar reservas no dia do check-in ou após");
+                throw new InvalidOperationException("Nï¿½o ï¿½ possï¿½vel cancelar reservas no dia do check-in ou apï¿½s");
 
             _unitOfWork.Reservations.Remove(reservation);
             return await _unitOfWork.CommitAsync();
@@ -161,27 +161,27 @@ namespace ViagemImpacta.Services.Implementations
             if (!dto.IsValidDateRange())
                 throw new ArgumentException("Data de check-out deve ser posterior ao check-in e check-in deve ser hoje ou no futuro");
 
-            // Validar se há pelo menos um viajante
+            // Validar se hï¿½ pelo menos um viajante
             if (dto.Travellers == null || !dto.Travellers.Any())
                 throw new ArgumentException("Deve haver pelo menos um viajante");
 
-            // Validar CPFs únicos
+            // Validar CPFs ï¿½nicos
             var cpfs = dto.Travellers.Select(t => t.Cpf).ToList();
             if (cpfs.Count != cpfs.Distinct().Count())
-                throw new ArgumentException("CPFs dos viajantes devem ser únicos");
+                throw new ArgumentException("CPFs dos viajantes devem ser ï¿½nicos");
 
             // Validar se entidades existem
             var userExists = await _unitOfWork.Users.GetByIdAsync(dto.UserId) != null;
             if (!userExists)
-                throw new ArgumentException("Usuário não encontrado");
+                throw new ArgumentException("Usuï¿½rio nï¿½o encontrado");
 
             var roomExists = await _unitOfWork.Rooms.GetByIdAsync(dto.RoomId) != null;
             if (!roomExists)
-                throw new ArgumentException("Quarto não encontrado");
+                throw new ArgumentException("Quarto nï¿½o encontrado");
 
             var hotelExists = await _unitOfWork.Hotels.GetByIdAsync(dto.HotelId) != null;
             if (!hotelExists)
-                throw new ArgumentException("Hotel não encontrado");
+                throw new ArgumentException("Hotel nï¿½o encontrado");
         }
 
         public async Task<IEnumerable<Reservation>> GetFilteredReservation(DateTime? checkin, DateTime? checkout, string search, string status)
@@ -230,16 +230,16 @@ namespace ViagemImpacta.Services.Implementations
             };
 
             var emailBody = $@"
-                <h1>Parabéns, {user.FirstName}!</h1>
+                <h1>Parabï¿½ns, {user.FirstName}!</h1>
                 <p>Sua reserva foi confirmada com sucesso!</p>
-                <p>Agora você pode acessar nossa plataforma e aproveitar todos os benefícios.</p>
-                <p>Você pode acessar sua conta usando o email: {user.Email}</p>
+                <p>Agora vocï¿½ pode acessar nossa plataforma e aproveitar todos os benefï¿½cios.</p>
+                <p>Vocï¿½ pode acessar sua conta usando o email: {user.Email}</p>
                 <p>Atenciosamente,<br>Equipe Tripz</p>";
 
             var mensagem = new MailMessage
             {
                 From = new MailAddress(_smtpOptions.From),
-                Subject = "Confirmação de Cadastro",
+                Subject = "Confirmaï¿½ï¿½o de Cadastro",
                 Body = emailBody,
                 IsBodyHtml = true
             };

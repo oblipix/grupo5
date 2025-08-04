@@ -9,6 +9,8 @@ namespace ViagemImpacta.Repositories
         IReservationRepository Reservations { get; }
         IRoomRepository Rooms { get; }
         ITravellerRepository Travellers { get; }
+        IPromotionRepository Promotions { get; }
+        IRoomsPromotionalRepository RoomsPromotions { get; }
 
         Task<bool> CommitAsync();
     }

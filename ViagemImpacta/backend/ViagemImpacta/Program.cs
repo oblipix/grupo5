@@ -10,6 +10,7 @@ using ViagemImpacta.Profiles;
 using ViagemImpacta.Repositories;
 using ViagemImpacta.Repositories.Implementations;
 using ViagemImpacta.Repositories.Interfaces;
+using ViagemImpacta.Services;
 using ViagemImpacta.Services.Implementations;
 using ViagemImpacta.Services.Interfaces;
 using ViagemImpacta.Setup;
@@ -17,6 +18,9 @@ using Settings = ViagemImpacta.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 var key = Encoding.ASCII.GetBytes(Settings.Secret);
+
+// Adiciona o Application Insights
+builder.Services.AddApplicationInsightsTelemetry();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
@@ -104,9 +108,10 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IHotelService, HotelService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<IHotelMappingService, HotelMappingService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<StripeService>();
-builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>) );
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 builder.Services.AddAutoMapper(typeof(HotelProfile).Assembly, typeof(UserProfile).Assembly, typeof(ReservationProfile).Assembly);
 
 builder.Services.AddHttpContextAccessor();
@@ -115,7 +120,16 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5173", "https://localhost:5173")
+        policy.WithOrigins(
+                "http://localhost:3000",
+                "https://localhost:3000",
+                "http://localhost:5173",
+                "https://localhost:5173",
+                "http://localhost:5174",
+                "https://localhost:5174",
+                "http://localhost:4173",
+                "https://localhost:4173"
+              )
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -136,7 +150,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI(c =>
     {
         c.SwaggerEndpoint("/swagger/v1/swagger.json", "Viagem Impacta API v1");
-        c.RoutePrefix = "swagger"; 
+        c.RoutePrefix = "swagger";
     });
 }
 
