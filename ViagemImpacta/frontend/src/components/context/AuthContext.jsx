@@ -285,6 +285,43 @@ export const AuthProvider = ({ children }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn, token, currentUser]);
 
+    // Efeito para escutar eventos de token expirado
+    useEffect(() => {
+        const handleTokenExpired = () => {
+            console.log('=== EVENTO tokenExpired DETECTADO NO AUTHCONTEXT ===');
+            console.log('Fazendo logout automático...');
+            
+            // Executa logout diretamente sem depender da referência da função
+            setCurrentUser(null);
+            setIsLoggedIn(false);
+            setToken(null);
+            setSavedHotels([]);
+            setVisitedHotels([]);   
+            setReservationHistory([]);
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('authUser');
+
+            console.log('Estado limpo, navegando para login...');
+            // Navega para login de forma segura
+            try {
+                navigate('/login');
+            } catch (navError) {
+                console.warn('Não foi possível navegar para /login:', navError);
+                window.location.href = '/login';
+            }
+        };
+
+        console.log('Adicionando listener para tokenExpired');
+        // Adiciona o listener para o evento personalizado
+        window.addEventListener('tokenExpired', handleTokenExpired);
+
+        // Remove o listener quando o componente for desmontado
+        return () => {
+            console.log('Removendo listener para tokenExpired');
+            window.removeEventListener('tokenExpired', handleTokenExpired);
+        };
+    }, [navigate, setCurrentUser, setIsLoggedIn, setToken, setSavedHotels, setVisitedHotels, setReservationHistory]);
+
     // Função para carregar o histórico de reservas do backend
     const loadReservationHistory = async (userId, token) => {
         if (!userId || !token) {
@@ -451,6 +488,9 @@ export const AuthProvider = ({ children }) => {
  
     // <<<<<<<<<<<< FUNÇÃO DE LOGOUT >>>>>>>>>>>>
     const logout = () => {
+        console.log('=== EXECUTANDO LOGOUT ===');
+        console.log('Stack trace do logout:', new Error().stack);
+        
         setCurrentUser(null);
         setIsLoggedIn(false);
         setToken(null);
@@ -459,6 +499,8 @@ export const AuthProvider = ({ children }) => {
         setReservationHistory([]); // Limpa histórico de reservas do estado local
         localStorage.removeItem('authToken');
         localStorage.removeItem('authUser');
+
+        console.log('Estado limpo, navegando para login...');
 
         // Navega para login de forma segura
         try {

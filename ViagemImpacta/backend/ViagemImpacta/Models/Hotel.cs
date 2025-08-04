@@ -18,6 +18,7 @@ namespace ViagemImpacta.Models
         public string? HotelAddress { get; set; }
 
         public ICollection<Room> Rooms { get; set; } = new List<Room>(); // Coleção de navegação
+        public ICollection<Review> Reviews { get; set; } = new List<Review>(); // Coleção de avaliações
 
         public bool Wifi { get; set; }
         public bool Parking { get; set; }
@@ -53,6 +54,10 @@ namespace ViagemImpacta.Models
         /// Cada URL deve ter no máximo 500 caracteres.
         /// </summary>
         public List<string> ImageUrls { get; set; } = new List<string>();
+
+        // Novo campo: média das avaliações
+        [Range(0, 5, ErrorMessage = "Rating deve ser entre 0 e 5")]
+        public float Rating { get; set; } = 0;
     }
 }
 

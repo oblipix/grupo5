@@ -12,6 +12,7 @@ namespace ViagemImpacta.Repositories
         IPasswordResetTokenRepository PasswordResetTokens { get; }
         IPromotionRepository Promotions { get; }
         IRoomsPromotionalRepository RoomsPromotions { get; }
+        IReviewRepository Reviews { get; }
 
         Task<bool> CommitAsync();
     }
