@@ -140,6 +140,7 @@ namespace ViagemImpacta.Services.Implementations
             await _unitOfWork.CommitAsync();
             return true;
         }
+
         public async Task<bool> ConfirmReservationAsync(string sessionId)
         {
             StripeConfiguration.ApiKey = _model.SecretKey;
@@ -161,7 +162,7 @@ namespace ViagemImpacta.Services.Implementations
 
             _unitOfWork.Reservations.Update(reservation);
             await _unitOfWork.CommitAsync();
-            await SendEmailAsync(reservation.User);
+            await SendEmailAsync(reservation);
             
             return true;
         }
@@ -237,7 +238,7 @@ namespace ViagemImpacta.Services.Implementations
             return reservations;
         }
 
-        private async Task SendEmailAsync(User user, Reservation reservation)
+        private async Task SendEmailAsync(Reservation reservation)
         {
             var smtpClient = new SmtpClient(_smtpOptions.Host)
             {
@@ -252,7 +253,7 @@ namespace ViagemImpacta.Services.Implementations
 
             var emailBody = $@"
                 <img src=""cid:logoTripz"" alt=""Logo Tripz"" style=""width:600px; height:auto; display:block; margin-bottom: 20px;"" />
-                <h1>Parab�ns, {user.FirstName}! </h1>
+                <h1>Parab�ns, {reservation.User.FirstName}! </h1>
                 <p>Estamos muito felizes em confirmar que sua reserva foi realizada com sucesso!</p>
                 <p>A partir de agora, voc� j� pode acessar a nossa plataforma e come�ar a planejar a sua experi�ncia com a gente.</p>
                 <p><strong>Detalhes da sua reserva:</strong></p>
@@ -262,7 +263,7 @@ namespace ViagemImpacta.Services.Implementations
                     <li><strong>Checkout:</strong> {reservation.CheckOut.ToString("dd/MM/yyyy")}</li>
                     <li><strong>Valor total:</strong> {reservation.TotalPrice.ToString("N2")}</li>
                 </ul>
-                <p>Use este e-mail para fazer login: <strong>{user.Email}</strong></p>
+                <p>Use este e-mail para fazer login: <strong>{reservation.User.Email}</strong></p>
                 <p>Se tiver qualquer d�vida, nossa equipe est� pronta para te ajudar.</p>
                 <p>Voc� pode acessar nosso site a qualquer momento em: <a href=""https://tripz.com"">tripz.com</a></p>
                 <p>Aproveite sua estadia ao m�ximo!</p>
@@ -276,7 +277,7 @@ namespace ViagemImpacta.Services.Implementations
                 IsBodyHtml = true
             };
 
-            mensagem.To.Add(user.Email);
+            mensagem.To.Add(reservation.User.Email);
 
             // Cria o LinkedResource para a imagem
             var logo = new LinkedResource(imagePath)

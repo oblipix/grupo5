@@ -105,7 +105,7 @@ namespace ViagemImpacta.Controllers.ApiControllers
                 return BadRequest("Token inválido ou expirado");
             }
 
-            var user = await _userService.GetUserById(resetToken.UserId);
+            var user = await _userService.GetUserByIdAsync(resetToken.UserId);
             if (user == null || !user.Active)
             {
                 return NotFound("Usuário inválido");
