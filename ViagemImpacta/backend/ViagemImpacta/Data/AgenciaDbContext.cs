@@ -16,8 +16,15 @@ namespace ViagemImpacta.Data
         public DbSet<Payment> Payments { get; set; } = null!;
         public DbSet<Travellers> Travellers { get; set; } = null!;
 
+        public DbSet<Promotion> Promotions { get; set; } = null!;
+        public DbSet<RoomsPromotional> RoomsPromotional { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Configuração da chave primária para RoomsPromotional
+            modelBuilder.Entity<RoomsPromotional>()
+                .HasKey(rp => rp.RoomPromotionalId);
+
             // Configuração para armazenar lista de URLs de imagem como string delimitada
             modelBuilder.Entity<Hotel>()
                 .Property(h => h.ImageUrls)
@@ -43,7 +50,7 @@ namespace ViagemImpacta.Data
             {
                 entity.HasKey(e => e.RoomId);
                 entity.Property(e => e.AverageDailyPrice).HasColumnType("decimal(18,2)");
-                
+
                 // Relacionamento com Hotel
                 entity.HasOne(e => e.Hotel)
                     .WithMany(h => h.Rooms)
@@ -68,7 +75,7 @@ namespace ViagemImpacta.Data
                 entity.HasKey(e => e.ReservationId);
                 entity.Property(e => e.TotalPrice).HasColumnType("decimal(18,2)");
                 entity.Property(e => e.Description).HasMaxLength(500);
-                
+
                 // Relacionamentos
                 entity.HasOne(e => e.User)
                     .WithMany(u => u.Reservations)
