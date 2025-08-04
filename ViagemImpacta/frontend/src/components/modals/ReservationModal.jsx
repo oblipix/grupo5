@@ -6,10 +6,24 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { reservationService } from '../../services/reservationService.js';
 import { paymentService } from '../../services/paymentService.js';
 import { Icons } from '../layout/Icons.jsx';
+import DateErrorModal from './DateErrorModal.jsx'; // Importa o modal de erro de data
 
 const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
   const { currentUser, isLoggedIn, addReservationToHistory } = useAuth();
   
+  // Função para obter a data mínima permitida (amanhã)
+  const getMinDate = () => {
+    const today = new Date();
+    const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+    return tomorrow.toISOString().split('T')[0];
+  };
+
+  // Função para obter a data de hoje para comparação
+  const getTodayDate = () => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  };
+
   const [formData, setFormData] = useState({
     checkIn: '',
     checkOut: '',
@@ -28,6 +42,13 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
   const [errors, setErrors] = useState([]);
   const [calculatedTotal, setCalculatedTotal] = useState(null);
 
+  // Estado para o modal de erro de data
+  const [dateErrorModal, setDateErrorModal] = useState({
+    isOpen: false,
+    message: '',
+    title: 'Data não permitida'
+  });
+
   // Verifica se o usuário está logado
   if (!isLoggedIn || !currentUser) {
     return null; // Não renderiza o modal se não estiver logado
@@ -35,6 +56,43 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    
+    // Validação para campos de data
+    if (name === 'checkIn' || name === 'checkOut') {
+      const today = getTodayDate();
+      const minDate = getMinDate();
+      
+      // Valida se a data não é anterior a amanhã (ou igual a hoje)
+      if (value && (value < minDate || value === today)) {
+        setDateErrorModal({
+          isOpen: true,
+          message: 'Só é permitido agendar em datas posteriores ao dia de hoje!',
+          title: 'Data não permitida'
+        });
+        return;
+      }
+      
+      // Validação adicional para check-out: deve ser posterior ao check-in
+      if (name === 'checkOut' && formData.checkIn && value && value <= formData.checkIn) {
+        setDateErrorModal({
+          isOpen: true,
+          message: 'A data de check-out deve ser posterior à data de check-in!',
+          title: 'Data inválida'
+        });
+        return;
+      }
+      
+      // Se check-in for alterado e check-out for anterior, limpar check-out
+      if (name === 'checkIn' && formData.checkOut && value && formData.checkOut <= value) {
+        setFormData(prev => ({
+          ...prev,
+          checkIn: value,
+          checkOut: ''
+        }));
+        setCalculatedTotal(null);
+        return;
+      }
+    }
     
     if (name === 'numberOfGuests') {
       const guestCount = parseInt(value);
@@ -232,8 +290,22 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
                   type="date"
                   name="checkIn"
                   value={formData.checkIn}
+                  min={getMinDate()}
                   onChange={handleInputChange}
-                  min={new Date().toISOString().split('T')[0]}
+                  onBlur={(e) => {
+                    const { value } = e.target;
+                    const today = getTodayDate();
+                    const minDate = getMinDate();
+                    
+                    if (value && (value < minDate || value === today)) {
+                      e.target.setCustomValidity('Só é permitido agendar em datas posteriores ao dia de hoje!');
+                    } else {
+                      e.target.setCustomValidity('');
+                    }
+                  }}
+                  onInvalid={(e) => {
+                    e.target.setCustomValidity('Só é permitido agendar em datas posteriores ao dia de hoje!');
+                  }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
@@ -246,8 +318,30 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
                   type="date"
                   name="checkOut"
                   value={formData.checkOut}
+                  min={formData.checkIn || getMinDate()}
                   onChange={handleInputChange}
-                  min={formData.checkIn || new Date().toISOString().split('T')[0]}
+                  onBlur={(e) => {
+                    const { value } = e.target;
+                    const today = getTodayDate();
+                    const minDate = getMinDate();
+                    const checkInDate = formData.checkIn;
+                    
+                    if (value && (value < minDate || value === today)) {
+                      e.target.setCustomValidity('Só é permitido agendar em datas posteriores ao dia de hoje!');
+                    } else if (value && checkInDate && value <= checkInDate) {
+                      e.target.setCustomValidity('A data de check-out deve ser posterior à data de check-in!');
+                    } else {
+                      e.target.setCustomValidity('');
+                    }
+                  }}
+                  onInvalid={(e) => {
+                    const checkInDate = formData.checkIn;
+                    if (formData.checkOut && checkInDate && formData.checkOut <= checkInDate) {
+                      e.target.setCustomValidity('A data de check-out deve ser posterior à data de check-in!');
+                    } else {
+                      e.target.setCustomValidity('Só é permitido agendar em datas posteriores ao dia de hoje!');
+                    }
+                  }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
@@ -391,6 +485,14 @@ const ReservationModal = ({ isOpen, onClose, hotel, room, onSuccess }) => {
           </div>
         </div>
       </div>
+
+      {/* Modal de erro de data */}
+      <DateErrorModal
+        isOpen={dateErrorModal.isOpen}
+        onClose={() => setDateErrorModal({ ...dateErrorModal, isOpen: false })}
+        message={dateErrorModal.message}
+        title={dateErrorModal.title}
+      />
     </div>
   );
 };

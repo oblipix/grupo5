@@ -48,7 +48,125 @@ input[type="range"], /* Corrigi "rage" para "range" */
     color: #2c5282;
     font-size: 1.0rem;
     margin-bottom: 0.5rem; /* Espaçamento abaixo do título */
-    display: block; /* Garante que a label ocupe sua própria linha */
+}
+
+/* Estilos para ícone de data inválida */
+.date-invalid-icon {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #ef4444;
+    cursor: help;
+    transition: color 0.2s ease;
+}
+
+.date-invalid-icon:hover {
+    color: #dc2626;
+}
+
+/* Estilos para inputs de data com data inválida */
+input[type="date"]:invalid {
+    border-color: #ef4444;
+    background-color: #fef2f2;
+}
+
+/* Estilização do seletor de data para indicar datas bloqueadas */
+input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+}
+
+input[type="date"]:disabled::-webkit-calendar-picker-indicator {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Estilos para indicar datas proibidas ao usuário */
+.date-forbidden {
+    position: relative;
+    cursor: not-allowed !important;
+}
+
+.date-forbidden::after {
+    content: '🚫';
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 16px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.date-forbidden:hover::before {
+    content: 'Só é permitido agendar em datas posteriores ao dia de hoje';
+    position: absolute;
+    top: -40px;
+    left: 0;
+    right: 0;
+    background: #1f2937;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 20;
+    text-align: center;
+}
+
+/* Tooltip arrow */
+.date-forbidden:hover::after {
+    content: '';
+    position: absolute;
+    top: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #1f2937;
+    z-index: 21;
+}
+
+/* Estilo para inputs quando há erro de validação */
+input[type="date"].date-error {
+    border: 2px solid #ef4444;
+    background-color: #fef2f2;
+}
+
+input[type="date"].date-error:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* Tooltip personalizado para datas inválidas */
+.date-tooltip {
+    position: relative;
+}
+
+.date-tooltip:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1f2937;
+    color: white;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    z-index: 1000;
+    opacity: 1;
+}
+
+.date-tooltip:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: #1f2937;
+    z-index: 1000;
 }
 
 /* Remove qualquer top: 20px de inputs ou labels que possa estar desalinhando */

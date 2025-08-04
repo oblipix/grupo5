@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { Icons } from '../layout/Icons'; // Importa o nosso arquivo central de ícones
 import '../styles/SearchForms.css'; // Importa o CSS específico do SearchHotelsBar
 import { hotelService } from '../../services/hotelService'; // Importa o serviço de hotéis
+import DateErrorModal from '../modals/DateErrorModal'; // Importa o modal de erro de data
 
 // --- DADOS E OPÇÕES DO FORMULÁRIO ---
 const roomGuestOptions = [
@@ -51,6 +52,19 @@ function SearchHotelsBar() {
     // Estado para detectar se é mobile
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 640);
 
+    // Função para obter a data mínima permitida (amanhã)
+    const getMinDate = () => {
+        const today = new Date();
+        const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+        return tomorrow.toISOString().split('T')[0];
+    };
+
+    // Função para obter a data de hoje para comparação
+    const getTodayDate = () => {
+        const today = new Date();
+        return today.toISOString().split('T')[0];
+    };
+
     // Estado interno do formulário
     const [destination, setDestination] = useState('');
     const [checkInDate, setCheckInDate] = useState('');
@@ -61,6 +75,13 @@ function SearchHotelsBar() {
     const [priceRange, setPriceRange] = useState(5000);
     const [selectedAmenities, setSelectedAmenities] = useState([]);
     const [isAmenitiesDropdownOpen, setIsAmenitiesDropdownOpen] = useState(false);
+
+    // Estado para o modal de erro de data
+    const [dateErrorModal, setDateErrorModal] = useState({
+        isOpen: false,
+        message: '',
+        title: 'Data não permitida'
+    });
 
     // Função para obter o label apropriado baseado no tamanho da tela
     const getGuestLabel = (option) => {
@@ -135,6 +156,43 @@ function SearchHotelsBar() {
         );
     };
 
+    // Função para validar e atualizar datas
+    const handleDateChange = (field, value) => {
+        // Valida se a data não é anterior a amanhã (ou igual a hoje)
+        const minDate = getMinDate();
+        const today = getTodayDate();
+        
+        if (value && (value < minDate || value === today)) {
+            // Se a data for inválida (hoje ou anterior), mostra modal e não atualiza o estado
+            setDateErrorModal({
+                isOpen: true,
+                message: 'Só é permitido agendar em datas posteriores ao dia de hoje!',
+                title: 'Data não permitida'
+            });
+            return;
+        }
+
+        // Validação adicional para check-out: deve ser posterior ao check-in
+        if (field === 'checkOut' && checkInDate && value && value <= checkInDate) {
+            // Se check-out for anterior ou igual ao check-in, mostra modal
+            setDateErrorModal({
+                isOpen: true,
+                message: 'A data de check-out deve ser posterior à data de check-in!',
+                title: 'Data inválida'
+            });
+            return;
+        }
+
+        if (field === 'checkIn') {
+            setCheckInDate(value);
+            // Se a data de check-out já selecionada for anterior à nova data de check-in, limpa check-out
+            if (checkOutDate && value && checkOutDate <= value) {
+                setCheckOutDate('');
+            }
+        }
+        if (field === 'checkOut') setCheckOutDate(value);
+    };
+
     // Função para realizar a pesquisa
     const handleSearch = () => {
         const searchParams = new URLSearchParams();
@@ -198,10 +256,33 @@ function SearchHotelsBar() {
                             </svg>
                             <input
                                 type="date"
-                                className="flex-grow pl-2 bg-transparent focus:outline-none text-gray-800"
+                                min={getMinDate()}
+                                className="flex-grow pl-2 bg-transparent focus:outline-none text-gray-800 date-tooltip"
                                 value={checkInDate}
-                                onChange={(e) => setCheckInDate(e.target.value)}
+                                onChange={(e) => handleDateChange('checkIn', e.target.value)}
+                                onInvalid={(e) => {
+                                    e.preventDefault();
+                                    alert('Só é permitido agendar em datas posteriores ao dia de hoje!');
+                                }}
+                                onBlur={(e) => {
+                                    // Validação adicional ao sair do campo
+                                    const value = e.target.value;
+                                    const today = getTodayDate();
+                                    if (value && value <= today) {
+                                        e.target.value = '';
+                                        setCheckInDate('');
+                                        alert('Só é permitido agendar em datas posteriores ao dia de hoje!');
+                                    }
+                                }}
+                                title="Só é permitido agendar em datas posteriores ao dia de hoje"
                             />
+                            {checkInDate && checkInDate < getMinDate() && (
+                                <div className="date-invalid-icon" title="Data não permitida - Só é permitido agendar em datas posteriores ao dia de hoje">
+                                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -213,10 +294,33 @@ function SearchHotelsBar() {
                             </svg>
                             <input
                                 type="date"
-                                className="flex-grow pl-2 bg-transparent focus:outline-none text-gray-800"
+                                min={checkInDate || getMinDate()}
+                                className="flex-grow pl-2 bg-transparent focus:outline-none text-gray-800 date-tooltip"
                                 value={checkOutDate}
-                                onChange={(e) => setCheckOutDate(e.target.value)}
+                                onChange={(e) => handleDateChange('checkOut', e.target.value)}
+                                onInvalid={(e) => {
+                                    e.preventDefault();
+                                    alert('Só é permitido agendar em datas posteriores ao dia de hoje!');
+                                }}
+                                onBlur={(e) => {
+                                    // Validação adicional ao sair do campo
+                                    const value = e.target.value;
+                                    const today = getTodayDate();
+                                    if (value && (value <= today || value <= checkInDate)) {
+                                        e.target.value = '';
+                                        setCheckOutDate('');
+                                        alert('A data de check-out deve ser posterior ao check-in e ao dia de hoje!');
+                                    }
+                                }}
+                                title="Só é permitido agendar em datas posteriores ao dia de hoje"
                             />
+                            {checkOutDate && checkOutDate < (checkInDate || getMinDate()) && (
+                                <div className="date-invalid-icon" title="Data não permitida - Só é permitido agendar em datas posteriores ao dia de hoje">
+                                    <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                                    </svg>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -332,6 +436,14 @@ function SearchHotelsBar() {
                     </div>
                 </div>
             </div>
+
+            {/* Modal de erro de data */}
+            <DateErrorModal
+                isOpen={dateErrorModal.isOpen}
+                onClose={() => setDateErrorModal({ ...dateErrorModal, isOpen: false })}
+                message={dateErrorModal.message}
+                title={dateErrorModal.title}
+            />
         </div>
     );
 }
