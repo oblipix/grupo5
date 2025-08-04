@@ -156,3 +156,19 @@
     margin-top: 2.5rem;
     margin-bottom: 2.5rem;
   }
+
+  /* Ajustes específicos para mobile - evitar sobreposição com o header sticky */
+  @media (max-width: 768px) {
+    /* Container principal da página de blog no mobile */
+    .container.mx-auto.py-8.px-6 {
+      padding-top: 2rem !important; /* Mais espaço no topo para não grudar no header */
+      padding-left: 1rem !important;
+      padding-right: 1rem !important;
+    }
+    
+    /* Botão voltar no mobile */
+    .main-action-button {
+      margin-top: 0.5rem !important;
+      margin-bottom: 1.5rem !important;
+    }
+  }
