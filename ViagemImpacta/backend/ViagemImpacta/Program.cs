@@ -19,6 +19,9 @@ using Settings = ViagemImpacta.Settings;
 var builder = WebApplication.CreateBuilder(args);
 var key = Encoding.ASCII.GetBytes(Settings.Secret);
 
+// Adiciona o Application Insights
+builder.Services.AddApplicationInsightsTelemetry();
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers()
@@ -117,7 +120,16 @@ builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:5173", "https://localhost:5173")
+        policy.WithOrigins(
+                "http://localhost:3000",
+                "https://localhost:3000",
+                "http://localhost:5173",
+                "https://localhost:5173",
+                "http://localhost:5174",
+                "https://localhost:5174",
+                "http://localhost:4173",
+                "https://localhost:4173"
+              )
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();

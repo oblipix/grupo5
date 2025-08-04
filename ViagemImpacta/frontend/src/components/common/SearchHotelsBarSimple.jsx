@@ -143,8 +143,7 @@ function SearchHotelsBar() {
         if (checkInDate) searchParams.append('checkIn', checkInDate);
         if (checkOutDate) searchParams.append('checkOut', checkOutDate);
         if (guestsInfo.rooms) searchParams.append('quartos', guestsInfo.rooms);
-        if (guestsInfo.adults) searchParams.append('adultos', guestsInfo.adults);
-        if (guestsInfo.children) searchParams.append('criancas', guestsInfo.children);
+        if (guestsInfo.adults || guestsInfo.children) searchParams.append('hospedes', guestsInfo.adults + guestsInfo.children);
         if (priceRange < 10000) searchParams.append('precoMaximo', priceRange);
         if (selectedAmenities.length > 0) searchParams.append('comodidades', selectedAmenities.join(','));
         if (selectedRoomType) searchParams.append('tipoQuarto', selectedRoomType);

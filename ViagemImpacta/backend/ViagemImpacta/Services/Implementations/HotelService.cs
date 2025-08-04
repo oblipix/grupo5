@@ -65,7 +65,7 @@ namespace ViagemImpacta.Services.Interfaces
 
             // Agora processar os quartos - apenas criar registros para tipos com quantidade > 0
             var roomsToCreate = new List<Room>();
-            
+
             foreach (var roomConfig in hotel.Rooms)
             {
                 if (roomConfig.TotalRooms > 0)
@@ -78,7 +78,7 @@ namespace ViagemImpacta.Services.Interfaces
                         Capacity = roomConfig.Capacity,
                         AverageDailyPrice = roomConfig.AverageDailyPrice
                     };
-                    
+
                     roomsToCreate.Add(roomToCreate);
                 }
             }
@@ -128,7 +128,7 @@ namespace ViagemImpacta.Services.Interfaces
             foreach (var roomConfig in hotel.Rooms)
             {
                 var existingRoom = existingHotel.Rooms.FirstOrDefault(r => r.TypeName == roomConfig.TypeName);
-                
+
                 if (roomConfig.TotalRooms > 0)
                 {
                     if (existingRoom != null)
@@ -172,7 +172,7 @@ namespace ViagemImpacta.Services.Interfaces
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<IEnumerable<HotelDto>> GetHotelsWithFiltersAsync(string? hotelAddress, int? minStars,int? minPrice, int? maxPrice, int? guestCount)
+        public async Task<IEnumerable<HotelDto>> GetHotelsWithFiltersAsync(string? hotelAddress, int? minStars, int? minPrice, int? maxPrice, int? guestCount)
         {
             var hotels = await _unitOfWork.Hotels.GetAllAsync(include: q => q.Include(h => h.Rooms));
             if (!string.IsNullOrEmpty(hotelAddress))
@@ -184,8 +184,6 @@ namespace ViagemImpacta.Services.Interfaces
             {
                 foreach (var hotel in hotels)
                 {
-                    // Calcular o menor preço absoluto de todos os quartos
-                     hotel.AbsoluteLowestRoomPrice = hotel.Rooms.Any() ? hotel.Rooms.Min(r => r.AverageDailyPrice) : (decimal?)null;
                     // Filtrar quartos com base no preço mínimo e máximo
                     hotel.Rooms = hotel.Rooms
                         .Where(r =>

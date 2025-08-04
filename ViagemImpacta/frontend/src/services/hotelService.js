@@ -8,12 +8,103 @@ import axios from 'axios';
  * Substitui os dados estáticos do hotels.js por chamadas reais à API
  */
 class HotelService {
+  
+  constructor() {
+    // Sistema de cache simples em memória
+    this.cache = new Map();
+    this.CACHE_TTL = {
+      getAllHotels: 10 * 60 * 1000,        // 10 minutos
+      getHotelsWithFilters: 2 * 60 * 1000, // 2 minutos
+      getHotelById: 15 * 60 * 1000         // 15 minutos
+    };
+  }
+
+  /**
+   * Gera chave única para o cache baseada no método e parâmetros
+   * @param {string} method - Nome do método
+   * @param {*} params - Parâmetros do método
+   * @returns {string} Chave única para o cache
+   */
+  _getCacheKey(method, params = null) {
+    if (params === null) {
+      return method;
+    }
+    return `${method}-${JSON.stringify(params)}`;
+  }
+
+  /**
+   * Verifica se um item do cache ainda é válido
+   * @param {Object} cacheEntry - Entrada do cache
+   * @param {string} method - Método para verificar TTL
+   * @returns {boolean} Se o cache é válido
+   */
+  _isValidCache(cacheEntry, method) {
+    if (!cacheEntry) return false;
+    const ttl = this.CACHE_TTL[method] || this.CACHE_TTL.getHotelsWithFilters;
+    return (Date.now() - cacheEntry.timestamp) < ttl;
+  }
+
+  /**
+   * Armazena dados no cache
+   * @param {string} key - Chave do cache
+   * @param {*} data - Dados para armazenar
+   */
+  _setCache(key, data) {
+    this.cache.set(key, {
+      data: data,
+      timestamp: Date.now()
+    });
+  }
+
+  /**
+   * Recupera dados do cache se válidos
+   * @param {string} key - Chave do cache
+   * @param {string} method - Método para verificar TTL
+   * @returns {*|null} Dados do cache ou null se inválido
+   */
+  _getFromCache(key, method) {
+    const cacheEntry = this.cache.get(key);
+    if (this._isValidCache(cacheEntry, method)) {
+      return cacheEntry.data;
+    }
+    
+    // Remove cache expirado
+    if (cacheEntry) {
+      this.cache.delete(key);
+    }
+    
+    return null;
+  }
+
+  /**
+   * Limpa todo o cache ou por padrão específico
+   * @param {string} pattern - Padrão para limpar (opcional)
+   */
+  clearCache(pattern = null) {
+    if (pattern) {
+      for (const key of this.cache.keys()) {
+        if (key.includes(pattern)) {
+          this.cache.delete(key);
+        }
+      }
+    } else {
+      this.cache.clear();
+    }
+  }
  
   /**
    * Busca todos os hotéis da API
    * @returns {Promise<Array>} Lista de hotéis
    */
   async getAllHotels() {
+    const cacheKey = this._getCacheKey('getAllHotels');
+    
+    // Verifica cache primeiro
+    const cachedData = this._getFromCache(cacheKey, 'getAllHotels');
+    if (cachedData) {
+      return cachedData;
+    }
+
     try {
       const response = await fetch(`${API_BASE_URL}/hotels`, {
         method: 'GET',
@@ -27,10 +118,14 @@ class HotelService {
       }
  
       const hotels = await response.json();
-    
-     
+      
       // Transforma os dados do backend para o formato esperado pelo frontend
-      return this.transformHotelsData(hotels);
+      const transformedData = this.transformHotelsData(hotels);
+      
+      // Armazena no cache
+      this._setCache(cacheKey, transformedData);
+      
+      return transformedData;
      
     } catch (error) {
       console.error('Erro no serviço de hotéis:', error);
@@ -44,6 +139,14 @@ class HotelService {
    * @returns {Promise<Object>} Dados do hotel
    */
   async getHotelById(id) {
+    const cacheKey = this._getCacheKey('getHotelById', { id });
+    
+    // Verifica cache primeiro
+    const cachedData = this._getFromCache(cacheKey, 'getHotelById');
+    if (cachedData) {
+      return cachedData;
+    }
+
     try {
       const response = await fetch(`${API_BASE_URL}/hotels/${id}`, {
         method: 'GET',
@@ -60,7 +163,12 @@ class HotelService {
       }
  
       const hotel = await response.json();
-      return this.transformSingleHotelData(hotel);
+      const transformedData = this.transformSingleHotelData(hotel);
+      
+      // Armazena no cache
+      this._setCache(cacheKey, transformedData);
+      
+      return transformedData;
      
     } catch (error) {
       console.error('Erro ao buscar hotel por ID:', error);
@@ -70,6 +178,7 @@ class HotelService {
  
   /**
    * Busca hotéis por número de estrelas
+   * REFATORADO: Agora usa a rota /search internamente
    * @param {number} stars - Número de estrelas (1-5)
    * @returns {Promise<Array>} Lista de hotéis filtrados
    */
@@ -78,59 +187,45 @@ class HotelService {
       if (stars < 1 || stars > 5) {
         throw new Error('Número de estrelas deve ser entre 1 e 5');
       }
- 
-      const response = await fetch(`${API_BASE_URL}/hotels/stars/${stars}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+
+      // Usa a rota search unificada
+      return await this.getHotelsWithFilters({ 
+        stars: stars 
       });
- 
-      if (!response.ok) {
-        throw new Error(`Erro ao buscar hotéis por estrelas: ${response.status} ${response.statusText}`);
-      }
- 
-      const hotels = await response.json();
-      return this.transformHotelsData(hotels);
      
     } catch (error) {
       console.error('Erro ao buscar hotéis por estrelas:', error);
       throw error;
     }
-  }
- 
-  /**
+  }  /**
    * Busca hotéis por comodidades
+   * REFATORADO: Agora usa a rota /search internamente
    * @param {Object} amenities - Objeto com comodidades (wifi, parking, gym)
    * @returns {Promise<Array>} Lista de hotéis filtrados
    */
   async getHotelsByAmenities(amenities = {}) {
-    try {
-      const queryParams = new URLSearchParams();
-     
-      if (amenities.wifi) queryParams.append('wifi', 'true');
-      if (amenities.parking) queryParams.append('parking', 'true');
-      if (amenities.gym) queryParams.append('gym', 'true');
- 
-      const response = await fetch(`${API_BASE_URL}/hotels/amenities?${queryParams.toString()}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
- 
-      if (!response.ok) {
-        throw new Error(`Erro ao buscar hotéis por comodidades: ${response.status} ${response.statusText}`);
-      }
- 
-      const hotels = await response.json();
-      return this.transformHotelsData(hotels);
-     
-    } catch (error) {
-      console.error('Erro ao buscar hotéis por comodidades:', error);
-      throw error;
-    }
+  try {
+    // Mapeamento simplificado - frontend envia nomes simples
+    const amenitiesArray = [];
+    if (amenities.wifi) amenitiesArray.push('Wifi');
+    if (amenities.parking) amenitiesArray.push('Parking');
+    if (amenities.gym) amenitiesArray.push('Gym');
+    if (amenities.restaurant) amenitiesArray.push('Restaurant');
+    if (amenities.bar) amenitiesArray.push('Bar');
+    if (amenities.pool) amenitiesArray.push('Pool');
+    if (amenities.roomService) amenitiesArray.push('RoomService');
+    if (amenities.accessibility) amenitiesArray.push('Accessibility');
+    if (amenities.petFriendly) amenitiesArray.push('PetFriendly');
+
+    return await this.getHotelsWithFilters({
+      amenities: amenitiesArray.join(',')
+    });
+  } catch (error) {
+    console.error('Erro ao buscar hotéis por comodidades:', error);
+    throw error;
   }
+}
+     
  
   /**
    * Transforma os dados dos hotéis do backend para o formato esperado pelo frontend
@@ -148,11 +243,7 @@ class HotelService {
    * @returns {Object} Hotel no formato do frontend
    */
   transformSingleHotelData(backendHotel) {
-    // Debug: vamos ver o que está vindo do backend
-    console.log('Backend Hotel Data:', backendHotel);
-    
     return {
-      // Mapeia os campos do backend para o frontend
       id: backendHotel.hotelId || backendHotel.HotelId,
       title: backendHotel.name || backendHotel.Name,
       description: backendHotel.description || backendHotel.Description,
@@ -160,28 +251,29 @@ class HotelService {
       price: this.generatePrice(backendHotel),
       rating: this.generateRating(backendHotel),
       lowestRoomPrice: backendHotel.lowestRoomPrice || backendHotel.LowestRoomPrice,
-     
-      // Campos específicos do backend
+      filteredLowestRoomPrice: backendHotel.filteredLowestRoomPrice || backendHotel.FilteredLowestRoomPrice,
+
+
       address: backendHotel.hotelAddress || backendHotel.HotelAddress,
       phone: backendHotel.phone || backendHotel.Phone,
       stars: backendHotel.stars || backendHotel.Stars,
       city: backendHotel.city || backendHotel.City,
      
       // Comodidades/Amenities
-      hasWifi: backendHotel.wifi || backendHotel.Wifi || false,
-      parking: backendHotel.parking || backendHotel.Parking || false,
-      hasGym: backendHotel.gym || backendHotel.Gym || false,
-      hasRestaurant: backendHotel.restaurant || backendHotel.Restaurant || false,
-      hasBar: backendHotel.bar || backendHotel.Bar || false,
-      hasPool: backendHotel.pool || backendHotel.Pool || false,
-      roomService: backendHotel.roomService || backendHotel.RoomService || false,
-      accessibility: backendHotel.accessibility || backendHotel.Accessibility || false,
-      warmPool: backendHotel.warmPool || backendHotel.WarmPool || false,
-      theater: backendHotel.theater || backendHotel.Theater || false,
-      garden: backendHotel.garden || backendHotel.Garden || false,
-      petFriendly: backendHotel.petFriendly || backendHotel.PetFriendly || false,
-      breakfastIncludes: backendHotel.breakfastIncludes || backendHotel.BreakfastIncludes || false,
-     
+    wifi: backendHotel.wifi || backendHotel.Wifi || false,
+    parking: backendHotel.parking || backendHotel.Parking || false,
+    gym: backendHotel.gym || backendHotel.Gym || false,
+    restaurant: backendHotel.restaurant || backendHotel.Restaurant || false,
+    bar: backendHotel.bar || backendHotel.Bar || false,
+    pool: backendHotel.pool || backendHotel.Pool || false,
+    roomService: backendHotel.roomService || backendHotel.RoomService || false,
+    accessibility: backendHotel.accessibility || backendHotel.Accessibility || false,
+    warmPool: backendHotel.warmPool || backendHotel.WarmPool || false,
+    theater: backendHotel.theater || backendHotel.Theater || false,
+    garden: backendHotel.garden || backendHotel.Garden || false,
+    petFriendly: backendHotel.petFriendly || backendHotel.PetFriendly || false,
+    breakfastIncludes: backendHotel.breakfastIncludes || backendHotel.BreakfastIncludes || false,
+    
       // Campos que precisam ser gerados ou vir de outras fontes
       mainImageUrl: this.generateImageUrl(backendHotel),
       galleryImages: this.generateGalleryImages(backendHotel),
@@ -205,22 +297,45 @@ class HotelService {
   }
 
   async getHotelsWithFilters(filters) {
-    const params = {};
-    if (filters.destination) params.destino = filters.destination;
-    if (typeof filters.precoMin === 'number' && !isNaN(filters.precoMin)) params.precoMin = filters.precoMin;
-    if (typeof filters.precoMax === 'number' && !isNaN(filters.precoMax)) params.precoMax = filters.precoMax;
-    if (filters.estrelas) params.stars = filters.estrelas;
-    if (filters.roomType) params.tipoQuarto = filters.roomType;
-    if (filters.guests) params.hospedes = filters.guests;
-    if (filters.amenities) params.comodidades = filters.amenities;
-    if (filters.checkIn) params.checkIn = filters.checkIn;
-    if (filters.checkOut) params.checkOut = filters.checkOut;
-    // Adicione outros filtros conforme necessário
-    //DEBUG TEMPORARIO MELHORADO
-    console.log('[DEBUG][hotelService][TEMP] Enviando para backend:', JSON.stringify(params));
-    const response = await axios.get(`${API_BASE_URL}/hotels/search`, { params });
-    console.log('[DEBUG][hotelService][TEMP] Dados brutos recebidos do backend:', response.data);
-    return this.transformHotelsData(response.data);
+    const cacheKey = this._getCacheKey('getHotelsWithFilters', filters);
+    
+    // Verifica cache primeiro
+    const cachedData = this._getFromCache(cacheKey, 'getHotelsWithFilters');
+    if (cachedData) {
+      return cachedData;
+    }
+
+    try {
+      const params = {};
+      if (filters.destination) params.destination = filters.destination;
+      if (typeof filters.precoMin === 'number' && !isNaN(filters.precoMin)) params.minPrice = filters.precoMin;
+      if (typeof filters.precoMax === 'number' && !isNaN(filters.precoMax)) params.maxPrice = filters.precoMax;
+      if (typeof filters.minPrice === 'number' && !isNaN(filters.minPrice)) params.minPrice = filters.minPrice;
+      if (typeof filters.maxPrice === 'number' && !isNaN(filters.maxPrice)) params.maxPrice = filters.maxPrice;
+      if (filters.estrelas) params.stars = filters.estrelas;
+      if (filters.roomType) params.roomType = filters.roomType;
+      if (filters.guests) params.guests = filters.guests;
+      if (filters.amenities) params.amenities = filters.amenities;
+      if (filters.checkIn) params.checkIn = filters.checkIn;
+      if (filters.checkOut) params.checkOut = filters.checkOut;
+      
+      const response = await axios.get(`${API_BASE_URL}/hotels/search`, { params });
+      const transformedData = this.transformHotelsData(response.data);
+      
+      // Armazena no cache
+      this._setCache(cacheKey, transformedData);
+      
+      return transformedData;
+    } catch (error) {
+      console.error('❌ Error in getHotelsWithFilters:', error);
+      
+      // Se a busca com filtros falhar, tenta buscar todos os hotéis
+      if (error.response?.status === 404) {
+        return await this.getAllHotels();
+      }
+      
+      throw error;
+    }
   }
  
   /**
@@ -275,32 +390,29 @@ class HotelService {
    * Gera URL de imagem baseada nas URLs do backend ou fallback
    */
   generateImageUrl(hotel) {
-    console.log('generateImageUrl - hotel data:', hotel);
-    console.log('generateImageUrl - mainImageUrl:', hotel.mainImageUrl);
-    console.log('generateImageUrl - imageUrls:', hotel.imageUrls);
-    console.log('generateImageUrl - ImageUrls:', hotel.ImageUrls);
-    
-    // Primeiro, tenta usar a mainImageUrl do backend
-    if (hotel.mainImageUrl) {
-      console.log('Using mainImageUrl:', hotel.mainImageUrl);
+    // Primeira tentativa: mainImageUrl
+    if (hotel.mainImageUrl && hotel.mainImageUrl.trim() !== '') {
       return hotel.mainImageUrl;
     }
     
-    // Se não tiver mainImageUrl, tenta usar a primeira imagem da lista ImageUrls
+    // Segunda tentativa: imageUrls (minúsculo)
     if (hotel.imageUrls && Array.isArray(hotel.imageUrls) && hotel.imageUrls.length > 0) {
-      console.log('Using first imageUrls:', hotel.imageUrls[0]);
-      return hotel.imageUrls[0];
+      const firstImage = hotel.imageUrls.find(url => url && url.trim() !== '');
+      if (firstImage) {
+        return firstImage;
+      }
     }
     
-    // Fallback para propriedades com case diferentes (Pascal case)
+    // Terceira tentativa: ImageUrls (maiúsculo)
     if (hotel.ImageUrls && Array.isArray(hotel.ImageUrls) && hotel.ImageUrls.length > 0) {
-      console.log('Using first ImageUrls:', hotel.ImageUrls[0]);
-      return hotel.ImageUrls[0];
+      const firstImage = hotel.ImageUrls.find(url => url && url.trim() !== '');
+      if (firstImage) {
+        return firstImage;
+      }
     }
     
-    // Fallback: se não houver imagens do backend, usa placeholder
-    console.log('No images found, using placeholder');
-    return 'https://via.placeholder.com/800x600/f0f0f0/999999?text=Sem+Imagem';
+    // Fallback simples
+    return '/images/hotel-placeholder.jpg';
   }
  
   /**
@@ -403,13 +515,8 @@ class HotelService {
    * Gera opções de quartos baseadas nos dados reais do backend
    */
   generateRoomOptions(hotel) {
-    // Debug: vamos ver se os quartos estão chegando
-    console.log('Hotel rooms data:', hotel.rooms);
-    console.log('Full hotel object:', hotel);
-    
     // Se o hotel tem dados de quartos do backend, usa eles
     if (hotel.rooms && Array.isArray(hotel.rooms) && hotel.rooms.length > 0) {
-      console.log('Using real room data from backend');
       return hotel.rooms.map(room => {
         const roomData = {
           id: room.roomId || room.RoomId || room.id, // Mapea o ID corretamente
@@ -422,13 +529,11 @@ class HotelService {
           bathrooms: 1,
           beds: this.getBedConfiguration(room.capacity || room.Capacity)
         };
-        console.log('Mapped room data:', roomData);
         return roomData;
       });
     }
     
     // Fallback: gera opções básicas se não há dados do backend
-    console.log('Using fallback room data - no backend data found');
     const stars = hotel.stars || hotel.Stars || 3;
     const basePrice = stars * 150;
    
@@ -514,6 +619,48 @@ getRoomTypes() {
         guestName: 'Maria C.'
       }
     ];
+  }
+
+  /**
+   * Retorna informações sobre o estado atual do cache
+   * @returns {Object} Informações do cache
+   */
+  getCacheInfo() {
+    const info = {
+      totalEntries: this.cache.size,
+      entries: [],
+      sizeInKB: 0
+    };
+
+    for (const [key, value] of this.cache.entries()) {
+      const ageInMinutes = Math.round((Date.now() - value.timestamp) / (1000 * 60));
+      info.entries.push({
+        key: key,
+        ageInMinutes: ageInMinutes,
+        isExpired: !this._isValidCache(value, key.split('-')[0])
+      });
+    }
+
+    // Estimativa aproximada do tamanho
+    info.sizeInKB = Math.round(JSON.stringify([...this.cache.entries()]).length / 1024);
+
+    return info;
+  }
+
+  /**
+   * Invalida cache relacionado a hotéis quando há mudanças
+   * Útil para quando um hotel é atualizado no backend
+   * @param {number} hotelId - ID do hotel que foi modificado (opcional)
+   */
+  invalidateHotelCache(hotelId = null) {
+    if (hotelId) {
+      // Invalida cache específico do hotel
+      this.clearCache(`getHotelById-{"id":${hotelId}}`);
+    }
+    
+    // Invalida caches que podem conter o hotel modificado
+    this.clearCache('getAllHotels');
+    this.clearCache('getHotelsWithFilters');
   }
 }
  

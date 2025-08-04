@@ -9,6 +9,14 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './components/context/AuthContext.jsx';
 import { ModalProvider } from './components/context/ModalContext.jsx';
 
+// Utilitários de teste (apenas em desenvolvimento)
+if (import.meta.env.DEV) {
+  import('./utils/testCache.js').then(({ testCache }) => {
+    window.testCache = testCache;
+    console.log('🧪 testCache disponível no console! Digite: testCache.showCacheInfo()');
+  });
+}
+
 
 
 // Estilos Globais

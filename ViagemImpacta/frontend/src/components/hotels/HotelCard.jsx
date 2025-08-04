@@ -2,10 +2,11 @@
 // src/components/HotelCard.jsx
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; // Importa o contexto para ações do usuário
 import { StarIcon } from '@heroicons/react/24/solid'; // Para a avaliação
 import '../styles/HotelCard.css'; // Importa o CSS específico do card
+import DebugImage from '../common/DebugImage';
 
 function HotelCard({ hotel }) {
     // Usa o contexto para gerenciar o estado de "salvo"
@@ -13,6 +14,7 @@ function HotelCard({ hotel }) {
     const [showConfetti, setShowConfetti] = useState(false);
     const confettiRef = useRef(null);
     const buttonRef = useRef(null);
+    const location = useLocation();
 
     // Limpeza dos confetes quando o componente for desmontado
     useEffect(() => {
@@ -46,20 +48,15 @@ function HotelCard({ hotel }) {
     };
 
     // Calcula o menor preço dos quartos disponíveis
+    const getMinPrice = () => {
+        if (hotel.roomOptions && hotel.roomOptions.length > 0) {
+            const prices = hotel.roomOptions.map(room => room.price).filter(price => price > 0);
+            return prices.length > 0 ? Math.min(...prices) : hotel.price || 0;
+        }
+        return hotel.price || 0;
+    };
 
-
-    const minPrice = hotel.lowestRoomPrice; // Usa o preço mais baixo disponível
-    /*
-        const getMinPrice = () => {
-            if (hotel.roomOptions && hotel.roomOptions.length > 0) {
-                const prices = hotel.roomOptions.map(room => room.price).filter(price => price > 0);
-                return prices.length > 0 ? Math.min(...prices) : hotel.price || 0;
-            }
-            return hotel.price || 0;
-        };
-    
-        const minPrice = getMinPrice();
-        */
+    const minPrice = getMinPrice();
     const starRating = getStarRating();
 
     // Função para criar e animar confetes
@@ -138,9 +135,10 @@ function HotelCard({ hotel }) {
                 {/* Overlay gradient over image - mais escuro para melhor contraste */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-black/20 z-10"></div>
 
-                <img
+                <DebugImage
                     src={hotel.mainImageUrl}
                     alt={hotel.title}
+                    hotel={hotel}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                 />
 

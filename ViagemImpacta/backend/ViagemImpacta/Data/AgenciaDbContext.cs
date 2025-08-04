@@ -21,6 +21,10 @@ namespace ViagemImpacta.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Configuração da chave primária para RoomsPromotional
+            modelBuilder.Entity<RoomsPromotional>()
+                .HasKey(rp => rp.RoomPromotionalId);
+
             // Configuração para armazenar lista de URLs de imagem como string delimitada
             modelBuilder.Entity<Hotel>()
                 .Property(h => h.ImageUrls)
@@ -29,7 +33,6 @@ namespace ViagemImpacta.Data
                     v => string.IsNullOrWhiteSpace(v) ? new List<string>() : v.Split('|', StringSplitOptions.RemoveEmptyEntries).ToList() // Converter string de volta para lista
                 );
 
-            base.OnModelCreating(modelBuilder);
             base.OnModelCreating(modelBuilder);
 
             modelBuilder.Entity<Hotel>().HasData(
@@ -54,7 +57,14 @@ namespace ViagemImpacta.Data
                     Garden = true,
                     PetFriendly = true,
                     BreakfastIncludes = true,
-                    Description = "Luxuoso hotel localizado na praia de Copacabana, com suítes de alto padrão, spa e várias opções de lazer."
+                    Description = "Luxuoso hotel localizado na praia de Copacabana, com suítes de alto padrão, spa e várias opções de lazer.",
+                    ImageUrls = new List<string>
+                    {
+                        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+                        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
+                        "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800",
+                        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800"
+                    }
                 },
                 new Hotel
                 {
@@ -77,7 +87,14 @@ namespace ViagemImpacta.Data
                     Garden = true,
                     PetFriendly = false,
                     BreakfastIncludes = true,
-                    Description = "Hotel aconchegante em Gramado, ideal para famílias, com quartos confortáveis e vista para as montanhas."
+                    Description = "Hotel aconchegante em Gramado, ideal para famílias, com quartos confortáveis e vista para as montanhas.",
+                    ImageUrls = new List<string>
+                    {
+                        "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800",
+                        "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?w=800",
+                        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800",
+                        "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800"
+                    }
                 },
                 new Hotel
                 {
@@ -100,7 +117,14 @@ namespace ViagemImpacta.Data
                     Garden = true,
                     PetFriendly = false,
                     BreakfastIncludes = true,
-                    Description = "Resort all-inclusive na costa da Bahia com múltiplas opções de lazer, esportes aquáticos e entretenimento."
+                    Description = "Resort all-inclusive na costa da Bahia com múltiplas opções de lazer, esportes aquáticos e entretenimento.",
+                    ImageUrls = new List<string>
+                    {
+                        "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800",
+                        "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800",
+                        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
+                        "https://images.unsplash.com/photo-1544986581-efac024faf62?w=800"
+                    }
                 },
                 new Hotel
                 {
@@ -123,7 +147,14 @@ namespace ViagemImpacta.Data
                     Garden = false,
                     PetFriendly = true,
                     BreakfastIncludes = true,
-                    Description = "Pousada rústica e charmosa em Jericoacoara, próxima à praia e às dunas, ambiente descontraído."
+                    Description = "Pousada rústica e charmosa em Jericoacoara, próxima à praia e às dunas, ambiente descontraído.",
+                    ImageUrls = new List<string>
+                    {
+                        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
+                        "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800",
+                        "https://images.unsplash.com/photo-1502780402662-acc01917152e?w=800",
+                        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800"
+                    }
                 },
                 new Hotel
                 {
@@ -146,7 +177,14 @@ namespace ViagemImpacta.Data
                     Garden = false,
                     PetFriendly = false,
                     BreakfastIncludes = false,
-                    Description = "Hotel boutique no coração de São Paulo, design sofisticado e localização privilegiada nos Jardins."
+                    Description = "Hotel boutique no coração de São Paulo, design sofisticado e localização privilegiada nos Jardins.",
+                    ImageUrls = new List<string>
+                    {
+                        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+                        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
+                        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
+                        "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800"
+                    }
                 },
                 new Hotel
                 {
@@ -169,7 +207,14 @@ namespace ViagemImpacta.Data
                     Garden = true,
                     PetFriendly = false,
                     BreakfastIncludes = true,
-                    Description = "Pousada exclusiva em Fernando de Noronha com vista deslumbrante para o mar e acesso às melhores praias."
+                    Description = "Pousada exclusiva em Fernando de Noronha com vista deslumbrante para o mar e acesso às melhores praias.",
+                    ImageUrls = new List<string>
+                    {
+                        "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800",
+                        "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800",
+                        "https://images.unsplash.com/photo-1502780402662-acc01917152e?w=800",
+                        "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800"
+                    }
                 },
                 new Hotel
                 {
@@ -192,7 +237,14 @@ namespace ViagemImpacta.Data
                     Garden = true,
                     PetFriendly = false,
                     BreakfastIncludes = true,
-                    Description = "Hotel de luxo localizado dentro do Parque Nacional do Iguaçu, com vista privilegiada para as Cataratas."
+                    Description = "Hotel de luxo localizado dentro do Parque Nacional do Iguaçu, com vista privilegiada para as Cataratas.",
+                    ImageUrls = new List<string>
+                    {
+                        "https://images.unsplash.com/photo-1544986581-efac024faf62?w=800",
+                        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+                        "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800",
+                        "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800"
+                    }
                 },
                 new Hotel
                 {
@@ -215,7 +267,14 @@ namespace ViagemImpacta.Data
                     Garden = true,
                     PetFriendly = true,
                     BreakfastIncludes = true,
-                    Description = "Pousada charmosa na Praia da Pipa, ambiente rústico e aconchegante com vista para o mar."
+                    Description = "Pousada charmosa na Praia da Pipa, ambiente rústico e aconchegante com vista para o mar.",
+                    ImageUrls = new List<string>
+                    {
+                        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800",
+                        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
+                        "https://images.unsplash.com/photo-1502780402662-acc01917152e?w=800",
+                        "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800"
+                    }
                 },
                 new Hotel
                 {
@@ -238,7 +297,14 @@ namespace ViagemImpacta.Data
                     Garden = true,
                     PetFriendly = false,
                     BreakfastIncludes = true,
-                    Description = "Resort all-inclusive em ilha privativa na Bahia, com múltiplas opções de lazer e esportes."
+                    Description = "Resort all-inclusive em ilha privativa na Bahia, com múltiplas opções de lazer e esportes.",
+                    ImageUrls = new List<string>
+                    {
+                        "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800",
+                        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
+                        "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800",
+                        "https://images.unsplash.com/photo-1544986581-efac024faf62?w=800"
+                    }
                 },
                 new Hotel
                 {
@@ -261,7 +327,14 @@ namespace ViagemImpacta.Data
                     Garden = true,
                     PetFriendly = true,
                     BreakfastIncludes = true,
-                    Description = "Pousada rural em Monte Verde, ambiente familiar com vista para as montanhas e trilhas ecológicas."
+                    Description = "Pousada rural em Monte Verde, ambiente familiar com vista para as montanhas e trilhas ecológicas.",
+                    ImageUrls = new List<string>
+                    {
+                        "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?w=800",
+                        "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800",
+                        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800",
+                        "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800"
+                    }
                 },
                 new Hotel
                 {
@@ -284,7 +357,14 @@ namespace ViagemImpacta.Data
                     Garden = false,
                     PetFriendly = false,
                     BreakfastIncludes = false,
-                    Description = "Hotel design icônico em São Paulo, arquitetura futurista com vista panorâmica da cidade."
+                    Description = "Hotel design icônico em São Paulo, arquitetura futurista com vista panorâmica da cidade.",
+                    ImageUrls = new List<string>
+                    {
+                        "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800",
+                        "https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=800",
+                        "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
+                        "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800"
+                    }
                 },
                 new Hotel
                 {
@@ -307,7 +387,14 @@ namespace ViagemImpacta.Data
                     Garden = true,
                     PetFriendly = false,
                     BreakfastIncludes = true,
-                    Description = "Pousada ecológica em Ubatuba, localizada na Vila de Picinguaba com acesso a praias preservadas."
+                    Description = "Pousada ecológica em Ubatuba, localizada na Vila de Picinguaba com acesso a praias preservadas.",
+                    ImageUrls = new List<string>
+                    {
+                        "https://images.unsplash.com/photo-1502780402662-acc01917152e?w=800",
+                        "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800",
+                        "https://images.unsplash.com/photo-1540541338287-41700207dee6?w=800",
+                        "https://images.unsplash.com/photo-1439066615861-d1af74d74000?w=800"
+                    }
                 },
                 new Hotel
                 {
@@ -330,7 +417,14 @@ namespace ViagemImpacta.Data
                     Garden = false,
                     PetFriendly = false,
                     BreakfastIncludes = true,
-                    Description = "Hotel boutique no Pelourinho, arquitetura colonial preservada no coração histórico de Salvador."
+                    Description = "Hotel boutique no Pelourinho, arquitetura colonial preservada no coração histórico de Salvador.",
+                    ImageUrls = new List<string>
+                    {
+                        "https://images.unsplash.com/photo-1544986581-efac024faf62?w=800",
+                        "https://images.unsplash.com/photo-1571003123894-1f0594d2b5d9?w=800",
+                        "https://images.unsplash.com/photo-1445019980597-93fa8acb246c?w=800",
+                        "https://images.unsplash.com/photo-1496417263034-38ec4f0b665a?w=800"
+                    }
                 }
             );
             modelBuilder.Entity<Room>().HasData(
@@ -881,7 +975,7 @@ namespace ViagemImpacta.Data
                 }
             );
 
-            // Dados de usuários para teste
+            // Dados de usuários para teste - População expandida
             modelBuilder.Entity<User>().HasData(
                 new User
                 {
@@ -924,11 +1018,251 @@ namespace ViagemImpacta.Data
                     BirthDate = DateOnly.FromDateTime(new DateTime(1978, 12, 10)),
                     CreatedAt = DateTime.Now,
                     Active = true
+                },
+                new User
+                {
+                    UserId = 4,
+                    Email = "ana.costa@email.com",
+                    Password = "123456",
+                    FirstName = "Ana",
+                    LastName = "Costa",
+                    Cpf = "111.222.333-44",
+                    Phone = "(11) 98765-1111",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1992, 3, 25)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 5,
+                    Email = "bruno.ferreira@email.com",
+                    Password = "123456",
+                    FirstName = "Bruno",
+                    LastName = "Ferreira",
+                    Cpf = "222.333.444-55",
+                    Phone = "(21) 97654-2222",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1987, 7, 12)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 6,
+                    Email = "carla.mendes@email.com",
+                    Password = "123456",
+                    FirstName = "Carla",
+                    LastName = "Mendes",
+                    Cpf = "333.444.555-66",
+                    Phone = "(31) 96543-3333",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1983, 11, 8)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 7,
+                    Email = "diego.almeida@email.com",
+                    Password = "123456",
+                    FirstName = "Diego",
+                    LastName = "Almeida",
+                    Cpf = "444.555.666-77",
+                    Phone = "(41) 95432-4444",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1995, 1, 30)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 8,
+                    Email = "elena.barbosa@email.com",
+                    Password = "123456",
+                    FirstName = "Elena",
+                    LastName = "Barbosa",
+                    Cpf = "555.666.777-88",
+                    Phone = "(51) 94321-5555",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1989, 9, 18)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 9,
+                    Email = "felipe.cardoso@email.com",
+                    Password = "123456",
+                    FirstName = "Felipe",
+                    LastName = "Cardoso",
+                    Cpf = "666.777.888-99",
+                    Phone = "(61) 93210-6666",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1986, 4, 22)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 10,
+                    Email = "gabriela.dias@email.com",
+                    Password = "123456",
+                    FirstName = "Gabriela",
+                    LastName = "Dias",
+                    Cpf = "777.888.999-00",
+                    Phone = "(71) 92109-7777",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1991, 6, 14)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 11,
+                    Email = "hugo.esteves@email.com",
+                    Password = "123456",
+                    FirstName = "Hugo",
+                    LastName = "Esteves",
+                    Cpf = "888.999.000-11",
+                    Phone = "(81) 91098-8888",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1984, 10, 5)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 12,
+                    Email = "isis.fonseca@email.com",
+                    Password = "123456",
+                    FirstName = "Isis",
+                    LastName = "Fonseca",
+                    Cpf = "999.000.111-22",
+                    Phone = "(85) 90987-9999",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1993, 2, 27)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 13,
+                    Email = "jorge.gomes@email.com",
+                    Password = "123456",
+                    FirstName = "Jorge",
+                    LastName = "Gomes",
+                    Cpf = "000.111.222-33",
+                    Phone = "(11) 89876-0000",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1988, 8, 16)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 14,
+                    Email = "karla.henrique@email.com",
+                    Password = "123456",
+                    FirstName = "Karla",
+                    LastName = "Henrique",
+                    Cpf = "111.222.333-44",
+                    Phone = "(21) 88765-1111",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1996, 12, 3)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 15,
+                    Email = "lucas.izidoro@email.com",
+                    Password = "123456",
+                    FirstName = "Lucas",
+                    LastName = "Izidoro",
+                    Cpf = "222.333.444-55",
+                    Phone = "(31) 87654-2222",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1982, 5, 11)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 16,
+                    Email = "mariana.jorge@email.com",
+                    Password = "123456",
+                    FirstName = "Mariana",
+                    LastName = "Jorge",
+                    Cpf = "333.444.555-66",
+                    Phone = "(41) 86543-3333",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1994, 7, 29)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 17,
+                    Email = "nicolas.klein@email.com",
+                    Password = "123456",
+                    FirstName = "Nicolas",
+                    LastName = "Klein",
+                    Cpf = "444.555.666-77",
+                    Phone = "(51) 85432-4444",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1981, 9, 7)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 18,
+                    Email = "olivia.lima@email.com",
+                    Password = "123456",
+                    FirstName = "Olivia",
+                    LastName = "Lima",
+                    Cpf = "555.666.777-88",
+                    Phone = "(61) 84321-5555",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1997, 1, 15)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 19,
+                    Email = "pedro.moreira@email.com",
+                    Password = "123456",
+                    FirstName = "Pedro",
+                    LastName = "Moreira",
+                    Cpf = "666.777.888-99",
+                    Phone = "(71) 83210-6666",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1980, 11, 23)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
+                },
+                new User
+                {
+                    UserId = 20,
+                    Email = "quincy.nunes@email.com",
+                    Password = "123456",
+                    FirstName = "Quincy",
+                    LastName = "Nunes",
+                    Cpf = "777.888.999-00",
+                    Phone = "(81) 82109-7777",
+                    Role = Models.Enums.Roles.User,
+                    BirthDate = DateOnly.FromDateTime(new DateTime(1985, 3, 9)),
+                    CreatedAt = DateTime.Now,
+                    Active = true
                 }
             );
 
-            // Dados de reservas para teste de disponibilidade por datas
+            // Dados de reservas - População realística 50-55% ocupação próximos 60 dias
+            // Primeiro vamos manter as reservas existentes e adicionar novas
             modelBuilder.Entity<Reservation>().HasData(
+                // Reservas existentes mantidas
                 new Reservation
                 {
                     ReservationId = 1,
@@ -980,7 +1314,7 @@ namespace ViagemImpacta.Data
                     CheckIn = new DateTime(2025, 8, 25),
                     CheckOut = new DateTime(2025, 8, 30),
                     TotalPrice = 2250.00m, // 5 diárias x 450
-                    IsConfirmed = false,
+                    IsConfirmed = true, // CONFIRMADA
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
                     Description = "Viagem de aventura"
@@ -1041,6 +1375,316 @@ namespace ViagemImpacta.Data
                     CreatedAt = DateTime.Now,
                     UpdatedAt = DateTime.Now,
                     Description = "Férias com crianças"
+                },
+
+                // NOVAS RESERVAS ADICIONAIS - População realística para próximos 60 dias
+                new Reservation
+                {
+                    ReservationId = 9,
+                    UserId = 4,
+                    RoomId = 3, // Standard Copacabana
+                    HotelId = 1,
+                    CheckIn = new DateTime(2025, 8, 6),
+                    CheckOut = new DateTime(2025, 8, 9),
+                    TotalPrice = 1800.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Final de semana Rio"
+                },
+                new Reservation
+                {
+                    ReservationId = 10,
+                    UserId = 5,
+                    RoomId = 4, // Família vista mar Copacabana
+                    HotelId = 1,
+                    CheckIn = new DateTime(2025, 8, 22),
+                    CheckOut = new DateTime(2025, 8, 26),
+                    TotalPrice = 4800.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Férias família Copacabana"
+                },
+                new Reservation
+                {
+                    ReservationId = 11,
+                    UserId = 6,
+                    RoomId = 6, // Chalé família Gramado
+                    HotelId = 2,
+                    CheckIn = new DateTime(2025, 8, 16),
+                    CheckOut = new DateTime(2025, 8, 19),
+                    TotalPrice = 3000.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Meio de semana Gramado"
+                },
+                new Reservation
+                {
+                    ReservationId = 12,
+                    UserId = 7,
+                    RoomId = 7, // Quarto standard Gramado
+                    HotelId = 2,
+                    CheckIn = new DateTime(2025, 8, 28),
+                    CheckOut = new DateTime(2025, 8, 31),
+                    TotalPrice = 2100.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Final agosto Gramado"
+                },
+                new Reservation
+                {
+                    ReservationId = 13,
+                    UserId = 8,
+                    RoomId = 9, // Villa vista mar Salvador
+                    HotelId = 3,
+                    CheckIn = new DateTime(2025, 8, 8),
+                    CheckOut = new DateTime(2025, 8, 12),
+                    TotalPrice = 10000.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Villa Salvador agosto"
+                },
+                new Reservation
+                {
+                    ReservationId = 14,
+                    UserId = 9,
+                    RoomId = 11, // Quarto duplo Salvador
+                    HotelId = 3,
+                    CheckIn = new DateTime(2025, 8, 26),
+                    CheckOut = new DateTime(2025, 8, 29),
+                    TotalPrice = 1500.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Final agosto Salvador"
+                },
+                new Reservation
+                {
+                    ReservationId = 15,
+                    UserId = 10,
+                    RoomId = 12, // Cobertura Salvador
+                    HotelId = 3,
+                    CheckIn = new DateTime(2025, 9, 5),
+                    CheckOut = new DateTime(2025, 9, 9),
+                    TotalPrice = 9200.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Cobertura setembro Salvador"
+                },
+                new Reservation
+                {
+                    ReservationId = 16,
+                    UserId = 11,
+                    RoomId = 15, // Villa familiar Jericoacoara
+                    HotelId = 4,
+                    CheckIn = new DateTime(2025, 8, 14),
+                    CheckOut = new DateTime(2025, 8, 18),
+                    TotalPrice = 3600.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Villa família Jericoacoara"
+                },
+                new Reservation
+                {
+                    ReservationId = 17,
+                    UserId = 12,
+                    RoomId = 16, // Bangalô Jericoacoara
+                    HotelId = 4,
+                    CheckIn = new DateTime(2025, 9, 3),
+                    CheckOut = new DateTime(2025, 9, 7),
+                    TotalPrice = 2800.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Bangalô setembro Jericoacoara"
+                },
+                new Reservation
+                {
+                    ReservationId = 18,
+                    UserId = 13,
+                    RoomId = 18, // Loft empresarial Fasano SP
+                    HotelId = 5,
+                    CheckIn = new DateTime(2025, 8, 7),
+                    CheckOut = new DateTime(2025, 8, 11),
+                    TotalPrice = 8000.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Loft negócios SP"
+                },
+                new Reservation
+                {
+                    ReservationId = 19,
+                    UserId = 14,
+                    RoomId = 19, // Quarto superior Fasano SP
+                    HotelId = 5,
+                    CheckIn = new DateTime(2025, 8, 19),
+                    CheckOut = new DateTime(2025, 8, 22),
+                    TotalPrice = 5400.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Superior SP agosto"
+                },
+                new Reservation
+                {
+                    ReservationId = 20,
+                    UserId = 15,
+                    RoomId = 20, // Penthouse Fasano SP
+                    HotelId = 5,
+                    CheckIn = new DateTime(2025, 9, 10),
+                    CheckOut = new DateTime(2025, 9, 13),
+                    TotalPrice = 9000.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Penthouse setembro SP"
+                },
+                new Reservation
+                {
+                    ReservationId = 21,
+                    UserId = 16,
+                    RoomId = 1, // Suíte presidencial Copacabana
+                    HotelId = 1,
+                    CheckIn = new DateTime(2025, 9, 20),
+                    CheckOut = new DateTime(2025, 9, 24),
+                    TotalPrice = 6000.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Presidencial setembro"
+                },
+                new Reservation
+                {
+                    ReservationId = 22,
+                    UserId = 17,
+                    RoomId = 3, // Standard Copacabana
+                    HotelId = 1,
+                    CheckIn = new DateTime(2025, 9, 12),
+                    CheckOut = new DateTime(2025, 9, 15),
+                    TotalPrice = 1800.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Standard setembro Rio"
+                },
+                new Reservation
+                {
+                    ReservationId = 23,
+                    UserId = 18,
+                    RoomId = 5, // Suíte romântica Gramado
+                    HotelId = 2,
+                    CheckIn = new DateTime(2025, 9, 18),
+                    CheckOut = new DateTime(2025, 9, 21),
+                    TotalPrice = 3600.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Romance setembro Gramado"
+                },
+                new Reservation
+                {
+                    ReservationId = 24,
+                    UserId = 19,
+                    RoomId = 8, // Quarto familiar Gramado
+                    HotelId = 2,
+                    CheckIn = new DateTime(2025, 9, 26),
+                    CheckOut = new DateTime(2025, 9, 29),
+                    TotalPrice = 3300.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Família final setembro"
+                },
+                new Reservation
+                {
+                    ReservationId = 25,
+                    UserId = 20,
+                    RoomId = 13, // Quarto família Salvador
+                    HotelId = 3,
+                    CheckIn = new DateTime(2025, 9, 25),
+                    CheckOut = new DateTime(2025, 9, 28),
+                    TotalPrice = 2340.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Família Salvador setembro"
+                },
+                new Reservation
+                {
+                    ReservationId = 26,
+                    UserId = 4,
+                    RoomId = 14, // Suíte rústica Jericoacoara
+                    HotelId = 4,
+                    CheckIn = new DateTime(2025, 9, 8),
+                    CheckOut = new DateTime(2025, 9, 12),
+                    TotalPrice = 1800.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Rústica setembro Jericoacoara"
+                },
+                new Reservation
+                {
+                    ReservationId = 27,
+                    UserId = 5,
+                    RoomId = 17, // Suíte executiva Fasano SP
+                    HotelId = 5,
+                    CheckIn = new DateTime(2025, 9, 23),
+                    CheckOut = new DateTime(2025, 9, 26),
+                    TotalPrice = 7500.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Executiva final setembro SP"
+                },
+                new Reservation
+                {
+                    ReservationId = 28,
+                    UserId = 6,
+                    RoomId = 2, // Quarto luxo Copacabana
+                    HotelId = 1,
+                    CheckIn = new DateTime(2025, 10, 1),
+                    CheckOut = new DateTime(2025, 10, 4),
+                    TotalPrice = 2700.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Luxo outubro Rio"
+                },
+                new Reservation
+                {
+                    ReservationId = 29,
+                    UserId = 7,
+                    RoomId = 6, // Chalé família Gramado
+                    HotelId = 2,
+                    CheckIn = new DateTime(2025, 10, 2),
+                    CheckOut = new DateTime(2025, 10, 6),
+                    TotalPrice = 4000.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Chalé outubro Gramado"
+                },
+                new Reservation
+                {
+                    ReservationId = 30,
+                    UserId = 8,
+                    RoomId = 10, // Villa familiar Salvador
+                    HotelId = 3,
+                    CheckIn = new DateTime(2025, 10, 3),
+                    CheckOut = new DateTime(2025, 10, 7),
+                    TotalPrice = 11200.00m,
+                    IsConfirmed = true,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now,
+                    Description = "Villa outubro Salvador"
                 }
             );
 

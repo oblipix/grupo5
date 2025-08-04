@@ -31,8 +31,6 @@ namespace ViagemImpacta.DTO.HotelDTO
         public List<RoomDto> Rooms { get; set; } = new();
 
         public decimal? MaxRoomPrice { get; set; }
-        public decimal? FilteredLowestRoomPrice { get; set; }
-
 
         // Image URLs - A primeira será a imagem principal do card
         public List<string> ImageUrls { get; set; } = new();

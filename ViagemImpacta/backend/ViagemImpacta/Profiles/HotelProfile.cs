@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ViagemImpacta.DTO.HotelDTO;
+using ViagemImpacta.DTO.RoomDTO;
 using ViagemImpacta.Models;
 
 namespace ViagemImpacta.Profiles
@@ -8,7 +9,6 @@ namespace ViagemImpacta.Profiles
     {
         public HotelProfile()
         {
-            // Mapeamento simples e direto Hotel para HotelDto
             CreateMap<Hotel, HotelDto>()
                 .ForMember(dest => dest.RoomCount,
                     opt => opt.MapFrom(src => src.Rooms != null ? src.Rooms.Sum(r => r.TotalRooms) : 0))
@@ -23,10 +23,6 @@ namespace ViagemImpacta.Profiles
                 .ForMember(dest => dest.MaxRoomPrice,
                     opt => opt.MapFrom(src => src.Rooms != null && src.Rooms.Any()
                         ? src.Rooms.Max(r => r.AverageDailyPrice)
-                        : (decimal?)null))
-                .ForMember(dest => dest.FilteredLowestRoomPrice,
-                    opt => opt.MapFrom(src => src.Rooms != null && src.Rooms.Any()
-                        ? src.Rooms.Min(r => r.AverageDailyPrice)
                         : (decimal?)null));
         }
     }
