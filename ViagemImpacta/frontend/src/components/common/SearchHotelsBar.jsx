@@ -493,20 +493,7 @@ function SearchHotelsBar({ enableOnChange = true, onSearch, loadingState }) {
                                         title: 'Data não permitida'
                                     });
                                 }}
-                                onBlur={(e) => {
-                                    // Validação adicional ao sair do campo
-                                    const value = e.target.value;
-                                    const today = getTodayDate();
-                                    if (value && value <= today) {
-                                        e.target.value = '';
-                                        setCheckInDate('');
-                                        setDateErrorModal({
-                                            isOpen: true,
-                                            message: 'Só é permitido agendar em datas posteriores ao dia de hoje!',
-                                            title: 'Data não permitida'
-                                        });
-                                    }
-                                }}
+                                // onBlur removido para evitar bloqueio no mobile
                                 onMouseEnter={(e) => {
                                     if (checkInDate && checkInDate <= getTodayDate()) {
                                         e.target.style.cursor = 'not-allowed';
