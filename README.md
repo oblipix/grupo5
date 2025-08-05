@@ -1,29 +1,101 @@
 <div align="center">
-<img src="https://github.com/user-attachments/assets/63de21b1-4a13-4c3c-9085-8fb93827e6fb" width="200px"style=> 
+<img src="https://github.com/user-attachments/assets/dac0eaa1-3cbd-4a74-957d-6f244da6aca6" width="200px"style=> 
 </div>
 
 
 
-## AlphaTech University 
+## Tripiz Hospedagens
 
-O AlphaTech University será um portal acadêmico inovador, projetado para oferecer uma plataforma completa para instituições de ensino e alunos. O objetivo é facilitar o acesso a conteúdos educacionais, matrículas, notas e acompanhamento de desempenho acadêmico. Através de uma interface amigável e intuitiva, alunos poderão acessar recursos de aprendizado, realizar avaliações e monitorar seu progresso. Instituições poderão gerenciar turmas, cursos e materiais de forma centralizada, oferecendo uma experiência de ensino mais eficiente e personalizada para todos os envolvidos.
+O Tripz será um portal de hospitalidade inovador, projetado para oferecer uma plataforma completa para hóspedes e gerentes de hotéis. O objetivo é facilitar o acesso a reservas, serviços de quarto e avaliações, além de um acompanhamento detalhado da estadia. Através de uma interface amigável e intuitiva, hóspedes poderão acessar recursos de lazer, realizar check-in e check-out online e monitorar seus gastos. Gerentes de hotéis poderão gerenciar quartos, reservas e serviços de forma centralizada, oferecendo uma experiência de hospedagem mais eficiente e personalizada para todos os envolvidos.
 
 ## Funcionalidades Implementadas
+<details>
+<summary>Épico 1 – Cadastro e Autenticação de Usuários</summary>
+<ul>
+  
+- US01: Criar conta como cliente. O cliente deve poder se registrar com validação de dados e receber um e-mail de confirmação.
 
-- **Calendário:** Exibe o calendário anual a partir de setembro de 2024, onde o usuário pode registrar e salvar eventos no calendário pessoal, com título e data. É possível navegar entre meses.
+- US02: Recuperar senha. Usuário pode redefinir a senha via e-mail e fazer login com a nova senha.
 
-- **Serviços:** Página onde os usuários podem solicitar serviços como troca de turma, declaração de matrícula ou declaração de imposto de renda, preenchendo matrícula, tipo de serviço, motivo e descrição.
+- US03: Login do cliente. Usuário deve ser autenticado com credenciais corretas e ser direcionado para sua área de cliente.
 
-- **Dados Pessoais:** Permite ao usuário visualizar suas informações pessoais (matrícula, idade, tipo de usuário, curso, endereço e período de ingresso) ao inserir a matrícula.
+- US04: Login do administrador. Administrador deve acessar o painel de administração com credenciais válidas.
 
+- US05: Controle de perfis. Administrador pode atribuir diferentes permissões (cliente, atendente, gestor) aos usuários.
+</ul>
+</details>
+<details>
+<summary>Épico 2 – Hoteis</summary>
+<ul>
+  
+- US06: Cadastro de hoteis. Administrador deve poder criar pacotes completos, que são salvos e aparecem na listagem pública.
 
+- US07: Editar/excluir pacotes. O administrador pode editar os dados de um pacote ou excluí-lo (com confirmação).
+
+- US08: Listagem e filtros. Usuário pode usar filtros por destino, data ou preço para encontrar pacotes.
+
+- US09: Visualização de detalhes. Ao clicar em um pacote, o usuário deve ver todos os detalhes, como fotos, descrição, datas e valor.
+</ul>
+</details>
+<details>
+<summary>Épico 3 – Reservas</summary>
+<ul>
+
+- US10: Escolher o hotel e data. Cliente pode selecionar um pacote e uma data disponível para iniciar o processo de reserva.
+
+- US11: Inserir dados dos viajantes. O sistema deve validar e salvar os dados de todos os viajantes na reserva.
+
+- US12: Visualizar reservas no admin. O administrador deve ver uma lista de todas as reservas com status, datas e clientes associados.
+</ul>
+</details>
+<details>
+<summary>Épico 4 – Pagamentos</summary>
+<ul>
+
+- US13: Efetuar pagamento. Após finalizar a reserva, o sistema deve processar o pagamento via gateway integrado.
+
+- US14: Receber comprovante por e-mail. Após a confirmação do pagamento, o cliente recebe um e-mail com o comprovante e os detalhes da reserva.
+
+- US15: Ver status do pagamento. O administrador deve visualizar o status do pagamento (pendente, aprovado, recusado) de uma reserva.
+</ul>
+</details>
+<details>
+<summary>Épico 5 – Painel Administrativo</summary>
+<ul>
+
+- US16: Métricas no painel. O painel deve exibir gráficos e números de vendas por período, destino e status.
+
+- US17: Exportar relatórios. Administrador pode exportar dados do sistema em formatos como Excel ou PDF.
+
+- US18: Suporte ao cliente. Administrador pode buscar clientes por CPF ou nome para ver suas reservas e dar suporte.
+</ul>
+</details>
+
+<details>
+<summary>Épico 6 – Avaliações</summary>
+<ul>
+
+- US19: Avaliar pacote. Após a viagem, o cliente pode dar uma nota e escrever um comentário para o pacote.
+
+- US20: Moderação de comentários. Administrador pode gerenciar, aprovar ou remover as avaliações dos clientes.
+</ul>
+</details>
+<details>
+<summary>Épico 7 – Usabilidade</summary>
+<ul>
+
+- US21: Acesso via celular. O site deve ser responsivo e se adaptar a telas de celulares e tablets.
+
+- US22: Acessibilidade. O site deve ser acessível, com suporte a leitores de tela e navegação por teclado.
+</ul>
+</details>
 
 
 ## 💻 Tecnologias Usadas
-- **Linguagem de Programação**:<br>![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-- **Banco de Dados**:<br>![SQLite](https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white)![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
-- **Framework de Desenvolvimento Web**:<br>![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
-- **Frontend**:<br>![HTML](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)![CSS](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
+- **Linguagem de Programação**:<br>![C#](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white)
+- **Banco de Dados**:<br>![SQL Server](https://img.shields.io/badge/Microsoft%20SQL%20Server-CC2927?style=for-the-badge&logo=microsoft%20sql%20server&logoColor=white)
+- **Framework de Desenvolvimento Web**:<br>![.NET](https://img.shields.io/badge/.NET-512BD4?style=for-the-badge&logo=dotnet&logoColor=white)
+- **Frontend**:<br>![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
 - **Organização**:<br>![Jira](https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=jira&logoColor=white)![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 
 ## 🖇️Links 
