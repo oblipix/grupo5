@@ -154,6 +154,35 @@ export const reviewService = {
             // Em caso de erro, retorna dados vazios para não quebrar a UI
             return { reviews: [], averageRating: 0, totalReviews: 0 };
         }
+    },
+
+    // Verificar se o usuário já avaliou um hotel específico
+    async hasUserReviewedHotel(hotelId) {
+        console.log('🔍 REVIEW SERVICE - Verificando se usuário já avaliou hotel:', hotelId);
+        
+        try {
+            const response = await makeAuthenticatedRequest(`${API_URL}/Reviews/user-hotel-review/${hotelId}`, {
+                method: 'GET'
+            });
+
+            if (!response.ok) {
+                // Se retornar 404, significa que não há review
+                if (response.status === 404) {
+                    console.log('✅ REVIEW SERVICE - Usuário ainda não avaliou este hotel');
+                    return false;
+                }
+                throw new Error(`Erro HTTP: ${response.status}`);
+            }
+
+            const existingReview = await response.json();
+            console.log('❌ REVIEW SERVICE - Usuário já avaliou este hotel:', existingReview);
+            return true;
+
+        } catch (error) {
+            console.error('❌ REVIEW SERVICE - Erro ao verificar review existente:', error.message);
+            // Em caso de erro, assume que ainda não avaliou (para não bloquear desnecessariamente)
+            return false;
+        }
     }
 };
 

@@ -15,6 +15,13 @@ namespace ViagemImpacta.Services.Implementations
 
         public async Task<Review> CreateReviewAsync(Review review)
         {
+            // Verifica se o usuário já avaliou este hotel
+            var existingReview = await GetUserReviewForHotelAsync(review.UserId, review.HotelId);
+            if (existingReview != null)
+            {
+                throw new InvalidOperationException("Usuário já avaliou este hotel. Cada usuário pode avaliar um hotel apenas uma vez.");
+            }
+
             await _unitOfWork.Reviews.AddAsync(review);
             await _unitOfWork.CommitAsync();
             await UpdateHotelRatingAsync(review.HotelId);
@@ -34,6 +41,12 @@ namespace ViagemImpacta.Services.Implementations
         public async Task<IEnumerable<Review>> GetReviewsByUserIdAsync(int userId)
         {
             return await _unitOfWork.Reviews.GetReviewsByUserIdAsync(userId);
+        }
+
+        public async Task<Review?> GetUserReviewForHotelAsync(int userId, int hotelId)
+        {
+            var userReviews = await _unitOfWork.Reviews.GetReviewsByUserIdAsync(userId);
+            return userReviews.FirstOrDefault(r => r.HotelId == hotelId);
         }
 
         public async Task<Review> UpdateReviewAsync(Review review)

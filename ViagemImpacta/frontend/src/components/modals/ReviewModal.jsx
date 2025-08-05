@@ -4,27 +4,57 @@ import { reviewService } from '../../services/reviewService';
 import AuthService from '../../services/AuthService'; // Use seu AuthService para verificar o login
 
 const ReviewModal = ({ isOpen, onClose, reservation, onReviewSubmitted }) => {
-  const [rating, setRating] = useState(0);
-  const [hoveredRating, setHoveredRating] = useState(0);
-  const [comment, setComment] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
+  const [rating, setRating] = useState(0);
+  const [hoveredRating, setHoveredRating] = useState(0);
+  const [comment, setComment] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [isCheckingExistingReview, setIsCheckingExistingReview] = useState(false);
+  const [hasAlreadyReviewed, setHasAlreadyReviewed] = useState(false);
 
-  // useEffect para verificar token quando modal abre
-  useEffect(() => {
-    if (isOpen) {
-      const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+  // useEffect para verificar token e se já avaliou quando modal abre
+  useEffect(() => {
+    if (isOpen && reservation) {
+      const checkExistingReview = async () => {
+        const token = localStorage.getItem('authToken') || localStorage.getItem('token');
         console.log('🔍 Modal aberto - Token presente:', !!token);
-      console.log('🏨 Reserva:', reservation);
-      
-      if (!token) {
-        console.warn('⚠️ Token não encontrado quando modal abriu');
-      }
-    }
-  }, [isOpen]);
+        console.log('🏨 Reserva:', reservation);
+        
+        if (!token) {
+          console.warn('⚠️ Token não encontrado quando modal abriu');
+          setError('É necessário estar logado para avaliar.');
+          return;
+        }
 
-  const handleSubmit = async (e) => {
+        // Verificar se o usuário já avaliou este hotel
+        setIsCheckingExistingReview(true);
+        try {
+          const hotelId = reservation.hotelId || reservation.HotelId;
+          const alreadyReviewed = await reviewService.hasUserReviewedHotel(hotelId);
+          setHasAlreadyReviewed(alreadyReviewed);
+          
+          if (alreadyReviewed) {
+            setError('Você já avaliou este hotel. Cada usuário pode avaliar um hotel apenas uma vez.');
+          }
+        } catch (error) {
+          console.error('Erro ao verificar review existente:', error);
+          // Em caso de erro, permite continuar
+          setHasAlreadyReviewed(false);
+        } finally {
+          setIsCheckingExistingReview(false);
+        }
+      };
+
+      checkExistingReview();
+    }
+  }, [isOpen, reservation]);  const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Verificação se já avaliou
+    if (hasAlreadyReviewed) {
+      setError('Você já avaliou este hotel. Cada usuário pode avaliar um hotel apenas uma vez.');
+      return;
+    }
     
     // Verificação DETALHADA antes de enviar
     const token = localStorage.getItem('authToken') || localStorage.getItem('token');
@@ -60,17 +90,25 @@ const ReviewModal = ({ isOpen, onClose, reservation, onReviewSubmitted }) => {
       return;
     }
 
-    setIsSubmitting(true);
-    setError('');
+    setIsSubmitting(true);
+    setError('');
 
     try {
+      // Verificação final antes de enviar - dupla verificação de segurança
+      const hotelId = reservation.hotelId || reservation.HotelId;
+      const alreadyReviewed = await reviewService.hasUserReviewedHotel(hotelId);
+      
+      if (alreadyReviewed) {
+        setError('Você já avaliou este hotel. Cada usuário pode avaliar um hotel apenas uma vez.');
+        setIsSubmitting(false);
+        return;
+      }
+
       const reviewData = {
-        hotelId: reservation.hotelId || reservation.HotelId,
+        hotelId: hotelId,
         rating: rating,
         comment: comment.trim()
-      };
-
-      console.log('📤 REVIEW MODAL - Enviando dados para reviewService:', reviewData);
+      };      console.log('📤 REVIEW MODAL - Enviando dados para reviewService:', reviewData);
       console.log('📤 REVIEW MODAL - Token ainda presente antes de chamar service:', !!localStorage.getItem('authToken'));
       
       const result = await reviewService.rateHotel(reviewData);

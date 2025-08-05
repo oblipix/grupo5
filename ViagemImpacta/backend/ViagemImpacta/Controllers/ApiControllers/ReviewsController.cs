@@ -52,8 +52,16 @@ namespace ViagemImpacta.Controllers.ApiControllers
                 CreatedAt = DateTime.UtcNow
             };
 
-            var created = await _reviewService.CreateReviewAsync(review);
-            return CreatedAtAction(nameof(GetById), new { id = created.ReviewId }, created);
+            try
+            {
+                var created = await _reviewService.CreateReviewAsync(review);
+                return CreatedAtAction(nameof(GetById), new { id = created.ReviewId }, created);
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Trata especificamente o caso de review duplicada
+                return Conflict(new { message = ex.Message });
+            }
         }
 
         [HttpGet("hotel/{hotelId}")]
@@ -68,6 +76,27 @@ namespace ViagemImpacta.Controllers.ApiControllers
         {
             var reviews = await _reviewService.GetReviewsByUserIdAsync(userId);
             return Ok(reviews);
+        }
+
+        [HttpGet("user-hotel-review/{hotelId}")]
+        public async Task<ActionResult<Review>> GetUserHotelReview(int hotelId)
+        {
+            // Extrai o UserId do token JWT
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
+            {
+                return Unauthorized("Token de usuário inválido");
+            }
+
+            // Busca se o usuário já tem uma review para este hotel
+            var existingReview = await _reviewService.GetUserReviewForHotelAsync(userId, hotelId);
+            
+            if (existingReview == null)
+            {
+                return NotFound("Usuário ainda não avaliou este hotel");
+            }
+
+            return Ok(existingReview);
         }
 
         [HttpGet("{id}")]
