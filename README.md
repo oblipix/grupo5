@@ -52,7 +52,7 @@ Backend
 
 frontend
 
--npm install
+- npm install
 
   </ul>
 </details>
