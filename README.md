@@ -32,7 +32,7 @@ Exemplo de string de conexão para LocalDB:
 <details>
  <summary> Bibliotecas</summary>
 <ul>
-- **Backend**
+Backend
   
 - Abra o terminal e baixe as bibliotecas
   
