@@ -14,7 +14,7 @@ const ReviewModal = ({ isOpen, onClose, reservation, onReviewSubmitted }) => {
   useEffect(() => {
     if (isOpen) {
       const token = localStorage.getItem('authToken') || localStorage.getItem('token');
-      console.log('🔍 Modal aberto - Token presente:', !!token);
+        console.log('🔍 Modal aberto - Token presente:', !!token);
       console.log('🏨 Reserva:', reservation);
       
       if (!token) {
@@ -28,6 +28,7 @@ const ReviewModal = ({ isOpen, onClose, reservation, onReviewSubmitted }) => {
     
     // Verificação DETALHADA antes de enviar
     const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+    console.log("$$$$$$$$$$$$$$$$$$$$$$$$$",token)
     const user = localStorage.getItem('authUser');
     
     console.log('🔍 REVIEW MODAL - Verificações antes do submit:');
@@ -83,9 +84,9 @@ const ReviewModal = ({ isOpen, onClose, reservation, onReviewSubmitted }) => {
       
       if (error.message.includes('Sessão expirada') || error.message.includes('Token')) {
         setError('Sessão expirada. Redirecionando para login...');
-        setTimeout(() => {
-          window.location.href = '/login';
-        }, 2000);
+//         setTimeout(() => {
+//           window.location.href = '/login';
+//         }, 2000);
       } else {
         setError(error.message || 'Erro ao enviar avaliação. Tente novamente.');
       }
