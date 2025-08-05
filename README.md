@@ -99,11 +99,8 @@ O Tripz será um portal de hospitalidade inovador, projetado para oferecer uma p
 - **Organização**:<br>![Jira](https://img.shields.io/badge/Jira-0052CC?style=for-the-badge&logo=jira&logoColor=white)![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
 
 ## 🖇️Links 
--  [Projeto - Jira](https://cesar-team-c925b8yd.atlassian.net/jira/software/projects/AW/boards/5?atlOrigin=eyJpIjoiOGQyNjQxNmVlNzYxNDUzNmEwMDA5Y2Y4YTZiMmVkMmEiLCJwIjoiaiJ9)
--  [Protótipo Lo-Fi & Sketchboard - Figma](https://www.figma.com/design/7uEuFDZ5T9I2HeTYMGfnR9/FDS-Entrega-1?node-id=0-1&t=nimLCI6xdHeemn50-1)
-- [Site](https://alphatech-btdjdsgcg6dff6f4.brazilsouth-01.azurewebsites.net)
-- [Instruções de Uso](https://docs.google.com/document/d/1c1OgO7LOwW2Inl0H0sZEEPRcILvZiO6kl6c-bOLQv3Y/edit?usp=sharing)
-- [Repositório que tem os testes](https://github.com/pedroguswander/FDS)
+-  [Projeto - Jira](https://matheusclcclc-1752064913933.atlassian.net/jira/software/projects/SCRUM/boards/1/backlog?atlOrigin=eyJpIjoiYzUzNTk3YzEyOWY4NGQwNWJjODQ4NzE3Nzk2MmEzNzAiLCJwIjoiaiJ9)
+- [Protótipo Lo-Fi & Sketchboard - Figma](https://www.figma.com/proto/epp3vRexzmU4C3Twsh4ZWI/Untitled?node-id=0-1&t=R4FQwUqcs4BoGPUP-1)
 
 
 
