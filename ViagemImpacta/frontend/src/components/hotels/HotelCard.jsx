@@ -8,15 +8,43 @@ import { useModal } from '../context/ModalContext'; // Importa o contexto para m
 import { StarIcon } from '@heroicons/react/24/solid'; // Para a avaliação
 import '../styles/HotelCard.css'; // Importa o CSS específico do card
 import DebugImage from '../common/DebugImage';
+import { reviewService } from '../../services/reviewService'; // Importa o serviço de reviews
 
 function HotelCard({ hotel }) {
     // Usa o contexto para gerenciar o estado de "salvo"
     const { isLoggedIn, savedHotels, addSavedHotel, removeSavedHotel } = useAuth();
     const { showModal } = useModal();
     const [showConfetti, setShowConfetti] = useState(false);
+    const [reviewData, setReviewData] = useState({ averageRating: 0, totalReviews: 0 }); // Estado para reviews
     const confettiRef = useRef(null);
     const buttonRef = useRef(null);
     const location = useLocation();
+
+    // Busca reviews do hotel quando o componente é montado
+    useEffect(() => {
+        const fetchReviews = async () => {
+            // Só busca reviews se houver um hotel e o usuário estiver logado
+            if ((hotel?.id || hotel?.hotelId) && isLoggedIn) {
+                try {
+                    const hotelId = hotel.id || hotel.hotelId;
+                    console.log(`[HotelCard] Buscando reviews para hotel ID: ${hotelId}`);
+                    const data = await reviewService.getHotelReviews(hotelId);
+                    console.log(`[HotelCard] Reviews recebidas para hotel ${hotelId}:`, data);
+                    setReviewData(data);
+                } catch (error) {
+                    console.error('Erro ao buscar reviews do hotel:', error);
+                    // Mantém valores padrão em caso de erro
+                    setReviewData({ averageRating: 0, totalReviews: 0 });
+                }
+            } else {
+                // Se não estiver logado, não mostra reviews
+                console.log('[HotelCard] Usuário não logado, não buscando reviews');
+                setReviewData({ averageRating: 0, totalReviews: 0 });
+            }
+        };
+
+        fetchReviews();
+    }, [hotel?.id, hotel?.hotelId, isLoggedIn]); // Adiciona isLoggedIn como dependência
 
     // Limpeza dos confetes quando o componente for desmontado
     useEffect(() => {
@@ -35,19 +63,15 @@ function HotelCard({ hotel }) {
     // Só considera como favoritado se o usuário estiver logado E o hotel estiver na lista de favoritos
     const isSaved = isLoggedIn && savedHotels?.some(saved => saved.id === hotel.id);
 
-    // Determina a classificação do hotel (em estrelas)
+    // Determina a classificação do hotel (em estrelas) - APENAS dados do backend
     const getStarRating = () => {
-        // Se o hotel tem uma propriedade starRating, usamos ela
-        if (hotel.starRating) return hotel.starRating;
-
-        // Caso contrário, derivamos das avaliações dos usuários
-        if (hotel.rating) {
-            // Arredondamos para cima para ter um número inteiro de estrelas
-            return Math.round(hotel.rating);
+        // Usa APENAS a média das reviews reais do backend
+        if (reviewData.averageRating > 0) {
+            return Math.round(reviewData.averageRating);
         }
 
-        // Valor padrão se não houver dados
-        return 5; // Como solicitado, o exemplo é de 5 estrelas
+        // Se não houver reviews, mostra 0 estrelas (ou não mostra nada)
+        return 0;
     };
 
     // Calcula o menor preço dos quartos disponíveis
@@ -161,15 +185,17 @@ function HotelCard({ hotel }) {
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                 />
 
-                {/* Estrelas do hotel - posicionadas no topo esquerdo */}
-                <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-20 flex items-center bg-white/30 shadow-lg backdrop-blur-sm px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg">
-                    {[...Array(starRating)].map((_, index) => (
-                        <StarIcon key={index} className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 star-icon" />
-                    ))}
-                </div>
+                {/* Estrelas do hotel - APENAS se houver reviews reais */}
+                {reviewData.totalReviews > 0 && (
+                    <div className="absolute top-2 left-2 sm:top-4 sm:left-4 z-20 flex items-center bg-white/30 shadow-lg backdrop-blur-sm px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg">
+                        {[...Array(starRating)].map((_, index) => (
+                            <StarIcon key={index} className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-400 star-icon" />
+                        ))}
+                    </div>
+                )}
 
-                {/* Location indicator below stars */}
-                <div className="absolute top-8 left-2 sm:top-14 sm:left-4 z-20 flex items-center bg-white/30 shadow-lg backdrop-blur-sm px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg">
+                {/* Location indicator - posição ajustada baseada na presença de estrelas */}
+                <div className={`absolute ${reviewData.totalReviews > 0 ? 'top-8 left-2 sm:top-14 sm:left-4' : 'top-2 left-2 sm:top-4 sm:left-4'} z-20 flex items-center bg-white/30 shadow-lg backdrop-blur-sm px-1.5 py-0.5 sm:px-2 sm:py-1 rounded-lg`}>
                     <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-1.5 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"></path>
                     </svg>
@@ -188,13 +214,20 @@ function HotelCard({ hotel }) {
                     <div className="flex items-center mb-2 sm:mb-3 justify-between flex-wrap gap-2">
                         <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
                             <span className="text-gray-600 text-xs sm:text-sm">
-                                {hotel.rating && !isNaN(parseFloat(hotel.rating)) && (
-                                    <>
-                                        <span className="font-medium text-blue-600">{parseFloat(hotel.rating).toFixed(1)}</span>
-                                        <span className="mx-1">•</span>
-                                    </>
+                                {/* Exibe APENAS dados reais do backend se estiver logado */}
+                                {isLoggedIn ? (
+                                    reviewData.totalReviews > 0 ? (
+                                        <>
+                                            <span className="font-medium text-blue-600">{reviewData.averageRating.toFixed(1)}</span>
+                                            <span className="mx-1">•</span>
+                                            <span>{reviewData.totalReviews} {reviewData.totalReviews === 1 ? 'avaliação' : 'avaliações'}</span>
+                                        </>
+                                    ) : (
+                                        <span>Sem avaliações</span>
+                                    )
+                                ) : (
+                                    <span>Faça login para ver avaliações</span>
                                 )}
-                                {hotel.reviews || hotel.feedbacks?.length || 0} avaliações
                             </span>
 
                             {/* Botão de "Salvar" - posicionado ao lado das avaliações */}

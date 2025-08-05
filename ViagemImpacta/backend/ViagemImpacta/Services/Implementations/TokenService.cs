@@ -16,7 +16,7 @@ public static class TokensService
         var tokenDescriptor = new SecurityTokenDescriptor //Leva as infos necessarias pro token funcionar
         {
             Subject = new ClaimsIdentity(new[]
-            {
+            {   new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Role, user.Role.ToString())
             }),
