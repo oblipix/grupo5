@@ -108,6 +108,52 @@ export const reviewService = {
             console.error('❌ REVIEW SERVICE - Erro ao enviar avaliação:', error.message);
             throw error;
         }
+    },
+
+    // Buscar reviews de um hotel e calcular média
+    async getHotelReviews(hotelId) {
+        console.log('📊 REVIEW SERVICE - Buscando reviews do hotel:', hotelId);
+        
+        try {
+            // Requisição COM autenticação pois o backend exige
+            const response = await fetch(`${API_URL}/Reviews/hotel/${hotelId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getAuthToken()}`
+                }
+            });
+
+            if (!response.ok) {
+                // Se não encontrar reviews, retorna dados vazios ao invés de erro
+                if (response.status === 404) {
+                    console.log('📊 REVIEW SERVICE - Nenhuma review encontrada para o hotel');
+                    return { reviews: [], averageRating: 0, totalReviews: 0 };
+                }
+                throw new Error(`Erro HTTP: ${response.status}`);
+            }
+
+            const reviews = await response.json();
+            console.log('✅ REVIEW SERVICE - Reviews encontradas:', reviews);
+
+            // Calcula a média das avaliações
+            if (reviews && reviews.length > 0) {
+                const totalRating = reviews.reduce((sum, review) => sum + (review.rating || review.Rating || 0), 0);
+                const averageRating = totalRating / reviews.length;
+                
+                return {
+                    reviews: reviews,
+                    averageRating: Math.round(averageRating * 10) / 10, // Arredonda para 1 casa decimal
+                    totalReviews: reviews.length
+                };
+            } else {
+                return { reviews: [], averageRating: 0, totalReviews: 0 };
+            }
+        } catch (error) {
+            console.error('❌ REVIEW SERVICE - Erro ao buscar reviews:', error.message);
+            // Em caso de erro, retorna dados vazios para não quebrar a UI
+            return { reviews: [], averageRating: 0, totalReviews: 0 };
+        }
     }
 };
 
