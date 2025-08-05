@@ -165,6 +165,6 @@ frontend
 - **Rodrigo Santos** - <a href="mailto:rodrigo_rwa@hotmail.com"><img src="https://github.com/user-attachments/assets/d910e050-b74b-4dfd-9c58-bd3e6be60e8b" width="25"></a> - <a href="https://www.linkedin.com/in/rodrigospmelo/"><img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="20"></a>
  
 ## ✨ Contribuição
-<a href="https://github.com/oblipix/ViagemImpacta/graphs/contributors">
-<img src="https://contrib.rocks/image?repo=oblipix/ViagemImpacta" />
+<a href="https://github.com/oblipix/grupo5/graphs/contributors">
+<img src="https://contrib.rocks/image?repo=oblipix/grupo5" />
 </a>
