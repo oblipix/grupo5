@@ -59,11 +59,11 @@ frontend
 <details>
  <summary> Comandos</summary>
 <ul>
-  Adicionar uma nova migração:
+  Adicionar uma nova migração no terminal do nugget:
 
-  - dotnet ef migrations add <NomeDaMigracao>
+  - add-migrations <NomeDaMigracao>
 
-  - dotnet ef database update
+  - update-database 
 
   rodar o front
 - npm run dev
