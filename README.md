@@ -3,12 +3,76 @@
 </div>
 
 
-
 ## Tripz Hospedagens
 
 O Tripz será um portal de hospitalidade inovador, projetado para oferecer uma plataforma completa para hóspedes e gerentes de hotéis. O objetivo é facilitar o acesso a reservas, serviços de quarto e avaliações, além de um acompanhamento detalhado da estadia. Através de uma interface amigável e intuitiva, hóspedes poderão acessar recursos de lazer, realizar check-in e check-out online e monitorar seus gastos. Gerentes de hotéis poderão gerenciar quartos, reservas e serviços de forma centralizada, oferecendo uma experiência de hospedagem mais eficiente e personalizada para todos os envolvidos.
 
+## Instruções de uso
+<details>
+ <summary> Ambiente de trabalho</summary>
+<ul>
+  Certifique-se de que você tem as seguintes ferramentas instaladas:
+  
+- .NET SDK 8.0:** [Baixar aqui](https://dotnet.microsoft.com/download/dotnet/8.0)
+  
+- Node.js & npm:** [Baixar aqui](https://nodejs.org/en) (a instalação do Node.js já inclui o npm)
+
+- SQL Server: Você pode usar o [SQL Server Express](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) ou o LocalDB (instalado com o Visual Studio).
+  
+Abra seu terminal favorito (PowerShell, Git Bash, CMD) e clone o repositório para o seu diretório local:
+
+- git clone [https://github.com/oblipix/ViagemImpacta.git](https://github.com/oblipix/ViagemImpacta.git)
+  <br><br/>
+Exemplo de string de conexão para LocalDB:
+
+- "ViagemImpactConnection": "Server=(localdb)\\mssqllocaldb;Database=ViagemImpactaDb;Trusted_Connection=True;MultipleActiveResultSets=true"
+  
+  </ul>
+</details>
+<details>
+ <summary> Bibliotecas</summary>
+<ul>
+- **Backend**
+  
+- Abra o terminal e baixe as bibliotecas
+  
+- Install-Package Microsoft.AspNetCore.Authentication.JwtBearer
+  
+- Install-Package AutoMapper
+  
+- Install-Package AutoMapper.Extensions.Microsoft.DependencyInjection
+  
+- Install-Package Stripe.net
+  
+- Install-Package Microsoft.EntityFrameworkCore.SqlServer
+  
+- Install-Package Microsoft.EntityFrameworkCore.Tools
+  
+- Install-Package Microsoft.EntityFrameworkCore.Design
+
+frontend
+
+-npm install
+
+  </ul>
+</details>
+<details>
+ <summary> Comandos</summary>
+<ul>
+  Adicionar uma nova migração:
+
+  - dotnet ef migrations add <NomeDaMigracao>
+
+  - dotnet ef database update
+
+  rodar o front
+- npm run dev
+
+  </ul>
+</details>
+
 ## Funcionalidades Implementadas
+
 <details>
 <summary>Épico 1 – Cadastro e Autenticação de Usuários</summary>
 <ul>
@@ -106,8 +170,8 @@ O Tripz será um portal de hospitalidade inovador, projetado para oferecer uma p
 
 ## 🙋‍♂️ Criado por:
 
-- **Matheus Lustosa** - <a href="mailto:mclc3@cesar.school"><img src="https://github.com/user-attachments/assets/d910e050-b74b-4dfd-9c58-bd3e6be60e8b" width="25"></a> - <a href="https://www.linkedin.com/in/matheus-lustosa-827010242/"><img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="20"></a>
-
+- **Matheus Lustosa** - <a href="mailto:matheusclc@hotmail.com"><img src="https://github.com/user-attachments/assets/d910e050-b74b-4dfd-9c58-bd3e6be60e8b" width="25"></a> - <a href="https://www.linkedin.com/in/matheus-lustosa-827010242/"><img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="20"></a>
+- **Poliana Barros** - <a href="mailto:polibarross@gmail.com"><img src="https://github.com/user-attachments/assets/d910e050-b74b-4dfd-9c58-bd3e6be60e8b" width="25"></a> - <a href="https://www.linkedin.com/in/polianabrandao1/"><img src="https://upload.wikimedia.org/wikipedia/commons/c/ca/LinkedIn_logo_initials.png" width="20"></a>
 
 ## ✨ Contribuição
 <a href="https://github.com/oblipix/ViagemImpacta/graphs/contributors">
