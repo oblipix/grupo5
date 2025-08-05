@@ -1,5 +1,5 @@
 // src/components/ReviewModal.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { reviewService } from '../../services/reviewService';
 import AuthService from '../../services/AuthService'; // Use seu AuthService para verificar o login
 
@@ -10,40 +10,79 @@ const ReviewModal = ({ isOpen, onClose, reservation, onReviewSubmitted }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    
-    if (rating === 0) {
-      setError('Por favor, selecione uma avaliação de 1 a 5 estrelas.');
+  // useEffect para verificar token quando modal abre
+  useEffect(() => {
+    if (isOpen) {
+      const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+      console.log('🔍 Modal aberto - Token presente:', !!token);
+      console.log('🏨 Reserva:', reservation);
+      
+      if (!token) {
+        console.warn('⚠️ Token não encontrado quando modal abriu');
+      }
+    }
+  }, [isOpen]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    // Verificação DETALHADA antes de enviar
+    const token = localStorage.getItem('authToken') || localStorage.getItem('token');
+    const user = localStorage.getItem('authUser');
+    
+    console.log('🔍 REVIEW MODAL - Verificações antes do submit:');
+    console.log('  Token presente:', !!token);
+    console.log('  Token COMPLETO para debug:', token); // TEMPORÁRIO: Log do token completo
+    console.log('  User presente:', !!user);
+    console.log('  User data:', user ? JSON.parse(user) : null); // TEMPORÁRIO: Log do user completo
+    console.log('  Rating:', rating);
+    console.log('  Comment length:', comment.trim().length);
+    console.log('  Timestamp:', new Date().toISOString());
+    
+    if (!token) {
+      console.error('❌ REVIEW MODAL - Token não encontrado no localStorage');
+      setError('Sessão expirada. Faça login novamente.');
+      return;
+    }
+
+    if (!user) {
+      console.error('❌ REVIEW MODAL - Dados do usuário não encontrados no localStorage');
+      setError('Dados de usuário não encontrados. Faça login novamente.');
+      return;
+    }    if (rating === 0) {
+      setError('Por favor, selecione uma avaliação');
       return;
     }
 
     if (comment.trim().length < 5) {
-      setError('Por favor, escreva um comentário com pelo menos 5 caracteres.');
+      setError('O comentário deve ter pelo menos 5 caracteres');
       return;
     }
 
     setIsSubmitting(true);
     setError('');
 
-    try {
-      const reviewData = {
-        HotelId: reservation.hotelId || reservation.HotelId,
-        Rating: rating,
-        Comment: comment.trim()
-      };
+    try {
+      const reviewData = {
+        hotelId: reservation.hotelId || reservation.HotelId,
+        rating: rating,
+        comment: comment.trim()
+      };
 
-      await reviewService.rateHotel(reviewData);
-      
-      onReviewSubmitted(reviewData);
-      
-      setRating(0);
-      setComment('');
-    } catch (error) {
-      console.error('Erro no submit da avaliação:', error);
+      console.log('📤 REVIEW MODAL - Enviando dados para reviewService:', reviewData);
+      console.log('📤 REVIEW MODAL - Token ainda presente antes de chamar service:', !!localStorage.getItem('authToken'));
+      
+      const result = await reviewService.rateHotel(reviewData);
+      
+      console.log('✅ REVIEW MODAL - Avaliação enviada com sucesso:', result);
+      
+      // Sucesso
+      onReviewSubmitted?.();
+      handleClose();    } catch (error) {
+      console.error('❌ Erro ao enviar avaliação:', error);
       
       if (error.message.includes('Sessão expirada') || error.message.includes('Token')) {
-        setError('Sua sessão expirou. Você será redirecionado para o login.');
+        setError('Sessão expirada. Redirecionando para login...');
         setTimeout(() => {
           window.location.href = '/login';
         }, 2000);
