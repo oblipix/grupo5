@@ -4,7 +4,7 @@
 
 
 
-## Tripiz Hospedagens
+## Tripz Hospedagens
 
 O Tripz será um portal de hospitalidade inovador, projetado para oferecer uma plataforma completa para hóspedes e gerentes de hotéis. O objetivo é facilitar o acesso a reservas, serviços de quarto e avaliações, além de um acompanhamento detalhado da estadia. Através de uma interface amigável e intuitiva, hóspedes poderão acessar recursos de lazer, realizar check-in e check-out online e monitorar seus gastos. Gerentes de hotéis poderão gerenciar quartos, reservas e serviços de forma centralizada, oferecendo uma experiência de hospedagem mais eficiente e personalizada para todos os envolvidos.
 
