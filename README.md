@@ -13,9 +13,9 @@ O Tripz será um portal de hospitalidade inovador, projetado para oferecer uma p
 <ul>
   Certifique-se de que você tem as seguintes ferramentas instaladas:
   
-- .NET SDK 8.0:** [Baixar aqui](https://dotnet.microsoft.com/download/dotnet/8.0)
+- .NET SDK 8.0: [Baixar aqui](https://dotnet.microsoft.com/download/dotnet/8.0)
   
-- Node.js & npm:** [Baixar aqui](https://nodejs.org/en) (a instalação do Node.js já inclui o npm)
+- Node.js & npm: [Baixar aqui](https://nodejs.org/en) (a instalação do Node.js já inclui o npm)
 
 - SQL Server: Você pode usar o [SQL Server Express](https://www.microsoft.com/en-us/sql-server/sql-server-downloads) ou o LocalDB (instalado com o Visual Studio).
   
